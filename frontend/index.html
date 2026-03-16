@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>agraX | Wholesale Produce Prices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leaf: { 50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',800:'#166534',900:'#14532d' },
+                        earth: { 50:'#fafaf9',100:'#f5f5f4',200:'#e7e5e4',300:'#d6d3d1',400:'#a8a29e',500:'#78716c',600:'#57534e',700:'#44403c',800:'#292524',900:'#1c1917' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #fafaf9; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .nav-link.active { color: #16a34a; border-bottom: 2px solid #16a34a; }
+        .card-hover { transition: all 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="font-sans text-earth-800">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-earth-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="h-16 flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" onclick="navigate('home')" class="flex items-center">
+                    <img src="agrax-logo.png" alt="agraX" class="h-12 md:h-14" />
+                </a>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Home</a>
+                    <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Markets</a>
+                    <a href="#" onclick="navigate('commodities')" data-nav="commodities" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Commodities</a>
+                    <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Compare</a>
+                </nav>
+                
+                <!-- Search + Actions -->
+                <div class="flex items-center gap-3">
+                    <button onclick="navigate('search')" class="flex items-center gap-2 px-4 py-2 bg-earth-100 hover:bg-earth-200 rounded-lg text-sm text-earth-600 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span class="hidden sm:inline">Search</span>
+                    </button>
+                    <span id="headerDate" class="hidden lg:block text-xs text-earth-400"></span>
+                </div>
+            </div>
+            
+            <!-- Mobile Nav -->
+            <div class="md:hidden flex gap-1 pb-2 overflow-x-auto">
+                <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Home</a>
+                <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Markets</a>
+                <a href="#" onclick="navigate('commodities')" data-nav="commodities" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Commodities</a>
+                <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Compare</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <div id="page-home" class="page active">
+        <!-- Hero -->
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-12 md:py-16">
+                <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
+                    Wholesale Produce <span class="text-leaf-600">Prices</span>
+                </h1>
+                <p class="text-earth-500 mb-8 max-w-xl">Real-time USDA terminal market data. Find prices, compare markets, make informed decisions.</p>
+                
+                <!-- Search Bar -->
+                <div class="flex gap-3 max-w-xl">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl text-base focus:border-leaf-500 focus:ring-2 focus:ring-leaf-100 bg-white" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+                    </div>
+                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium transition-colors">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-commodities">--</div>
+                    <div class="text-xs text-earth-500">Commodities</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-markets">--</div>
+                    <div class="text-xs text-earth-500">Markets</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-records">--</div>
+                    <div class="text-xs text-earth-500">Price Records</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-avgprice">--</div>
+                    <div class="text-xs text-earth-500">Avg Price</div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <section class="mb-10">
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by Category</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="categoriesGrid">
+                    <!-- Filled by JS -->
+                </div>
+            </section>
+
+            <!-- Markets Section -->
+            <section class="mb-10">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-earth-800">Terminal Markets</h2>
+                    <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium">View all →</a>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="marketsPreview">
+                    <!-- Filled by JS -->
+                </div>
+            </section>
+
+            <!-- Price Movers -->
+            <section class="mb-10">
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Today's Price Movers</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <h3 class="text-sm font-semibold text-leaf-700 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            Prices Up
+                        </h3>
+                        <div id="home-pricesUp" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <h3 class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/></svg>
+                            Prices Down
+                        </h3>
+                        <div id="home-pricesDown" class="space-y-2"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==================== MARKETS PAGE ==================== -->
+    <div id="page-markets" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Terminal Markets</h1>
+                <p class="text-earth-500">Browse wholesale produce prices by USDA terminal market location.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketsFullGrid">
+                <!-- Filled by JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== MARKET DETAIL PAGE ==================== -->
+    <div id="page-market-detail" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Markets</a>
+                <h1 id="marketDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
+                <p id="marketDetailStats" class="text-earth-500"></p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                            <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">7D Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketDetailTable"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== COMMODITIES PAGE ==================== -->
+    <div id="page-commodities" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Commodities</h1>
+                <p class="text-earth-500">Browse wholesale produce by category.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap gap-2 mb-6" id="commodityCategoryTabs"></div>
+            
+            <!-- Commodities Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="commoditiesGrid"></div>
+        </main>
+    </div>
+
+    <!-- ==================== COMMODITY DETAIL PAGE ==================== -->
+    <div id="page-commodity-detail" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <a href="#" onclick="navigate('commodities')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Commodities</a>
+                <h1 id="commodityDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
+                <p id="commodityDetailStats" class="text-earth-500"></p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Price Chart -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-earth-200 p-5">
+                    <h3 class="font-semibold text-earth-800 mb-4">7-Day Price Trend</h3>
+                    <div class="h-64"><canvas id="commodityChart"></canvas></div>
+                </div>
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl border border-earth-200 p-5">
+                    <h3 class="font-semibold text-earth-800 mb-4">Price Summary</h3>
+                    <div id="commodityQuickStats" class="space-y-3"></div>
+                </div>
+            </div>
+            
+            <!-- Markets Table -->
+            <div class="mt-6 bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <div class="px-5 py-4 border-b border-earth-200">
+                    <h3 class="font-semibold text-earth-800">Prices by Market</h3>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Market</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Origin</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Variety</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commodityMarketsTable"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== COMPARE PAGE ==================== -->
+    <div id="page-compare" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Compare Prices</h1>
+                <p class="text-earth-500">Compare the same commodity across different markets to find the best deal.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Commodity Selector -->
+            <div class="bg-white rounded-xl border border-earth-200 p-5 mb-6">
+                <label class="block text-sm font-medium text-earth-700 mb-2">Select a commodity to compare:</label>
+                <select id="compareSelect" onchange="runCompare()" class="w-full max-w-md px-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500">
+                    <option value="">Choose commodity...</option>
+                </select>
+            </div>
+            
+            <!-- Comparison Results -->
+            <div id="compareResults" class="hidden">
+                <h3 class="text-lg font-semibold text-earth-800 mb-4" id="compareTitle"></h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="compareGrid"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== SEARCH PAGE ==================== -->
+    <div id="page-search" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-4">Search</h1>
+                <div class="flex gap-3 max-w-2xl">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="searchInput" type="text" placeholder="Search commodities, markets, origins..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500" onkeydown="if(event.key==='Enter')runSearch()"/>
+                    </div>
+                    <select id="searchMarketFilter" class="px-4 py-3 border border-earth-300 rounded-xl bg-white">
+                        <option value="">All Markets</option>
+                    </select>
+                    <button onclick="runSearch()" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium">Search</button>
+                </div>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <p id="searchResultsInfo" class="text-sm text-earth-500 mb-4"></p>
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                            <th class="text-left px-4 py-3 font-medium">Market</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchResultsTable">
+                        <tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">Enter a search term above</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-4">
+                <span id="searchPageInfo" class="text-sm text-earth-500"></span>
+                <div class="flex gap-2">
+                    <button id="searchPrevBtn" onclick="searchPrev()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40" disabled>← Prev</button>
+                    <button id="searchNextBtn" onclick="searchNext()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40">Next →</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-earth-200 bg-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-earth-500">
+            <div class="flex items-center gap-3">
+                <img src="agrax-logo.png" alt="agraX" class="h-8" />
+                <span class="text-earth-400">Wholesale Produce Market Data</span>
+            </div>
+            <div>Data from USDA Agricultural Marketing Service</div>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://produce-iq-production.up.railway.app';
+        
+        let allData = [], datesData = {}, dates = [];
+        let searchPage = 1, searchResults = [];
+        const PAGE_SIZE = 25;
+        
+        const CATEGORIES = {
+            'Fruits': { emoji: '🍎', items: ['apple','pear','grape','peach','plum','cherry','nectarine','kiwi','melon','watermelon','mango','papaya','pineapple','banana'] },
+            'Vegetables': { emoji: '🥬', items: ['lettuce','tomato','pepper','onion','potato','carrot','celery','broccoli','cauliflower','cabbage','spinach','kale','cucumber','squash','zucchini','eggplant','corn','bean','pea','asparagus'] },
+            'Citrus': { emoji: '🍊', items: ['orange','lemon','lime','grapefruit','tangerine','mandarin','clementine'] },
+            'Berries': { emoji: '🍓', items: ['strawberr','blueberr','raspberr','blackberr','cranberr'] },
+            'Tropical': { emoji: '🥭', items: ['avocado','mango','papaya','pineapple','banana','coconut','kiwi'] },
+            'Organics': { emoji: '🌱', items: ['organic'] }
+        };
+        
+        function getCat(name) {
+            const l = name.toLowerCase();
+            for (const [cat, {items}] of Object.entries(CATEGORIES)) {
+                if (items.some(i => l.includes(i))) return cat;
+            }
+            return 'Other';
+        }
+        
+        function getTrend(commodity) {
+            if (dates.length < 2) return 0;
+            const today = datesData[dates[0].date]?.filter(x => x.commodity === commodity) || [];
+            const week = datesData[dates[Math.min(6, dates.length-1)].date]?.filter(x => x.commodity === commodity) || [];
+            if (!today.length || !week.length) return 0;
+            const avgToday = today.reduce((s,x) => s + parseFloat(x.price_low), 0) / today.length;
+            const avgWeek = week.reduce((s,x) => s + parseFloat(x.price_low), 0) / week.length;
+            return ((avgToday - avgWeek) / avgWeek) * 100;
+        }
+        
+        // ==================== NAVIGATION ====================
+        function navigate(page, param) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll(`[data-nav="${page}"]`).forEach(n => n.classList.add('active'));
+            window.scrollTo(0, 0);
+            
+            if (page === 'market-detail' && param) loadMarketDetail(param);
+            if (page === 'commodity-detail' && param) loadCommodityDetail(param);
+        }
+        
+        // ==================== INIT ====================
+        async function init() {
+            try {
+                dates = await (await fetch(`${API}/dates`)).json();
+                if (!dates.length) return;
+                
+                document.getElementById('headerDate').textContent = new Date(dates[0].date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+                
+                // Load current day
+                datesData[dates[0].date] = await (await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
+                allData = datesData[dates[0].date];
+                
+                // Load history for trends
+                for (let i = 1; i <= 6 && i < dates.length; i++) {
+                    try { datesData[dates[i].date] = await (await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json(); } catch {}
+                }
+                
+                populateHome();
+                populateMarketsPage();
+                populateCommoditiesPage();
+                populateComparePage();
+                populateSearchFilters();
+                
+            } catch(e) { console.error(e); }
+        }
+        
+        // ==================== HOME PAGE ====================
+        function populateHome() {
+            const commodities = [...new Set(allData.map(i => i.commodity))];
+            const markets = [...new Set(allData.map(i => i.market))];
+            const prices = allData.map(i => parseFloat(i.price_low)).filter(p => !isNaN(p));
+            
+            document.getElementById('stat-commodities').textContent = commodities.length;
+            document.getElementById('stat-markets').textContent = markets.length;
+            document.getElementById('stat-records').textContent = allData.length.toLocaleString();
+            document.getElementById('stat-avgprice').textContent = '$' + (prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2);
+            
+            // Categories
+            document.getElementById('categoriesGrid').innerHTML = Object.entries(CATEGORIES).map(([name, {emoji}]) => {
+                const count = allData.filter(i => getCat(i.commodity) === name).length;
+                return `
+                <div onclick="navigate('commodities');filterCommoditiesByCategory('${name}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer text-center">
+                    <div class="text-3xl mb-2">${emoji}</div>
+                    <div class="font-semibold text-earth-800">${name}</div>
+                    <div class="text-xs text-earth-500">${count} items</div>
+                </div>`;
+            }).join('');
+            
+            // Markets Preview (top 6)
+            const byMarket = {};
+            allData.forEach(i => {
+                if (!byMarket[i.market]) byMarket[i.market] = [];
+                byMarket[i.market].push(i);
+            });
+            const topMarkets = Object.entries(byMarket).sort((a,b) => b[1].length - a[1].length).slice(0, 6);
+            
+            document.getElementById('marketsPreview').innerHTML = topMarkets.map(([market, items]) => {
+                const topItems = [...new Set(items.map(i => i.commodity))].slice(0, 3);
+                return `
+                <div onclick="navigate('market-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-leaf-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-leaf-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-earth-800">${market}</div>
+                            <div class="text-xs text-earth-500">${items.length} listings</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-earth-500">Top: ${topItems.join(', ')}</div>
+                </div>`;
+            }).join('');
+            
+            // Price Movers
+            const changes = commodities.map(c => ({ commodity: c, change: getTrend(c) })).filter(c => Math.abs(c.change) > 1);
+            const up = changes.filter(c => c.change > 0).sort((a,b) => b.change - a.change).slice(0, 5);
+            const down = changes.filter(c => c.change < 0).sort((a,b) => a.change - b.change).slice(0, 5);
+            
+            document.getElementById('home-pricesUp').innerHTML = up.map(c => `
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
+                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-leaf-600">+${c.change.toFixed(1)}%</span>
+                </div>
+            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+            
+            document.getElementById('home-pricesDown').innerHTML = down.map(c => `
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
+                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-red-600">${c.change.toFixed(1)}%</span>
+                </div>
+            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+        }
+        
+        // ==================== MARKETS PAGE ====================
+        function populateMarketsPage() {
+            const byMarket = {};
+            allData.forEach(i => {
+                if (!byMarket[i.market]) byMarket[i.market] = { items: [], total: 0 };
+                byMarket[i.market].items.push(i);
+                byMarket[i.market].total += parseFloat(i.price_low) || 0;
+            });
+            
+            document.getElementById('marketsFullGrid').innerHTML = Object.entries(byMarket)
+                .sort((a,b) => b[1].items.length - a[1].items.length)
+                .map(([market, data]) => {
+                    const avg = data.total / data.items.length;
+                    const commodities = [...new Set(data.items.map(i => i.commodity))];
+                    return `
+                    <div onclick="navigate('market-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-leaf-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-leaf-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-earth-800">${market}</div>
+                                <div class="text-sm text-earth-500">${data.items.length} listings · ${commodities.length} commodities</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-earth-500">Avg price</span>
+                            <span class="font-semibold text-leaf-600">$${avg.toFixed(2)}</span>
+                        </div>
+                    </div>`;
+                }).join('');
+        }
+        
+        function loadMarketDetail(market) {
+            const items = allData.filter(i => i.market === market);
+            document.getElementById('marketDetailTitle').textContent = market;
+            document.getElementById('marketDetailStats').textContent = `${items.length} listings · ${[...new Set(items.map(i=>i.commodity))].length} commodities`;
+            
+            document.getElementById('marketDetailTable').innerHTML = items
+                .sort((a,b) => a.commodity.localeCompare(b.commodity))
+                .map(item => {
+                    const price = parseFloat(item.price_low);
+                    const change = getTrend(item.commodity);
+                    const isUp = change > 0.5, isDown = change < -0.5;
+                    return `
+                    <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                        <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                        <td class="px-4 py-3 text-right font-mono font-semibold">$${price.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-right hidden sm:table-cell">
+                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                                ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
+                            </span>
+                        </td>
+                    </tr>`;
+                }).join('');
+        }
+        
+        // ==================== COMMODITIES PAGE ====================
+        let currentCatFilter = 'All';
+        
+        function populateCommoditiesPage() {
+            // Category tabs
+            document.getElementById('commodityCategoryTabs').innerHTML = 
+                `<button onclick="filterCommoditiesByCategory('All')" data-cat="All" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-leaf-600 text-white">All</button>` +
+                Object.entries(CATEGORIES).map(([name, {emoji}]) => 
+                    `<button onclick="filterCommoditiesByCategory('${name}')" data-cat="${name}" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-white border border-earth-200 text-earth-700 hover:border-leaf-500">${emoji} ${name}</button>`
+                ).join('');
+            
+            renderCommoditiesGrid();
+        }
+        
+        function filterCommoditiesByCategory(cat) {
+            currentCatFilter = cat;
+            document.querySelectorAll('.cat-tab').forEach(t => {
+                const isActive = t.dataset.cat === cat;
+                t.classList.toggle('bg-leaf-600', isActive);
+                t.classList.toggle('text-white', isActive);
+                t.classList.toggle('bg-white', !isActive);
+                t.classList.toggle('text-earth-700', !isActive);
+            });
+            renderCommoditiesGrid();
+        }
+        
+        function renderCommoditiesGrid() {
+            let items = allData;
+            if (currentCatFilter !== 'All') {
+                items = items.filter(i => getCat(i.commodity) === currentCatFilter);
+            }
+            
+            const byCommodity = {};
+            items.forEach(i => {
+                if (!byCommodity[i.commodity]) byCommodity[i.commodity] = { items: [], total: 0 };
+                byCommodity[i.commodity].items.push(i);
+                byCommodity[i.commodity].total += parseFloat(i.price_low) || 0;
+            });
+            
+            document.getElementById('commoditiesGrid').innerHTML = Object.entries(byCommodity)
+                .sort((a,b) => a[0].localeCompare(b[0]))
+                .map(([commodity, data]) => {
+                    const avg = data.total / data.items.length;
+                    const change = getTrend(commodity);
+                    const isUp = change > 0.5, isDown = change < -0.5;
+                    return `
+                    <div onclick="navigate('commodity-detail','${commodity}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer">
+                        <div class="font-semibold text-earth-800 mb-1">${commodity}</div>
+                        <div class="text-xs text-earth-500 mb-3">${data.items.length} listings</div>
+                        <div class="flex justify-between items-end">
+                            <span class="text-lg font-bold text-leaf-600">$${avg.toFixed(2)}</span>
+                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                                ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
+                            </span>
+                        </div>
+                    </div>`;
+                }).join('') || '<p class="col-span-4 text-center text-earth-400 py-8">No commodities found</p>';
+        }
+        
+        function loadCommodityDetail(commodity) {
+            const items = allData.filter(i => i.commodity === commodity);
+            const prices = items.map(i => parseFloat(i.price_low));
+            const markets = [...new Set(items.map(i => i.market))];
+            
+            document.getElementById('commodityDetailTitle').textContent = commodity;
+            document.getElementById('commodityDetailStats').textContent = `Available in ${markets.length} markets · ${items.length} listings`;
+            
+            // Quick stats
+            document.getElementById('commodityQuickStats').innerHTML = `
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">Low</span>
+                    <span class="font-semibold">$${Math.min(...prices).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">High</span>
+                    <span class="font-semibold">$${Math.max(...prices).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">Average</span>
+                    <span class="font-semibold text-leaf-600">$${(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-earth-500">7D Change</span>
+                    <span class="font-semibold ${getTrend(commodity) >= 0 ? 'text-leaf-600' : 'text-red-500'}">${getTrend(commodity) >= 0 ? '+' : ''}${getTrend(commodity).toFixed(1)}%</span>
+                </div>
+            `;
+            
+            // Markets table sorted by price
+            document.getElementById('commodityMarketsTable').innerHTML = items
+                .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
+                .map((item, i) => `
+                    <tr class="border-b border-earth-100 ${i === 0 ? 'bg-leaf-50' : 'hover:bg-earth-50'}">
+                        <td class="px-4 py-3 font-medium text-earth-800">${item.market} ${i === 0 ? '<span class="text-xs text-leaf-600 ml-2">Best price</span>' : ''}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.origin || '-'}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-right font-mono font-semibold ${i === 0 ? 'text-leaf-600' : ''}">$${parseFloat(item.price_low).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+            
+            // Chart
+            const history = [];
+            for (let i = Math.min(6, dates.length-1); i >= 0; i--) {
+                const d = dates[i].date;
+                const dayItems = datesData[d]?.filter(x => x.commodity === commodity) || [];
+                if (dayItems.length) history.push({ date: d, price: dayItems.reduce((s,x) => s + parseFloat(x.price_low), 0) / dayItems.length });
+            }
+            
+            setTimeout(() => {
+                const canvas = document.getElementById('commodityChart');
+                if (canvas && history.length) {
+                    if (canvas.chart) canvas.chart.destroy();
+                    canvas.chart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: history.map(h => new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
+                            datasets: [{
+                                data: history.map(h => h.price),
+                                borderColor: '#16a34a',
+                                backgroundColor: '#16a34a20',
+                                fill: true, tension: 0.4, pointRadius: 4,
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => '$' + v.toFixed(0) } } } }
+                    });
+                }
+            }, 100);
+        }
+        
+        // ==================== COMPARE PAGE ====================
+        function populateComparePage() {
+            const commodities = [...new Set(allData.map(i => i.commodity))].sort();
+            document.getElementById('compareSelect').innerHTML = '<option value="">Choose commodity...</option>' +
+                commodities.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        
+        function runCompare() {
+            const commodity = document.getElementById('compareSelect').value;
+            if (!commodity) {
+                document.getElementById('compareResults').classList.add('hidden');
+                return;
+            }
+            
+            const items = allData.filter(i => i.commodity === commodity);
+            document.getElementById('compareResults').classList.remove('hidden');
+            document.getElementById('compareTitle').textContent = `${commodity} prices across ${items.length} listings`;
+            
+            document.getElementById('compareGrid').innerHTML = items
+                .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
+                .map((item, i) => `
+                    <div class="bg-white rounded-xl border ${i === 0 ? 'border-leaf-400 ring-2 ring-leaf-100' : 'border-earth-200'} p-4">
+                        ${i === 0 ? '<div class="text-xs font-semibold text-leaf-600 mb-2">🏆 Best Price</div>' : ''}
+                        <div class="font-semibold text-earth-800">${item.market}</div>
+                        <div class="text-xs text-earth-500 mb-3">${item.origin || 'Domestic'} · ${item.variety || 'Standard'}</div>
+                        <div class="text-2xl font-bold ${i === 0 ? 'text-leaf-600' : 'text-earth-800'}">$${parseFloat(item.price_low).toFixed(2)}</div>
+                    </div>
+                `).join('');
+        }
+        
+        // ==================== SEARCH PAGE ====================
+        function populateSearchFilters() {
+            const markets = [...new Set(allData.map(i => i.market))].sort();
+            document.getElementById('searchMarketFilter').innerHTML = '<option value="">All Markets</option>' +
+                markets.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+        
+        function runSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const market = document.getElementById('searchMarketFilter').value;
+            
+            searchResults = allData.filter(item => {
+                if (market && item.market !== market) return false;
+                if (query && !`${item.commodity} ${item.variety || ''} ${item.origin || ''}`.toLowerCase().includes(query)) return false;
+                return true;
+            });
+            
+            searchPage = 1;
+            renderSearchResults();
+        }
+        
+        function renderSearchResults() {
+            const start = (searchPage - 1) * PAGE_SIZE;
+            const pageItems = searchResults.slice(start, start + PAGE_SIZE);
+            const totalPages = Math.ceil(searchResults.length / PAGE_SIZE) || 1;
+            
+            document.getElementById('searchResultsInfo').textContent = `${searchResults.length} results found`;
+            document.getElementById('searchPageInfo').textContent = `Page ${searchPage} of ${totalPages}`;
+            document.getElementById('searchPrevBtn').disabled = searchPage <= 1;
+            document.getElementById('searchNextBtn').disabled = searchPage >= totalPages;
+            
+            document.getElementById('searchResultsTable').innerHTML = pageItems.length ? pageItems.map(item => `
+                <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                    <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
+                    <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
+                    <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                    <td class="px-4 py-3 text-earth-600">${item.market}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold">$${parseFloat(item.price_low).toFixed(2)}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+        }
+        
+        function searchPrev() { if (searchPage > 1) { searchPage--; renderSearchResults(); } }
+        function searchNext() { searchPage++; renderSearchResults(); }
+        
+        // Init
+        init();
+    </script>
+</body>
+</html>
