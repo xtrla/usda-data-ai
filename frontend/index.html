@@ -68,44 +68,26 @@
 
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
-        <!-- Quick Price Check Hero -->
-        <section class="bg-earth-100 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-6">
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-lg font-semibold text-earth-800">Quick price check</h2>
-                        <p class="text-sm text-earth-500">What's the terminal market price right now?</p>
+        <!-- Hero with Search -->
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10 md:py-14">
+                <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
+                    Wholesale Produce <span class="text-leaf-600">Intelligence</span>
+                </h1>
+                <p class="text-earth-500 mb-6 max-w-xl">Track prices from farm to market. Source prices, destination prices, and movement data — all in one place.</p>
+                
+                <div class="flex gap-3 max-w-xl">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="homeSearch" type="text" placeholder="Search commodities..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl bg-white focus:ring-2 focus:ring-leaf-200 focus:border-leaf-400" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
                     </div>
-                    <div class="flex flex-wrap gap-3 items-center">
-                        <select id="home-quick-commodity" class="px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm min-w-[160px]">
-                            <option value="">Select commodity...</option>
-                        </select>
-                        <select id="home-quick-market" class="px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm min-w-[140px]">
-                            <option value="">All Markets</option>
-                        </select>
-                        <button onclick="homeQuickCheck()" class="px-5 py-2.5 bg-leaf-600 hover:bg-leaf-700 text-white rounded-lg font-medium text-sm transition-colors">Check</button>
-                    </div>
-                </div>
-                <!-- Quick Result (hidden by default) -->
-                <div id="home-quick-result" class="hidden mt-5 bg-white border-2 border-leaf-500 rounded-xl p-5">
-                    <div class="flex flex-wrap justify-between gap-4">
-                        <div>
-                            <p id="home-quick-title" class="text-sm text-earth-500 mb-1"></p>
-                            <div class="flex items-baseline gap-3 flex-wrap">
-                                <span id="home-quick-price" class="text-3xl font-bold text-leaf-600"></span>
-                                <span id="home-quick-change" class="text-sm px-2 py-0.5 rounded"></span>
-                            </div>
-                            <p id="home-quick-range" class="text-xs text-earth-400 mt-1"></p>
-                        </div>
-                        <div id="home-quick-compare" class="text-right text-sm"></div>
-                    </div>
-                    <div id="home-quick-tip" class="mt-4 bg-amber-50 border-l-4 border-amber-400 px-4 py-3 rounded-r-lg text-sm text-amber-800"></div>
+                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium transition-colors">Search</button>
                 </div>
             </div>
         </section>
 
         <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Today's Movers - Primary Content -->
+            <!-- Today's Movers -->
             <section class="mb-10">
                 <h2 class="text-xl font-bold text-earth-800 mb-4">Prices moving this week</h2>
                 <div class="grid md:grid-cols-2 gap-5">
@@ -126,17 +108,8 @@
                 </div>
             </section>
 
-            <!-- Price Flow Section -->
-            <section class="mb-10">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-earth-800">Price flow: source → market</h2>
-                    <a href="#" onclick="navigate('compare')" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium">Compare all →</a>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 divide-y divide-earth-100" id="home-price-flow"></div>
-            </section>
-
             <!-- Dig Deeper - Report Cards -->
-            <section class="mb-10">
+            <section>
                 <h2 class="text-xl font-bold text-earth-800 mb-4">Dig deeper</h2>
                 <div class="grid md:grid-cols-3 gap-5">
                     <!-- Terminal Markets -->
@@ -169,12 +142,6 @@
                         <div class="text-sm text-blue-600 font-medium flex items-center gap-1">View all data <span>→</span></div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Browse by Category -->
-            <section>
-                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by category</h2>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="categoriesGrid"></div>
             </section>
         </main>
     </div>
@@ -663,58 +630,6 @@
         // ==================== HOME PAGE ====================
         function renderHome() {
             const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
-            const markets = [...new Set(terminalData.map(d => d.market))].sort();
-
-            // Populate quick check dropdowns
-            document.getElementById('home-quick-commodity').innerHTML = '<option value="">Select commodity...</option>' +
-                commodities.map(c => `<option value="${c}">${c}</option>`).join('');
-            document.getElementById('home-quick-market').innerHTML = '<option value="">All Markets</option>' +
-                markets.map(m => `<option value="${m}">${m}</option>`).join('');
-
-            // Price flow
-            const flowCommodities = ['Tomatoes', 'Avocados', 'Strawberries', 'Lettuce', 'Peppers'];
-            document.getElementById('home-price-flow').innerHTML = flowCommodities.map(name => {
-                const ship = shippingData.find(s => s.commodity === name);
-                const term = terminalData.find(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5)));
-                if (!ship || !term) return '';
-                const margin = parseFloat(term.price_low) - ship.priceLow;
-                return `
-                    <div class="flex items-center gap-4 p-4 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${name}')">
-                        <div class="w-28 shrink-0">
-                            <div class="font-semibold text-earth-800">${name}</div>
-                        </div>
-                        <div class="flex-1 flex items-center gap-3">
-                            <div class="text-center">
-                                <div class="text-xs text-earth-400">📦 Source</div>
-                                <div class="font-bold text-orange-600">$${ship.priceLow.toFixed(2)}</div>
-                                <div class="text-xs text-earth-400">${ship.origin.split(' - ')[0]}</div>
-                            </div>
-                            <div class="flex-1 flex items-center gap-2">
-                                <div class="flex-1 flow-line"></div>
-                                <div class="px-2 py-1 bg-earth-100 rounded text-xs font-medium text-earth-600">+$${margin.toFixed(2)}</div>
-                                <div class="flex-1 flow-line"></div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-xs text-earth-400">🏪 Market</div>
-                                <div class="font-bold text-leaf-600">$${parseFloat(term.price_low).toFixed(2)}</div>
-                                <div class="text-xs text-earth-400">${term.market}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Categories
-            document.getElementById('categoriesGrid').innerHTML = Object.entries(CATEGORIES).map(([name, { emoji }]) => {
-                const count = terminalData.filter(d => getCategory(d.commodity) === name).length;
-                return `
-                    <div onclick="filterByCategory('${name}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer text-center">
-                        <div class="text-2xl mb-1">${emoji}</div>
-                        <div class="font-medium text-earth-800 text-sm">${name}</div>
-                        <div class="text-xs text-earth-400">${count} items</div>
-                    </div>
-                `;
-            }).join('');
 
             // Price movers
             const withTrends = commodities.map(c => {
@@ -755,75 +670,6 @@
             navigate('search');
             document.getElementById('searchInput').value = cat;
             runSearch();
-        }
-
-        function homeQuickCheck() {
-            const commodity = document.getElementById('home-quick-commodity').value;
-            const market = document.getElementById('home-quick-market').value;
-            const resultDiv = document.getElementById('home-quick-result');
-
-            if (!commodity) {
-                resultDiv.classList.add('hidden');
-                return;
-            }
-
-            // Filter data
-            let items = terminalData.filter(d => d.commodity === commodity);
-            if (market) items = items.filter(d => d.market === market);
-
-            if (!items.length) {
-                resultDiv.classList.add('hidden');
-                return;
-            }
-
-            // Calculate price info
-            const prices = items.map(d => parseFloat(d.price_low));
-            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
-            const minPrice = Math.min(...prices);
-            const maxPrice = Math.max(...prices);
-
-            // Week-over-week change
-            const weekAgoItems = (datesData[dates[6]?.date] || []).filter(d => d.commodity === commodity);
-            let changeText = '', changeClass = '';
-            if (weekAgoItems.length) {
-                const weekPrices = weekAgoItems.map(d => parseFloat(d.price_low));
-                const weekAvg = weekPrices.reduce((a, b) => a + b, 0) / weekPrices.length;
-                const change = avgPrice - weekAvg;
-                if (Math.abs(change) > 0.5) {
-                    changeText = `${change > 0 ? '↑' : '↓'} $${Math.abs(change).toFixed(2)} vs last week`;
-                    changeClass = change > 0 ? 'bg-red-100 text-red-700' : 'bg-leaf-100 text-leaf-700';
-                }
-            }
-
-            // Compare to other markets
-            const allMarkets = [...new Set(terminalData.filter(d => d.commodity === commodity).map(d => d.market))];
-            let compareHtml = '';
-            if (allMarkets.length > 1) {
-                const otherMarkets = allMarkets.filter(m => m !== (market || items[0].market)).slice(0, 3);
-                const comparePrices = otherMarkets.map(m => {
-                    const mItems = terminalData.filter(d => d.commodity === commodity && d.market === m);
-                    const mAvg = mItems.reduce((s, d) => s + parseFloat(d.price_low), 0) / mItems.length;
-                    return `<span class="text-earth-500">${m}</span> <span class="font-medium">$${mAvg.toFixed(2)}</span>`;
-                });
-                compareHtml = `<p class="text-xs text-earth-400 mb-1">Other markets</p><div class="space-y-1">${comparePrices.join('<br>')}</div>`;
-            }
-
-            // Pricing tip
-            const suggestLow = avgPrice + 3;
-            const suggestHigh = avgPrice + 5;
-            const tipHtml = `<strong>💡 Pricing tip:</strong> Terminal price is $${avgPrice.toFixed(2)}. Typical resale to supermarkets: <strong>$${suggestLow.toFixed(0)} – $${suggestHigh.toFixed(0)}</strong> (3-5 over terminal).`;
-
-            // Update UI
-            document.getElementById('home-quick-title').textContent = `${commodity}${market ? ' — ' + market : ''}`;
-            document.getElementById('home-quick-price').textContent = `$${avgPrice.toFixed(2)}`;
-            document.getElementById('home-quick-change').textContent = changeText;
-            document.getElementById('home-quick-change').className = `text-sm px-2 py-0.5 rounded ${changeClass}`;
-            document.getElementById('home-quick-change').style.display = changeText ? 'inline' : 'none';
-            document.getElementById('home-quick-range').textContent = minPrice !== maxPrice ? `Range: $${minPrice.toFixed(2)} – $${maxPrice.toFixed(2)}` : '';
-            document.getElementById('home-quick-compare').innerHTML = compareHtml;
-            document.getElementById('home-quick-tip').innerHTML = tipHtml;
-
-            resultDiv.classList.remove('hidden');
         }
 
         // ==================== TERMINAL MARKETS PAGE ====================
