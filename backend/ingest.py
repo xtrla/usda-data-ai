@@ -14,6 +14,7 @@ Requires env vars:
 import os
 import re
 import json
+import hashlib
 import logging
 import requests
 from datetime import date, datetime
@@ -335,7 +336,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         or "organic" in quality_combined.lower()
     )
 
-    return {
+    row = {
         "report_date":        report_date,
         "market":             report_meta["market"],
         "market_type":        report_meta["market_type"],
@@ -357,27 +358,40 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "slug_id":            report_meta["slug_id"],
         "source_report":      report_meta["code"],
     }
+    # Compute row_hash for deduplication
+    hash_str = "|".join([
+        str(row.get("report_date") or ""),
+        str(row.get("source_report") or ""),
+        str(row.get("market") or ""),
+        str(row.get("commodity") or ""),
+        str(row.get("variety") or ""),
+        str(row.get("origin") or ""),
+        str(row.get("package") or ""),
+        str(row.get("size") or ""),
+        str(row.get("quality_note") or ""),
+        str(row.get("organic") or "false"),
+    ])
+    row["row_hash"] = hashlib.md5(hash_str.encode()).hexdigest()
+    return row
 
 
 # ── Upsert ───────────────────────────────────────────────────────────────────
 
 def upsert_rows(rows: list[dict]) -> int:
-    """Upsert rows into Supabase using the unique constraint as the conflict target."""
+    """
+    Upsert rows using row_hash as the conflict target.
+    On conflict (same hash = same row already exists) do nothing.
+    """
     if not rows:
         return 0
 
-    # Batch in chunks of 500 (Supabase limit)
     BATCH = 500
     total = 0
     for i in range(0, len(rows), BATCH):
         chunk = rows[i : i + BATCH]
         result = (
             supabase.table(TABLE)
-            .upsert(
-                chunk,
-                on_conflict="report_date,source_report,market,commodity,variety,origin,package,size,quality_note,organic",
-                ignore_duplicates=True,
-            )
+            .upsert(chunk, on_conflict="row_hash", ignore_duplicates=True)
             .execute()
         )
         total += len(chunk)
