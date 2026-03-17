@@ -194,8 +194,98 @@
                 <p class="text-earth-500">Wholesale prices at destination — what buyers pay at major city markets.</p>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5" id="terminal-grid"></div>
+        <main class="max-w-7xl mx-auto px-4 py-6">
+            <!-- Quick Price Check -->
+            <div class="bg-earth-100 rounded-xl p-5 mb-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-lg">⚡</span>
+                    <h3 class="font-semibold text-earth-800">Quick Price Check</h3>
+                </div>
+                <div class="flex flex-wrap gap-3 items-end">
+                    <div class="flex-1 min-w-[180px]">
+                        <label class="block text-xs text-earth-500 mb-1">Commodity</label>
+                        <select id="quick-commodity" class="w-full px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm" onchange="quickPriceCheck()">
+                            <option value="">Select...</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-[180px]">
+                        <label class="block text-xs text-earth-500 mb-1">Market</label>
+                        <select id="quick-market" class="w-full px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm" onchange="quickPriceCheck()">
+                            <option value="">All Markets</option>
+                        </select>
+                    </div>
+                    <button onclick="quickPriceCheck()" class="px-5 py-2.5 bg-leaf-600 hover:bg-leaf-700 text-white rounded-lg font-medium text-sm transition-colors">Check</button>
+                </div>
+            </div>
+
+            <!-- Quick Result Card (hidden by default) -->
+            <div id="quick-result" class="hidden bg-white border-2 border-leaf-500 rounded-xl p-5 mb-6">
+                <div class="flex flex-wrap justify-between gap-4">
+                    <div>
+                        <p id="quick-result-title" class="text-sm text-earth-500 mb-1"></p>
+                        <div class="flex items-baseline gap-3">
+                            <span id="quick-result-price" class="text-3xl font-bold text-leaf-600"></span>
+                            <span id="quick-result-change" class="text-sm px-2 py-0.5 rounded"></span>
+                        </div>
+                        <p id="quick-result-range" class="text-xs text-earth-400 mt-1"></p>
+                    </div>
+                    <div id="quick-result-compare" class="text-right text-sm"></div>
+                </div>
+                <!-- Pricing Tip -->
+                <div id="quick-result-tip" class="mt-4 bg-amber-50 border-l-3 border-amber-400 px-4 py-3 rounded-r-lg text-sm text-amber-800"></div>
+            </div>
+
+            <!-- Filters & Table -->
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <!-- Filter Bar -->
+                <div class="p-4 border-b border-earth-100 flex flex-wrap gap-3 items-center justify-between bg-earth-50">
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input id="terminal-search" type="text" placeholder="Search commodity..." class="pl-9 pr-3 py-2 border border-earth-300 rounded-lg text-sm w-48" oninput="filterTerminalTable()"/>
+                        </div>
+                        <select id="terminal-market-filter" class="px-3 py-2 border border-earth-300 rounded-lg text-sm bg-white" onchange="filterTerminalTable()">
+                            <option value="">All Markets</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs text-earth-400">Sort:</span>
+                        <select id="terminal-sort" class="px-3 py-2 border border-earth-300 rounded-lg text-sm bg-white" onchange="filterTerminalTable()">
+                            <option value="commodity">A → Z</option>
+                            <option value="price-low">Price ↑</option>
+                            <option value="price-high">Price ↓</option>
+                            <option value="change">Change %</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-earth-50 border-b border-earth-200">
+                            <tr class="text-xs text-earth-500 uppercase">
+                                <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                                <th class="text-left px-4 py-3 font-medium">Market</th>
+                                <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
+                                <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                                <th class="text-right px-4 py-3 font-medium">Price</th>
+                                <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">vs Last Wk</th>
+                                <th class="text-center px-4 py-3 font-medium w-20"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="terminal-table" class="divide-y divide-earth-100"></tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="p-4 border-t border-earth-100 flex justify-between items-center bg-earth-50">
+                    <span id="terminal-page-info" class="text-sm text-earth-500"></span>
+                    <div class="flex gap-2">
+                        <button id="terminal-prev" onclick="terminalPrev()" class="px-3 py-1.5 border border-earth-300 rounded-lg text-sm bg-white disabled:opacity-40" disabled>← Prev</button>
+                        <button id="terminal-next" onclick="terminalNext()" class="px-3 py-1.5 border border-earth-300 rounded-lg text-sm bg-white disabled:opacity-40">Next →</button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -684,35 +774,176 @@
         }
 
         // ==================== TERMINAL MARKETS PAGE ====================
+        let terminalPage = 1;
+        let terminalFiltered = [];
+        const TERMINAL_PAGE_SIZE = 25;
+
         function renderTerminalPage() {
-            const byMarket = {};
-            terminalData.forEach(d => {
-                if (!byMarket[d.market]) byMarket[d.market] = [];
-                byMarket[d.market].push(d);
+            // Populate commodity dropdown
+            const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
+            document.getElementById('quick-commodity').innerHTML = '<option value="">Select commodity...</option>' +
+                commodities.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            // Populate market dropdown
+            const markets = [...new Set(terminalData.map(d => d.market))].sort();
+            document.getElementById('quick-market').innerHTML = '<option value="">All Markets</option>' +
+                markets.map(m => `<option value="${m}">${m}</option>`).join('');
+            document.getElementById('terminal-market-filter').innerHTML = '<option value="">All Markets</option>' +
+                markets.map(m => `<option value="${m}">${m}</option>`).join('');
+
+            filterTerminalTable();
+        }
+
+        function filterTerminalTable() {
+            const search = document.getElementById('terminal-search').value.toLowerCase().trim();
+            const market = document.getElementById('terminal-market-filter').value;
+            const sort = document.getElementById('terminal-sort').value;
+
+            terminalFiltered = terminalData.filter(d => {
+                if (market && d.market !== market) return false;
+                if (search && !`${d.commodity} ${d.variety || ''} ${d.origin || ''}`.toLowerCase().includes(search)) return false;
+                return true;
             });
 
-            document.getElementById('terminal-grid').innerHTML = Object.entries(byMarket)
-                .sort((a, b) => b[1].length - a[1].length)
-                .map(([market, items]) => {
-                    const avg = items.reduce((s, i) => s + parseFloat(i.price_low), 0) / items.length;
-                    const top3 = [...new Set(items.map(i => i.commodity))].slice(0, 3);
-                    return `
-                        <div onclick="navigate('terminal-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-11 h-11 rounded-xl bg-leaf-100 flex items-center justify-center text-lg">🏪</div>
-                                <div>
-                                    <h3 class="font-bold text-earth-800">${market}</h3>
-                                    <p class="text-xs text-earth-500">${items.length} commodities</p>
-                                </div>
-                            </div>
-                            <div class="text-sm text-earth-500 mb-3">Top: ${top3.join(', ')}</div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-earth-400">Avg price</span>
-                                <span class="font-semibold text-leaf-600">$${avg.toFixed(2)}</span>
-                            </div>
-                        </div>
+            // Sort
+            if (sort === 'commodity') {
+                terminalFiltered.sort((a, b) => a.commodity.localeCompare(b.commodity));
+            } else if (sort === 'price-low') {
+                terminalFiltered.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+            } else if (sort === 'price-high') {
+                terminalFiltered.sort((a, b) => parseFloat(b.price_low) - parseFloat(a.price_low));
+            } else if (sort === 'change') {
+                terminalFiltered.sort((a, b) => {
+                    const changeA = getWeekChange(a.commodity);
+                    const changeB = getWeekChange(b.commodity);
+                    return Math.abs(changeB) - Math.abs(changeA);
+                });
+            }
+
+            terminalPage = 1;
+            renderTerminalTable();
+        }
+
+        function getWeekChange(commodity) {
+            const today = terminalData.filter(d => d.commodity === commodity);
+            const weekAgo = (datesData[dates[6]?.date] || []).filter(d => d.commodity === commodity);
+            if (!today.length || !weekAgo.length) return 0;
+            const avgToday = today.reduce((s, d) => s + parseFloat(d.price_low), 0) / today.length;
+            const avgWeek = weekAgo.reduce((s, d) => s + parseFloat(d.price_low), 0) / weekAgo.length;
+            return ((avgToday - avgWeek) / avgWeek) * 100;
+        }
+
+        function renderTerminalTable() {
+            const start = (terminalPage - 1) * TERMINAL_PAGE_SIZE;
+            const pageItems = terminalFiltered.slice(start, start + TERMINAL_PAGE_SIZE);
+            const totalPages = Math.ceil(terminalFiltered.length / TERMINAL_PAGE_SIZE) || 1;
+
+            document.getElementById('terminal-page-info').textContent = `${terminalFiltered.length} results · Page ${terminalPage} of ${totalPages}`;
+            document.getElementById('terminal-prev').disabled = terminalPage <= 1;
+            document.getElementById('terminal-next').disabled = terminalPage >= totalPages;
+
+            document.getElementById('terminal-table').innerHTML = pageItems.length ? pageItems.map((item, i) => {
+                const price = parseFloat(item.price_low);
+                const change = getWeekChange(item.commodity);
+                const isUp = change > 1, isDown = change < -1;
+                return `
+                    <tr class="${i % 2 === 1 ? 'bg-earth-50/50' : ''} hover:bg-leaf-50 cursor-pointer" onclick="navigate('commodity','${item.commodity}')">
+                        <td class="px-4 py-3">
+                            <span class="font-medium text-earth-800">${item.commodity}</span>
+                        </td>
+                        <td class="px-4 py-3 text-earth-600">${item.market}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '–'}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '–'}</td>
+                        <td class="px-4 py-3 text-right font-semibold text-leaf-600">$${price.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-right hidden sm:table-cell">
+                            <span class="${isUp ? 'text-red-500' : isDown ? 'text-leaf-600' : 'text-earth-400'}">
+                                ${isUp ? '↑' : isDown ? '↓' : '–'} ${Math.abs(change).toFixed(1)}%
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="event.stopPropagation(); navigate('compare'); document.getElementById('compare-select').value='${item.commodity}'; updateCompare();" class="text-xs text-leaf-600 hover:text-leaf-700 font-medium">Compare</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('') : '<tr><td colspan="7" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+        }
+
+        function terminalPrev() { if (terminalPage > 1) { terminalPage--; renderTerminalTable(); } }
+        function terminalNext() { terminalPage++; renderTerminalTable(); }
+
+        function quickPriceCheck() {
+            const commodity = document.getElementById('quick-commodity').value;
+            const market = document.getElementById('quick-market').value;
+            const resultEl = document.getElementById('quick-result');
+
+            if (!commodity) {
+                resultEl.classList.add('hidden');
+                return;
+            }
+
+            let items = terminalData.filter(d => d.commodity === commodity);
+            if (market) items = items.filter(d => d.market === market);
+
+            if (!items.length) {
+                resultEl.classList.add('hidden');
+                return;
+            }
+
+            const prices = items.map(d => parseFloat(d.price_low));
+            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const change = getWeekChange(commodity);
+
+            resultEl.classList.remove('hidden');
+            document.getElementById('quick-result-title').textContent = `${commodity}${market ? ' — ' + market : ' (all markets)'}`;
+            document.getElementById('quick-result-price').textContent = `$${avgPrice.toFixed(2)}`;
+            
+            const changeEl = document.getElementById('quick-result-change');
+            if (Math.abs(change) > 0.5) {
+                changeEl.textContent = `${change > 0 ? '↑' : '↓'} $${Math.abs(change * avgPrice / 100).toFixed(2)} vs last week`;
+                changeEl.className = `text-sm px-2 py-0.5 rounded ${change > 0 ? 'bg-red-100 text-red-600' : 'bg-leaf-100 text-leaf-600'}`;
+            } else {
+                changeEl.textContent = 'Unchanged vs last week';
+                changeEl.className = 'text-sm px-2 py-0.5 rounded bg-earth-100 text-earth-500';
+            }
+
+            document.getElementById('quick-result-range').textContent = `Range: $${minPrice.toFixed(2)} – $${maxPrice.toFixed(2)} · ${items.length} listing${items.length > 1 ? 's' : ''}`;
+
+            // Compare to other markets
+            if (market) {
+                const otherMarkets = terminalData.filter(d => d.commodity === commodity && d.market !== market).slice(0, 3);
+                if (otherMarkets.length) {
+                    document.getElementById('quick-result-compare').innerHTML = `
+                        <p class="text-xs text-earth-400 mb-1">Other markets:</p>
+                        ${otherMarkets.map(d => `<div><span class="text-earth-500">${d.market}</span> <span class="font-medium">$${parseFloat(d.price_low).toFixed(2)}</span></div>`).join('')}
                     `;
-                }).join('');
+                } else {
+                    document.getElementById('quick-result-compare').innerHTML = '';
+                }
+            } else {
+                const byMarket = {};
+                items.forEach(d => { byMarket[d.market] = parseFloat(d.price_low); });
+                const sorted = Object.entries(byMarket).sort((a, b) => a[1] - b[1]).slice(0, 3);
+                document.getElementById('quick-result-compare').innerHTML = `
+                    <p class="text-xs text-earth-400 mb-1">Best prices:</p>
+                    ${sorted.map(([m, p]) => `<div><span class="text-earth-500">${m}</span> <span class="font-medium text-leaf-600">$${p.toFixed(2)}</span></div>`).join('')}
+                `;
+            }
+
+            // Pricing tip
+            const shipPrice = shippingData.find(s => s.commodity.toLowerCase().includes(commodity.toLowerCase().slice(0, 5)))?.priceLow;
+            if (shipPrice) {
+                const margin = avgPrice - shipPrice;
+                document.getElementById('quick-result-tip').innerHTML = `
+                    <strong>💡 Pricing tip:</strong> Source price is ~$${shipPrice.toFixed(2)}. 
+                    Market margin: $${margin.toFixed(2)} (${((margin / shipPrice) * 100).toFixed(0)}%). 
+                    Typical resale to retail: $${(avgPrice + 3).toFixed(2)} – $${(avgPrice + 5).toFixed(2)}
+                `;
+                document.getElementById('quick-result-tip').classList.remove('hidden');
+            } else {
+                document.getElementById('quick-result-tip').classList.add('hidden');
+            }
         }
 
         function loadTerminalDetail(market) {
