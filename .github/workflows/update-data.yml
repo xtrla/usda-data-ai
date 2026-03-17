@@ -1,0 +1,33 @@
+name: Daily Data Update
+
+on:
+  schedule:
+    - cron: '0 15 * * 1-5'  # 10am ET (15:00 UTC), Mon-Fri only
+  workflow_dispatch:          # allows manual trigger from GitHub Actions tab
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run ingestion
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          MARS_API_KEY: ${{ secrets.MARS_API_KEY }}
+        run: |
+          cd backend
+          python ingest.py
