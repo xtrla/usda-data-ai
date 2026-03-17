@@ -289,8 +289,8 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     # Prices
     low_price_raw = raw.get("low_price") or raw.get("price") or raw.get("price_low")
     high_price_raw = raw.get("high_price") or raw.get("price_high")
-    mostly_low_raw = raw.get("mostly_low")
-    mostly_high_raw = raw.get("mostly_high")
+    mostly_low_raw = raw.get("mostly_low_price") or raw.get("mostly_low")
+    mostly_high_raw = raw.get("mostly_high_price") or raw.get("mostly_high")
 
     price_low, price_high_from_range = parse_price_range(str(low_price_raw) if low_price_raw else "")
 
@@ -314,21 +314,25 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     if price_low is None:
         return None  # skip rows with no price
 
-    # Pull quality-related fields individually for targeted parsing
-    quality_field  = raw.get("quality") or raw.get("condition") or raw.get("quality_condition") or ""
-    size_field     = raw.get("item_size") or raw.get("size") or ""
-    market_note    = raw.get("market_note") or raw.get("supply") or ""
-    grade_field    = raw.get("grade") or ""
+    # ── Confirmed MARS API field names from live response ──────────────────
+    # appearance, quality, condition are THREE separate fields
+    # quality_note = combine all three for best coverage
+    appearance_field = str(raw.get("appearance") or "").strip().lower()
+    quality_field    = str(raw.get("quality") or "").strip().lower()
+    condition_field  = str(raw.get("condition") or "").strip().lower()
+    size_field       = str(raw.get("item_size") or "").strip()
+    grade_field      = str(raw.get("grade") or "").strip()
+    supply_note      = str(raw.get("market_tone_comments") or raw.get("offerings_comments") or "").strip()
 
-    # Combined text for grade extraction (grade lives in different fields by report type)
-    grade_text = " ".join(filter(None, [grade_field, quality_field, market_note]))
+    # Combine all quality signals for parsing
+    quality_combined = " ".join(filter(None, [appearance_field, quality_field, condition_field, size_field]))
+    grade_text       = " ".join(filter(None, [grade_field, quality_combined]))
 
-    # Organic flag — appears as a section header in USDA reports
+    # Organic — comes as "Y"/"N" or True/False
+    organic_raw = raw.get("organic") or ""
     organic_flag = (
-        bool(raw.get("organic"))
-        or "organic" in str(quality_field).lower()
-        or "organic" in str(market_note).lower()
-        or "organic" in str(raw.get("section") or "").lower()
+        str(organic_raw).strip().upper() in ("Y", "YES", "TRUE", "1")
+        or "organic" in quality_combined.lower()
     )
 
     return {
@@ -337,19 +341,19 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "market_type":        report_meta["market_type"],
         "commodity":          commodity.title(),
         "variety":            (raw.get("variety") or "").strip().upper() or None,
-        "origin":             (raw.get("origin") or raw.get("location") or "").strip().title() or None,
+        "origin":             (raw.get("origin") or raw.get("district") or "").strip().title() or None,
         "package":            normalize_package(raw.get("package")),
         "size":               normalize_size(size_field),
-        "grade":              extract_grade(grade_text) or grade_field.strip().title() or None,
-        "quality_note":       extract_quality_note(quality_field, size_field, market_note),
+        "grade":              extract_grade(grade_text) or grade_field.title() or None,
+        "quality_note":       extract_quality_note(appearance_field, quality_field, condition_field),
         "organic":            organic_flag,
         "price_low":          price_low,
         "price_high":         price_high,
         "price_mostly_low":   mostly_low,
         "price_mostly_high":  mostly_high,
-        "movement":           normalize_movement(raw.get("movement") or raw.get("price_change")),
-        "trading_activity":   normalize_trading(raw.get("trading_desc") or raw.get("trading")),
-        "supply_note":        (raw.get("market_note") or raw.get("supply") or "").strip().upper() or None,
+        "movement":           normalize_movement(raw.get("movement") or raw.get("market_tone_comments")),
+        "trading_activity":   normalize_trading(raw.get("trading_desc") or raw.get("unit_sales")),
+        "supply_note":        supply_note.upper() or None,
         "slug_id":            report_meta["slug_id"],
         "source_report":      report_meta["code"],
     }
@@ -372,6 +376,7 @@ def upsert_rows(rows: list[dict]) -> int:
             .upsert(
                 chunk,
                 on_conflict="report_date,source_report,market,commodity,variety,origin,package,size,quality_note,organic",
+                ignore_duplicates=True,
             )
             .execute()
         )
