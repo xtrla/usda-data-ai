@@ -38,7 +38,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="h-16 flex items-center justify-between">
                 <a href="#" onclick="navigate('home')" class="flex items-center">
-                    <img src="agrax-logo.png" alt="agraX" class="h-10 md:h-12" />
+                    <img src="agrax-logo.png" alt="agraX" class="h-12 md:h-14" />
                 </a>
                 
                 <nav class="hidden md:flex items-center gap-1">
@@ -359,11 +359,16 @@
 
     <!-- ==================== COMMODITY DETAIL PAGE ==================== -->
     <div id="page-commodity" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <a href="#" onclick="history.back()" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-flex items-center gap-1">← Back</a>
-                <h1 id="commodity-title" class="text-2xl md:text-3xl font-bold text-earth-900"></h1>
-                <p id="commodity-subtitle" class="text-earth-500"></p>
+        <section id="commodity-hero" class="relative border-b border-earth-200 overflow-hidden" style="min-height: 200px;">
+            <!-- Background image -->
+            <div id="commodity-bg" class="absolute inset-0 bg-cover bg-center transition-opacity duration-500" style="opacity: 0;"></div>
+            <!-- Overlay gradient -->
+            <div class="absolute inset-0 bg-gradient-to-r from-earth-900/85 via-earth-900/70 to-earth-900/50"></div>
+            <!-- Content -->
+            <div class="relative max-w-7xl mx-auto px-4 py-10 md:py-14">
+                <a href="#" onclick="history.back()" class="text-sm text-leaf-300 hover:text-leaf-200 mb-3 inline-flex items-center gap-1">← Back</a>
+                <h1 id="commodity-title" class="text-3xl md:text-4xl font-bold text-white drop-shadow-lg"></h1>
+                <p id="commodity-subtitle" class="text-earth-200 text-lg mt-1"></p>
             </div>
         </section>
         <main class="max-w-7xl mx-auto px-4 py-8">
@@ -404,7 +409,7 @@
     <footer class="border-t border-earth-200 bg-white mt-16">
         <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-earth-500">
             <div class="flex items-center gap-3">
-                <img src="agrax-logo.png" alt="agraX" class="h-7" />
+                <img src="agrax-logo.png" alt="agraX" class="h-9" />
                 <span>Wholesale Produce Market Intelligence</span>
             </div>
             <div>Data from USDA Agricultural Marketing Service</div>
@@ -898,7 +903,60 @@
             const shipCount = shippingData.filter(s => s.commodity === name).length;
             document.getElementById('commodity-subtitle').textContent = `${termCount} market listings · ${shipCount} shipping origins`;
 
+            // Set background image from Unsplash
+            const bgEl = document.getElementById('commodity-bg');
+            const searchTerm = getCommoditySearchTerm(name);
+            const imgUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(searchTerm)}`;
+            
+            bgEl.style.opacity = '0';
+            const img = new Image();
+            img.onload = () => {
+                bgEl.style.backgroundImage = `url('${imgUrl}')`;
+                bgEl.style.opacity = '1';
+            };
+            img.src = imgUrl;
+
             showTab('terminal');
+        }
+
+        // Get better search terms for Unsplash
+        function getCommoditySearchTerm(name) {
+            const terms = {
+                'Tomatoes': 'fresh tomatoes farm',
+                'Strawberries': 'strawberry field harvest',
+                'Blueberries': 'blueberries basket farm',
+                'Raspberries': 'raspberries fresh fruit',
+                'Blackberries': 'blackberries harvest',
+                'Apples': 'apple orchard harvest',
+                'Oranges': 'orange grove citrus',
+                'Lemons': 'lemon tree citrus',
+                'Limes': 'lime citrus fresh',
+                'Grapes': 'grape vineyard harvest',
+                'Avocados': 'avocado farm fresh',
+                'Lettuce': 'lettuce farm green',
+                'Broccoli': 'broccoli vegetable farm',
+                'Peppers': 'bell pepper colorful',
+                'Cucumbers': 'cucumber fresh vegetable',
+                'Celery': 'celery vegetable farm',
+                'Carrots': 'carrots harvest farm',
+                'Cabbage': 'cabbage vegetable green',
+                'Asparagus': 'asparagus vegetable fresh',
+                'Onions': 'onion harvest farm',
+                'Potatoes': 'potato harvest farm',
+                'Watermelons': 'watermelon summer fruit',
+                'Cantaloupes': 'cantaloupe melon farm',
+                'Honeydews': 'honeydew melon fresh',
+                'Mangoes': 'mango tropical fruit',
+                'Pineapples': 'pineapple tropical farm',
+                'Cherries': 'cherry orchard fruit'
+            };
+            // Find best match
+            for (const [key, value] of Object.entries(terms)) {
+                if (name.toLowerCase().includes(key.toLowerCase().slice(0, 4))) {
+                    return value;
+                }
+            }
+            return name.toLowerCase() + ' produce fresh';
         }
 
         function showTab(tab) {
