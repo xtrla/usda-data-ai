@@ -395,6 +395,11 @@ def run(target_date: str = None):
             continue
 
         log.info("  Got %d raw rows from API", len(raw_rows))
+        # Log first row keys and sample so we can verify field names
+        if raw_rows:
+            import json
+            log.info("  Sample row keys: %s", list(raw_rows[0].keys()))
+            log.info("  Sample row: %s", json.dumps(raw_rows[0], default=str)[:500])
 
         built = []
         for raw in raw_rows:

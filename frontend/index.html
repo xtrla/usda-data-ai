@@ -223,6 +223,7 @@
                     <table class="w-full">
                         <thead class="bg-earth-50 border-b border-earth-200">
                             <tr class="text-xs text-earth-500 uppercase">
+                                <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Date</th>
                                 <th class="text-left px-4 py-3 font-medium">Commodity</th>
                                 <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
                                 <th class="text-center px-4 py-3 font-medium hidden lg:table-cell">Size</th>
@@ -597,6 +598,7 @@
 
                     return `
                     <tr class="${i % 2 === 1 ? 'bg-earth-50/50' : ''} hover:bg-leaf-50 cursor-pointer" onclick="navigate('commodity','${item.commodity}')">
+                        <td class="px-4 py-3 text-earth-400 text-xs hidden sm:table-cell whitespace-nowrap">${item.report_date || '–'}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">
                                 <span class="font-medium text-earth-800">${item.commodity}</span>
@@ -623,7 +625,7 @@
                         </td>
                     </tr>`;
                 }).join('')
-                : '<tr><td colspan="10" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+                : '<tr><td colspan="11" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
         }
 
         function terminalPrev() { if (terminalPage > 1) { terminalPage--; renderTerminalTable(); } }
