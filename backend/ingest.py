@@ -58,12 +58,23 @@ REPORT_SLUGS = [
 # ── USDA Fetch ───────────────────────────────────────────────────────────────
 
 def fetch_report(slug_id: int, report_date: str = None) -> list[dict]:
-    """Fetch rows from MARS API for a given slug, optionally filtered by date."""
-    params = {}
+    """
+    Fetch price detail rows from MARS API for a given slug.
+    Uses the 'report details' endpoint which returns actual commodity price rows,
+    not the report header/summary.
+    """
+    # Build query string — MARS uses semicolon-separated filters
+    filters = []
     if report_date:
-        params["q"] = f"report_date={report_date}"
+        filters.append(f"report_date={report_date}")
+    q = ";".join(filters) if filters else None
 
-    url = f"{MARS_BASE}/reports/{slug_id}"
+    # /reports/{slug_id}/report details  → returns actual price rows
+    url = f"{MARS_BASE}/reports/{slug_id}/report details"
+    params = {}
+    if q:
+        params["q"] = q
+
     resp = requests.get(
         url,
         params=params,
@@ -71,11 +82,15 @@ def fetch_report(slug_id: int, report_date: str = None) -> list[dict]:
         timeout=30,
     )
     if resp.status_code == 404:
-        log.warning("Slug %s returned 404 — may not be published yet", slug_id)
+        log.warning("Slug %s returned 404 — report not published yet", slug_id)
+        return []
+    if resp.status_code == 401:
+        log.error("Slug %s returned 401 — check MARS_API_KEY", slug_id)
         return []
     resp.raise_for_status()
     data = resp.json()
-    # MARS API returns either a list or {"results": [...]}
+
+    # API returns either a list directly or {"results": [...]}
     if isinstance(data, list):
         return data
     return data.get("results", [])
