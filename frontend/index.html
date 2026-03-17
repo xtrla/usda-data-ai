@@ -224,12 +224,11 @@
                         <thead class="bg-earth-50 border-b border-earth-200">
                             <tr class="text-xs text-earth-500 uppercase">
                                 <th class="text-left px-4 py-3 font-medium">Commodity</th>
-                                <th class="text-left px-4 py-3 font-medium">Market</th>
                                 <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
-                                <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
-                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Package</th>
                                 <th class="text-center px-4 py-3 font-medium hidden lg:table-cell">Size</th>
-                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Grade / Quality</th>
+                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Package</th>
+                                <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                                <th class="text-left px-4 py-3 font-medium">Market</th>
                                 <th class="text-right px-4 py-3 font-medium">Price</th>
                                 <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">vs Last Wk</th>
                                 <th class="text-center px-4 py-3 font-medium w-20"></th>
@@ -594,7 +593,6 @@
                     const isUp = change > 1, isDown = change < -1;
                     const priceDisplay = formatPrice(item);
                     const mostlyDisplay = formatPriceMostly(item);
-                    const gradeText = [item.grade, item.quality_note].filter(Boolean).join(' · ') || '';
 
                     return `
                     <tr class="${i % 2 === 1 ? 'bg-earth-50/50' : ''} hover:bg-leaf-50 cursor-pointer" onclick="navigate('commodity','${item.commodity}')">
@@ -604,14 +602,11 @@
                                 ${item.organic ? '<span class="badge-organic">ORG</span>' : ''}
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-earth-600 text-sm">${item.market}</td>
                         <td class="px-4 py-3 text-earth-500 text-sm hidden md:table-cell">${item.variety || '–'}</td>
-                        <td class="px-4 py-3 text-earth-500 text-sm hidden lg:table-cell">${item.origin || '–'}</td>
-                        <td class="px-4 py-3 text-earth-400 text-xs hidden xl:table-cell">${item.package || '–'}</td>
                         <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(item.size)}</td>
-                        <td class="px-4 py-3 hidden xl:table-cell">
-                            <div class="text-xs text-earth-500">${gradeText || '–'}</div>
-                        </td>
+                        <td class="px-4 py-3 text-earth-400 text-xs hidden xl:table-cell">${item.package || '–'}</td>
+                        <td class="px-4 py-3 text-earth-500 text-sm hidden lg:table-cell">${item.origin || '–'}</td>
+                        <td class="px-4 py-3 text-earth-600 text-sm">${item.market}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="font-semibold text-leaf-600">${priceDisplay}</div>
                             ${mostlyDisplay ? `<div class="price-range">${mostlyDisplay}</div>` : ''}
@@ -626,7 +621,7 @@
                         </td>
                     </tr>`;
                 }).join('')
-                : '<tr><td colspan="10" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+                : '<tr><td colspan="9" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
         }
 
         function terminalPrev() { if (terminalPage > 1) { terminalPage--; renderTerminalTable(); } }
@@ -746,7 +741,7 @@
                                 <tr>
                                     <th class="text-left px-4 py-2 font-medium">Package</th>
                                     <th class="text-center px-4 py-2 font-medium">Size</th>
-                                    <th class="text-left px-4 py-2 font-medium hidden sm:table-cell">Grade / Quality</th>
+                                    <th class="text-left px-4 py-2 font-medium hidden lg:table-cell">Origin</th>
                                     <th class="text-right px-4 py-2 font-medium">Price</th>
                                     <th class="text-right px-4 py-2 font-medium hidden md:table-cell">Mostly</th>
                                 </tr>
@@ -759,14 +754,7 @@
                                     <tr class="${isLowest ? 'bg-leaf-50/50' : 'hover:bg-earth-50'}">
                                         <td class="px-4 py-2.5 text-sm text-earth-600">${r.package || '–'}</td>
                                         <td class="px-4 py-2.5 text-center">${sizePill(r.size)}</td>
-                                        <td class="px-4 py-2.5 hidden sm:table-cell">
-                                            <div class="flex items-center gap-1.5">
-                                                ${r.organic ? '<span class="badge-organic">ORGANIC</span>' : ''}
-                                                ${r.quality_note ? `<span class="${r.quality_note.includes('fair') ? 'badge-fair' : 'badge-quality'}">${r.quality_note}</span>` : ''}
-                                                ${r.grade && !r.quality_note ? `<span class="text-xs text-earth-400">${r.grade}</span>` : ''}
-                                                ${!r.organic && !r.quality_note && !r.grade ? '<span class="text-xs text-earth-300">standard</span>' : ''}
-                                            </div>
-                                        </td>
+                                        <td class="px-4 py-2.5 text-sm text-earth-500 hidden lg:table-cell">${r.origin || '–'}</td>
                                         <td class="px-4 py-2.5 text-right">
                                             <span class="font-semibold ${isLowest ? 'text-leaf-600' : 'text-earth-700'}">${formatPrice(r)}</span>
                                             ${isLowest ? '<span class="text-xs text-leaf-500 ml-1">best</span>' : ''}
