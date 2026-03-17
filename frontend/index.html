@@ -903,10 +903,9 @@
             const shipCount = shippingData.filter(s => s.commodity === name).length;
             document.getElementById('commodity-subtitle').textContent = `${termCount} market listings · ${shipCount} shipping origins`;
 
-            // Set background image from Unsplash
+            // Set background image
             const bgEl = document.getElementById('commodity-bg');
-            const searchTerm = getCommoditySearchTerm(name);
-            const imgUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(searchTerm)}`;
+            const imgUrl = getCommodityImage(name);
             
             bgEl.style.opacity = '0';
             const img = new Image();
@@ -914,49 +913,64 @@
                 bgEl.style.backgroundImage = `url('${imgUrl}')`;
                 bgEl.style.opacity = '1';
             };
+            img.onerror = () => {
+                // Fallback to gradient if image fails
+                bgEl.style.background = 'linear-gradient(135deg, #166534 0%, #14532d 100%)';
+                bgEl.style.opacity = '1';
+            };
             img.src = imgUrl;
 
             showTab('terminal');
         }
 
-        // Get better search terms for Unsplash
-        function getCommoditySearchTerm(name) {
-            const terms = {
-                'Tomatoes': 'fresh tomatoes farm',
-                'Strawberries': 'strawberry field harvest',
-                'Blueberries': 'blueberries basket farm',
-                'Raspberries': 'raspberries fresh fruit',
-                'Blackberries': 'blackberries harvest',
-                'Apples': 'apple orchard harvest',
-                'Oranges': 'orange grove citrus',
-                'Lemons': 'lemon tree citrus',
-                'Limes': 'lime citrus fresh',
-                'Grapes': 'grape vineyard harvest',
-                'Avocados': 'avocado farm fresh',
-                'Lettuce': 'lettuce farm green',
-                'Broccoli': 'broccoli vegetable farm',
-                'Peppers': 'bell pepper colorful',
-                'Cucumbers': 'cucumber fresh vegetable',
-                'Celery': 'celery vegetable farm',
-                'Carrots': 'carrots harvest farm',
-                'Cabbage': 'cabbage vegetable green',
-                'Asparagus': 'asparagus vegetable fresh',
-                'Onions': 'onion harvest farm',
-                'Potatoes': 'potato harvest farm',
-                'Watermelons': 'watermelon summer fruit',
-                'Cantaloupes': 'cantaloupe melon farm',
-                'Honeydews': 'honeydew melon fresh',
-                'Mangoes': 'mango tropical fruit',
-                'Pineapples': 'pineapple tropical farm',
-                'Cherries': 'cherry orchard fruit'
+        // Direct Unsplash image URLs (more reliable than source API)
+        function getCommodityImage(name) {
+            const images = {
+                'blueberr': 'https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=1600&q=80',
+                'strawberr': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=1600&q=80',
+                'raspberr': 'https://images.unsplash.com/photo-1577003833619-76bbd7f82948?w=1600&q=80',
+                'blackberr': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=1600&q=80',
+                'tomato': 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1600&q=80',
+                'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=1600&q=80',
+                'orange': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=1600&q=80',
+                'lemon': 'https://images.unsplash.com/photo-1590502593747-42a996133562?w=1600&q=80',
+                'lime': 'https://images.unsplash.com/photo-1516888892352-ef1c5f063de1?w=1600&q=80',
+                'grape': 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=1600&q=80',
+                'avocado': 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=1600&q=80',
+                'lettuce': 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=1600&q=80',
+                'broccoli': 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=1600&q=80',
+                'pepper': 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=1600&q=80',
+                'cucumber': 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=1600&q=80',
+                'celery': 'https://images.unsplash.com/photo-1580391564590-aeca65c5e2d3?w=1600&q=80',
+                'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=1600&q=80',
+                'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=1600&q=80',
+                'asparagus': 'https://images.unsplash.com/photo-1515471209610-dae1c92d8777?w=1600&q=80',
+                'onion': 'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=1600&q=80',
+                'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82ber633?w=1600&q=80',
+                'watermelon': 'https://images.unsplash.com/photo-1563114773-84221bd62daa?w=1600&q=80',
+                'cantaloupe': 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=1600&q=80',
+                'honeydew': 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=1600&q=80',
+                'mango': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=1600&q=80',
+                'pineapple': 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=1600&q=80',
+                'cherr': 'https://images.unsplash.com/photo-1528821128474-27f963b062bf?w=1600&q=80',
+                'peach': 'https://images.unsplash.com/photo-1595124219498-71846760be53?w=1600&q=80',
+                'pear': 'https://images.unsplash.com/photo-1514756331096-242fdeb70d4a?w=1600&q=80',
+                'plum': 'https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=1600&q=80',
+                'squash': 'https://images.unsplash.com/photo-1570586437263-ab629fccc818?w=1600&q=80',
+                'corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=1600&q=80',
+                'bean': 'https://images.unsplash.com/photo-1567375698348-5db6f41de014?w=1600&q=80',
+                'spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=1600&q=80',
+                'kale': 'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=1600&q=80'
             };
-            // Find best match
-            for (const [key, value] of Object.entries(terms)) {
-                if (name.toLowerCase().includes(key.toLowerCase().slice(0, 4))) {
-                    return value;
+            
+            const nameLower = name.toLowerCase();
+            for (const [key, url] of Object.entries(images)) {
+                if (nameLower.includes(key)) {
+                    return url;
                 }
             }
-            return name.toLowerCase() + ' produce fresh';
+            // Default produce image
+            return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=80';
         }
 
         function showTab(tab) {
