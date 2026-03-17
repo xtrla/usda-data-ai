@@ -68,117 +68,113 @@
 
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-10 md:py-14">
-                <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
-                    Wholesale Produce <span class="text-leaf-600">Intelligence</span>
-                </h1>
-                <p class="text-earth-500 mb-6 max-w-xl">Track prices from farm to market. Source prices, destination prices, and movement data — all in one place.</p>
-                
-                <div class="flex gap-3 max-w-xl">
-                    <div class="flex-1 relative">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input id="homeSearch" type="text" placeholder="Search commodities..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl bg-white focus:ring-2 focus:ring-leaf-200 focus:border-leaf-400" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+        <!-- Quick Price Check Hero -->
+        <section class="bg-earth-100 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-earth-800">Quick price check</h2>
+                        <p class="text-sm text-earth-500">What's the terminal market price right now?</p>
                     </div>
-                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium transition-colors">Search</button>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <select id="home-quick-commodity" class="px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm min-w-[160px]">
+                            <option value="">Select commodity...</option>
+                        </select>
+                        <select id="home-quick-market" class="px-3 py-2.5 border border-earth-300 rounded-lg bg-white text-sm min-w-[140px]">
+                            <option value="">All Markets</option>
+                        </select>
+                        <button onclick="homeQuickCheck()" class="px-5 py-2.5 bg-leaf-600 hover:bg-leaf-700 text-white rounded-lg font-medium text-sm transition-colors">Check</button>
+                    </div>
+                </div>
+                <!-- Quick Result (hidden by default) -->
+                <div id="home-quick-result" class="hidden mt-5 bg-white border-2 border-leaf-500 rounded-xl p-5">
+                    <div class="flex flex-wrap justify-between gap-4">
+                        <div>
+                            <p id="home-quick-title" class="text-sm text-earth-500 mb-1"></p>
+                            <div class="flex items-baseline gap-3 flex-wrap">
+                                <span id="home-quick-price" class="text-3xl font-bold text-leaf-600"></span>
+                                <span id="home-quick-change" class="text-sm px-2 py-0.5 rounded"></span>
+                            </div>
+                            <p id="home-quick-range" class="text-xs text-earth-400 mt-1"></p>
+                        </div>
+                        <div id="home-quick-compare" class="text-right text-sm"></div>
+                    </div>
+                    <div id="home-quick-tip" class="mt-4 bg-amber-50 border-l-4 border-amber-400 px-4 py-3 rounded-r-lg text-sm text-amber-800"></div>
                 </div>
             </div>
         </section>
 
         <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Three Report Type Cards -->
-            <div class="grid md:grid-cols-3 gap-5 mb-10">
-                <!-- Terminal Markets -->
-                <div onclick="navigate('terminal')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-11 h-11 rounded-xl bg-leaf-100 flex items-center justify-center text-xl">🏪</div>
-                        <div>
-                            <h3 class="font-bold text-earth-800">Terminal Markets</h3>
-                            <p class="text-xs text-earth-500">Destination prices</p>
+            <!-- Today's Movers - Primary Content -->
+            <section class="mb-10">
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Prices moving this week</h2>
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-leaf-100 text-leaf-700 text-xs font-semibold px-2 py-1 rounded">↓ FALLING</span>
+                            <span class="text-sm text-earth-500">Buy opportunity</span>
                         </div>
+                        <div id="home-prices-down" class="space-y-2"></div>
                     </div>
-                    <p class="text-sm text-earth-500 mb-4">What buyers pay at wholesale markets</p>
-                    <div id="home-terminal-stats" class="space-y-1.5 mb-3"></div>
-                    <div class="text-sm text-leaf-600 font-medium flex items-center gap-1">View all <span>→</span></div>
-                </div>
-
-                <!-- Shipping Points -->
-                <div onclick="navigate('shipping')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center text-xl">📦</div>
-                        <div>
-                            <h3 class="font-bold text-earth-800">Shipping Points</h3>
-                            <p class="text-xs text-earth-500">Origin prices</p>
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded">↑ RISING</span>
+                            <span class="text-sm text-earth-500">Margins tightening</span>
                         </div>
+                        <div id="home-prices-up" class="space-y-2"></div>
                     </div>
-                    <p class="text-sm text-earth-500 mb-4">F.O.B. prices at source</p>
-                    <div id="home-shipping-stats" class="space-y-1.5 mb-3"></div>
-                    <div class="text-sm text-orange-600 font-medium flex items-center gap-1">View all <span>→</span></div>
                 </div>
-
-                <!-- Movement -->
-                <div onclick="navigate('movement')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">🚛</div>
-                        <div>
-                            <h3 class="font-bold text-earth-800">Movement</h3>
-                            <p class="text-xs text-earth-500">Volume trends</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-earth-500 mb-4">Weekly shipment volumes</p>
-                    <div id="home-movement-stats" class="space-y-1.5 mb-3"></div>
-                    <div class="text-sm text-blue-600 font-medium flex items-center gap-1">View all <span>→</span></div>
-                </div>
-            </div>
+            </section>
 
             <!-- Price Flow Section -->
             <section class="mb-10">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-earth-800">💰 Price Flow: Source → Market</h2>
+                    <h2 class="text-xl font-bold text-earth-800">Price flow: source → market</h2>
                     <a href="#" onclick="navigate('compare')" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium">Compare all →</a>
                 </div>
                 <div class="bg-white rounded-xl border border-earth-200 divide-y divide-earth-100" id="home-price-flow"></div>
             </section>
 
-            <!-- Quick Stats Row -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <div class="bg-white rounded-xl border border-earth-200 p-4 text-center">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-commodities">--</div>
-                    <div class="text-xs text-earth-500">Commodities</div>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4 text-center">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-markets">--</div>
-                    <div class="text-xs text-earth-500">Terminal Markets</div>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4 text-center">
-                    <div class="text-2xl font-bold text-orange-500" id="stat-origins">--</div>
-                    <div class="text-xs text-earth-500">Shipping Origins</div>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4 text-center">
-                    <div class="text-2xl font-bold text-blue-600" id="stat-volume">--</div>
-                    <div class="text-xs text-earth-500">Weekly Volume</div>
-                </div>
-            </div>
-
-            <!-- Categories -->
+            <!-- Dig Deeper - Report Cards -->
             <section class="mb-10">
-                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by Category</h2>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="categoriesGrid"></div>
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Dig deeper</h2>
+                <div class="grid md:grid-cols-3 gap-5">
+                    <!-- Terminal Markets -->
+                    <div onclick="navigate('terminal')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-leaf-100 flex items-center justify-center text-xl">🏪</div>
+                            <h3 class="font-bold text-earth-800">Terminal Markets</h3>
+                        </div>
+                        <p class="text-sm text-earth-500 mb-3">Wholesale prices at destination markets</p>
+                        <div class="text-sm text-leaf-600 font-medium flex items-center gap-1">View all prices <span>→</span></div>
+                    </div>
+
+                    <!-- Shipping Points -->
+                    <div onclick="navigate('shipping')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-xl">📦</div>
+                            <h3 class="font-bold text-earth-800">Shipping Points</h3>
+                        </div>
+                        <p class="text-sm text-earth-500 mb-3">F.O.B. prices at origin</p>
+                        <div class="text-sm text-orange-600 font-medium flex items-center gap-1">View all prices <span>→</span></div>
+                    </div>
+
+                    <!-- Movement -->
+                    <div onclick="navigate('movement')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-xl">🚛</div>
+                            <h3 class="font-bold text-earth-800">Movement</h3>
+                        </div>
+                        <p class="text-sm text-earth-500 mb-3">Weekly shipment volumes</p>
+                        <div class="text-sm text-blue-600 font-medium flex items-center gap-1">View all data <span>→</span></div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Today's Movers -->
+            <!-- Browse by Category -->
             <section>
-                <h2 class="text-xl font-bold text-earth-800 mb-4">Today's Price Movers</h2>
-                <div class="grid md:grid-cols-2 gap-5">
-                    <div class="bg-white rounded-xl border border-earth-200 p-5">
-                        <h3 class="text-sm font-semibold text-leaf-700 mb-3 flex items-center gap-2">📈 Prices Up</h3>
-                        <div id="home-prices-up" class="space-y-2"></div>
-                    </div>
-                    <div class="bg-white rounded-xl border border-earth-200 p-5">
-                        <h3 class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">📉 Prices Down</h3>
-                        <div id="home-prices-down" class="space-y-2"></div>
-                    </div>
-                </div>
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by category</h2>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="categoriesGrid"></div>
             </section>
         </main>
     </div>
@@ -666,33 +662,14 @@
 
         // ==================== HOME PAGE ====================
         function renderHome() {
-            const commodities = [...new Set(terminalData.map(d => d.commodity))];
-            const markets = [...new Set(terminalData.map(d => d.market))];
+            const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
+            const markets = [...new Set(terminalData.map(d => d.market))].sort();
 
-            // Stats
-            document.getElementById('stat-commodities').textContent = commodities.length;
-            document.getElementById('stat-markets').textContent = markets.length;
-            document.getElementById('stat-origins').textContent = [...new Set(shippingData.map(s => s.region))].length;
-            document.getElementById('stat-volume').textContent = formatLbs(movementData.reduce((s, m) => s + m.thisWeek, 0));
-
-            // Terminal preview
-            const topMarkets = markets.slice(0, 3);
-            document.getElementById('home-terminal-stats').innerHTML = topMarkets.map(m => {
-                const count = terminalData.filter(d => d.market === m).length;
-                return `<div class="flex justify-between text-sm"><span class="text-earth-600">${m}</span><span class="text-earth-400">${count} items</span></div>`;
-            }).join('');
-
-            // Shipping preview
-            const topShipping = shippingData.filter(s => s.movement.includes('Higher')).slice(0, 3);
-            document.getElementById('home-shipping-stats').innerHTML = topShipping.map(s => 
-                `<div class="flex justify-between text-sm"><span class="text-earth-600">${s.commodity}</span><span class="${movementClass(s.movement)}">${movementArrow(s.movement)} ${s.movement}</span></div>`
-            ).join('');
-
-            // Movement preview
-            const topMovement = [...movementData].sort((a, b) => Math.abs(b.change) - Math.abs(a.change)).slice(0, 3);
-            document.getElementById('home-movement-stats').innerHTML = topMovement.map(m =>
-                `<div class="flex justify-between text-sm"><span class="text-earth-600">${m.commodity}</span><span class="${m.change > 0 ? 'text-leaf-600' : 'text-red-500'}">${m.change > 0 ? '+' : ''}${m.change.toFixed(1)}%</span></div>`
-            ).join('');
+            // Populate quick check dropdowns
+            document.getElementById('home-quick-commodity').innerHTML = '<option value="">Select commodity...</option>' +
+                commodities.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('home-quick-market').innerHTML = '<option value="">All Markets</option>' +
+                markets.map(m => `<option value="${m}">${m}</option>`).join('');
 
             // Price flow
             const flowCommodities = ['Tomatoes', 'Avocados', 'Strawberries', 'Lettuce', 'Peppers'];
@@ -746,23 +723,30 @@
                 if (!today.length || !weekAgo.length) return null;
                 const avgToday = today.reduce((s, d) => s + parseFloat(d.price_low), 0) / today.length;
                 const avgWeek = weekAgo.reduce((s, d) => s + parseFloat(d.price_low), 0) / weekAgo.length;
-                return { commodity: c, change: ((avgToday - avgWeek) / avgWeek) * 100 };
+                const dollarChange = avgToday - avgWeek;
+                return { commodity: c, price: avgToday, dollarChange, change: ((avgToday - avgWeek) / avgWeek) * 100 };
             }).filter(Boolean);
 
             const up = withTrends.filter(t => t.change > 2).sort((a, b) => b.change - a.change).slice(0, 5);
             const down = withTrends.filter(t => t.change < -2).sort((a, b) => a.change - b.change).slice(0, 5);
 
             document.getElementById('home-prices-up').innerHTML = up.length ? up.map(t =>
-                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between p-2 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
-                    <span class="text-sm text-earth-700">${t.commodity}</span>
-                    <span class="text-sm font-semibold text-leaf-600">+${t.change.toFixed(1)}%</span>
+                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
+                    <div>
+                        <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
+                        <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
+                    </div>
+                    <span class="text-sm font-semibold text-red-600">↑ $${t.dollarChange.toFixed(2)}</span>
                 </div>`
             ).join('') : '<p class="text-sm text-earth-400">No significant increases</p>';
 
             document.getElementById('home-prices-down').innerHTML = down.length ? down.map(t =>
-                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between p-2 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
-                    <span class="text-sm text-earth-700">${t.commodity}</span>
-                    <span class="text-sm font-semibold text-red-500">${t.change.toFixed(1)}%</span>
+                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
+                    <div>
+                        <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
+                        <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
+                    </div>
+                    <span class="text-sm font-semibold text-leaf-600">↓ $${Math.abs(t.dollarChange).toFixed(2)}</span>
                 </div>`
             ).join('') : '<p class="text-sm text-earth-400">No significant decreases</p>';
         }
@@ -771,6 +755,75 @@
             navigate('search');
             document.getElementById('searchInput').value = cat;
             runSearch();
+        }
+
+        function homeQuickCheck() {
+            const commodity = document.getElementById('home-quick-commodity').value;
+            const market = document.getElementById('home-quick-market').value;
+            const resultDiv = document.getElementById('home-quick-result');
+
+            if (!commodity) {
+                resultDiv.classList.add('hidden');
+                return;
+            }
+
+            // Filter data
+            let items = terminalData.filter(d => d.commodity === commodity);
+            if (market) items = items.filter(d => d.market === market);
+
+            if (!items.length) {
+                resultDiv.classList.add('hidden');
+                return;
+            }
+
+            // Calculate price info
+            const prices = items.map(d => parseFloat(d.price_low));
+            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+
+            // Week-over-week change
+            const weekAgoItems = (datesData[dates[6]?.date] || []).filter(d => d.commodity === commodity);
+            let changeText = '', changeClass = '';
+            if (weekAgoItems.length) {
+                const weekPrices = weekAgoItems.map(d => parseFloat(d.price_low));
+                const weekAvg = weekPrices.reduce((a, b) => a + b, 0) / weekPrices.length;
+                const change = avgPrice - weekAvg;
+                if (Math.abs(change) > 0.5) {
+                    changeText = `${change > 0 ? '↑' : '↓'} $${Math.abs(change).toFixed(2)} vs last week`;
+                    changeClass = change > 0 ? 'bg-red-100 text-red-700' : 'bg-leaf-100 text-leaf-700';
+                }
+            }
+
+            // Compare to other markets
+            const allMarkets = [...new Set(terminalData.filter(d => d.commodity === commodity).map(d => d.market))];
+            let compareHtml = '';
+            if (allMarkets.length > 1) {
+                const otherMarkets = allMarkets.filter(m => m !== (market || items[0].market)).slice(0, 3);
+                const comparePrices = otherMarkets.map(m => {
+                    const mItems = terminalData.filter(d => d.commodity === commodity && d.market === m);
+                    const mAvg = mItems.reduce((s, d) => s + parseFloat(d.price_low), 0) / mItems.length;
+                    return `<span class="text-earth-500">${m}</span> <span class="font-medium">$${mAvg.toFixed(2)}</span>`;
+                });
+                compareHtml = `<p class="text-xs text-earth-400 mb-1">Other markets</p><div class="space-y-1">${comparePrices.join('<br>')}</div>`;
+            }
+
+            // Pricing tip
+            const suggestLow = avgPrice + 3;
+            const suggestHigh = avgPrice + 5;
+            const tipHtml = `<strong>💡 Pricing tip:</strong> Terminal price is $${avgPrice.toFixed(2)}. Typical resale to supermarkets: <strong>$${suggestLow.toFixed(0)} – $${suggestHigh.toFixed(0)}</strong> (3-5 over terminal).`;
+
+            // Update UI
+            document.getElementById('home-quick-title').textContent = `${commodity}${market ? ' — ' + market : ''}`;
+            document.getElementById('home-quick-price').textContent = `$${avgPrice.toFixed(2)}`;
+            document.getElementById('home-quick-change').textContent = changeText;
+            document.getElementById('home-quick-change').className = `text-sm px-2 py-0.5 rounded ${changeClass}`;
+            document.getElementById('home-quick-change').style.display = changeText ? 'inline' : 'none';
+            document.getElementById('home-quick-range').textContent = minPrice !== maxPrice ? `Range: $${minPrice.toFixed(2)} – $${maxPrice.toFixed(2)}` : '';
+            document.getElementById('home-quick-compare').innerHTML = compareHtml;
+            document.getElementById('home-quick-tip').innerHTML = tipHtml;
+
+            resultDiv.classList.remove('hidden');
         }
 
         // ==================== TERMINAL MARKETS PAGE ====================
