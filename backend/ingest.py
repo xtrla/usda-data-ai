@@ -109,17 +109,67 @@ def parse_mostly_range(mostly_str: str) -> tuple[float | None, float | None]:
     return parse_price_range(mostly_str)
 
 
-# Quality/condition qualifiers USDA uses
-QUALITY_NOTES = [
+# ── Quality/condition qualifier parser ──────────────────────────────────────
+#
+# USDA uses these qualifiers inline with prices in the raw text.
+# They appear in the API as separate fields (quality, item_size, market_note)
+# or embedded in the size/description string.
+#
+# Ordered longest-first so "fair appearance holdovers" matches before "fair appearance"
+# and "poorer quality and condition" matches before "poorer quality".
+#
+# Meaning:
+#   fine appearance         → premium, top visual quality, highest price tier
+#   fair quality/appearance → below standard, still saleable, lower price
+#   fair condition          → condition issue (bruising, ripeness), lower price
+#   holdovers               → old stock from prior day(s), significantly lower
+#   fair appearance holdovers → old AND below grade, lowest price tier
+#   poorer quality/condition  → significant defects, rarely sold in bulk
+
+QUALITY_QUALIFIERS = [
+    "poorer quality and condition",
+    "fair appearance holdovers",
+    "fair quality holdovers",
     "fine appearance",
+    "fair appearance",
     "fair quality",
     "fair condition",
-    "fair appearance",
     "poorer quality",
-    "poorer quality and condition",
+    "holdovers",
 ]
 
-# Known grade strings
+def extract_quality_note(
+    quality_field: str | None,
+    size_field: str | None = None,
+    market_note: str | None = None,
+) -> str | None:
+    """
+    Extract quality/condition qualifier from MARS API fields.
+
+    The qualifier can live in:
+      - quality_field  (raw.get("quality") or raw.get("condition"))
+      - size_field     (raw.get("item_size") — USDA sometimes embeds it here)
+      - market_note    (raw.get("market_note") — fallback)
+
+    Returns None for standard/unqualified stock.
+    """
+    combined = " ".join(filter(None, [
+        str(quality_field or "").lower(),
+        str(size_field or "").lower(),
+        str(market_note or "").lower(),
+    ])).strip()
+
+    if not combined:
+        return None
+
+    for qualifier in QUALITY_QUALIFIERS:
+        if qualifier in combined:
+            return qualifier
+
+    return None
+
+
+# Known grade strings — separate from quality notes
 GRADE_PATTERNS = [
     r"u\.?s\.?\s*one",
     r"u\.?s\.?\s*fancy",
@@ -129,6 +179,8 @@ GRADE_PATTERNS = [
     r"shippers?\s*choice",
     r"extra\s*fancy",
     r"no\s*grade\s*marks",
+    r"wa\s*extra\s*fancy",
+    r"wa\s*fancy",
 ]
 
 
@@ -138,14 +190,6 @@ def extract_grade(text: str) -> str | None:
         m = re.search(pat, text_lower)
         if m:
             return m.group(0).title()
-    return None
-
-
-def extract_quality_note(text: str) -> str | None:
-    text_lower = text.lower()
-    for note in QUALITY_NOTES:
-        if note in text_lower:
-            return note
     return None
 
 
@@ -255,14 +299,22 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     if price_low is None:
         return None  # skip rows with no price
 
-    # Text fields — combine raw strings for quality/grade extraction
-    raw_text = " ".join(str(v) for v in [
-        raw.get("quality") or "",
-        raw.get("grade") or "",
-        raw.get("item_size") or "",
-        raw.get("package") or "",
-        raw.get("market_note") or "",
-    ])
+    # Pull quality-related fields individually for targeted parsing
+    quality_field  = raw.get("quality") or raw.get("condition") or raw.get("quality_condition") or ""
+    size_field     = raw.get("item_size") or raw.get("size") or ""
+    market_note    = raw.get("market_note") or raw.get("supply") or ""
+    grade_field    = raw.get("grade") or ""
+
+    # Combined text for grade extraction (grade lives in different fields by report type)
+    grade_text = " ".join(filter(None, [grade_field, quality_field, market_note]))
+
+    # Organic flag — appears as a section header in USDA reports
+    organic_flag = (
+        bool(raw.get("organic"))
+        or "organic" in str(quality_field).lower()
+        or "organic" in str(market_note).lower()
+        or "organic" in str(raw.get("section") or "").lower()
+    )
 
     return {
         "report_date":        report_date,
@@ -272,10 +324,10 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "variety":            (raw.get("variety") or "").strip().upper() or None,
         "origin":             (raw.get("origin") or raw.get("location") or "").strip().title() or None,
         "package":            normalize_package(raw.get("package")),
-        "size":               normalize_size(raw.get("item_size") or raw.get("size")),
-        "grade":              extract_grade(raw_text) or (raw.get("grade") or "").strip().title() or None,
-        "quality_note":       extract_quality_note(raw_text) or (raw.get("quality") or "").strip().lower() or None,
-        "organic":            is_organic(raw_text) or bool(raw.get("organic")),
+        "size":               normalize_size(size_field),
+        "grade":              extract_grade(grade_text) or grade_field.strip().title() or None,
+        "quality_note":       extract_quality_note(quality_field, size_field, market_note),
+        "organic":            organic_flag,
         "price_low":          price_low,
         "price_high":         price_high,
         "price_mostly_low":   mostly_low,

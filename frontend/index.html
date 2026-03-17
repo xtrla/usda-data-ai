@@ -229,6 +229,7 @@
                                 <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Package</th>
                                 <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
                                 <th class="text-left px-4 py-3 font-medium">Market</th>
+                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Condition</th>
                                 <th class="text-right px-4 py-3 font-medium">Price</th>
                                 <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">vs Last Wk</th>
                                 <th class="text-center px-4 py-3 font-medium w-20"></th>
@@ -607,6 +608,7 @@
                         <td class="px-4 py-3 text-earth-400 text-xs hidden xl:table-cell">${item.package || '–'}</td>
                         <td class="px-4 py-3 text-earth-500 text-sm hidden lg:table-cell">${item.origin || '–'}</td>
                         <td class="px-4 py-3 text-earth-600 text-sm">${item.market}</td>
+                        <td class="px-4 py-3 hidden xl:table-cell">${item.quality_note ? `<span class="${item.quality_note.includes('fine') ? 'badge-quality' : 'badge-fair'}">${item.quality_note}</span>` : ''}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="font-semibold text-leaf-600">${priceDisplay}</div>
                             ${mostlyDisplay ? `<div class="price-range">${mostlyDisplay}</div>` : ''}
@@ -621,7 +623,7 @@
                         </td>
                     </tr>`;
                 }).join('')
-                : '<tr><td colspan="9" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+                : '<tr><td colspan="10" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
         }
 
         function terminalPrev() { if (terminalPage > 1) { terminalPage--; renderTerminalTable(); } }
