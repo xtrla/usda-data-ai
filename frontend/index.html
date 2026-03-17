@@ -29,6 +29,11 @@
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
         .tab-btn.active { background: #166534; color: white; }
         .flow-line { height: 2px; background: linear-gradient(90deg, #f97316, #22c55e); }
+        .badge-organic { background:#dcfce7;color:#15803d;font-size:10px;font-weight:600;padding:1px 6px;border-radius:9999px;letter-spacing:.03em; }
+        .badge-quality { background:#fef9c3;color:#a16207;font-size:10px;padding:1px 6px;border-radius:9999px; }
+        .badge-fair { background:#fee2e2;color:#b91c1c;font-size:10px;padding:1px 6px;border-radius:9999px; }
+        .size-pill { background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;font-family:monospace; }
+        .price-range { font-size:11px;color:#78716c; }
     </style>
 </head>
 <body class="font-sans text-earth-800">
@@ -40,7 +45,6 @@
                 <a href="#" onclick="navigate('home')" class="flex items-center">
                     <img src="agrax-logo.png" alt="agraX" class="h-12 md:h-14" />
                 </a>
-                
                 <nav class="hidden md:flex items-center gap-1">
                     <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Home</a>
                     <a href="#" onclick="navigate('terminal')" data-nav="terminal" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Terminal Markets</a>
@@ -48,14 +52,11 @@
                     <a href="#" onclick="navigate('movement')" data-nav="movement" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Movement</a>
                     <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Compare</a>
                 </nav>
-                
                 <button onclick="navigate('search')" class="flex items-center gap-2 px-4 py-2 bg-earth-100 hover:bg-earth-200 rounded-lg text-sm text-earth-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <span class="hidden sm:inline">Search</span>
                 </button>
             </div>
-            
-            <!-- Mobile Nav -->
             <div class="md:hidden flex gap-1 pb-2 overflow-x-auto text-xs">
                 <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link shrink-0 px-3 py-1.5 rounded-full bg-earth-100 font-medium">Home</a>
                 <a href="#" onclick="navigate('terminal')" data-nav="terminal" class="nav-link shrink-0 px-3 py-1.5 rounded-full bg-earth-100 font-medium">Terminal</a>
@@ -68,14 +69,12 @@
 
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
-        <!-- Hero with Search -->
         <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
             <div class="max-w-7xl mx-auto px-4 py-10 md:py-14">
                 <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
                     Wholesale Produce <span class="text-leaf-600">Intelligence</span>
                 </h1>
                 <p class="text-earth-500 mb-6 max-w-xl">Track prices from farm to market. Source prices, destination prices, and movement data — all in one place.</p>
-                
                 <div class="flex gap-3 max-w-xl">
                     <div class="flex-1 relative">
                         <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -85,9 +84,7 @@
                 </div>
             </div>
         </section>
-
         <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Today's Movers -->
             <section class="mb-10">
                 <h2 class="text-xl font-bold text-earth-800 mb-4">Prices moving this week</h2>
                 <div class="grid md:grid-cols-2 gap-5">
@@ -107,12 +104,9 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Dig Deeper - Report Cards -->
             <section>
                 <h2 class="text-xl font-bold text-earth-800 mb-4">Dig deeper</h2>
                 <div class="grid md:grid-cols-3 gap-5">
-                    <!-- Terminal Markets -->
                     <div onclick="navigate('terminal')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
                         <div class="flex items-center gap-3 mb-2">
                             <div class="w-10 h-10 rounded-lg bg-leaf-100 flex items-center justify-center text-xl">🏪</div>
@@ -121,8 +115,6 @@
                         <p class="text-sm text-earth-500 mb-3">Wholesale prices at destination markets</p>
                         <div class="text-sm text-leaf-600 font-medium flex items-center gap-1">View all prices <span>→</span></div>
                     </div>
-
-                    <!-- Shipping Points -->
                     <div onclick="navigate('shipping')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
                         <div class="flex items-center gap-3 mb-2">
                             <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-xl">📦</div>
@@ -131,8 +123,6 @@
                         <p class="text-sm text-earth-500 mb-3">F.O.B. prices at origin</p>
                         <div class="text-sm text-orange-600 font-medium flex items-center gap-1">View all prices <span>→</span></div>
                     </div>
-
-                    <!-- Movement -->
                     <div onclick="navigate('movement')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
                         <div class="flex items-center gap-3 mb-2">
                             <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-xl">🚛</div>
@@ -158,6 +148,7 @@
             </div>
         </section>
         <main class="max-w-7xl mx-auto px-4 py-6">
+
             <!-- Quick Price Check -->
             <div class="bg-earth-100 rounded-xl p-5 mb-6">
                 <div class="flex items-center gap-2 mb-4">
@@ -181,7 +172,7 @@
                 </div>
             </div>
 
-            <!-- Quick Result Card (hidden by default) -->
+            <!-- Quick Result -->
             <div id="quick-result" class="hidden bg-white border-2 border-leaf-500 rounded-xl p-5 mb-6">
                 <div class="flex flex-wrap justify-between gap-4">
                     <div>
@@ -194,13 +185,11 @@
                     </div>
                     <div id="quick-result-compare" class="text-right text-sm"></div>
                 </div>
-                <!-- Pricing Tip -->
                 <div id="quick-result-tip" class="mt-4 bg-amber-50 border-l-3 border-amber-400 px-4 py-3 rounded-r-lg text-sm text-amber-800"></div>
             </div>
 
-            <!-- Filters & Table -->
+            <!-- Filters -->
             <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <!-- Filter Bar -->
                 <div class="p-4 border-b border-earth-100 flex flex-wrap gap-3 items-center justify-between bg-earth-50">
                     <div class="flex flex-wrap gap-2 items-center">
                         <div class="relative">
@@ -210,6 +199,13 @@
                         <select id="terminal-market-filter" class="px-3 py-2 border border-earth-300 rounded-lg text-sm bg-white" onchange="filterTerminalTable()">
                             <option value="">All Markets</option>
                         </select>
+                        <select id="terminal-variety-filter" class="px-3 py-2 border border-earth-300 rounded-lg text-sm bg-white" onchange="filterTerminalTable()">
+                            <option value="">All Varieties</option>
+                        </select>
+                        <label class="flex items-center gap-1.5 text-sm text-earth-600 cursor-pointer">
+                            <input type="checkbox" id="terminal-organic-filter" onchange="filterTerminalTable()" class="rounded"/>
+                            Organic only
+                        </label>
                     </div>
                     <div class="flex gap-2 items-center">
                         <span class="text-xs text-earth-400">Sort:</span>
@@ -221,7 +217,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <!-- Table -->
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -231,6 +227,9 @@
                                 <th class="text-left px-4 py-3 font-medium">Market</th>
                                 <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
                                 <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Package</th>
+                                <th class="text-center px-4 py-3 font-medium hidden lg:table-cell">Size</th>
+                                <th class="text-left px-4 py-3 font-medium hidden xl:table-cell">Grade / Quality</th>
                                 <th class="text-right px-4 py-3 font-medium">Price</th>
                                 <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">vs Last Wk</th>
                                 <th class="text-center px-4 py-3 font-medium w-20"></th>
@@ -239,7 +238,7 @@
                         <tbody id="terminal-table" class="divide-y divide-earth-100"></tbody>
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
                 <div class="p-4 border-t border-earth-100 flex justify-between items-center bg-earth-50">
                     <span id="terminal-page-info" class="text-sm text-earth-500"></span>
@@ -252,172 +251,11 @@
         </main>
     </div>
 
-    <!-- ==================== TERMINAL DETAIL PAGE ==================== -->
-    <div id="page-terminal-detail" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <a href="#" onclick="navigate('terminal')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-flex items-center gap-1">← Back to Markets</a>
-                <h1 id="terminal-detail-title" class="text-2xl md:text-3xl font-bold text-earth-900"></h1>
-                <p id="terminal-detail-subtitle" class="text-earth-500"></p>
-            </div>
-        </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200">
-                        <tr class="text-xs text-earth-500 uppercase">
-                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
-                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
-                            <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Origin</th>
-                            <th class="text-right px-4 py-3 font-medium">Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="terminal-detail-table" class="divide-y divide-earth-100"></tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <!-- ==================== SHIPPING POINTS PAGE ==================== -->
-    <div id="page-shipping" class="page">
-        <section class="bg-gradient-to-b from-orange-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="text-2xl">📦</span>
-                    <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Shipping Points</h1>
-                </div>
-                <p class="text-earth-500">F.O.B. prices at origin — what producers receive at source before transportation.</p>
-            </div>
-        </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Region Tabs -->
-            <div class="flex flex-wrap gap-2 mb-6" id="shipping-region-tabs"></div>
-            
-            <!-- Price Trends -->
-            <div class="grid md:grid-cols-2 gap-5 mb-8">
-                <div class="bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-leaf-700 mb-3">📈 Prices Rising</h3>
-                    <div id="shipping-up" class="space-y-2"></div>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-red-600 mb-3">📉 Prices Falling</h3>
-                    <div id="shipping-down" class="space-y-2"></div>
-                </div>
-            </div>
-
-            <!-- Shipping Table -->
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200">
-                        <tr class="text-xs text-earth-500 uppercase">
-                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
-                            <th class="text-left px-4 py-3 font-medium">Origin</th>
-                            <th class="text-right px-4 py-3 font-medium">Price Range</th>
-                            <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">Movement</th>
-                        </tr>
-                    </thead>
-                    <tbody id="shipping-table" class="divide-y divide-earth-100"></tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <!-- ==================== MOVEMENT PAGE ==================== -->
-    <div id="page-movement" class="page">
-        <section class="bg-gradient-to-b from-blue-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="text-2xl">🚛</span>
-                    <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Movement Data</h1>
-                </div>
-                <p class="text-earth-500">Weekly shipment volumes — track supply levels and seasonal patterns.</p>
-            </div>
-        </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Volume Trends -->
-            <div class="grid md:grid-cols-2 gap-5 mb-8">
-                <div class="bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-leaf-700 mb-3">📈 Volume Increasing</h3>
-                    <div id="movement-up" class="space-y-2"></div>
-                </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-red-600 mb-3">📉 Volume Decreasing</h3>
-                    <div id="movement-down" class="space-y-2"></div>
-                </div>
-            </div>
-
-            <!-- Movement Table -->
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200">
-                        <tr class="text-xs text-earth-500 uppercase">
-                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
-                            <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Origin</th>
-                            <th class="text-right px-4 py-3 font-medium">This Week</th>
-                            <th class="text-right px-4 py-3 font-medium hidden md:table-cell">Last Week</th>
-                            <th class="text-right px-4 py-3 font-medium">Change</th>
-                        </tr>
-                    </thead>
-                    <tbody id="movement-table" class="divide-y divide-earth-100"></tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <!-- ==================== COMPARE PAGE ==================== -->
-    <div id="page-compare" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Compare Prices</h1>
-                <p class="text-earth-500">See the full picture: source prices, destination prices, and margins.</p>
-            </div>
-        </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Commodity Selector -->
-            <div class="bg-white rounded-xl border border-earth-200 p-5 mb-6">
-                <label class="block text-sm font-medium text-earth-700 mb-2">Select a commodity:</label>
-                <select id="compare-select" onchange="updateCompare()" class="w-full max-w-sm px-4 py-2.5 border border-earth-300 rounded-xl bg-white focus:ring-2 focus:ring-leaf-200 focus:border-leaf-400">
-                    <option value="">Choose...</option>
-                </select>
-            </div>
-
-            <!-- Compare Results -->
-            <div id="compare-results" class="hidden">
-                <!-- Price Flow Visual -->
-                <div class="bg-white rounded-xl border border-earth-200 p-6 mb-6">
-                    <h3 class="font-bold text-earth-800 mb-4">Price Flow: Origin → Destination</h3>
-                    <div id="compare-flow" class="space-y-4"></div>
-                </div>
-
-                <!-- Side by Side -->
-                <div class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-orange-50 rounded-xl border border-orange-200 p-5">
-                        <h4 class="font-semibold text-orange-800 mb-4 flex items-center gap-2">📦 Shipping Points (Source)</h4>
-                        <div id="compare-shipping" class="space-y-2"></div>
-                    </div>
-                    <div class="bg-leaf-50 rounded-xl border border-leaf-200 p-5">
-                        <h4 class="font-semibold text-leaf-800 mb-4 flex items-center gap-2">🏪 Terminal Markets (Destination)</h4>
-                        <div id="compare-terminal" class="space-y-2"></div>
-                    </div>
-                </div>
-
-                <!-- Movement -->
-                <div class="bg-blue-50 rounded-xl border border-blue-200 p-5">
-                    <h4 class="font-semibold text-blue-800 mb-4 flex items-center gap-2">🚛 Weekly Movement</h4>
-                    <div id="compare-movement"></div>
-                </div>
-            </div>
-        </main>
-    </div>
-
     <!-- ==================== COMMODITY DETAIL PAGE ==================== -->
     <div id="page-commodity" class="page">
         <section id="commodity-hero" class="relative border-b border-earth-200 overflow-hidden" style="min-height: 200px;">
-            <!-- Background image -->
             <div id="commodity-bg" class="absolute inset-0 bg-cover bg-center transition-opacity duration-500" style="opacity: 0;"></div>
-            <!-- Overlay gradient -->
             <div class="absolute inset-0 bg-gradient-to-r from-earth-900/85 via-earth-900/70 to-earth-900/50"></div>
-            <!-- Content -->
             <div class="relative max-w-7xl mx-auto px-4 py-10 md:py-14">
                 <a href="#" onclick="history.back()" class="text-sm text-leaf-300 hover:text-leaf-200 mb-3 inline-flex items-center gap-1">← Back</a>
                 <h1 id="commodity-title" class="text-3xl md:text-4xl font-bold text-white drop-shadow-lg"></h1>
@@ -425,15 +263,12 @@
             </div>
         </section>
         <main class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Tabs -->
             <div class="flex flex-wrap gap-2 mb-6">
                 <button onclick="showTab('terminal')" data-tab="terminal" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-leaf-800 text-white">🏪 Terminal Prices</button>
                 <button onclick="showTab('shipping')" data-tab="shipping" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-earth-100 text-earth-600 hover:bg-earth-200">📦 Shipping Points</button>
                 <button onclick="showTab('movement')" data-tab="movement" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-earth-100 text-earth-600 hover:bg-earth-200">🚛 Movement</button>
                 <button onclick="showTab('flow')" data-tab="flow" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-earth-100 text-earth-600 hover:bg-earth-200">💰 Price Flow</button>
             </div>
-            
-            <!-- Tab Content -->
             <div id="commodity-content"></div>
         </main>
     </div>
@@ -458,6 +293,91 @@
         </main>
     </div>
 
+    <!-- ==================== SHIPPING PAGE ==================== -->
+    <div id="page-shipping" class="page">
+        <section class="bg-gradient-to-b from-orange-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">📦</span>
+                    <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Shipping Points</h1>
+                </div>
+                <p class="text-earth-500">F.O.B. prices at origin — what producers receive at source.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-earth-50 border-b border-earth-200">
+                            <tr class="text-xs text-earth-500 uppercase">
+                                <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                                <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Variety</th>
+                                <th class="text-left px-4 py-3 font-medium">Origin</th>
+                                <th class="text-center px-4 py-3 font-medium hidden lg:table-cell">Size</th>
+                                <th class="text-right px-4 py-3 font-medium">Price Range</th>
+                                <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">Movement</th>
+                                <th class="text-right px-4 py-3 font-medium hidden md:table-cell">Trading</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipping-table" class="divide-y divide-earth-100">
+                            <tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Loading shipping data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== MOVEMENT PAGE ==================== -->
+    <div id="page-movement" class="page">
+        <section class="bg-gradient-to-b from-blue-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">🚛</span>
+                    <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Movement Data</h1>
+                </div>
+                <p class="text-earth-500">Weekly shipment volumes from shipping point reports.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div id="movement-content" class="text-earth-400 text-sm">Loading movement data...</div>
+        </main>
+    </div>
+
+    <!-- ==================== COMPARE PAGE ==================== -->
+    <div id="page-compare" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Compare Prices</h1>
+                <p class="text-earth-500">See the full picture: source prices, destination prices, and margins.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-xl border border-earth-200 p-5 mb-6">
+                <label class="block text-sm font-medium text-earth-700 mb-2">Select a commodity:</label>
+                <select id="compare-select" onchange="updateCompare()" class="w-full max-w-sm px-4 py-2.5 border border-earth-300 rounded-xl bg-white">
+                    <option value="">Choose...</option>
+                </select>
+            </div>
+            <div id="compare-results" class="hidden">
+                <div class="bg-white rounded-xl border border-earth-200 p-6 mb-6">
+                    <h3 class="font-bold text-earth-800 mb-4">Price Flow: Origin → Destination</h3>
+                    <div id="compare-flow" class="space-y-4"></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-orange-50 rounded-xl border border-orange-200 p-5">
+                        <h4 class="font-semibold text-orange-800 mb-4">📦 Shipping Points (Source)</h4>
+                        <div id="compare-shipping" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-leaf-50 rounded-xl border border-leaf-200 p-5">
+                        <h4 class="font-semibold text-leaf-800 mb-4">🏪 Terminal Markets (Destination)</h4>
+                        <div id="compare-terminal" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
     <!-- Footer -->
     <footer class="border-t border-earth-200 bg-white mt-16">
         <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-earth-500">
@@ -471,256 +391,158 @@
 
     <script>
         const API = 'https://produce-iq-production.up.railway.app';
-        
-        // State
+
         let terminalData = [];
         let dates = [];
         let datesData = {};
         let currentCommodity = '';
         let currentTab = 'terminal';
-        let shippingRegion = 'all';
 
-        // ==================== MOCK DATA ====================
-        const shippingData = [
-            { commodity: "Tomatoes", origin: "Mexico - Texas Crossing", region: "mexico", priceLow: 13.95, priceHigh: 15.95, movement: "Slightly Higher", trading: "Moderate" },
-            { commodity: "Tomatoes", origin: "Florida", region: "florida", priceLow: 23.35, priceHigh: 23.35, movement: "Unchanged", trading: "Moderate" },
-            { commodity: "Tomatoes", origin: "Mexico - Nogales", region: "mexico", priceLow: 12.95, priceHigh: 13.95, movement: "Slightly Higher", trading: "Moderate" },
-            { commodity: "Strawberries", origin: "Mexico - Texas", region: "mexico", priceLow: 8.00, priceHigh: 12.00, movement: "Much Lower", trading: "Slow" },
-            { commodity: "Strawberries", origin: "Central Florida", region: "florida", priceLow: 10.00, priceHigh: 12.00, movement: "Much Lower", trading: "Fairly Active" },
-            { commodity: "Strawberries", origin: "Oxnard, CA", region: "california", priceLow: 10.00, priceHigh: 14.00, movement: "Much Lower", trading: "Active" },
-            { commodity: "Avocados", origin: "Mexico - Texas", region: "mexico", priceLow: 24.25, priceHigh: 27.25, movement: "Higher", trading: "Moderate" },
-            { commodity: "Limes", origin: "Mexico - Texas", region: "mexico", priceLow: 40.00, priceHigh: 44.00, movement: "Much Higher", trading: "Active" },
-            { commodity: "Lemons", origin: "CA/AZ", region: "california", priceLow: 24.50, priceHigh: 30.75, movement: "Unchanged", trading: "Moderate" },
-            { commodity: "Oranges", origin: "CA/AZ", region: "california", priceLow: 17.00, priceHigh: 32.95, movement: "Lower", trading: "Moderate" },
-            { commodity: "Lettuce", origin: "Western Arizona", region: "arizona", priceLow: 42.45, priceHigh: 45.75, movement: "Lower", trading: "Active" },
-            { commodity: "Lettuce", origin: "Imperial Valley, CA", region: "california", priceLow: 35.75, priceHigh: 41.45, movement: "Much Lower", trading: "Active" },
-            { commodity: "Broccoli", origin: "Mexico - Texas", region: "mexico", priceLow: 20.00, priceHigh: 24.00, movement: "Much Lower", trading: "Moderate" },
-            { commodity: "Broccoli", origin: "Western Arizona", region: "arizona", priceLow: 33.95, priceHigh: 39.75, movement: "Slightly Lower", trading: "Moderate" },
-            { commodity: "Peppers", origin: "Mexico - Nogales", region: "mexico", priceLow: 22.95, priceHigh: 28.95, movement: "Much Higher", trading: "Active" },
-            { commodity: "Peppers", origin: "Florida", region: "florida", priceLow: 29.35, priceHigh: 31.35, movement: "Much Higher", trading: "Moderate" },
-            { commodity: "Cucumbers", origin: "Mexico - Nogales", region: "mexico", priceLow: 18.95, priceHigh: 20.95, movement: "Much Higher", trading: "Active" },
-            { commodity: "Apples", origin: "Washington", region: "washington", priceLow: 22.95, priceHigh: 43.95, movement: "Unchanged", trading: "Moderate" },
-            { commodity: "Grapes", origin: "Peru Imports", region: "imports", priceLow: 24.00, priceHigh: 30.00, movement: "Slightly Higher", trading: "Moderate" },
-            { commodity: "Grapes", origin: "Chile Imports", region: "imports", priceLow: 22.00, priceHigh: 32.00, movement: "Higher", trading: "Moderate" },
-            { commodity: "Blueberries", origin: "Chile Imports", region: "imports", priceLow: 28.00, priceHigh: 34.00, movement: "Unchanged", trading: "Active" },
-            { commodity: "Blueberries", origin: "Mexico", region: "mexico", priceLow: 22.00, priceHigh: 28.00, movement: "Much Higher", trading: "Moderate" },
-            { commodity: "Asparagus", origin: "Mexico - Calexico", region: "mexico", priceLow: 30.75, priceHigh: 38.75, movement: "Lower", trading: "Slow" },
-            { commodity: "Celery", origin: "Oxnard, CA", region: "california", priceLow: 52.75, priceHigh: 54.75, movement: "Slightly Higher", trading: "Active" },
-            { commodity: "Carrots", origin: "Kern County, CA", region: "california", priceLow: 34.00, priceHigh: 36.00, movement: "Higher", trading: "Active" },
-            { commodity: "Cabbage", origin: "Florida", region: "florida", priceLow: 12.35, priceHigh: 12.35, movement: "Unchanged", trading: "Moderate" },
-            { commodity: "Watermelons", origin: "Mexico - Texas", region: "mexico", priceLow: 294.00, priceHigh: 308.00, movement: "Slightly Lower", trading: "Active" },
-            { commodity: "Cantaloupes", origin: "Honduras Imports", region: "imports", priceLow: 13.95, priceHigh: 17.95, movement: "Lower", trading: "Moderate" },
-            { commodity: "Honeydews", origin: "Mexico - Nogales", region: "mexico", priceLow: 10.95, priceHigh: 12.95, movement: "Slightly Lower", trading: "Moderate" },
-            { commodity: "Mangoes", origin: "Mexico - Texas", region: "mexico", priceLow: 6.50, priceHigh: 9.50, movement: "Lower", trading: "Slow" },
-            { commodity: "Pineapples", origin: "Costa Rica Imports", region: "imports", priceLow: 13.00, priceHigh: 14.00, movement: "Unchanged", trading: "Moderate" },
-            { commodity: "Onions", origin: "Idaho/Oregon", region: "other", priceLow: 6.00, priceHigh: 8.00, movement: "Lower", trading: "Moderate" },
-            { commodity: "Potatoes", origin: "Idaho", region: "other", priceLow: 4.00, priceHigh: 6.00, movement: "Lower", trading: "Slow" },
-        ];
-
-        const movementData = [
-            { commodity: "Apples", origin: "Washington", thisWeek: 1216000, lastWeek: 1132000, change: 7.4 },
-            { commodity: "Lettuce", origin: "AZ/CA", thisWeek: 520000, lastWeek: 480000, change: 8.3 },
-            { commodity: "Tomatoes", origin: "Mexico/FL", thisWeek: 890000, lastWeek: 920000, change: -3.3 },
-            { commodity: "Strawberries", origin: "CA/FL", thisWeek: 380000, lastWeek: 450000, change: -15.6 },
-            { commodity: "Grapes", origin: "Imports", thisWeek: 1245000, lastWeek: 1180000, change: 5.5 },
-            { commodity: "Avocados", origin: "Mexico", thisWeek: 582000, lastWeek: 766000, change: -24.0 },
-            { commodity: "Oranges", origin: "CA/AZ", thisWeek: 340000, lastWeek: 350000, change: -2.9 },
-            { commodity: "Broccoli", origin: "Mexico/AZ", thisWeek: 168000, lastWeek: 182000, change: -7.7 },
-            { commodity: "Peppers", origin: "Mexico/FL", thisWeek: 580000, lastWeek: 518000, change: 12.0 },
-            { commodity: "Cucumbers", origin: "Mexico", thisWeek: 434000, lastWeek: 470000, change: -7.7 },
-            { commodity: "Celery", origin: "California", thisWeek: 163000, lastWeek: 148000, change: 10.1 },
-            { commodity: "Carrots", origin: "California", thisWeek: 285000, lastWeek: 280000, change: 1.8 },
-            { commodity: "Cabbage", origin: "FL/TX", thisWeek: 90000, lastWeek: 81000, change: 11.1 },
-            { commodity: "Potatoes", origin: "ID/CO", thisWeek: 1597000, lastWeek: 1744000, change: -8.4 },
-            { commodity: "Onions", origin: "Various", thisWeek: 1039000, lastWeek: 974000, change: 6.7 },
-            { commodity: "Watermelons", origin: "Mexico", thisWeek: 268000, lastWeek: 347000, change: -22.8 },
-            { commodity: "Blueberries", origin: "Imports", thisWeek: 230000, lastWeek: 250000, change: -8.0 },
-            { commodity: "Mangoes", origin: "Mexico", thisWeek: 258000, lastWeek: 244000, change: 5.7 },
-            { commodity: "Pineapples", origin: "Costa Rica", thisWeek: 181000, lastWeek: 192000, change: -5.7 },
-            { commodity: "Asparagus", origin: "Mexico", thisWeek: 71000, lastWeek: 48000, change: 47.9 },
-            { commodity: "Limes", origin: "Mexico", thisWeek: 182000, lastWeek: 214000, change: -15.0 },
-            { commodity: "Lemons", origin: "CA/AZ", thisWeek: 156000, lastWeek: 148000, change: 5.4 },
-        ];
-
-        const regions = [
-            { id: 'all', name: 'All Regions' },
-            { id: 'mexico', name: '🇲🇽 Mexico' },
-            { id: 'california', name: '🌴 California' },
-            { id: 'florida', name: '☀️ Florida' },
-            { id: 'arizona', name: '🏜️ Arizona' },
-            { id: 'washington', name: '🍎 Washington' },
-            { id: 'imports', name: '🚢 Imports' },
-            { id: 'other', name: '📍 Other' },
-        ];
-
-        const CATEGORIES = {
-            'Fruits': { emoji: '🍎', keywords: ['apple','pear','grape','peach','plum','cherry','mango','papaya','pineapple','watermelon','cantaloupe','honeydew'] },
-            'Vegetables': { emoji: '🥬', keywords: ['lettuce','tomato','pepper','onion','potato','carrot','celery','broccoli','cabbage','cucumber','asparagus'] },
-            'Citrus': { emoji: '🍊', keywords: ['orange','lemon','lime','grapefruit'] },
-            'Berries': { emoji: '🍓', keywords: ['strawberr','blueberr','raspberr','blackberr'] },
-            'Tropical': { emoji: '🥭', keywords: ['avocado','mango','papaya','pineapple','banana'] },
-        };
-
-        // ==================== UTILITIES ====================
-        function formatLbs(n) {
-            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-            if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
-            return n.toString();
+        // ── Utilities ────────────────────────────────────────────────
+        function formatPrice(row) {
+            const lo = parseFloat(row.price_low);
+            const hi = row.price_high ? parseFloat(row.price_high) : null;
+            if (hi && hi !== lo) return `$${lo.toFixed(2)}–${hi.toFixed(2)}`;
+            return `$${lo.toFixed(2)}`;
         }
 
-        function getCategory(name) {
-            const l = name.toLowerCase();
-            for (const [cat, { keywords }] of Object.entries(CATEGORIES)) {
-                if (keywords.some(k => l.includes(k))) return cat;
+        function formatPriceMostly(row) {
+            if (row.price_mostly_low && row.price_mostly_high) {
+                return `mostly $${parseFloat(row.price_mostly_low).toFixed(2)}–${parseFloat(row.price_mostly_high).toFixed(2)}`;
             }
-            return 'Other';
+            return '';
+        }
+
+        function qualityBadge(row) {
+            if (row.organic) return `<span class="badge-organic">ORGANIC</span>`;
+            const q = (row.quality_note || '').toLowerCase();
+            if (!q) return '';
+            if (q.includes('fair')) return `<span class="badge-fair">${row.quality_note}</span>`;
+            if (q.includes('fine')) return `<span class="badge-quality">${row.quality_note}</span>`;
+            return `<span class="badge-quality">${row.quality_note}</span>`;
+        }
+
+        function sizePill(size) {
+            if (!size) return '–';
+            return `<span class="size-pill">${size}</span>`;
         }
 
         function movementClass(m) {
+            if (!m) return 'text-earth-400';
             if (m.includes('Higher')) return 'text-leaf-600';
             if (m.includes('Lower')) return 'text-red-500';
             return 'text-earth-400';
         }
 
         function movementArrow(m) {
+            if (!m) return '–';
             if (m.includes('Higher')) return '↑';
             if (m.includes('Lower')) return '↓';
             return '–';
         }
 
-        // ==================== NAVIGATION ====================
+        function getCategoryEmoji(name) {
+            const l = (name || '').toLowerCase();
+            if (['apple','pear','grape','peach','plum','cherry','mango','papaya','pineapple','watermelon','cantaloupe','honeydew'].some(k => l.includes(k))) return '🍎';
+            if (['lettuce','tomato','pepper','onion','potato','carrot','celery','broccoli','cabbage','cucumber','asparagus'].some(k => l.includes(k))) return '🥬';
+            if (['orange','lemon','lime','grapefruit'].some(k => l.includes(k))) return '🍊';
+            if (['strawberr','blueberr','raspberr','blackberr'].some(k => l.includes(k))) return '🍓';
+            if (['avocado'].some(k => l.includes(k))) return '🥑';
+            return '🌿';
+        }
+
+        // ── Navigation ───────────────────────────────────────────────
         function navigate(page, param) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const el = document.getElementById('page-' + page);
             if (el) el.classList.add('active');
-            
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active', 'bg-leaf-100'));
             document.querySelectorAll(`[data-nav="${page}"]`).forEach(n => n.classList.add('active'));
-            
             window.scrollTo(0, 0);
-            
-            if (page === 'terminal-detail' && param) loadTerminalDetail(param);
             if (page === 'commodity' && param) loadCommodity(param);
         }
 
-        // ==================== INIT ====================
+        // ── Init ─────────────────────────────────────────────────────
         async function init() {
             try {
                 dates = await (await fetch(`${API}/dates`)).json();
                 if (!dates.length) return;
 
                 datesData[dates[0].date] = await (await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
-                terminalData = datesData[dates[0].date];
+                terminalData = datesData[dates[0].date].filter(d => d.market_type === 'terminal');
 
-                // Load history for trends
                 for (let i = 1; i <= 6 && i < dates.length; i++) {
-                    datesData[dates[i].date] = await (await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json();
+                    const d = await (await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json();
+                    datesData[dates[i].date] = d;
                 }
 
                 renderHome();
                 renderTerminalPage();
                 renderShippingPage();
-                renderMovementPage();
                 renderComparePage();
             } catch (e) {
                 console.error('Init error:', e);
             }
         }
 
-        // ==================== HOME PAGE ====================
-        function renderHome() {
-            const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
+        // ── Home ─────────────────────────────────────────────────────
+        async function renderHome() {
+            try {
+                const movers = await (await fetch(`${API}/movers?market_type=terminal`)).json();
 
-            // Price movers
-            const withTrends = commodities.map(c => {
-                const today = terminalData.filter(d => d.commodity === c);
-                const weekAgo = (datesData[dates[6]?.date] || []).filter(d => d.commodity === c);
-                if (!today.length || !weekAgo.length) return null;
-                const avgToday = today.reduce((s, d) => s + parseFloat(d.price_low), 0) / today.length;
-                const avgWeek = weekAgo.reduce((s, d) => s + parseFloat(d.price_low), 0) / weekAgo.length;
-                const dollarChange = avgToday - avgWeek;
-                return { commodity: c, price: avgToday, dollarChange, change: ((avgToday - avgWeek) / avgWeek) * 100 };
-            }).filter(Boolean);
+                document.getElementById('home-prices-up').innerHTML = movers.rising?.length
+                    ? movers.rising.map(t => `
+                        <div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
+                            <div>
+                                <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
+                                <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
+                            </div>
+                            <span class="text-sm font-semibold text-red-600">↑ $${t.dollar_change.toFixed(2)}</span>
+                        </div>`).join('')
+                    : '<p class="text-sm text-earth-400">No significant increases</p>';
 
-            const up = withTrends.filter(t => t.change > 2).sort((a, b) => b.change - a.change).slice(0, 5);
-            const down = withTrends.filter(t => t.change < -2).sort((a, b) => a.change - b.change).slice(0, 5);
-
-            document.getElementById('home-prices-up').innerHTML = up.length ? up.map(t =>
-                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
-                    <div>
-                        <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
-                        <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
-                    </div>
-                    <span class="text-sm font-semibold text-red-600">↑ $${t.dollarChange.toFixed(2)}</span>
-                </div>`
-            ).join('') : '<p class="text-sm text-earth-400">No significant increases</p>';
-
-            document.getElementById('home-prices-down').innerHTML = down.length ? down.map(t =>
-                `<div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
-                    <div>
-                        <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
-                        <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
-                    </div>
-                    <span class="text-sm font-semibold text-leaf-600">↓ $${Math.abs(t.dollarChange).toFixed(2)}</span>
-                </div>`
-            ).join('') : '<p class="text-sm text-earth-400">No significant decreases</p>';
+                document.getElementById('home-prices-down').innerHTML = movers.falling?.length
+                    ? movers.falling.map(t => `
+                        <div onclick="navigate('commodity','${t.commodity}')" class="flex justify-between items-center p-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
+                            <div>
+                                <span class="text-sm font-medium text-earth-800">${t.commodity}</span>
+                                <span class="text-sm text-earth-500 ml-2">$${t.price.toFixed(2)}</span>
+                            </div>
+                            <span class="text-sm font-semibold text-leaf-600">↓ $${Math.abs(t.dollar_change).toFixed(2)}</span>
+                        </div>`).join('')
+                    : '<p class="text-sm text-earth-400">No significant decreases</p>';
+            } catch (e) {
+                console.error('renderHome error', e);
+            }
         }
 
-        function filterByCategory(cat) {
-            navigate('search');
-            document.getElementById('searchInput').value = cat;
-            runSearch();
-        }
-
-        // ==================== TERMINAL MARKETS PAGE ====================
+        // ── Terminal Markets ─────────────────────────────────────────
         let terminalPage = 1;
         let terminalFiltered = [];
-        const TERMINAL_PAGE_SIZE = 25;
+        const TERMINAL_PAGE_SIZE = 30;
 
         function renderTerminalPage() {
-            // Populate commodity dropdown
             const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
-            document.getElementById('quick-commodity').innerHTML = '<option value="">Select commodity...</option>' +
+            const markets = [...new Set(terminalData.map(d => d.market))].sort();
+            const varieties = [...new Set(terminalData.map(d => d.variety).filter(Boolean))].sort();
+
+            document.getElementById('quick-commodity').innerHTML =
+                '<option value="">Select commodity...</option>' +
                 commodities.map(c => `<option value="${c}">${c}</option>`).join('');
 
-            // Populate market dropdown
-            const markets = [...new Set(terminalData.map(d => d.market))].sort();
-            document.getElementById('quick-market').innerHTML = '<option value="">All Markets</option>' +
+            document.getElementById('quick-market').innerHTML =
+                '<option value="">All Markets</option>' +
                 markets.map(m => `<option value="${m}">${m}</option>`).join('');
-            document.getElementById('terminal-market-filter').innerHTML = '<option value="">All Markets</option>' +
+
+            document.getElementById('terminal-market-filter').innerHTML =
+                '<option value="">All Markets</option>' +
                 markets.map(m => `<option value="${m}">${m}</option>`).join('');
+
+            document.getElementById('terminal-variety-filter').innerHTML =
+                '<option value="">All Varieties</option>' +
+                varieties.map(v => `<option value="${v}">${v}</option>`).join('');
 
             filterTerminalTable();
-        }
-
-        function filterTerminalTable() {
-            const search = document.getElementById('terminal-search').value.toLowerCase().trim();
-            const market = document.getElementById('terminal-market-filter').value;
-            const sort = document.getElementById('terminal-sort').value;
-
-            terminalFiltered = terminalData.filter(d => {
-                if (market && d.market !== market) return false;
-                if (search && !`${d.commodity} ${d.variety || ''} ${d.origin || ''}`.toLowerCase().includes(search)) return false;
-                return true;
-            });
-
-            // Sort
-            if (sort === 'commodity') {
-                terminalFiltered.sort((a, b) => a.commodity.localeCompare(b.commodity));
-            } else if (sort === 'price-low') {
-                terminalFiltered.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low));
-            } else if (sort === 'price-high') {
-                terminalFiltered.sort((a, b) => parseFloat(b.price_low) - parseFloat(a.price_low));
-            } else if (sort === 'change') {
-                terminalFiltered.sort((a, b) => {
-                    const changeA = getWeekChange(a.commodity);
-                    const changeB = getWeekChange(b.commodity);
-                    return Math.abs(changeB) - Math.abs(changeA);
-                });
-            }
-
-            terminalPage = 1;
-            renderTerminalTable();
         }
 
         function getWeekChange(commodity) {
@@ -732,6 +554,30 @@
             return ((avgToday - avgWeek) / avgWeek) * 100;
         }
 
+        function filterTerminalTable() {
+            const search = document.getElementById('terminal-search').value.toLowerCase().trim();
+            const market = document.getElementById('terminal-market-filter').value;
+            const variety = document.getElementById('terminal-variety-filter').value;
+            const sort = document.getElementById('terminal-sort').value;
+            const organicOnly = document.getElementById('terminal-organic-filter').checked;
+
+            terminalFiltered = terminalData.filter(d => {
+                if (market && d.market !== market) return false;
+                if (variety && d.variety !== variety) return false;
+                if (organicOnly && !d.organic) return false;
+                if (search && !`${d.commodity} ${d.variety || ''} ${d.origin || ''} ${d.size || ''}`.toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            if (sort === 'commodity') terminalFiltered.sort((a, b) => (a.commodity + (a.variety||'')).localeCompare(b.commodity + (b.variety||'')));
+            else if (sort === 'price-low') terminalFiltered.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+            else if (sort === 'price-high') terminalFiltered.sort((a, b) => parseFloat(b.price_low) - parseFloat(a.price_low));
+            else if (sort === 'change') terminalFiltered.sort((a, b) => Math.abs(getWeekChange(b.commodity)) - Math.abs(getWeekChange(a.commodity)));
+
+            terminalPage = 1;
+            renderTerminalTable();
+        }
+
         function renderTerminalTable() {
             const start = (terminalPage - 1) * TERMINAL_PAGE_SIZE;
             const pageItems = terminalFiltered.slice(start, start + TERMINAL_PAGE_SIZE);
@@ -741,19 +587,35 @@
             document.getElementById('terminal-prev').disabled = terminalPage <= 1;
             document.getElementById('terminal-next').disabled = terminalPage >= totalPages;
 
-            document.getElementById('terminal-table').innerHTML = pageItems.length ? pageItems.map((item, i) => {
-                const price = parseFloat(item.price_low);
-                const change = getWeekChange(item.commodity);
-                const isUp = change > 1, isDown = change < -1;
-                return `
+            document.getElementById('terminal-table').innerHTML = pageItems.length
+                ? pageItems.map((item, i) => {
+                    const price = parseFloat(item.price_low);
+                    const change = getWeekChange(item.commodity);
+                    const isUp = change > 1, isDown = change < -1;
+                    const priceDisplay = formatPrice(item);
+                    const mostlyDisplay = formatPriceMostly(item);
+                    const gradeText = [item.grade, item.quality_note].filter(Boolean).join(' · ') || '';
+
+                    return `
                     <tr class="${i % 2 === 1 ? 'bg-earth-50/50' : ''} hover:bg-leaf-50 cursor-pointer" onclick="navigate('commodity','${item.commodity}')">
                         <td class="px-4 py-3">
-                            <span class="font-medium text-earth-800">${item.commodity}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-earth-800">${item.commodity}</span>
+                                ${item.organic ? '<span class="badge-organic">ORG</span>' : ''}
+                            </div>
                         </td>
-                        <td class="px-4 py-3 text-earth-600">${item.market}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '–'}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '–'}</td>
-                        <td class="px-4 py-3 text-right font-semibold text-leaf-600">$${price.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-earth-600 text-sm">${item.market}</td>
+                        <td class="px-4 py-3 text-earth-500 text-sm hidden md:table-cell">${item.variety || '–'}</td>
+                        <td class="px-4 py-3 text-earth-500 text-sm hidden lg:table-cell">${item.origin || '–'}</td>
+                        <td class="px-4 py-3 text-earth-400 text-xs hidden xl:table-cell">${item.package || '–'}</td>
+                        <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(item.size)}</td>
+                        <td class="px-4 py-3 hidden xl:table-cell">
+                            <div class="text-xs text-earth-500">${gradeText || '–'}</div>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-semibold text-leaf-600">${priceDisplay}</div>
+                            ${mostlyDisplay ? `<div class="price-range">${mostlyDisplay}</div>` : ''}
+                        </td>
                         <td class="px-4 py-3 text-right hidden sm:table-cell">
                             <span class="${isUp ? 'text-red-500' : isDown ? 'text-leaf-600' : 'text-earth-400'}">
                                 ${isUp ? '↑' : isDown ? '↓' : '–'} ${Math.abs(change).toFixed(1)}%
@@ -762,9 +624,9 @@
                         <td class="px-4 py-3 text-center">
                             <button onclick="event.stopPropagation(); navigate('compare'); document.getElementById('compare-select').value='${item.commodity}'; updateCompare();" class="text-xs text-leaf-600 hover:text-leaf-700 font-medium">Compare</button>
                         </td>
-                    </tr>
-                `;
-            }).join('') : '<tr><td colspan="7" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+                    </tr>`;
+                }).join('')
+                : '<tr><td colspan="10" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
         }
 
         function terminalPrev() { if (terminalPage > 1) { terminalPage--; renderTerminalTable(); } }
@@ -774,19 +636,11 @@
             const commodity = document.getElementById('quick-commodity').value;
             const market = document.getElementById('quick-market').value;
             const resultEl = document.getElementById('quick-result');
-
-            if (!commodity) {
-                resultEl.classList.add('hidden');
-                return;
-            }
+            if (!commodity) { resultEl.classList.add('hidden'); return; }
 
             let items = terminalData.filter(d => d.commodity === commodity);
             if (market) items = items.filter(d => d.market === market);
-
-            if (!items.length) {
-                resultEl.classList.add('hidden');
-                return;
-            }
+            if (!items.length) { resultEl.classList.add('hidden'); return; }
 
             const prices = items.map(d => parseFloat(d.price_low));
             const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
@@ -797,193 +651,211 @@
             resultEl.classList.remove('hidden');
             document.getElementById('quick-result-title').textContent = `${commodity}${market ? ' — ' + market : ' (all markets)'}`;
             document.getElementById('quick-result-price').textContent = `$${avgPrice.toFixed(2)}`;
-            
+
             const changeEl = document.getElementById('quick-result-change');
             if (Math.abs(change) > 0.5) {
-                changeEl.textContent = `${change > 0 ? '↑' : '↓'} $${Math.abs(change * avgPrice / 100).toFixed(2)} vs last week`;
+                changeEl.textContent = `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs last week`;
                 changeEl.className = `text-sm px-2 py-0.5 rounded ${change > 0 ? 'bg-red-100 text-red-600' : 'bg-leaf-100 text-leaf-600'}`;
             } else {
                 changeEl.textContent = 'Unchanged vs last week';
                 changeEl.className = 'text-sm px-2 py-0.5 rounded bg-earth-100 text-earth-500';
             }
 
-            document.getElementById('quick-result-range').textContent = `Range: $${minPrice.toFixed(2)} – $${maxPrice.toFixed(2)} · ${items.length} listing${items.length > 1 ? 's' : ''}`;
+            document.getElementById('quick-result-range').textContent =
+                `Range: $${minPrice.toFixed(2)} – $${maxPrice.toFixed(2)} · ${items.length} listing${items.length > 1 ? 's' : ''}`;
 
-            // Compare to other markets
-            if (market) {
-                const otherMarkets = terminalData.filter(d => d.commodity === commodity && d.market !== market).slice(0, 3);
-                if (otherMarkets.length) {
-                    document.getElementById('quick-result-compare').innerHTML = `
-                        <p class="text-xs text-earth-400 mb-1">Other markets:</p>
-                        ${otherMarkets.map(d => `<div><span class="text-earth-500">${d.market}</span> <span class="font-medium">$${parseFloat(d.price_low).toFixed(2)}</span></div>`).join('')}
-                    `;
-                } else {
-                    document.getElementById('quick-result-compare').innerHTML = '';
-                }
-            } else {
-                const byMarket = {};
-                items.forEach(d => { byMarket[d.market] = parseFloat(d.price_low); });
-                const sorted = Object.entries(byMarket).sort((a, b) => a[1] - b[1]).slice(0, 3);
-                document.getElementById('quick-result-compare').innerHTML = `
-                    <p class="text-xs text-earth-400 mb-1">Best prices:</p>
-                    ${sorted.map(([m, p]) => `<div><span class="text-earth-500">${m}</span> <span class="font-medium text-leaf-600">$${p.toFixed(2)}</span></div>`).join('')}
-                `;
-            }
+            // Best prices by market
+            const byMarket = {};
+            items.forEach(d => { byMarket[d.market] = parseFloat(d.price_low); });
+            const sorted = Object.entries(byMarket).sort((a, b) => a[1] - b[1]).slice(0, 3);
+            document.getElementById('quick-result-compare').innerHTML = `
+                <p class="text-xs text-earth-400 mb-1">Best prices:</p>
+                ${sorted.map(([m, p]) => `<div><span class="text-earth-500">${m}</span> <span class="font-medium text-leaf-600">$${p.toFixed(2)}</span></div>`).join('')}`;
 
-            // Pricing tip
-            const shipPrice = shippingData.find(s => s.commodity.toLowerCase().includes(commodity.toLowerCase().slice(0, 5)))?.priceLow;
-            if (shipPrice) {
-                const margin = avgPrice - shipPrice;
-                document.getElementById('quick-result-tip').innerHTML = `
-                    <strong>💡 Pricing tip:</strong> Source price is ~$${shipPrice.toFixed(2)}. 
-                    Market margin: $${margin.toFixed(2)} (${((margin / shipPrice) * 100).toFixed(0)}%). 
-                    Typical resale to retail: $${(avgPrice + 3).toFixed(2)} – $${(avgPrice + 5).toFixed(2)}
-                `;
-                document.getElementById('quick-result-tip').classList.remove('hidden');
-            } else {
-                document.getElementById('quick-result-tip').classList.add('hidden');
-            }
+            document.getElementById('quick-result-tip').classList.add('hidden');
         }
 
-        function loadTerminalDetail(market) {
-            const items = terminalData.filter(d => d.market === market);
-            document.getElementById('terminal-detail-title').textContent = market;
-            document.getElementById('terminal-detail-subtitle').textContent = `${items.length} commodities available`;
+        // ── Commodity Detail ─────────────────────────────────────────
+        function loadCommodity(name) {
+            currentCommodity = name;
+            document.getElementById('commodity-title').textContent = name;
 
-            document.getElementById('terminal-detail-table').innerHTML = items
-                .sort((a, b) => a.commodity.localeCompare(b.commodity))
-                .map(item => `
-                    <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${item.commodity}')">
-                        <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '–'}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${item.origin || '–'}</td>
-                        <td class="px-4 py-3 text-right font-semibold text-leaf-600">$${parseFloat(item.price_low).toFixed(2)}</td>
-                    </tr>
-                `).join('');
+            const termCount = terminalData.filter(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5))).length;
+            document.getElementById('commodity-subtitle').textContent = `${termCount} market listings`;
+
+            const bgEl = document.getElementById('commodity-bg');
+            const imgUrl = getCommodityImage(name);
+            bgEl.style.opacity = '0';
+            const img = new Image();
+            img.onload = () => { bgEl.style.backgroundImage = `url('${imgUrl}')`; bgEl.style.opacity = '1'; };
+            img.onerror = () => { bgEl.style.background = 'linear-gradient(135deg, #166534 0%, #14532d 100%)'; bgEl.style.opacity = '1'; };
+            img.src = imgUrl;
+
+            showTab('terminal');
         }
 
-        // ==================== SHIPPING POINTS PAGE ====================
-        function renderShippingPage() {
-            // Region tabs
-            document.getElementById('shipping-region-tabs').innerHTML = regions.map(r =>
-                `<button onclick="filterShippingRegion('${r.id}')" data-region="${r.id}" class="px-4 py-2 rounded-lg text-sm font-medium ${r.id === 'all' ? 'bg-orange-500 text-white' : 'bg-white border border-earth-200 text-earth-600 hover:border-orange-300'}">${r.name}</button>`
-            ).join('');
-
-            updateShippingTable();
-        }
-
-        function filterShippingRegion(region) {
-            shippingRegion = region;
-            document.querySelectorAll('[data-region]').forEach(btn => {
-                btn.classList.remove('bg-orange-500', 'text-white');
-                btn.classList.add('bg-white', 'text-earth-600', 'border', 'border-earth-200');
+        function showTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-leaf-800', 'text-white');
+                btn.classList.add('bg-earth-100', 'text-earth-600');
             });
-            document.querySelector(`[data-region="${region}"]`).classList.remove('bg-white', 'text-earth-600', 'border', 'border-earth-200');
-            document.querySelector(`[data-region="${region}"]`).classList.add('bg-orange-500', 'text-white');
-            updateShippingTable();
+            const active = document.querySelector(`[data-tab="${tab}"]`);
+            if (active) { active.classList.remove('bg-earth-100', 'text-earth-600'); active.classList.add('bg-leaf-800', 'text-white'); }
+
+            const content = document.getElementById('commodity-content');
+            const name = currentCommodity;
+
+            if (tab === 'terminal') {
+                const items = terminalData
+                    .filter(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5)))
+                    .sort((a, b) => {
+                        const mCmp = (a.market || '').localeCompare(b.market || '');
+                        if (mCmp !== 0) return mCmp;
+                        const vCmp = (a.variety || '').localeCompare(b.variety || '');
+                        if (vCmp !== 0) return vCmp;
+                        const sA = parseInt((a.size || '9999').replace(/\D/g, '')) || 9999;
+                        const sB = parseInt((b.size || '9999').replace(/\D/g, '')) || 9999;
+                        return sA - sB;
+                    });
+
+                // Group by market → variety
+                const grouped = {};
+                items.forEach(item => {
+                    const key = `${item.market}||${item.variety || 'Unknown'}`;
+                    if (!grouped[key]) grouped[key] = [];
+                    grouped[key].push(item);
+                });
+
+                content.innerHTML = Object.entries(grouped).map(([key, rows]) => {
+                    const [market, variety] = key.split('||');
+                    const originDisplay = [...new Set(rows.map(r => r.origin).filter(Boolean))].join(', ');
+
+                    return `
+                    <div class="bg-white rounded-xl border border-earth-200 overflow-hidden mb-4">
+                        <div class="bg-earth-50 px-4 py-3 border-b border-earth-200 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="font-semibold text-earth-800">${market}</span>
+                                <span class="text-sm text-earth-500">${variety}</span>
+                                ${originDisplay ? `<span class="text-xs text-earth-400">· ${originDisplay}</span>` : ''}
+                            </div>
+                            <span class="text-xs text-earth-400">${rows.length} listing${rows.length > 1 ? 's' : ''}</span>
+                        </div>
+                        <table class="w-full">
+                            <thead class="text-xs text-earth-500 uppercase bg-white border-b border-earth-100">
+                                <tr>
+                                    <th class="text-left px-4 py-2 font-medium">Package</th>
+                                    <th class="text-center px-4 py-2 font-medium">Size</th>
+                                    <th class="text-left px-4 py-2 font-medium hidden sm:table-cell">Grade / Quality</th>
+                                    <th class="text-right px-4 py-2 font-medium">Price</th>
+                                    <th class="text-right px-4 py-2 font-medium hidden md:table-cell">Mostly</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-earth-100">
+                                ${rows.map((r, i) => {
+                                    const gradeText = [r.grade, r.quality_note].filter(Boolean).join(' · ');
+                                    const isLowest = i === 0;
+                                    return `
+                                    <tr class="${isLowest ? 'bg-leaf-50/50' : 'hover:bg-earth-50'}">
+                                        <td class="px-4 py-2.5 text-sm text-earth-600">${r.package || '–'}</td>
+                                        <td class="px-4 py-2.5 text-center">${sizePill(r.size)}</td>
+                                        <td class="px-4 py-2.5 hidden sm:table-cell">
+                                            <div class="flex items-center gap-1.5">
+                                                ${r.organic ? '<span class="badge-organic">ORGANIC</span>' : ''}
+                                                ${r.quality_note ? `<span class="${r.quality_note.includes('fair') ? 'badge-fair' : 'badge-quality'}">${r.quality_note}</span>` : ''}
+                                                ${r.grade && !r.quality_note ? `<span class="text-xs text-earth-400">${r.grade}</span>` : ''}
+                                                ${!r.organic && !r.quality_note && !r.grade ? '<span class="text-xs text-earth-300">standard</span>' : ''}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-2.5 text-right">
+                                            <span class="font-semibold ${isLowest ? 'text-leaf-600' : 'text-earth-700'}">${formatPrice(r)}</span>
+                                            ${isLowest ? '<span class="text-xs text-leaf-500 ml-1">best</span>' : ''}
+                                        </td>
+                                        <td class="px-4 py-2.5 text-right text-xs text-earth-400 hidden md:table-cell">${formatPriceMostly(r)}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+                }).join('') || '<p class="text-earth-400">No terminal market data for this commodity.</p>';
+
+            } else if (tab === 'shipping') {
+                const items = terminalData.filter(t => t.market_type === 'shipping_point' && t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5)));
+                content.innerHTML = items.length ? `
+                    <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                                <tr>
+                                    <th class="text-left px-4 py-3">Origin</th>
+                                    <th class="text-center px-4 py-3">Size</th>
+                                    <th class="text-right px-4 py-3">Price Range</th>
+                                    <th class="text-right px-4 py-3 hidden sm:table-cell">Movement</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-earth-100">
+                                ${items.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low)).map((r, i) => `
+                                    <tr class="${i === 0 ? 'bg-orange-50' : 'hover:bg-earth-50'}">
+                                        <td class="px-4 py-3 font-medium text-earth-800">${r.origin || '–'} ${i === 0 ? '<span class="text-xs text-orange-600 ml-1">Lowest</span>' : ''}</td>
+                                        <td class="px-4 py-3 text-center">${sizePill(r.size)}</td>
+                                        <td class="px-4 py-3 text-right font-semibold ${i === 0 ? 'text-orange-600' : 'text-earth-700'}">${formatPrice(r)}</td>
+                                        <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(r.movement)}">${movementArrow(r.movement)} ${r.movement || '–'}</span></td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>` : '<p class="text-earth-500">No shipping point data for this commodity.</p>';
+            }
         }
 
-        function updateShippingTable() {
-            const filtered = shippingRegion === 'all' ? shippingData : shippingData.filter(s => s.region === shippingRegion);
+        // ── Shipping Page ────────────────────────────────────────────
+        function renderShippingPage() {
+            const shippingData = terminalData.filter(d => d.market_type === 'shipping_point');
 
-            // Up/Down
-            const up = filtered.filter(s => s.movement.includes('Higher')).slice(0, 5);
-            const down = filtered.filter(s => s.movement.includes('Lower')).slice(0, 5);
+            if (!shippingData.length) {
+                document.getElementById('shipping-table').innerHTML =
+                    '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Shipping point data loads from live USDA feed. Run the ingestion script to populate.</td></tr>';
+                return;
+            }
 
-            document.getElementById('shipping-up').innerHTML = up.length ? up.map(s =>
-                `<div class="flex justify-between p-2 bg-leaf-50 rounded-lg">
-                    <span class="text-sm text-earth-700">${s.commodity}</span>
-                    <span class="text-sm font-medium text-leaf-600">${s.movement}</span>
-                </div>`
-            ).join('') : '<p class="text-sm text-earth-400">None rising</p>';
-
-            document.getElementById('shipping-down').innerHTML = down.length ? down.map(s =>
-                `<div class="flex justify-between p-2 bg-red-50 rounded-lg">
-                    <span class="text-sm text-earth-700">${s.commodity}</span>
-                    <span class="text-sm font-medium text-red-500">${s.movement}</span>
-                </div>`
-            ).join('') : '<p class="text-sm text-earth-400">None falling</p>';
-
-            // Table
-            document.getElementById('shipping-table').innerHTML = filtered.map(s => `
-                <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${s.commodity}')">
-                    <td class="px-4 py-3 font-medium text-earth-800">${s.commodity}</td>
-                    <td class="px-4 py-3 text-earth-500">${s.origin}</td>
-                    <td class="px-4 py-3 text-right font-semibold text-orange-600">$${s.priceLow.toFixed(2)} - $${s.priceHigh.toFixed(2)}</td>
-                    <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(s.movement)}">${movementArrow(s.movement)} ${s.movement}</span></td>
-                </tr>
-            `).join('');
+            document.getElementById('shipping-table').innerHTML = shippingData
+                .sort((a, b) => a.commodity.localeCompare(b.commodity))
+                .map(r => `
+                <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${r.commodity}')">
+                    <td class="px-4 py-3 font-medium text-earth-800">${r.commodity}</td>
+                    <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${r.variety || '–'}</td>
+                    <td class="px-4 py-3 text-earth-500">${r.origin || '–'}</td>
+                    <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(r.size)}</td>
+                    <td class="px-4 py-3 text-right font-semibold text-orange-600">${formatPrice(r)}</td>
+                    <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(r.movement)}">${movementArrow(r.movement)} ${r.movement || '–'}</span></td>
+                    <td class="px-4 py-3 text-right text-earth-400 text-sm hidden md:table-cell">${r.trading_activity || '–'}</td>
+                </tr>`).join('');
         }
 
-        // ==================== MOVEMENT PAGE ====================
-        function renderMovementPage() {
-            const sorted = [...movementData].sort((a, b) => b.change - a.change);
-            const up = sorted.filter(m => m.change > 0).slice(0, 5);
-            const down = sorted.filter(m => m.change < 0).reverse().slice(0, 5);
-
-            document.getElementById('movement-up').innerHTML = up.map(m =>
-                `<div class="flex justify-between p-2 bg-leaf-50 rounded-lg">
-                    <span class="text-sm text-earth-700">${m.commodity}</span>
-                    <span class="text-sm font-semibold text-leaf-600">+${m.change.toFixed(1)}%</span>
-                </div>`
-            ).join('');
-
-            document.getElementById('movement-down').innerHTML = down.map(m =>
-                `<div class="flex justify-between p-2 bg-red-50 rounded-lg">
-                    <span class="text-sm text-earth-700">${m.commodity}</span>
-                    <span class="text-sm font-semibold text-red-500">${m.change.toFixed(1)}%</span>
-                </div>`
-            ).join('');
-
-            document.getElementById('movement-table').innerHTML = movementData
-                .sort((a, b) => b.thisWeek - a.thisWeek)
-                .map(m => `
-                    <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${m.commodity}')">
-                        <td class="px-4 py-3 font-medium text-earth-800">${m.commodity}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${m.origin}</td>
-                        <td class="px-4 py-3 text-right font-semibold text-blue-600">${formatLbs(m.thisWeek)} lbs</td>
-                        <td class="px-4 py-3 text-right text-earth-400 hidden md:table-cell">${formatLbs(m.lastWeek)} lbs</td>
-                        <td class="px-4 py-3 text-right"><span class="${m.change > 0 ? 'text-leaf-600' : 'text-red-500'} font-medium">${m.change > 0 ? '+' : ''}${m.change.toFixed(1)}%</span></td>
-                    </tr>
-                `).join('');
-        }
-
-        // ==================== COMPARE PAGE ====================
+        // ── Compare Page ─────────────────────────────────────────────
         function renderComparePage() {
-            const commodities = [...new Set([
-                ...terminalData.map(d => d.commodity),
-                ...shippingData.map(s => s.commodity)
-            ])].sort();
-
-            document.getElementById('compare-select').innerHTML = '<option value="">Choose...</option>' +
+            const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
+            document.getElementById('compare-select').innerHTML =
+                '<option value="">Choose...</option>' +
                 commodities.map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
         function updateCompare() {
             const commodity = document.getElementById('compare-select').value;
-            if (!commodity) {
-                document.getElementById('compare-results').classList.add('hidden');
-                return;
-            }
-
+            if (!commodity) { document.getElementById('compare-results').classList.add('hidden'); return; }
             document.getElementById('compare-results').classList.remove('hidden');
 
-            const shipping = shippingData.filter(s => s.commodity === commodity);
-            const terminal = terminalData.filter(t => t.commodity.toLowerCase().includes(commodity.toLowerCase().slice(0, 5)));
-            const movement = movementData.find(m => m.commodity === commodity);
+            const terminal = terminalData.filter(t => t.market_type === 'terminal' && t.commodity.toLowerCase().includes(commodity.toLowerCase().slice(0, 5)));
+            const shipping = terminalData.filter(t => t.market_type === 'shipping_point' && t.commodity.toLowerCase().includes(commodity.toLowerCase().slice(0, 5)));
 
-            // Flow visualization
             if (shipping.length && terminal.length) {
-                const lowestShip = shipping.sort((a, b) => a.priceLow - b.priceLow)[0];
+                const lowestShip = shipping.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low))[0];
                 const highestTerm = terminal.sort((a, b) => parseFloat(b.price_low) - parseFloat(a.price_low))[0];
-                const margin = parseFloat(highestTerm.price_low) - lowestShip.priceLow;
-
+                const margin = parseFloat(highestTerm.price_low) - parseFloat(lowestShip.price_low);
                 document.getElementById('compare-flow').innerHTML = `
                     <div class="flex items-center gap-4 p-4 bg-earth-50 rounded-xl">
                         <div class="flex-1 text-center">
                             <div class="text-xs text-earth-400 mb-1">📦 Lowest Source</div>
-                            <div class="text-xl font-bold text-orange-600">$${lowestShip.priceLow.toFixed(2)}</div>
-                            <div class="text-sm text-earth-500">${lowestShip.origin}</div>
+                            <div class="text-xl font-bold text-orange-600">$${parseFloat(lowestShip.price_low).toFixed(2)}</div>
+                            <div class="text-sm text-earth-500">${lowestShip.origin || lowestShip.market}</div>
                         </div>
                         <div class="flex flex-col items-center gap-1">
                             <div class="text-xs text-earth-400">Margin</div>
@@ -995,71 +867,53 @@
                             <div class="text-xl font-bold text-leaf-600">$${parseFloat(highestTerm.price_low).toFixed(2)}</div>
                             <div class="text-sm text-earth-500">${highestTerm.market}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+            } else {
+                document.getElementById('compare-flow').innerHTML = '<p class="text-earth-400 text-sm">Not enough data for price flow comparison.</p>';
             }
 
-            // Shipping list
-            document.getElementById('compare-shipping').innerHTML = shipping.length ? shipping.map(s => `
-                <div class="flex justify-between p-2 bg-white rounded-lg">
-                    <span class="text-sm text-earth-600">${s.origin}</span>
-                    <span class="font-semibold text-orange-600">$${s.priceLow.toFixed(2)}</span>
-                </div>
-            `).join('') : '<p class="text-sm text-earth-400">No shipping data</p>';
+            document.getElementById('compare-shipping').innerHTML = shipping.length
+                ? shipping.map(r => `<div class="flex justify-between p-2 bg-white rounded-lg"><span class="text-sm text-earth-600">${r.origin || r.market} ${sizePill(r.size)}</span><span class="font-semibold text-orange-600">${formatPrice(r)}</span></div>`).join('')
+                : '<p class="text-sm text-earth-400">No shipping data</p>';
 
-            // Terminal list
-            document.getElementById('compare-terminal').innerHTML = terminal.length ? terminal.map(t => `
-                <div class="flex justify-between p-2 bg-white rounded-lg">
-                    <span class="text-sm text-earth-600">${t.market}</span>
-                    <span class="font-semibold text-leaf-600">$${parseFloat(t.price_low).toFixed(2)}</span>
-                </div>
-            `).join('') : '<p class="text-sm text-earth-400">No terminal data</p>';
-
-            // Movement
-            document.getElementById('compare-movement').innerHTML = movement ?
-                `<div class="flex items-center gap-4">
-                    <div><span class="text-earth-500">This week:</span> <span class="font-bold text-blue-600">${formatLbs(movement.thisWeek)} lbs</span></div>
-                    <div><span class="text-earth-500">Change:</span> <span class="font-bold ${movement.change > 0 ? 'text-leaf-600' : 'text-red-500'}">${movement.change > 0 ? '+' : ''}${movement.change.toFixed(1)}%</span></div>
-                </div>` :
-                '<p class="text-sm text-earth-400">No movement data</p>';
+            document.getElementById('compare-terminal').innerHTML = terminal.length
+                ? terminal.map(r => `<div class="flex justify-between p-2 bg-white rounded-lg"><span class="text-sm text-earth-600">${r.market} ${sizePill(r.size)}</span><span class="font-semibold text-leaf-600">${formatPrice(r)}</span></div>`).join('')
+                : '<p class="text-sm text-earth-400">No terminal data</p>';
         }
 
-        // ==================== COMMODITY DETAIL ====================
-        function loadCommodity(name) {
-            currentCommodity = name;
-            document.getElementById('commodity-title').textContent = name;
+        // ── Search ───────────────────────────────────────────────────
+        function runSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) { document.getElementById('search-info').textContent = ''; document.getElementById('search-results').innerHTML = ''; return; }
 
-            const termCount = terminalData.filter(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5))).length;
-            const shipCount = shippingData.filter(s => s.commodity === name).length;
-            document.getElementById('commodity-subtitle').textContent = `${termCount} market listings · ${shipCount} shipping origins`;
+            const commodities = [...new Set(terminalData.map(d => d.commodity))];
+            const matches = commodities.filter(c => c.toLowerCase().includes(query));
 
-            // Set background image
-            const bgEl = document.getElementById('commodity-bg');
-            const imgUrl = getCommodityImage(name);
-            
-            bgEl.style.opacity = '0';
-            const img = new Image();
-            img.onload = () => {
-                bgEl.style.backgroundImage = `url('${imgUrl}')`;
-                bgEl.style.opacity = '1';
-            };
-            img.onerror = () => {
-                // Fallback to gradient if image fails
-                bgEl.style.background = 'linear-gradient(135deg, #166534 0%, #14532d 100%)';
-                bgEl.style.opacity = '1';
-            };
-            img.src = imgUrl;
-
-            showTab('terminal');
+            document.getElementById('search-info').textContent = `${matches.length} results for "${query}"`;
+            document.getElementById('search-results').innerHTML = matches.length
+                ? matches.map(c => {
+                    const items = terminalData.filter(t => t.commodity === c && t.market_type === 'terminal');
+                    const avg = items.reduce((s, i) => s + parseFloat(i.price_low), 0) / (items.length || 1);
+                    const hasOrganic = items.some(i => i.organic);
+                    return `
+                    <div onclick="navigate('commodity','${c}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">${getCategoryEmoji(c)}</span>
+                            <span class="font-semibold text-earth-800">${c}</span>
+                            ${hasOrganic ? '<span class="badge-organic">ORGANIC</span>' : ''}
+                        </div>
+                        <div class="text-xs text-earth-500 mb-2">${items.length} listings · ${[...new Set(items.map(i=>i.market))].length} markets</div>
+                        <div class="text-lg font-bold text-leaf-600">$${avg.toFixed(2)} avg</div>
+                    </div>`;
+                }).join('')
+                : '<p class="text-earth-500 col-span-3">No commodities found.</p>';
         }
 
-        // Direct Unsplash image URLs (more reliable than source API)
+        // ── Unsplash images ─────────────────────────────────────────
         function getCommodityImage(name) {
             const images = {
                 'blueberr': 'https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=1600&q=80',
                 'strawberr': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=1600&q=80',
-                'raspberr': 'https://images.unsplash.com/photo-1577003833619-76bbd7f82948?w=1600&q=80',
-                'blackberr': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=1600&q=80',
                 'tomato': 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1600&q=80',
                 'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=1600&q=80',
                 'orange': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=1600&q=80',
@@ -1073,189 +927,19 @@
                 'cucumber': 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=1600&q=80',
                 'celery': 'https://images.unsplash.com/photo-1580391564590-aeca65c5e2d3?w=1600&q=80',
                 'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=1600&q=80',
-                'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=1600&q=80',
                 'asparagus': 'https://images.unsplash.com/photo-1515471209610-dae1c92d8777?w=1600&q=80',
                 'onion': 'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=1600&q=80',
-                'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82ber633?w=1600&q=80',
                 'watermelon': 'https://images.unsplash.com/photo-1563114773-84221bd62daa?w=1600&q=80',
-                'cantaloupe': 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=1600&q=80',
-                'honeydew': 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=1600&q=80',
                 'mango': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=1600&q=80',
                 'pineapple': 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=1600&q=80',
-                'cherr': 'https://images.unsplash.com/photo-1528821128474-27f963b062bf?w=1600&q=80',
-                'peach': 'https://images.unsplash.com/photo-1595124219498-71846760be53?w=1600&q=80',
-                'pear': 'https://images.unsplash.com/photo-1514756331096-242fdeb70d4a?w=1600&q=80',
-                'plum': 'https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=1600&q=80',
-                'squash': 'https://images.unsplash.com/photo-1570586437263-ab629fccc818?w=1600&q=80',
-                'corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=1600&q=80',
-                'bean': 'https://images.unsplash.com/photo-1567375698348-5db6f41de014?w=1600&q=80',
-                'spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=1600&q=80',
-                'kale': 'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=1600&q=80'
             };
-            
-            const nameLower = name.toLowerCase();
+            const l = name.toLowerCase();
             for (const [key, url] of Object.entries(images)) {
-                if (nameLower.includes(key)) {
-                    return url;
-                }
+                if (l.includes(key)) return url;
             }
-            // Default produce image
             return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=80';
         }
 
-        function showTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-leaf-800', 'text-white');
-                btn.classList.add('bg-earth-100', 'text-earth-600');
-            });
-            document.querySelector(`[data-tab="${tab}"]`).classList.remove('bg-earth-100', 'text-earth-600');
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-leaf-800', 'text-white');
-
-            const content = document.getElementById('commodity-content');
-            const name = currentCommodity;
-
-            if (tab === 'terminal') {
-                const items = terminalData.filter(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5)));
-                content.innerHTML = `
-                    <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
-                                <tr>
-                                    <th class="text-left px-4 py-3">Market</th>
-                                    <th class="text-left px-4 py-3 hidden sm:table-cell">Variety</th>
-                                    <th class="text-right px-4 py-3">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-earth-100">
-                                ${items.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low)).map((item, i) => `
-                                    <tr class="${i === 0 ? 'bg-leaf-50' : 'hover:bg-earth-50'}">
-                                        <td class="px-4 py-3 font-medium text-earth-800">${item.market} ${i === 0 ? '<span class="text-xs text-leaf-600 ml-1">Best</span>' : ''}</td>
-                                        <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${item.variety || '–'}</td>
-                                        <td class="px-4 py-3 text-right font-semibold ${i === 0 ? 'text-leaf-600' : 'text-earth-700'}">$${parseFloat(item.price_low).toFixed(2)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } else if (tab === 'shipping') {
-                const items = shippingData.filter(s => s.commodity === name);
-                content.innerHTML = items.length ? `
-                    <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
-                                <tr>
-                                    <th class="text-left px-4 py-3">Origin</th>
-                                    <th class="text-right px-4 py-3">Price Range</th>
-                                    <th class="text-right px-4 py-3 hidden sm:table-cell">Movement</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-earth-100">
-                                ${items.sort((a, b) => a.priceLow - b.priceLow).map((s, i) => `
-                                    <tr class="${i === 0 ? 'bg-orange-50' : 'hover:bg-earth-50'}">
-                                        <td class="px-4 py-3 font-medium text-earth-800">${s.origin} ${i === 0 ? '<span class="text-xs text-orange-600 ml-1">Lowest</span>' : ''}</td>
-                                        <td class="px-4 py-3 text-right font-semibold ${i === 0 ? 'text-orange-600' : 'text-earth-700'}">$${s.priceLow.toFixed(2)} - $${s.priceHigh.toFixed(2)}</td>
-                                        <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(s.movement)}">${s.movement}</span></td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : '<p class="text-earth-500">No shipping point data available for this commodity.</p>';
-            } else if (tab === 'movement') {
-                const m = movementData.find(m => m.commodity === name);
-                content.innerHTML = m ? `
-                    <div class="bg-white rounded-xl border border-earth-200 p-6">
-                        <div class="grid md:grid-cols-3 gap-6">
-                            <div class="text-center">
-                                <div class="text-sm text-earth-500 mb-1">This Week</div>
-                                <div class="text-3xl font-bold text-blue-600">${formatLbs(m.thisWeek)}</div>
-                                <div class="text-sm text-earth-400">pounds</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-sm text-earth-500 mb-1">Last Week</div>
-                                <div class="text-3xl font-bold text-earth-600">${formatLbs(m.lastWeek)}</div>
-                                <div class="text-sm text-earth-400">pounds</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-sm text-earth-500 mb-1">Change</div>
-                                <div class="text-3xl font-bold ${m.change > 0 ? 'text-leaf-600' : 'text-red-500'}">${m.change > 0 ? '+' : ''}${m.change.toFixed(1)}%</div>
-                                <div class="text-sm text-earth-400">week over week</div>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-center text-sm text-earth-500">Origin: ${m.origin}</div>
-                    </div>
-                ` : '<p class="text-earth-500">No movement data available for this commodity.</p>';
-            } else if (tab === 'flow') {
-                const shipping = shippingData.filter(s => s.commodity === name);
-                const terminal = terminalData.filter(t => t.commodity.toLowerCase().includes(name.toLowerCase().slice(0, 5)));
-
-                if (shipping.length && terminal.length) {
-                    content.innerHTML = `
-                        <div class="bg-white rounded-xl border border-earth-200 p-6">
-                            <h3 class="font-bold text-earth-800 mb-6 text-center">Price Flow: Source → Market</h3>
-                            <div class="space-y-4">
-                                ${shipping.slice(0, 3).map(s => {
-                                    const bestTerm = terminal.sort((a, b) => parseFloat(b.price_low) - parseFloat(a.price_low))[0];
-                                    const margin = parseFloat(bestTerm.price_low) - s.priceLow;
-                                    return `
-                                        <div class="flex items-center gap-4 p-4 bg-earth-50 rounded-xl">
-                                            <div class="w-1/3">
-                                                <div class="text-xs text-orange-500 font-medium">📦 ${s.origin}</div>
-                                                <div class="text-xl font-bold text-orange-600">$${s.priceLow.toFixed(2)}</div>
-                                            </div>
-                                            <div class="flex-1 flex items-center">
-                                                <div class="flex-1 h-0.5 bg-gradient-to-r from-orange-400 to-leaf-500"></div>
-                                                <div class="px-3 py-1 bg-white rounded border text-sm font-bold text-earth-600">+$${margin.toFixed(2)}</div>
-                                                <div class="flex-1 h-0.5 bg-gradient-to-r from-leaf-400 to-leaf-500"></div>
-                                            </div>
-                                            <div class="w-1/3 text-right">
-                                                <div class="text-xs text-leaf-600 font-medium">🏪 ${bestTerm.market}</div>
-                                                <div class="text-xl font-bold text-leaf-600">$${parseFloat(bestTerm.price_low).toFixed(2)}</div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    content.innerHTML = '<p class="text-earth-500">Not enough data to show price flow for this commodity.</p>';
-                }
-            }
-        }
-
-        // ==================== SEARCH ====================
-        function runSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (!query) {
-                document.getElementById('search-info').textContent = '';
-                document.getElementById('search-results').innerHTML = '';
-                return;
-            }
-
-            const commodities = [...new Set(terminalData.map(d => d.commodity))];
-            const matches = commodities.filter(c => 
-                c.toLowerCase().includes(query) || 
-                getCategory(c).toLowerCase().includes(query)
-            );
-
-            document.getElementById('search-info').textContent = `${matches.length} results for "${query}"`;
-            document.getElementById('search-results').innerHTML = matches.length ? matches.map(c => {
-                const items = terminalData.filter(t => t.commodity === c);
-                const avg = items.reduce((s, i) => s + parseFloat(i.price_low), 0) / items.length;
-                return `
-                    <div onclick="navigate('commodity','${c}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer">
-                        <div class="font-semibold text-earth-800 mb-1">${c}</div>
-                        <div class="text-xs text-earth-500 mb-2">${items.length} listings · ${getCategory(c)}</div>
-                        <div class="text-lg font-bold text-leaf-600">$${avg.toFixed(2)} avg</div>
-                    </div>
-                `;
-            }).join('') : '<p class="text-earth-500 col-span-3">No commodities found matching your search.</p>';
-        }
-
-        // Init
         init();
     </script>
 </body>
