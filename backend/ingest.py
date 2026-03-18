@@ -411,21 +411,37 @@ def normalize_movement(mov_val) -> str | None:
     if s.lower() in direct:
         return direct[s.lower()]
 
-    # Verbose comment — score direction mentions
+    # Verbose comment — find first direction mention (dominant) then score overall
     sl = s.lower()
-    scores = {
-        "Much Higher":  sl.count("much higher") * 3,
-        "Higher":       sl.count("slightly higher") * 2 + sl.count("higher"),
-        "Much Lower":   sl.count("much lower") * 3,
-        "Lower":        sl.count("slightly lower") * 2 + sl.count("lower"),
-        "Unchanged":    sl.count("about steady") + sl.count("steady") + sl.count("unchanged"),
-    }
-    # "much higher" also contains "higher" — remove double-count
-    scores["Higher"] = max(0, scores["Higher"] - scores["Much Higher"] * 3)
-    scores["Lower"]  = max(0, scores["Lower"]  - scores["Much Lower"]  * 3)
 
-    best = max(scores, key=scores.get)
-    return best if scores[best] > 0 else None
+    # Find position of each direction's first mention — earlier = more dominant
+    directions = {
+        "Much Higher":  "much higher",
+        "Slightly Higher": "slightly higher",
+        "Higher":       "higher",
+        "Much Lower":   "much lower",
+        "Slightly Lower": "slightly lower",
+        "Lower":        "lower",
+        "Unchanged":    "about steady",
+    }
+    first_pos = {}
+    for label, keyword in directions.items():
+        idx = sl.find(keyword)
+        if idx >= 0:
+            first_pos[label] = idx
+
+    if not first_pos:
+        return None
+
+    # The direction mentioned first is dominant
+    dominant = min(first_pos, key=first_pos.get)
+
+    # Collapse "Slightly Higher/Lower" → "Higher/Lower" for cleaner display
+    collapse = {
+        "Slightly Higher": "Higher",
+        "Slightly Lower":  "Lower",
+    }
+    return collapse.get(dominant, dominant)
 
 
 def normalize_trading(trading_val) -> str | None:

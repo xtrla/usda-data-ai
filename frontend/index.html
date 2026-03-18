@@ -90,8 +90,8 @@
         <div class="bg-white border-b border-earth-200 px-6 py-4">
             <div class="max-w-screen-xl mx-auto flex items-center justify-between gap-6">
                 <div>
-                    <div class="text-xs text-earth-400" id="home-date"></div>
-                    <div class="text-sm font-medium text-earth-600 mt-0.5" id="home-market-summary">Loading market data...</div>
+                    <div class="text-sm font-bold text-earth-800">agraX Market Intelligence</div>
+                    <div class="text-sm text-earth-500 mt-0.5" id="home-market-summary">Loading market data...</div>
                 </div>
                 <!-- Stat strip -->
                 <div class="hidden md:flex items-center gap-6 text-sm">
@@ -166,7 +166,10 @@
                         <!-- Commodity title + condition -->
                         <div class="flex items-start justify-between">
                             <div>
-                                <h2 id="detail-title" class="text-2xl font-bold text-earth-900"></h2>
+                                <div class="flex items-center gap-3">
+                                    <h2 id="detail-title" class="text-2xl font-bold text-earth-900"></h2>
+                                    <span id="detail-report-date" class="text-xs font-medium text-earth-400 bg-earth-100 px-2 py-1 rounded-md hidden"></span>
+                                </div>
                                 <div id="detail-meta" class="text-sm text-earth-500 mt-1"></div>
                             </div>
                             <div id="detail-change-badge" class="text-right"></div>
@@ -718,6 +721,19 @@
                 `${termRows.length} listings · ${markets.length} market${markets.length !== 1 ? 's' : ''}` +
                 (fobRows.length ? ` · ${fobRows.length} FOB listing${fobRows.length !== 1 ? 's' : ''}` : ' · No FOB data');
 
+            // Show actual report date from the data — not today's date
+            const termDate = termRows[0]?.report_date;
+            const fobDate  = fobRows[0]?.report_date;
+            const reportDateEl = document.getElementById('detail-report-date');
+            if (termDate || fobDate) {
+                const d = new Date((termDate || fobDate) + 'T00:00:00');
+                const label = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+                reportDateEl.textContent = 'Data: ' + label;
+                reportDateEl.classList.remove('hidden');
+            } else {
+                reportDateEl.classList.add('hidden');
+            }
+
             // Change badge
             if (moverInfo) {
                 const up = moverInfo.pct_change > 0;
@@ -739,10 +755,11 @@
                 return parseFloat(a.price_low) - parseFloat(b.price_low);
             });
 
-            // Find overall best price for BEST badge
+            // Find overall best price for BEST badge — only first occurrence
             const bestPrice = sortedTermRows.length
                 ? Math.min(...sortedTermRows.map(r => parseFloat(r.price_low)))
                 : null;
+            let bestAwarded = false;
 
             // Group by market for visual separation
             let lastMarket = null;
@@ -751,7 +768,8 @@
                     const isNewMarket = r.market !== lastMarket;
                     lastMarket = r.market;
                     const price = parseFloat(r.price_low);
-                    const isBest = price === bestPrice;
+                    const isBest = !bestAwarded && price === bestPrice;
+                    if (isBest) bestAwarded = true;
                     const priceStr = r.price_high && parseFloat(r.price_high) !== price
                         ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}`
                         : `$${price.toFixed(2)}`;
@@ -797,7 +815,7 @@
                         <div>
                             <span class="text-earth-700 font-medium">${r.origin || r.market || '–'}</span>
                             ${i===0 ? '<span class="text-xs text-orange-500 font-semibold ml-1.5">LOW</span>' : ''}
-                            <div class="text-xs text-earth-400 mt-0.5">${r.variety || ''} ${r.trading_activity ? '· ' + r.trading_activity : ''}</div>
+                            ${(r.variety && r.variety !== 'N/A') || r.trading_activity ? `<div class="text-xs text-earth-400 mt-0.5">${r.variety && r.variety !== 'N/A' ? r.variety : ''}${r.trading_activity ? ' · ' + r.trading_activity : ''}</div>` : ''}
                         </div>
                         <span class="text-right text-earth-400">${r.size || '–'}</span>
                         <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">${priceStr}</span>
@@ -831,10 +849,6 @@
 
         async function renderHome() {
             try {
-                const today = new Date();
-                document.getElementById('home-date').textContent =
-                    today.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-
                 // Fetch movers
                 const movers = await (await fetch(`${API}/movers?market_type=terminal`)).json();
                 dashboardMovers = movers;
@@ -854,8 +868,18 @@
                 if (rising)  summary.push(`${rising} rising`);
                 if (falling) summary.push(`${falling} falling`);
                 if (steady)  summary.push(`${steady} steady`);
+                // Get most recent report date from terminal data
+                const latestDate = terminalData.length
+                    ? terminalData.reduce((a,b) => a.report_date > b.report_date ? a : b).report_date
+                    : null;
+                const latestLabel = latestDate
+                    ? new Date(latestDate + 'T00:00:00').toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})
+                    : null;
+
                 document.getElementById('home-market-summary').textContent =
-                    summary.length ? summary.join(' · ') + ' · ' + commodities.size + ' commodities tracked' : 'Market data loaded';
+                    summary.length
+                        ? summary.join(' · ') + ' · ' + commodities.size + ' commodities' + (latestLabel ? ' · as of ' + latestLabel : '')
+                        : 'Market data loaded';
 
                 renderWatchlist();
 
