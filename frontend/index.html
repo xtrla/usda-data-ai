@@ -35,18 +35,21 @@
         .size-pill { background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;font-family:monospace; }
         .price-range { font-size:11px;color:#78716c; }
 
-        /* Mobile-first home */
-        .mover-card { background:#fff;border-radius:16px;border:1px solid #e7e5e4;padding:14px 16px;cursor:pointer;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent; }
-        .mover-card:active { transform:scale(.97); }
-        .spark-bar { height:36px;display:flex;align-items:flex-end;gap:2px; }
-        .spark-bar span { border-radius:2px 2px 0 0;min-width:6px;transition:height .3s; }
-        .pill-up { background:#fee2e2;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em; }
-        .pill-down { background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em; }
-        .pill-flat { background:#f5f5f4;color:#78716c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em; }
-        .home-section-label { font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#a8a29e;margin-bottom:10px; }
-        .scroll-row { display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
-        .scroll-row::-webkit-scrollbar { display:none; }
-        .stat-chip { background:#fff;border:1px solid #e7e5e4;border-radius:12px;padding:12px 16px;min-width:120px;flex-shrink:0; }
+        /* Dashboard home */
+        .db-stat { background:#fff;border:1px solid #e7e5e4;border-radius:10px;padding:16px 20px; }
+        .db-label { font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#a8a29e;margin-bottom:2px; }
+        .watchlist-row { display:grid;grid-template-columns:1fr 90px 80px 80px;align-items:center;padding:9px 16px;border-bottom:1px solid #f5f5f4;cursor:pointer;transition:background .1s; }
+        .watchlist-row:hover { background:#f9fafb; }
+        .watchlist-row.active { background:#f0fdf4;border-left:3px solid #16a34a; }
+        .change-bar { height:4px;border-radius:2px;min-width:4px;max-width:60px; }
+        .detail-panel { background:#fff;border:1px solid #e7e5e4;border-radius:12px;overflow:hidden; }
+        .detail-market-row { display:grid;grid-template-columns:1fr 80px 70px;padding:8px 16px;border-bottom:1px solid #f5f5f4;font-size:13px; }
+        .detail-market-row:last-child { border-bottom:none; }
+        .fob-row { display:grid;grid-template-columns:1fr 80px 90px 80px;align-items:center;padding:8px 16px;border-bottom:1px solid #f5f5f4;font-size:13px; }
+        .fob-row:last-child { border-bottom:none; }
+        .tag-up { background:#fee2e2;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px; }
+        .tag-down { background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px; }
+        .tag-flat { background:#f5f5f4;color:#78716c;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px; }
     </style>
 </head>
 <body class="font-sans text-earth-800">
@@ -83,70 +86,146 @@
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
 
-        <!-- Top bar: date + search -->
-        <div class="bg-white border-b border-earth-100 px-4 py-3 flex items-center gap-3">
-            <div class="flex-1 relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input id="homeSearch" type="text" placeholder="Search any commodity..." class="w-full pl-9 pr-4 py-2 border border-earth-200 rounded-xl bg-earth-50 text-sm focus:bg-white focus:ring-2 focus:ring-leaf-200 focus:border-leaf-400" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}" onclick="navigate('search')"/>
+        <!-- Dashboard top bar -->
+        <div class="bg-white border-b border-earth-200 px-6 py-4">
+            <div class="max-w-screen-xl mx-auto flex items-center justify-between gap-6">
+                <div>
+                    <div class="text-xs text-earth-400" id="home-date"></div>
+                    <div class="text-sm font-medium text-earth-600 mt-0.5" id="home-market-summary">Loading market data...</div>
+                </div>
+                <!-- Stat strip -->
+                <div class="hidden md:flex items-center gap-6 text-sm">
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-red-500" id="snap-rising">–</div>
+                        <div class="text-xs text-earth-400">Rising</div>
+                    </div>
+                    <div class="w-px h-8 bg-earth-200"></div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-leaf-600" id="snap-falling">–</div>
+                        <div class="text-xs text-earth-400">Falling</div>
+                    </div>
+                    <div class="w-px h-8 bg-earth-200"></div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-earth-400" id="snap-steady">–</div>
+                        <div class="text-xs text-earth-400">Steady</div>
+                    </div>
+                    <div class="w-px h-8 bg-earth-200"></div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-earth-700" id="snap-total">–</div>
+                        <div class="text-xs text-earth-400">Commodities</div>
+                    </div>
+                </div>
+                <!-- Search -->
+                <div class="relative w-64">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input id="homeSearch" type="text" placeholder="Search commodity..." class="w-full pl-9 pr-4 py-2 border border-earth-200 rounded-lg bg-earth-50 text-sm focus:bg-white focus:ring-2 focus:ring-leaf-200 focus:border-leaf-400" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+                </div>
             </div>
-            <span id="home-date" class="text-xs text-earth-400 shrink-0"></span>
         </div>
 
-        <main class="max-w-2xl mx-auto px-4 py-5 space-y-6">
+        <!-- Dashboard body: two-column layout -->
+        <div class="max-w-screen-xl mx-auto px-6 py-6">
+            <div class="flex gap-6 items-start">
 
-            <!-- Market snapshot chips -->
-            <div>
-                <div class="home-section-label">Today's market</div>
-                <div class="scroll-row" id="home-snapshot-row">
-                    <div class="stat-chip"><div class="text-xs text-earth-400 mb-1">Rising</div><div class="text-xl font-bold text-red-500" id="snap-rising">–</div></div>
-                    <div class="stat-chip"><div class="text-xs text-earth-400 mb-1">Falling</div><div class="text-xl font-bold text-leaf-600" id="snap-falling">–</div></div>
-                    <div class="stat-chip"><div class="text-xs text-earth-400 mb-1">Steady</div><div class="text-xl font-bold text-earth-400" id="snap-steady">–</div></div>
-                    <div class="stat-chip"><div class="text-xs text-earth-400 mb-1">Commodities</div><div class="text-xl font-bold text-earth-700" id="snap-total">–</div></div>
-                    <div class="stat-chip"><div class="text-xs text-earth-400 mb-1">Markets</div><div class="text-xl font-bold text-earth-700" id="snap-markets">–</div></div>
+                <!-- LEFT: Commodity watchlist -->
+                <div class="w-full md:w-96 shrink-0">
+                    <!-- Filter tabs -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <button onclick="setWatchlistFilter('all')" id="wf-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-earth-800 text-white">All</button>
+                        <button onclick="setWatchlistFilter('up')" id="wf-up" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-earth-200 text-earth-600">↑ Rising</button>
+                        <button onclick="setWatchlistFilter('down')" id="wf-down" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-earth-200 text-earth-600">↓ Falling</button>
+                        <div class="flex-1 relative ml-1">
+                            <input id="watchlist-search" type="text" placeholder="Filter..." class="w-full pl-3 pr-3 py-1.5 border border-earth-200 rounded-lg text-xs bg-white" oninput="renderWatchlist()"/>
+                        </div>
+                    </div>
+
+                    <!-- Column headers -->
+                    <div class="grid px-4 pb-1" style="grid-template-columns:1fr 90px 80px 80px">
+                        <span class="db-label">Commodity</span>
+                        <span class="db-label text-right">Price</span>
+                        <span class="db-label text-right">Change</span>
+                        <span class="db-label text-right">vs Wk</span>
+                    </div>
+
+                    <!-- Watchlist rows -->
+                    <div id="home-watchlist" class="bg-white border border-earth-200 rounded-xl overflow-hidden" style="max-height:calc(100vh - 220px);overflow-y:auto;">
+                        <div class="px-4 py-8 text-center text-earth-400 text-sm">Loading...</div>
+                    </div>
                 </div>
+
+                <!-- RIGHT: Detail panel -->
+                <div class="flex-1 min-w-0 space-y-5">
+
+                    <!-- Selected commodity header -->
+                    <div id="home-detail-empty" class="detail-panel p-10 text-center">
+                        <div class="text-earth-300 text-sm">← Select a commodity to see market details</div>
+                    </div>
+
+                    <div id="home-detail" class="hidden space-y-5">
+
+                        <!-- Commodity title + condition -->
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h2 id="detail-title" class="text-2xl font-bold text-earth-900"></h2>
+                                <div id="detail-meta" class="text-sm text-earth-500 mt-1"></div>
+                            </div>
+                            <div id="detail-change-badge" class="text-right"></div>
+                        </div>
+
+                        <!-- Two columns: terminal prices + FOB prices -->
+                        <div class="grid md:grid-cols-2 gap-5">
+
+                            <!-- Terminal markets -->
+                            <div class="detail-panel">
+                                <div class="px-4 py-3 border-b border-earth-100 flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">Terminal Markets</span>
+                                    <span class="text-xs text-earth-400">Destination (wholesale)</span>
+                                </div>
+                                <div class="grid px-4 py-2 bg-earth-50 border-b border-earth-100" style="grid-template-columns:1fr 80px 70px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
+                                    <span>Market</span><span class="text-right">Price</span><span class="text-right">Variety</span>
+                                </div>
+                                <div id="detail-terminal-rows"></div>
+                            </div>
+
+                            <!-- FOB shipping points -->
+                            <div class="detail-panel">
+                                <div class="px-4 py-3 border-b border-earth-100 flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">Shipping Points (FOB)</span>
+                                    <span class="text-xs text-earth-400">Origin price</span>
+                                </div>
+                                <div class="grid px-4 py-2 bg-earth-50 border-b border-earth-100" style="grid-template-columns:1fr 80px 90px 80px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
+                                    <span>Origin</span><span class="text-right">Size</span><span class="text-right">FOB Price</span><span class="text-right">Movement</span>
+                                </div>
+                                <div id="detail-fob-rows"></div>
+                            </div>
+                        </div>
+
+                        <!-- Margin row -->
+                        <div id="detail-margin" class="hidden detail-panel px-6 py-4">
+                            <div class="flex items-center gap-8">
+                                <div>
+                                    <div class="db-label">Lowest FOB</div>
+                                    <div id="margin-fob" class="text-xl font-bold text-orange-600"></div>
+                                </div>
+                                <div class="text-earth-300 text-2xl">→</div>
+                                <div>
+                                    <div class="db-label">Avg Terminal</div>
+                                    <div id="margin-terminal" class="text-xl font-bold text-leaf-600"></div>
+                                </div>
+                                <div class="text-earth-300 text-2xl">=</div>
+                                <div>
+                                    <div class="db-label">Gross Spread</div>
+                                    <div id="margin-spread" class="text-xl font-bold text-earth-800"></div>
+                                </div>
+                                <div class="text-xs text-earth-400 max-w-xs ml-auto" id="margin-note"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-
-            <!-- Biggest movers — horizontal scroll cards -->
-            <div>
-                <div class="flex items-center justify-between mb-2">
-                    <div class="home-section-label">Biggest moves</div>
-                    <button onclick="navigate('terminal')" class="text-xs text-leaf-600 font-medium">See all →</button>
-                </div>
-                <div class="scroll-row" id="home-movers-row">
-                    <div class="stat-chip" style="min-width:160px"><div class="text-xs text-earth-300">Loading...</div></div>
-                </div>
-            </div>
-
-            <!-- FOB Source prices moving -->
-            <div>
-                <div class="flex items-center justify-between mb-2">
-                    <div class="home-section-label">Source prices (FOB)</div>
-                    <button onclick="navigate('shipping')" class="text-xs text-orange-500 font-medium">See all →</button>
-                </div>
-                <div id="home-fob-list" class="space-y-2"></div>
-            </div>
-
-            <!-- Quick nav -->
-            <div class="grid grid-cols-2 gap-3 pb-6">
-                <div onclick="navigate('terminal')" class="mover-card flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-leaf-100 flex items-center justify-center text-lg shrink-0">🏪</div>
-                    <div><div class="font-semibold text-earth-800 text-sm">Terminal</div><div class="text-xs text-earth-400">Destination prices</div></div>
-                </div>
-                <div onclick="navigate('shipping')" class="mover-card flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center text-lg shrink-0">📦</div>
-                    <div><div class="font-semibold text-earth-800 text-sm">Shipping</div><div class="text-xs text-earth-400">FOB source prices</div></div>
-                </div>
-                <div onclick="navigate('compare')" class="mover-card flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center text-lg shrink-0">⚖️</div>
-                    <div><div class="font-semibold text-earth-800 text-sm">Compare</div><div class="text-xs text-earth-400">Margin calculator</div></div>
-                </div>
-                <div onclick="navigate('search')" class="mover-card flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center text-lg shrink-0">🔍</div>
-                    <div><div class="font-semibold text-earth-800 text-sm">Search</div><div class="text-xs text-earth-400">Any commodity</div></div>
-                </div>
-            </div>
-
-        </main>
+        </div>
     </div>
 
     <!-- ==================== TERMINAL MARKETS PAGE ==================== -->
@@ -536,81 +615,203 @@
         }
 
         // ── Home ─────────────────────────────────────────────────────
+        // ── Dashboard state ──────────────────────────────────────────
+        let dashboardMovers = { rising: [], falling: [] };
+        let watchlistFilter = 'all';
+        let selectedCommodity = null;
+
+        function setWatchlistFilter(f) {
+            watchlistFilter = f;
+            ['all','up','down'].forEach(k => {
+                const el = document.getElementById('wf-' + k);
+                if (!el) return;
+                el.className = k === f
+                    ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-earth-800 text-white'
+                    : 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-earth-200 text-earth-600';
+            });
+            renderWatchlist();
+        }
+
+        function renderWatchlist() {
+            const search = (document.getElementById('watchlist-search')?.value || '').toLowerCase();
+            const rising  = new Set((dashboardMovers.rising  || []).map(m => m.commodity));
+            const falling = new Set((dashboardMovers.falling || []).map(m => m.commodity));
+            const moverMap = {};
+            [...(dashboardMovers.rising||[]), ...(dashboardMovers.falling||[])].forEach(m => moverMap[m.commodity] = m);
+
+            // Build commodity list from terminalData
+            const commodities = [...new Set(terminalData.map(d => d.commodity))].sort();
+
+            let filtered = commodities.filter(c => {
+                if (search && !c.toLowerCase().includes(search)) return false;
+                if (watchlistFilter === 'up'   && !rising.has(c))  return false;
+                if (watchlistFilter === 'down'  && !falling.has(c)) return false;
+                return true;
+            });
+
+            // Sort: movers first, then alpha
+            filtered.sort((a, b) => {
+                const aM = moverMap[a], bM = moverMap[b];
+                if (aM && !bM) return -1;
+                if (!aM && bM) return 1;
+                if (aM && bM) return Math.abs(bM.pct_change) - Math.abs(aM.pct_change);
+                return a.localeCompare(b);
+            });
+
+            if (!filtered.length) {
+                document.getElementById('home-watchlist').innerHTML =
+                    '<div class="px-4 py-8 text-center text-earth-300 text-sm">No results</div>';
+                return;
+            }
+
+            // Calculate max dollar change for bar scaling
+            const maxChange = Math.max(...Object.values(moverMap).map(m => Math.abs(m.dollar_change)), 1);
+
+            document.getElementById('home-watchlist').innerHTML = filtered.map(c => {
+                const rows = terminalData.filter(d => d.commodity === c);
+                const prices = rows.map(d => parseFloat(d.price_low));
+                const avgPrice = prices.length ? prices.reduce((a,b) => a+b,0)/prices.length : 0;
+                const m = moverMap[c];
+                const isUp   = m && m.pct_change > 0;
+                const isDown = m && m.pct_change < 0;
+                const isActive = c === selectedCommodity;
+
+                const changeCell = m
+                    ? `<span class="${isUp ? 'tag-up' : 'tag-down'}">${isUp ? '↑' : '↓'}${Math.abs(m.pct_change).toFixed(1)}%</span>`
+                    : `<span class="tag-flat">—</span>`;
+
+                const barWidth = m ? Math.round((Math.abs(m.dollar_change) / maxChange) * 52) : 0;
+                const barColor = isUp ? '#fca5a5' : isDown ? '#86efac' : '#e7e5e4';
+
+                const dollarChange = m
+                    ? `<span class="${isUp ? 'text-red-500' : 'text-leaf-600'}" style="font-size:12px">${isUp?'+':'-'}$${Math.abs(m.dollar_change).toFixed(2)}</span>`
+                    : `<span class="text-earth-300" style="font-size:12px">–</span>`;
+
+                return `<div class="watchlist-row ${isActive ? 'active' : ''}" onclick="selectDashboardCommodity('${c}')">
+                    <div>
+                        <div class="text-sm font-medium text-earth-800">${c}</div>
+                        <div style="margin-top:4px;height:4px;border-radius:2px;width:${barWidth}px;background:${barColor};min-width:4px"></div>
+                    </div>
+                    <div class="text-right font-semibold text-earth-700 tabular-nums" style="font-size:13px">$${avgPrice.toFixed(2)}</div>
+                    <div class="text-right">${changeCell}</div>
+                    <div class="text-right">${dollarChange}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function selectDashboardCommodity(name) {
+            selectedCommodity = name;
+            renderWatchlist(); // re-render to update active state
+
+            document.getElementById('home-detail-empty').classList.add('hidden');
+            document.getElementById('home-detail').classList.remove('hidden');
+
+            const termRows = terminalData.filter(d => d.commodity === name);
+            const fobRows  = shippingData.filter(d => d.commodity === name || d.commodity.toLowerCase().includes(name.toLowerCase().slice(0,5)));
+            const moverInfo = [...(dashboardMovers.rising||[]), ...(dashboardMovers.falling||[])].find(m => m.commodity === name);
+
+            // Title + meta
+            document.getElementById('detail-title').textContent = name;
+            const markets = [...new Set(termRows.map(r => r.market))];
+            document.getElementById('detail-meta').textContent =
+                `${termRows.length} listings · ${markets.length} market${markets.length !== 1 ? 's' : ''}${fobRows.length ? ` · ${fobRows.length} FOB source${fobRows.length !== 1 ? 's' : ''}` : ''}`;
+
+            // Change badge
+            if (moverInfo) {
+                const up = moverInfo.pct_change > 0;
+                document.getElementById('detail-change-badge').innerHTML = `
+                    <div class="${up ? 'text-red-500' : 'text-leaf-600'} text-3xl font-bold tabular-nums">${up?'↑':'↓'} ${Math.abs(moverInfo.pct_change).toFixed(1)}%</div>
+                    <div class="text-sm text-earth-400">${up?'+':'-'}$${Math.abs(moverInfo.dollar_change).toFixed(2)} vs last week</div>`;
+            } else {
+                document.getElementById('detail-change-badge').innerHTML =
+                    '<div class="text-earth-300 text-sm">No week-over-week data</div>';
+            }
+
+            // Terminal rows — group by market, show best price per market
+            const byMarket = {};
+            termRows.forEach(r => {
+                if (!byMarket[r.market] || parseFloat(r.price_low) < parseFloat(byMarket[r.market].price_low))
+                    byMarket[r.market] = r;
+            });
+            const sortedMarkets = Object.values(byMarket).sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+
+            document.getElementById('detail-terminal-rows').innerHTML = sortedMarkets.length
+                ? sortedMarkets.map((r, i) => `
+                    <div class="detail-market-row ${i === 0 ? 'bg-leaf-50/60' : ''}">
+                        <span class="text-earth-700 font-medium">${r.market}${i===0?' <span class="text-xs text-leaf-500 font-semibold ml-1">BEST</span>':''}</span>
+                        <span class="text-right font-semibold ${i===0?'text-leaf-600':'text-earth-600'} tabular-nums">$${parseFloat(r.price_low).toFixed(2)}</span>
+                        <span class="text-right text-earth-400 text-xs">${r.variety || '–'}</span>
+                    </div>`).join('')
+                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No terminal data</div>';
+
+            // FOB rows
+            const sortedFOB = [...fobRows].sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+            document.getElementById('detail-fob-rows').innerHTML = sortedFOB.length
+                ? sortedFOB.map((r, i) => {
+                    const mov = r.movement || '';
+                    const movColor = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
+                    const movArrow = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                    return `
+                    <div class="fob-row ${i===0?'bg-orange-50/50':''}">
+                        <span class="text-earth-700 font-medium">${r.origin || r.market || '–'}${i===0?' <span class="text-xs text-orange-500 font-semibold ml-1">LOW</span>':''}</span>
+                        <span class="text-right text-earth-400">${r.size || '–'}</span>
+                        <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">$${parseFloat(r.price_low).toFixed(2)}</span>
+                        <span class="text-right ${movColor} font-medium">${movArrow} ${mov || '–'}</span>
+                    </div>`;
+                }).join('')
+                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No FOB data</div>';
+
+            // Margin panel
+            if (sortedFOB.length && sortedMarkets.length) {
+                const lowestFOB = parseFloat(sortedFOB[0].price_low);
+                const avgTerminal = sortedMarkets.reduce((s,r) => s + parseFloat(r.price_low), 0) / sortedMarkets.length;
+                const spread = avgTerminal - lowestFOB;
+                document.getElementById('margin-fob').textContent = `$${lowestFOB.toFixed(2)}`;
+                document.getElementById('margin-terminal').textContent = `$${avgTerminal.toFixed(2)}`;
+                document.getElementById('margin-spread').textContent = `$${spread.toFixed(2)}`;
+                document.getElementById('margin-note').textContent =
+                    spread > 0
+                        ? `${((spread/lowestFOB)*100).toFixed(0)}% gross margin before freight & handling`
+                        : 'Terminal price at or below FOB — unusual market condition';
+                document.getElementById('detail-margin').classList.remove('hidden');
+            } else {
+                document.getElementById('detail-margin').classList.add('hidden');
+            }
+        }
+
         async function renderHome() {
             try {
-                // Set today's date
                 const today = new Date();
                 document.getElementById('home-date').textContent =
-                    today.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+                    today.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
-                // Fetch movers from API
+                // Fetch movers
                 const movers = await (await fetch(`${API}/movers?market_type=terminal`)).json();
-                const allMovers = [...(movers.rising||[]), ...(movers.falling||[])];
+                dashboardMovers = movers;
 
-                // Snapshot chips
-                document.getElementById('snap-rising').textContent  = movers.rising?.length  || '0';
-                document.getElementById('snap-falling').textContent = movers.falling?.length || '0';
-
-                // Count from terminalData
+                // Stats
                 const commodities = new Set(terminalData.map(d => d.commodity));
-                const markets     = new Set(terminalData.map(d => d.market));
-                const steady = Math.max(0, commodities.size - (movers.rising?.length||0) - (movers.falling?.length||0));
+                const rising  = movers.rising?.length  || 0;
+                const falling = movers.falling?.length || 0;
+                const steady  = Math.max(0, commodities.size - rising - falling);
+
+                document.getElementById('snap-rising').textContent  = rising;
+                document.getElementById('snap-falling').textContent = falling;
                 document.getElementById('snap-steady').textContent  = steady;
                 document.getElementById('snap-total').textContent   = commodities.size;
-                document.getElementById('snap-markets').textContent = markets.size;
 
-                // Mover cards — horizontal scroll, biggest % change first
-                const topMovers = [...allMovers].sort((a,b) => Math.abs(b.pct_change) - Math.abs(a.pct_change)).slice(0, 10);
-                document.getElementById('home-movers-row').innerHTML = topMovers.length
-                    ? topMovers.map(t => {
-                        const up = t.pct_change > 0;
-                        const pct = Math.abs(t.pct_change).toFixed(1);
-                        const dollarsign = up ? '+' : '-';
-                        const bgTop = up ? '#fff1f2' : '#f0fdf4';
-                        const pillClass = up ? 'pill-up' : 'pill-down';
-                        const arrow = up ? '↑' : '↓';
-                        return `
-                        <div class="mover-card" style="min-width:150px;background:${bgTop}" onclick="navigate('commodity','${t.commodity}')">
-                            <div class="flex items-start justify-between mb-2">
-                                <span class="text-sm font-semibold text-earth-800 leading-tight">${t.commodity}</span>
-                                <span class="${pillClass}">${arrow}${pct}%</span>
-                            </div>
-                            <div class="text-2xl font-bold ${up ? 'text-red-500' : 'text-leaf-600'}">$${t.price.toFixed(2)}</div>
-                            <div class="text-xs text-earth-400 mt-1">${dollarsign}$${Math.abs(t.dollar_change).toFixed(2)} vs last week</div>
-                        </div>`;
-                    }).join('')
-                    : '<div class="stat-chip text-xs text-earth-300">No movers today</div>';
+                const summary = [];
+                if (rising)  summary.push(`${rising} rising`);
+                if (falling) summary.push(`${falling} falling`);
+                if (steady)  summary.push(`${steady} steady`);
+                document.getElementById('home-market-summary').textContent =
+                    summary.length ? summary.join(' · ') + ' · ' + commodities.size + ' commodities tracked' : 'Market data loaded';
 
-                // FOB source prices — top 6 with movement
-                if (shippingData.length) {
-                    const fobMovers = shippingData
-                        .filter(r => r.movement && r.movement !== 'Unchanged')
-                        .sort((a,b) => {
-                            const ord = {'Much Higher':0,'Higher':1,'Slightly Higher':2,'Slightly Lower':3,'Lower':4,'Much Lower':5};
-                            return (ord[a.movement]??6) - (ord[b.movement]??6);
-                        })
-                        .slice(0, 8);
+                renderWatchlist();
 
-                    document.getElementById('home-fob-list').innerHTML = fobMovers.length
-                        ? fobMovers.map(r => {
-                            const up = (r.movement||'').includes('Higher');
-                            const movColor = up ? 'text-red-500' : 'text-leaf-600';
-                            const movArrow = up ? '↑' : '↓';
-                            return `
-                            <div class="mover-card flex items-center justify-between" onclick="navigate('commodity','${r.commodity}')">
-                                <div class="flex items-center gap-3">
-                                    <div>
-                                        <div class="text-sm font-semibold text-earth-800">${r.commodity}</div>
-                                        <div class="text-xs text-earth-400">${r.origin || r.market || ''} ${r.size ? '· ' + r.size : ''}</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-bold text-orange-600">$${parseFloat(r.price_low).toFixed(2)}</div>
-                                    <div class="text-xs ${movColor} font-medium">${movArrow} ${r.movement}</div>
-                                </div>
-                            </div>`;
-                        }).join('')
-                        : '<p class="text-xs text-earth-300 px-1">No FOB movement data yet</p>';
+                // Auto-select first mover if nothing selected
+                if (!selectedCommodity && movers.rising?.length) {
+                    selectDashboardCommodity(movers.rising[0].commodity);
                 }
 
             } catch (e) {
