@@ -3,315 +3,466 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>agraX — Produce Market Intelligence</title>
+<title>agraX — Produce Prices</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g:#1a3d1f;--g2:#245228;--g-lt:#eef4ee;--g-md:#c5d9c7;
-  --ink:#111110;--ink2:#2d2d2b;--ink3:#5a5a56;--ink4:#a0a09a;
-  --line:#ebebea;--line2:#d8d8d5;
-  --bg:#fff;--bg2:#fafaf9;--bg3:#f4f4f2;
-  --red:#c0392b;--red-bg:#fdf2f1;
-  --teal:#1a6b4a;--teal-bg:#eef7f3;
-  --sans:'Geist',system-ui,sans-serif;
-  --mono:'Geist Mono',monospace;
-  --r:8px;
+  --g:#1c4220;
+  --g-lt:#edf5ed;
+  --g-md:#b8d4ba;
+  --ink:#1a1a18;
+  --ink2:#404040;
+  --ink3:#737373;
+  --ink4:#b0b0a8;
+  --line:#ebebea;
+  --bg:#ffffff;
+  --bg2:#f7f7f5;
+  --bg3:#f0f0ee;
+  --red:#d13b2a;
+  --red-lt:#fef3f1;
+  --teal:#1b7a50;
+  --teal-lt:#eef8f3;
+  --card-shadow:0 2px 8px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);
+  --sans:'Nunito',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r:12px;--r2:16px;
 }
-html,body{min-height:100vh;background:var(--bg);}
+html,body{min-height:100vh;background:var(--bg2);}
 body{font-family:var(--sans);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 .page{display:none}.page.active{display:block}
 button,input,select{font-family:var(--sans);}
-a{color:inherit;text-decoration:none;}
 
-/* ── NAV ─────────────────────────── */
-.nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
-.nav-in{max-width:1160px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;gap:6px;}
-.nav-logo{display:flex;align-items:center;text-decoration:none;margin-right:28px;flex-shrink:0;}
-.nav-logo img{height:26px;}
+/* ── NAV ──────────────────────────────── */
+.nav{
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:200;
+}
+.nav-in{
+  max-width:1100px;margin:0 auto;
+  padding:0 20px;height:60px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo{display:flex;align-items:center;text-decoration:none;margin-right:24px;flex-shrink:0;}
+.nav-logo img{height:28px;}
 .nav-links{display:flex;gap:2px;flex:1;}
-.nl{padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;cursor:pointer;transition:color .12s,background .12s;white-space:nowrap;}
-.nl:hover{color:var(--ink);background:var(--bg3);}
-.nl.active{color:var(--g);font-weight:600;}
-.nav-srch{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);font-size:12px;color:var(--ink4);cursor:pointer;transition:border-color .12s;white-space:nowrap;}
-.nav-srch:hover{border-color:var(--g);color:var(--ink2);}
-.nav-srch kbd{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--line2);padding:1px 5px;border-radius:3px;}
-.nav-mob{display:none;overflow-x:auto;scrollbar-width:none;padding:6px 16px;gap:4px;border-top:1px solid var(--line);}
+.nl{
+  padding:6px 14px;border-radius:8px;font-size:14px;font-weight:600;
+  color:var(--ink3);background:none;border:none;cursor:pointer;
+  transition:color .12s,background .12s;white-space:nowrap;
+}
+.nl:hover{color:var(--ink);background:var(--bg2);}
+.nl.active{color:var(--g);}
+.nav-mob{display:none;overflow-x:auto;scrollbar-width:none;padding:8px 16px;gap:6px;border-top:1px solid var(--line);background:var(--bg);}
 .nav-mob::-webkit-scrollbar{display:none}
 @media(max-width:640px){.nav-links{display:none}.nav-mob{display:flex}.nav-logo{margin-right:auto}}
 
-/* ── HERO ────────────────────────── */
-.hero{padding:60px 20px 44px;max-width:1160px;margin:0 auto;text-align:center;}
-.hero-logo{display:flex;align-items:center;justify-content:center;margin-bottom:24px;}
-.hero-logo img{height:40px;}
-.hero-sub{font-size:15px;color:var(--ink3);margin-bottom:28px;font-weight:400;}
-.srch-wrap{position:relative;max-width:560px;margin:0 auto 14px;}
-.srch-wrap input{width:100%;padding:15px 52px 15px 18px;border:1.5px solid var(--line2);border-radius:10px;font-size:15px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .18s,box-shadow .18s;box-shadow:0 1px 6px rgba(0,0,0,.05);}
-.srch-wrap input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,61,31,.08),0 1px 6px rgba(0,0,0,.05);}
-.srch-wrap input::placeholder{color:var(--ink4);}
-.srch-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;}
-.srch-dd{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--bg);border:1px solid var(--line2);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:100;overflow:hidden;display:none;text-align:left;}
-.srch-dd.open{display:block;}
-.dd-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;gap:12px;}
-.dd-row:last-child{border-bottom:none;}
-.dd-row:hover{background:var(--bg2);}
-.dd-name{font-size:13px;font-weight:500;}
-.dd-sub{font-size:11px;color:var(--ink4);margin-top:1px;}
-.dd-price{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g);}
-.dd-chg{font-family:var(--mono);font-size:10px;margin-top:1px;}
-.dd-more{padding:10px 16px;text-align:center;font-size:12px;color:var(--ink3);border-top:1px solid var(--line);cursor:pointer;transition:background .1s;}
-.dd-more:hover{background:var(--bg2);color:var(--g);}
-.dd-empty{padding:20px;text-align:center;color:var(--ink4);font-size:13px;}
-.hint-row{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
-.hint{padding:5px 12px;border-radius:20px;border:1px solid var(--line2);font-size:12px;color:var(--ink3);cursor:pointer;background:var(--bg2);transition:all .12s;}
-.hint:hover{border-color:var(--g);color:var(--g);background:var(--g-lt);}
+/* ── HOME ─────────────────────────────── */
+.home-wrap{max-width:760px;margin:0 auto;padding:0 20px;}
 
-/* ── STAT STRIP ──────────────────── */
-.stats{max-width:1160px;margin:0 auto;padding:0 20px 36px;display:flex;justify-content:center;gap:0;flex-wrap:wrap;}
-.stat{display:flex;flex-direction:column;align-items:center;padding:10px 24px;border:1px solid var(--line);background:var(--bg2);}
-.stat:first-child{border-radius:var(--r) 0 0 var(--r);}
-.stat:last-child{border-radius:0 var(--r) var(--r) 0;}
-.stat+.stat{border-left:none;}
-.stat-v{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1;}
-.stat-l{font-size:10px;color:var(--ink4);letter-spacing:.05em;text-transform:uppercase;margin-top:3px;font-family:var(--mono);}
-@media(max-width:520px){.stat{padding:8px 14px;}.stat-v{font-size:16px;}}
+/* Hero */
+.home-hero{
+  text-align:center;
+  padding:52px 0 36px;
+}
+.home-hero-logo{margin-bottom:20px;}
+.home-hero-logo img{height:44px;}
+.home-hero-title{
+  font-size:clamp(22px,4vw,32px);
+  font-weight:800;color:var(--ink);
+  line-height:1.2;margin-bottom:8px;letter-spacing:-.02em;
+}
+.home-hero-sub{
+  font-size:15px;color:var(--ink3);font-weight:500;
+  margin-bottom:28px;
+}
 
-/* ── SECTIONS ────────────────────── */
-.wrap{max-width:1160px;margin:0 auto;padding:0 20px 52px;}
-.sh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
-.sh-title{font-size:15px;font-weight:600;letter-spacing:-.01em;}
-.sh-meta{font-family:var(--mono);font-size:11px;color:var(--ink4);}
+/* Search */
+.search-box{
+  position:relative;margin-bottom:14px;
+}
+.search-box input{
+  width:100%;padding:16px 52px 16px 20px;
+  border-radius:14px;border:2px solid var(--line);
+  font-size:16px;font-weight:600;
+  background:var(--bg);color:var(--ink);
+  outline:none;transition:border-color .18s,box-shadow .18s;
+  box-shadow:var(--card-shadow);
+}
+.search-box input:focus{
+  border-color:var(--g);
+  box-shadow:0 0 0 4px rgba(28,66,32,.08),var(--card-shadow);
+}
+.search-box input::placeholder{color:var(--ink4);font-weight:500;}
+.search-box-icon{
+  position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  color:var(--ink4);pointer-events:none;
+}
+.search-dd{
+  position:absolute;left:0;right:0;top:calc(100% + 8px);
+  background:var(--bg);border-radius:var(--r2);
+  box-shadow:0 8px 40px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.06);
+  z-index:100;overflow:hidden;display:none;text-align:left;
+}
+.search-dd.open{display:block;}
+.dd-item{
+  display:flex;align-items:center;padding:13px 18px;
+  border-bottom:1px solid var(--line);cursor:pointer;
+  transition:background .1s;gap:14px;
+}
+.dd-item:last-child{border-bottom:none;}
+.dd-item:hover{background:var(--bg2);}
+.dd-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--bg2);flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.dd-icon img{width:100%;height:100%;object-fit:cover;}
+.dd-name{font-size:14px;font-weight:700;}
+.dd-meta{font-size:12px;color:var(--ink3);font-weight:500;margin-top:1px;}
+.dd-r{margin-left:auto;text-align:right;flex-shrink:0;}
+.dd-price{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--ink);}
+.dd-chg{font-family:var(--mono);font-size:12px;margin-top:2px;font-weight:500;}
+.dd-footer{
+  padding:11px 18px;text-align:center;font-size:13px;font-weight:600;
+  color:var(--g);border-top:1px solid var(--line);cursor:pointer;
+  transition:background .1s;
+}
+.dd-footer:hover{background:var(--g-lt);}
 
-/* ── CATEGORY TABS ───────────────── */
-.cat-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto;scrollbar-width:none;}
-.cat-tabs::-webkit-scrollbar{display:none}
-.ct{padding:8px 16px;font-size:13px;font-weight:500;color:var(--ink4);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .12s,border-color .12s;white-space:nowrap;margin-bottom:-1px;}
-.ct:hover{color:var(--ink2);}
-.ct.active{color:var(--g);border-bottom-color:var(--g);font-weight:600;}
+/* Quick picks */
+.quick-label{font-size:12px;font-weight:700;color:var(--ink4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;text-align:left;}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;}
+.quick-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:20px;border:1.5px solid var(--line);
+  font-size:13px;font-weight:700;color:var(--ink2);
+  cursor:pointer;background:var(--bg);transition:all .12s;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+.quick-chip:hover{border-color:var(--g);color:var(--g);background:var(--g-lt);}
+.qc-price{font-family:var(--mono);font-size:12px;color:var(--ink3);}
 
-/* ── MOVERS ──────────────────────── */
-.movers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;}
-@media(max-width:560px){.movers{grid-template-columns:1fr;}}
-.mv-card{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
-.mv-hd{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;}
-.mv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.mv-lbl{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);}
-.mv-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;gap:10px;}
+/* Stats row */
+.stats-row{
+  display:flex;gap:10px;margin:28px 0 24px;
+  flex-wrap:wrap;
+}
+.stat-card{
+  flex:1;min-width:100px;
+  background:var(--bg);border-radius:var(--r);
+  padding:14px 16px;
+  box-shadow:var(--card-shadow);
+  text-align:center;
+}
+.stat-num{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1;}
+.stat-lbl{font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+
+/* Section */
+.section{margin-bottom:28px;}
+.section-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em;}
+
+/* Movers */
+.movers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.movers-grid{grid-template-columns:1fr;}}
+.mv-col{background:var(--bg);border-radius:var(--r2);box-shadow:var(--card-shadow);overflow:hidden;}
+.mv-col-hd{
+  padding:12px 16px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;
+}
+.mv-dot{width:8px;height:8px;border-radius:50%;}
+.mv-col-title{font-size:13px;font-weight:800;color:var(--ink2);}
+.mv-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .1s;gap:10px;
+}
 .mv-row:last-child{border-bottom:none;}
 .mv-row:hover{background:var(--bg2);}
-.mv-name{font-size:13px;font-weight:500;}
-.mv-n{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:1px;}
+.mv-name{font-size:13px;font-weight:700;}
+.mv-listings{font-size:11px;color:var(--ink4);font-weight:600;margin-top:1px;}
 .mv-r{text-align:right;flex-shrink:0;}
-.mv-price{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink2);}
-.mv-chg{font-family:var(--mono);font-size:11px;margin-top:2px;}
-.mv-bar{height:2px;border-radius:1px;margin-top:5px;min-width:4px;max-width:44px;margin-left:auto;}
-.mv-empty{padding:20px;font-size:12px;color:var(--ink4);text-align:center;}
-.up{color:var(--red);}
-.dn{color:var(--teal);}
-.fl{color:var(--ink4);}
+.mv-price{font-family:var(--mono);font-size:14px;font-weight:500;}
+.mv-chg{font-family:var(--mono);font-size:12px;font-weight:500;margin-top:2px;}
+.mv-bar{height:3px;border-radius:2px;margin-top:4px;margin-left:auto;min-width:4px;max-width:48px;}
+.mv-empty{padding:20px;text-align:center;font-size:13px;color:var(--ink4);font-weight:600;}
 
-/* ── TABLE ───────────────────────── */
-.tbl-wrap{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
-.tbl-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);}
-.fi{background:var(--bg);border:1px solid var(--line2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--ink);outline:none;transition:border-color .12s;}
+/* All listings */
+.listings-card{background:var(--bg);border-radius:var(--r2);box-shadow:var(--card-shadow);overflow:hidden;}
+.listings-filters{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg2);
+  align-items:center;
+}
+.fi{
+  background:var(--bg);border:1.5px solid var(--line);border-radius:8px;
+  padding:7px 11px;font-size:13px;font-weight:600;color:var(--ink);
+  outline:none;transition:border-color .12s;
+}
 .fi:focus{border-color:var(--g);}
 .fi::placeholder{color:var(--ink4);}
 .fi-sel{cursor:pointer;}
 .fi-sel option{background:var(--bg);}
 .tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);padding:8px 12px;text-align:left;background:var(--bg2);border-bottom:1px solid var(--line);white-space:nowrap;}
+.tbl th{
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink4);padding:9px 14px;text-align:left;
+  background:var(--bg2);border-bottom:1px solid var(--line);
+}
 .tbl th.r{text-align:right;}
-.tbl td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line);}
+.tbl td{padding:11px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--line);}
 .tbl td.r{text-align:right;font-family:var(--mono);}
-.tbl td.sm{font-size:11px;color:var(--ink3);}
+.tbl td.sm{font-size:12px;font-weight:500;color:var(--ink3);}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tbody tr{cursor:pointer;transition:background .08s;}
 .tbl tbody tr:hover td{background:var(--bg2);}
-.pager{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--bg2);border-top:1px solid var(--line);}
-.pi{font-family:var(--mono);font-size:10px;color:var(--ink4);}
-.pbtn{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid var(--line2);background:var(--bg);color:var(--ink2);cursor:pointer;transition:border-color .12s;}
+.pager{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--bg2);border-top:1px solid var(--line);
+}
+.pi{font-size:12px;font-weight:600;color:var(--ink4);}
+.pbtn{
+  padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;
+  border:1.5px solid var(--line);background:var(--bg);color:var(--ink2);
+  cursor:pointer;transition:all .12s;
+}
 .pbtn:hover:not(:disabled){border-color:var(--g);color:var(--g);}
 .pbtn:disabled{opacity:.3;cursor:default;}
 .mob-cards{display:none;}
-.mc{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .08s;gap:10px;}
+.mc{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .08s;gap:10px;
+}
 .mc:hover{background:var(--bg2);}
-.mc-name{font-size:13px;font-weight:500;}
-.mc-sub{font-size:11px;color:var(--ink4);margin-top:2px;}
-.mc-price{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g);text-align:right;}
-.mc-chg{font-family:var(--mono);font-size:10px;text-align:right;margin-top:2px;}
+.mc-name{font-size:14px;font-weight:700;}
+.mc-sub{font-size:12px;color:var(--ink3);font-weight:600;margin-top:2px;}
+.mc-price{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--g);text-align:right;}
+.mc-chg{font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;margin-top:2px;}
 @media(max-width:600px){.mob-cards{display:block;}.tbl-desktop{display:none!important;}}
 
-/* ── BADGES ──────────────────────── */
-.b{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:500;padding:2px 5px;border-radius:3px;line-height:1.4;}
-.b-up{background:var(--red-bg);color:var(--red);border:1px solid #f0c0bb;}
-.b-dn{background:var(--teal-bg);color:var(--teal);border:1px solid #b8e0cb;}
-.b-fl{background:var(--bg3);color:var(--ink4);border:1px solid var(--line2);}
-.b-sz{background:var(--bg3);color:var(--ink3);border:1px solid var(--line2);}
+.up{color:var(--red);}
+.dn{color:var(--teal);}
+.fl{color:var(--ink4);}
+.b{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 6px;border-radius:5px;line-height:1.4;}
+.b-up{background:var(--red-lt);color:var(--red);}
+.b-dn{background:var(--teal-lt);color:var(--teal);}
+.b-fl{background:var(--bg3);color:var(--ink4);}
+.b-sz{background:var(--bg3);color:var(--ink3);}
 .b-low{background:var(--g);color:#fff;}
-.b-org{background:var(--teal-bg);color:var(--teal);border:1px solid #b8e0cb;}
+.b-org{background:var(--teal-lt);color:var(--teal);}
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════
    COMMODITY DETAIL PAGE
-══════════════════════════════════════════════════ */
+════════════════════════════════ */
 
-/* Hero with photo */
+/* Full photo hero */
 .cp-hero{
-  position:relative;overflow:hidden;
-  min-height:200px;
-  border-bottom:1px solid var(--line);
+  position:relative;min-height:240px;
+  background:var(--g);overflow:hidden;
 }
-.cp-hero-img{
+.cp-hero-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
-  transition:opacity .4s;
+  opacity:0;transition:opacity .5s ease;
 }
-.cp-hero-img::after{
+.cp-hero-bg::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(to right,rgba(0,0,0,.7) 0%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.15) 100%);
+  background:linear-gradient(160deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.3) 100%);
 }
-.cp-hero-content{
+.cp-hero-inner{
   position:relative;z-index:1;
-  max-width:1160px;margin:0 auto;
-  padding:24px 20px;
+  max-width:1100px;margin:0 auto;padding:20px 20px 24px;
 }
-.cp-back{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;margin-bottom:12px;padding:0;letter-spacing:.04em;font-family:var(--mono);text-transform:uppercase;transition:color .12s;}
-.cp-back:hover{color:#fff;}
-.cp-hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-.cp-name{font-size:36px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1.1;}
-.cp-subtitle{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
-.cp-chg-block{text-align:right;flex-shrink:0;}
-.cp-pct{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1;}
-.cp-amt{font-family:var(--mono);font-size:11px;margin-top:2px;color:rgba(255,255,255,.6);}
+.cp-back{
+  display:inline-flex;align-items:center;gap:5px;
+  color:rgba(255,255,255,.75);font-size:13px;font-weight:700;
+  background:rgba(255,255,255,.15);border:none;cursor:pointer;
+  padding:6px 12px;border-radius:20px;margin-bottom:16px;
+  transition:background .12s;backdrop-filter:blur(8px);
+}
+.cp-back:hover{background:rgba(255,255,255,.25);}
+.cp-hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.cp-name-wrap{}
+.cp-name{font-size:clamp(26px,5vw,42px);font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1;}
+.cp-tags{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.cp-tag{
+  font-size:12px;font-weight:700;color:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.15);padding:3px 10px;border-radius:20px;
+  backdrop-filter:blur(8px);
+}
+.cp-chg-wrap{text-align:right;flex-shrink:0;}
+.cp-pct{font-family:var(--mono);font-size:32px;font-weight:500;line-height:1;}
+.cp-amt{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);margin-top:3px;font-weight:500;}
 
-/* 5-stat summary bar */
+/* 5-stat bar */
 .cp-stats{
   background:var(--bg);border-bottom:1px solid var(--line);
   display:flex;overflow-x:auto;scrollbar-width:none;
 }
 .cp-stats::-webkit-scrollbar{display:none}
-.cps{
-  flex:1;min-width:130px;padding:14px 20px;
-  border-right:1px solid var(--line);
-}
+.cps{flex:1;min-width:120px;padding:14px 20px;border-right:1px solid var(--line);}
 .cps:last-child{border-right:none;}
-.cps-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
-.cps-val{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1;color:var(--ink);}
-.cps-sub{font-size:11px;color:var(--ink4);margin-top:3px;}
+.cps-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-bottom:5px;}
+.cps-val{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1;color:var(--ink);}
+.cps-sub{font-size:12px;font-weight:600;color:var(--ink3);margin-top:3px;}
 
 /* Body */
-.cp-body{max-width:1160px;margin:0 auto;padding:24px 20px;}
+.cp-body{max-width:1100px;margin:0 auto;padding:24px 20px;}
 
 /* Signal */
-.signal{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--r);border:1px solid;margin-bottom:16px;}
-.signal.up{background:var(--red-bg);border-color:#f0c0bb;}
-.signal.dn{background:var(--teal-bg);border-color:#b8e0cb;}
+.signal{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;border-radius:var(--r);border:1.5px solid;margin-bottom:20px;
+}
+.signal.up{background:var(--red-lt);border-color:#f5c0b8;}
+.signal.dn{background:var(--teal-lt);border-color:#a8dfc0;}
 .signal.nt{background:var(--g-lt);border-color:var(--g-md);}
-.sig-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:2px;}
-.sig-txt{font-size:13px;color:var(--ink2);}
+.sig-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:3px;}
+.sig-txt{font-size:14px;font-weight:600;color:var(--ink2);}
 
-/* Two-col layout */
-.cp-grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:16px;}
-@media(max-width:860px){.cp-grid{grid-template-columns:1fr;}}
+/* Grid: chart + origins */
+.cp-grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-bottom:16px;}
+@media(max-width:820px){.cp-grid{grid-template-columns:1fr;}}
 
-/* Chart card */
-.cp-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
-.cp-card-hd{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);}
-.cp-card-title{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);}
-.cp-card-meta{font-family:var(--mono);font-size:10px;color:var(--ink4);}
-.chart-wrap{padding:16px;position:relative;height:200px;}
-
-/* Origin map */
-.origin-list{padding:14px 16px;}
-.origin-item{
+.cp-card{
+  background:var(--bg);border-radius:var(--r2);
+  box-shadow:var(--card-shadow);overflow:hidden;
+}
+.cp-card-hd{
+  padding:14px 18px;border-bottom:1px solid var(--line);
   display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0;border-bottom:1px solid var(--line);
-  font-size:13px;
+}
+.cp-card-title{font-size:13px;font-weight:800;color:var(--ink2);}
+.cp-card-meta{font-size:12px;font-weight:600;color:var(--ink4);}
+.chart-wrap{padding:16px;height:200px;position:relative;}
+
+/* Origins */
+.origin-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px;border-bottom:1px solid var(--line);
 }
 .origin-item:last-child{border-bottom:none;}
-.origin-name{font-weight:500;}
-.origin-region{font-size:11px;color:var(--ink4);margin-top:1px;}
-.origin-price{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink2);}
-.origin-mov{font-family:var(--mono);font-size:10px;margin-top:2px;text-align:right;}
-.origin-bar-wrap{margin-top:3px;width:100%;height:2px;background:var(--line);border-radius:1px;}
-.origin-bar-fill{height:100%;border-radius:1px;transition:width .4s;}
+.origin-rank{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--bg2);font-size:11px;font-weight:800;color:var(--ink4);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.origin-rank.first{background:var(--g);color:#fff;}
+.origin-main{flex:1;min-width:0;}
+.origin-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.origin-sub{font-size:11px;font-weight:600;color:var(--ink4);margin-top:1px;}
+.origin-r{text-align:right;flex-shrink:0;}
+.origin-price{font-family:var(--mono);font-size:14px;font-weight:500;}
+.origin-mov{font-family:var(--mono);font-size:11px;font-weight:500;margin-top:2px;}
+.origin-bar-wrap{margin-top:4px;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+.origin-bar{height:100%;border-radius:2px;transition:width .5s ease;}
 
 /* Price chain */
-.chain-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.chain-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 18px;background:var(--bg2);border-bottom:1px solid var(--line);
+  cursor:pointer;user-select:none;border-radius:var(--r2) var(--r2) 0 0;
+  box-shadow:var(--card-shadow);transition:background .1s;
+}
+.chain-hd.closed{border-radius:var(--r2);border-bottom:none;}
+.chain-hd:hover{background:var(--bg3);}
+.chain-title{font-size:13px;font-weight:800;color:var(--ink2);}
+.chain-meta{font-size:12px;font-weight:600;color:var(--ink4);}
+.chain-chev{font-size:12px;color:var(--ink4);transition:transform .18s;}
+.chain-chev.open{transform:rotate(180deg);}
+.chain-body{
+  background:var(--bg);border-radius:0 0 var(--r2) var(--r2);
+  box-shadow:var(--card-shadow);overflow:hidden;margin-bottom:16px;
+}
+.chain-body.hidden{display:none;}
+.chain-row{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;
+}
 .chain-row:last-child{border-bottom:none;}
 .chain-org{flex:1;min-width:100px;}
-.chain-oname{font-size:13px;font-weight:500;}
-.chain-osub{font-size:11px;color:var(--ink4);margin-top:1px;}
-.chain-fob{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink2);flex-shrink:0;}
-.chain-arr{color:var(--line2);flex-shrink:0;}
-.chain-spr{font-family:var(--mono);font-size:10px;color:var(--ink4);background:var(--bg3);padding:2px 6px;border-radius:4px;border:1px solid var(--line);flex-shrink:0;}
-.chain-term{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--g);flex-shrink:0;}
+.chain-oname{font-size:13px;font-weight:700;}
+.chain-osub{font-size:11px;font-weight:600;color:var(--ink4);margin-top:1px;}
+.chain-fob{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink2);flex-shrink:0;}
+.chain-arr{color:var(--ink4);font-size:14px;flex-shrink:0;}
+.chain-spr{
+  font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink3);
+  background:var(--bg2);padding:3px 8px;border-radius:6px;
+  border:1.5px solid var(--line);flex-shrink:0;
+}
+.chain-term{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g);flex-shrink:0;}
 
-/* Accordion */
-.acc{margin-bottom:10px;}
-.acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r) var(--r) 0 0;cursor:pointer;user-select:none;transition:background .1s;}
-.acc-hdr.closed{border-radius:var(--r);border-bottom:1px solid var(--line);}
-.acc-hdr:hover{background:var(--bg3);}
-.acc-t{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);}
-.acc-m{font-family:var(--mono);font-size:11px;color:var(--ink4);}
-.acc-c{font-size:11px;color:var(--ink4);transition:transform .18s;}
-.acc-c.open{transform:rotate(180deg);}
-.acc-body{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden;background:var(--bg);}
-.acc-body.hidden{display:none;}
-
-/* CP tabs */
-.cp-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto;scrollbar-width:none;}
+/* Listings */
+.cp-tabs{
+  display:flex;gap:6px;margin-bottom:14px;
+  overflow-x:auto;scrollbar-width:none;
+}
 .cp-tabs::-webkit-scrollbar{display:none}
-.ctb{padding:7px 14px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid transparent;color:var(--ink4);cursor:pointer;transition:all .12s;white-space:nowrap;margin-bottom:-1px;}
-.ctb.active{color:var(--g);border-bottom-color:var(--g);}
-.ctb:hover:not(.active){color:var(--ink2);}
+.ctb{
+  padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;
+  background:var(--bg3);border:none;color:var(--ink3);cursor:pointer;
+  transition:all .12s;white-space:nowrap;
+}
+.ctb.active{background:var(--g);color:#fff;}
+.ctb:hover:not(.active){background:var(--g-lt);color:var(--g);}
 
-/* ── OTHER PAGES ─────────────────── */
-.fp{display:flex;flex-direction:column;min-height:calc(100vh - 58px);}
-.fp-hero{padding:22px 20px;border-bottom:1px solid var(--line);background:var(--bg2);}
-.fp-hi{max-width:1160px;margin:0 auto;}
-.fp-h1{font-size:22px;font-weight:700;letter-spacing:-.02em;}
-.fp-sub{font-size:12px;color:var(--ink4);margin-top:3px;}
-.fp-body{max-width:1160px;margin:0 auto;padding:20px;flex:1;}
+/* ── OTHER PAGES ──────────────────── */
+.fp{display:flex;flex-direction:column;min-height:calc(100vh - 60px);}
+.fp-hero{padding:24px 20px;border-bottom:1px solid var(--line);background:var(--bg);}
+.fp-hi{max-width:1100px;margin:0 auto;}
+.fp-h1{font-size:24px;font-weight:800;letter-spacing:-.02em;}
+.fp-sub{font-size:13px;font-weight:600;color:var(--ink3);margin-top:3px;}
+.fp-body{max-width:1100px;margin:0 auto;padding:20px;flex:1;}
 
-/* Search page */
-.sp-hero{padding:36px 20px 24px;border-bottom:1px solid var(--line);}
-.sp-hi{max-width:700px;margin:0 auto;}
+.sp-hero{padding:36px 20px 24px;border-bottom:1px solid var(--line);background:var(--bg);}
+.sp-hi{max-width:680px;margin:0 auto;}
 .sp-box{position:relative;}
-.sp-box input{width:100%;padding:13px 44px 13px 16px;border:1.5px solid var(--line2);border-radius:10px;font-size:14px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .18s,box-shadow .18s;}
-.sp-box input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,61,31,.07);}
-.sp-box input::placeholder{color:var(--ink4);}
-.sp-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--ink4);}
-.sp-info{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:8px;}
-.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;padding:20px;max-width:1160px;margin:0 auto;}
-.sp-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
-.sp-card:hover{border-color:var(--g);box-shadow:0 2px 12px rgba(26,61,31,.07);}
-.sp-cn{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;}
-.sp-cm{font-family:var(--mono);font-size:10px;color:var(--ink4);}
-.sp-cp{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--g);margin-top:8px;}
+.sp-box input{width:100%;padding:14px 48px 14px 18px;border-radius:14px;border:2px solid var(--line);font-size:15px;font-weight:600;color:var(--ink);background:var(--bg);outline:none;transition:border-color .18s,box-shadow .18s;box-shadow:var(--card-shadow);}
+.sp-box input:focus{border-color:var(--g);box-shadow:0 0 0 4px rgba(28,66,32,.07),var(--card-shadow);}
+.sp-box input::placeholder{color:var(--ink4);font-weight:500;}
+.sp-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--ink4);}
+.sp-info{font-size:12px;font-weight:700;color:var(--ink4);margin-top:10px;letter-spacing:.04em;text-transform:uppercase;}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:20px;max-width:1100px;margin:0 auto;}
+.sp-card{
+  background:var(--bg);border-radius:var(--r2);
+  box-shadow:var(--card-shadow);
+  padding:16px;cursor:pointer;
+  transition:box-shadow .15s,transform .15s;
+  overflow:hidden;position:relative;
+}
+.sp-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px);}
+.sp-card-img{height:80px;margin:-16px -16px 12px;background:var(--bg2);background-size:cover;background-position:center;position:relative;}
+.sp-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.2));}
+.sp-cn{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+.sp-cm{font-size:12px;font-weight:600;color:var(--ink4);}
+.sp-cp{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--g);margin-top:8px;}
+.sp-chg{font-family:var(--mono);font-size:12px;font-weight:500;margin-top:3px;}
 
-/* Compare */
-.flow-card{display:flex;align-items:center;gap:20px;padding:22px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);margin-bottom:14px;flex-wrap:wrap;}
-.fn{flex:1;text-align:center;min-width:100px;}
-.fn-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;}
-.fn-price{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1;}
-.fn-place{font-size:11px;color:var(--ink4);margin-top:4px;}
+.flow-card{display:flex;align-items:center;gap:20px;padding:24px;background:var(--bg);border-radius:var(--r2);box-shadow:var(--card-shadow);margin-bottom:16px;flex-wrap:wrap;}
+.fn{flex:1;text-align:center;min-width:110px;}
+.fn-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-bottom:8px;}
+.fn-price{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+.fn-place{font-size:12px;font-weight:600;color:var(--ink3);margin-top:5px;}
 .fn-mid{flex-shrink:0;text-align:center;}
-.fn-margin{font-family:var(--mono);font-size:14px;font-weight:500;}
-.fn-line{width:48px;height:2px;margin:5px auto 0;background:linear-gradient(90deg,var(--ink4),var(--g));}
+.fn-margin{font-family:var(--mono);font-size:16px;font-weight:500;}
+.fn-line{width:52px;height:3px;margin:6px auto 0;border-radius:2px;background:linear-gradient(90deg,var(--ink4),var(--g));}
+.fn-mlbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-top:5px;}
 
-/* Footer */
-footer{border-top:1px solid var(--line);padding:14px 20px;font-family:var(--mono);font-size:10px;color:var(--ink4);background:var(--bg2);letter-spacing:.03em;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-footer img{height:16px;opacity:.35;vertical-align:middle;}
+footer{border-top:1px solid var(--line);padding:16px 20px;font-size:12px;font-weight:600;color:var(--ink4);background:var(--bg);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+footer img{height:18px;opacity:.4;vertical-align:middle;}
 
-/* Utils */
 .hidden{display:none!important;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.fu{animation:fadeUp .22s ease both;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fu{animation:fadeUp .25s ease both;}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.loading-pulse{animation:shimmer 1.5s ease-in-out infinite;background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;color:transparent!important;border-radius:6px;}
 </style>
 </head>
 <body>
@@ -325,171 +476,175 @@ footer img{height:16px;opacity:.35;vertical-align:middle;}
       <button onclick="go('terminal')" data-n="terminal" class="nl">Terminal Markets</button>
       <button onclick="go('shipping')" data-n="shipping" class="nl">Shipping Points</button>
       <button onclick="go('compare')"  data-n="compare"  class="nl">Compare</button>
+      <button onclick="go('search')"   data-n="search"   class="nl">Search</button>
     </div>
-    <div class="nav-srch" onclick="go('search')">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Search <kbd>/</kbd>
+    <div class="nav-mob">
+      <button onclick="go('home')"     data-n="home"     class="nl active">Home</button>
+      <button onclick="go('terminal')" data-n="terminal" class="nl">Terminal</button>
+      <button onclick="go('shipping')" data-n="shipping" class="nl">Shipping</button>
+      <button onclick="go('compare')"  data-n="compare"  class="nl">Compare</button>
+      <button onclick="go('search')"   data-n="search"   class="nl">Search</button>
     </div>
-  </div>
-  <div class="nav-mob">
-    <button onclick="go('home')"     data-n="home"     class="nl active">Home</button>
-    <button onclick="go('terminal')" data-n="terminal" class="nl">Terminal</button>
-    <button onclick="go('shipping')" data-n="shipping" class="nl">Shipping</button>
-    <button onclick="go('compare')"  data-n="compare"  class="nl">Compare</button>
-    <button onclick="go('search')"                      class="nl">Search</button>
   </div>
 </nav>
 
-<!-- HOME PAGE -->
+<!-- HOME -->
 <div id="page-home" class="page active">
-  <div class="hero">
-    <div class="hero-logo"><img src="agrax-logo.png" alt="agraX"></div>
-    <p class="hero-sub">Wholesale produce prices for growers, brokers &amp; distributors</p>
-    <div class="srch-wrap">
-      <input id="hi" type="text" placeholder="Search a commodity — cilantro, tomatoes, apples…"
-        oninput="hSearch()" onkeydown="hKey(event)" autocomplete="off" spellcheck="false">
-      <svg class="srch-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <div class="srch-dd" id="hdd"></div>
-    </div>
-    <div class="hint-row" id="hints"></div>
-  </div>
+  <div class="home-wrap">
 
-  <div class="stats">
-    <div class="stat"><div class="stat-v up" id="ss-r">—</div><div class="stat-l">Rising</div></div>
-    <div class="stat"><div class="stat-v dn" id="ss-f">—</div><div class="stat-l">Falling</div></div>
-    <div class="stat"><div class="stat-v fl" id="ss-s">—</div><div class="stat-l">Steady</div></div>
-    <div class="stat"><div class="stat-v" id="ss-t">—</div><div class="stat-l">Commodities</div></div>
-    <div class="stat"><div class="stat-v" id="ss-d" style="font-size:12px;color:var(--ink3)">—</div><div class="stat-l">Updated</div></div>
-  </div>
+    <div class="home-hero">
+      <div class="home-hero-logo"><img src="agrax-logo.png" alt="agraX"></div>
+      <h1 class="home-hero-title">What's the price today?</h1>
+      <p class="home-hero-sub">Search any produce commodity to see live wholesale prices</p>
 
-  <div class="wrap">
-    <div class="cat-tabs">
-      <button onclick="setCT('vegetables')"     id="ct-vegetables"     class="ct active">Vegetables</button>
-      <button onclick="setCT('fruits')"          id="ct-fruits"          class="ct">Fruits</button>
-      <button onclick="setCT('onions_potatoes')" id="ct-onions_potatoes" class="ct">Onions &amp; Potatoes</button>
-      <button onclick="setCT('nuts')"            id="ct-nuts"            class="ct">Nuts</button>
-    </div>
-
-    <div class="sh"><span class="sh-title">Today's Movers</span><span class="sh-meta" id="mv-meta"></span></div>
-    <div class="movers">
-      <div class="mv-card">
-        <div class="mv-hd"><div class="mv-dot" style="background:var(--red)"></div><span class="mv-lbl">Rising</span></div>
-        <div id="mv-up"></div>
+      <div class="search-box">
+        <input id="hi" type="text" placeholder="Try &quot;cilantro&quot; or &quot;tomatoes&quot;…"
+          oninput="hSearch()" onkeydown="hKey(event)" autocomplete="off" spellcheck="false">
+        <svg class="search-box-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="search-dd" id="hdd"></div>
       </div>
-      <div class="mv-card">
-        <div class="mv-hd"><div class="mv-dot" style="background:var(--teal)"></div><span class="mv-lbl">Falling</span></div>
-        <div id="mv-dn"></div>
-      </div>
+
+      <div class="quick-label">Popular today</div>
+      <div class="quick-row" id="quick-chips"></div>
     </div>
 
-    <div class="sh"><span class="sh-title" id="tbl-h">All Listings</span><span class="sh-meta" id="tbl-m"></span></div>
-    <div class="tbl-wrap">
-      <div class="tbl-top">
-        <div style="position:relative">
-          <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="tf-q" class="fi" style="padding-left:27px;min-width:150px" placeholder="Filter…" oninput="filterTbl()">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num up" id="ss-r">—</div><div class="stat-lbl">Rising</div></div>
+      <div class="stat-card"><div class="stat-num dn" id="ss-f">—</div><div class="stat-lbl">Falling</div></div>
+      <div class="stat-card"><div class="stat-num fl" id="ss-s">—</div><div class="stat-lbl">Steady</div></div>
+      <div class="stat-card"><div class="stat-num" id="ss-t">—</div><div class="stat-lbl">Commodities</div></div>
+    </div>
+
+    <!-- Category tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto;scrollbar-width:none;">
+      <button onclick="setCT('vegetables')"     id="ct-vegetables"     style="padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s,border-color .12s;" class="ct active">Vegetables</button>
+      <button onclick="setCT('fruits')"          id="ct-fruits"          style="padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s,border-color .12s;" class="ct">Fruits</button>
+      <button onclick="setCT('onions_potatoes')" id="ct-onions_potatoes" style="padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s,border-color .12s;" class="ct">Onions &amp; Potatoes</button>
+      <button onclick="setCT('nuts')"            id="ct-nuts"            style="padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s,border-color .12s;" class="ct">Nuts</button>
+    </div>
+
+    <!-- Movers -->
+    <div class="section">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title">Today's Movers</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink4)" id="mv-meta"></div>
+      </div>
+      <div class="movers-grid">
+        <div class="mv-col">
+          <div class="mv-col-hd"><div class="mv-dot" style="background:var(--red)"></div><span class="mv-col-title">Rising</span></div>
+          <div id="mv-up"></div>
         </div>
-        <select id="tf-m" class="fi fi-sel" onchange="filterTbl()"><option value="">All Markets</option></select>
-        <select id="tf-s" class="fi fi-sel" onchange="filterTbl()">
-          <option value="comm">A → Z</option>
-          <option value="pl">Price ↑</option>
-          <option value="ph">Price ↓</option>
-          <option value="chg">Change %</option>
-        </select>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);cursor:pointer">
-          <input type="checkbox" id="tf-org" onchange="filterTbl()"> Organic
-        </label>
-      </div>
-      <div class="tbl-desktop" style="overflow-x:auto">
-        <table class="tbl"><thead><tr>
-          <th>Commodity</th><th>Market</th>
-          <th class="r">Price</th><th class="r">vs Last Wk</th>
-          <th class="r">Movement</th><th>Origin</th>
-        </tr></thead><tbody id="tbl-body"></tbody></table>
-      </div>
-      <div class="mob-cards" id="tbl-mob"></div>
-      <div class="pager">
-        <span class="pi" id="tbl-pi"></span>
-        <div style="display:flex;gap:6px">
-          <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
-          <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
+        <div class="mv-col">
+          <div class="mv-col-hd"><div class="mv-dot" style="background:var(--teal)"></div><span class="mv-col-title">Falling</span></div>
+          <div id="mv-dn"></div>
         </div>
       </div>
     </div>
+
+    <!-- All listings -->
+    <div class="section">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title">All Listings</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink4)" id="tbl-meta"></div>
+      </div>
+      <div class="listings-card">
+        <div class="listings-filters">
+          <div style="position:relative">
+            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="tf-q" class="fi" style="padding-left:30px;min-width:150px" placeholder="Filter…" oninput="filterTbl()">
+          </div>
+          <select id="tf-m" class="fi fi-sel" onchange="filterTbl()"><option value="">All Markets</option></select>
+          <select id="tf-s" class="fi fi-sel" onchange="filterTbl()">
+            <option value="comm">A → Z</option>
+            <option value="pl">Lowest Price</option>
+            <option value="ph">Highest Price</option>
+            <option value="chg">Biggest Change</option>
+          </select>
+        </div>
+        <div class="tbl-desktop" style="overflow-x:auto">
+          <table class="tbl"><thead><tr>
+            <th>Commodity</th><th>Market</th>
+            <th class="r">Price</th><th class="r">vs Last Week</th>
+            <th class="r">Movement</th><th>Origin</th>
+          </tr></thead><tbody id="tbl-body"></tbody></table>
+        </div>
+        <div class="mob-cards" id="tbl-mob"></div>
+        <div class="pager">
+          <span class="pi" id="tbl-pi"></span>
+          <div style="display:flex;gap:6px">
+            <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
+            <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
-  <footer><img src="agrax-logo.png" alt="agraX"> agraX · Data sourced from USDA Agricultural Marketing Service</footer>
+  <footer><img src="agrax-logo.png" alt="agraX"> agraX · Live wholesale produce prices from USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- COMMODITY DETAIL PAGE -->
+<!-- COMMODITY DETAIL -->
 <div id="page-commodity" class="page">
-
-  <!-- Hero with photo -->
   <div class="cp-hero">
-    <div class="cp-hero-img" id="cp-img"></div>
-    <div class="cp-hero-content">
+    <div class="cp-hero-bg" id="cp-bg"></div>
+    <div class="cp-hero-inner">
       <button onclick="history.back()" class="cp-back">← Back</button>
       <div class="cp-hero-row">
-        <div>
+        <div class="cp-name-wrap">
           <div class="cp-name" id="cp-name"></div>
-          <div class="cp-subtitle" id="cp-sub"></div>
+          <div class="cp-tags" id="cp-tags"></div>
         </div>
-        <div class="cp-chg-block" id="cp-chg"></div>
+        <div class="cp-chg-wrap" id="cp-chg"></div>
       </div>
     </div>
   </div>
 
-  <!-- 5-stat bar -->
-  <div class="cp-stats" id="cp-stats">
-    <div class="cps"><div class="cps-lbl">Current FOB</div><div class="cps-val" id="cps-fob">—</div><div class="cps-sub" id="cps-fob-sub"></div></div>
-    <div class="cps"><div class="cps-lbl">Terminal Avg</div><div class="cps-val" id="cps-term">—</div><div class="cps-sub" id="cps-term-sub"></div></div>
-    <div class="cps"><div class="cps-lbl">Spread</div><div class="cps-val" id="cps-spread">—</div><div class="cps-sub" id="cps-spread-sub"></div></div>
-    <div class="cps"><div class="cps-lbl">Cheapest Source</div><div class="cps-val" id="cps-cheap">—</div><div class="cps-sub" id="cps-cheap-sub"></div></div>
-    <div class="cps"><div class="cps-lbl">Momentum</div><div class="cps-val" id="cps-mom">—</div><div class="cps-sub" id="cps-mom-sub"></div></div>
+  <div class="cp-stats">
+    <div class="cps"><div class="cps-lbl">FOB Price</div><div class="cps-val" id="cps-fob">—</div><div class="cps-sub" id="cps-fob-s"></div></div>
+    <div class="cps"><div class="cps-lbl">Terminal Avg</div><div class="cps-val" id="cps-term">—</div><div class="cps-sub" id="cps-term-s"></div></div>
+    <div class="cps"><div class="cps-lbl">Spread</div><div class="cps-val" id="cps-spr">—</div><div class="cps-sub" id="cps-spr-s"></div></div>
+    <div class="cps"><div class="cps-lbl">Best Source</div><div class="cps-val" id="cps-src">—</div><div class="cps-sub" id="cps-src-s"></div></div>
+    <div class="cps"><div class="cps-lbl">Momentum</div><div class="cps-val" id="cps-mom">—</div><div class="cps-sub" id="cps-mom-s"></div></div>
   </div>
 
   <div class="cp-body fu">
-    <!-- Signal -->
     <div id="cp-signal" class="hidden"></div>
 
-    <!-- Chart + Origins grid -->
     <div class="cp-grid">
-      <!-- Trend chart -->
       <div class="cp-card">
         <div class="cp-card-hd">
-          <span class="cp-card-title">Price Trend · Terminal Avg</span>
+          <span class="cp-card-title">30-Day Price Trend</span>
           <span class="cp-card-meta" id="chart-meta"></span>
         </div>
         <div class="chart-wrap"><canvas id="price-chart"></canvas></div>
       </div>
-      <!-- FOB Origins -->
       <div class="cp-card">
         <div class="cp-card-hd">
           <span class="cp-card-title">FOB Origins</span>
           <span class="cp-card-meta" id="origins-meta"></span>
         </div>
-        <div class="origin-list" id="origin-list"></div>
+        <div id="origin-list"></div>
       </div>
     </div>
 
-    <!-- Price chain -->
-    <div class="acc" id="acc-chain">
-      <div class="acc-hdr" onclick="togAcc('chain')">
-        <span class="acc-t">Price Chain · FOB → Terminal</span>
+    <div id="chain-wrap">
+      <div class="chain-hd" id="chain-hd-el" onclick="togChain()">
+        <span class="chain-title">Price Chain · FOB → Terminal</span>
         <div style="display:flex;align-items:center;gap:8px">
-          <span class="acc-m" id="chain-meta"></span>
-          <span class="acc-c open" id="chev-chain">▲</span>
+          <span class="chain-meta" id="chain-meta"></span>
+          <span class="chain-chev open" id="chev-chain">▲</span>
         </div>
       </div>
-      <div class="acc-body" id="body-chain"></div>
+      <div class="chain-body" id="chain-body"></div>
     </div>
 
-    <!-- Listings tabs -->
     <div class="cp-tabs">
       <button class="ctb active" data-tab="terminal" onclick="cpTab('terminal')">Terminal Listings</button>
       <button class="ctb" data-tab="fob" onclick="cpTab('fob')">FOB Sources</button>
     </div>
-    <div class="tbl-wrap">
-      <div style="overflow-x:auto"><table class="tbl"><thead id="cp-thead"></thead><tbody id="cp-tbody"></tbody></table></div>
+    <div class="listings-card">
+      <div style="overflow-x:auto"><table class="tbl"><thead id="cp-th"></thead><tbody id="cp-tb"></tbody></table></div>
     </div>
   </div>
 </div>
@@ -499,20 +654,17 @@ footer img{height:16px;opacity:.35;vertical-align:middle;}
   <div class="fp">
     <div class="fp-hero"><div class="fp-hi"><div class="fp-h1">Terminal Markets</div><div class="fp-sub">Destination wholesale prices at major US city markets</div></div></div>
     <div class="fp-body">
-      <div class="tbl-wrap">
-        <div class="tbl-top">
+      <div class="listings-card">
+        <div class="listings-filters">
           <div style="position:relative">
-            <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input id="tp-q" class="fi" style="padding-left:27px;min-width:150px" placeholder="Search…" oninput="filterTp()">
+            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="tp-q" class="fi" style="padding-left:30px;min-width:150px" placeholder="Search…" oninput="filterTp()">
           </div>
           <select id="tp-m" class="fi fi-sel" onchange="filterTp()"><option value="">All Markets</option></select>
           <select id="tp-v" class="fi fi-sel" onchange="filterTp()"><option value="">All Varieties</option></select>
           <select id="tp-s" class="fi fi-sel" onchange="filterTp()">
             <option value="comm">A → Z</option><option value="pl">Price ↑</option><option value="ph">Price ↓</option>
           </select>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);cursor:pointer">
-            <input type="checkbox" id="tp-org" onchange="filterTp()"> Organic
-          </label>
         </div>
         <div class="tbl-desktop" style="overflow-x:auto">
           <table class="tbl"><thead><tr>
@@ -539,18 +691,18 @@ footer img{height:16px;opacity:.35;vertical-align:middle;}
   <div class="fp">
     <div class="fp-hero"><div class="fp-hi"><div class="fp-h1">Shipping Points</div><div class="fp-sub">FOB origin prices — what shippers charge at the source</div></div></div>
     <div class="fp-body">
-      <div id="sp-loading" style="padding:40px;text-align:center;color:var(--ink4);font-family:var(--mono);font-size:12px">Loading…</div>
+      <div id="sp-loading" style="padding:40px;text-align:center;font-size:14px;font-weight:700;color:var(--ink4)">Loading shipping data…</div>
       <div id="sp-view" class="hidden">
-        <div style="display:flex;gap:14px;margin-bottom:10px;font-family:var(--mono);font-size:11px;flex-wrap:wrap">
+        <div style="display:flex;gap:14px;margin-bottom:12px;font-size:12px;font-weight:700;flex-wrap:wrap">
           <span id="sp-u" class="up"></span><span id="sp-d" class="dn"></span>
           <span id="sp-st" class="fl"></span><span id="sp-tot" style="color:var(--ink4)"></span>
           <span id="sp-date" style="color:var(--ink4);margin-left:auto"></span>
         </div>
-        <div class="tbl-wrap">
-          <div class="tbl-top">
+        <div class="listings-card">
+          <div class="listings-filters">
             <div style="position:relative">
-              <svg style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input id="sp-q" class="fi" style="padding-left:27px;min-width:130px" placeholder="Search…" oninput="renderSP()">
+              <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input id="sp-q" class="fi" style="padding-left:30px;min-width:140px" placeholder="Search…" oninput="renderSP()">
             </div>
             <select id="sp-og" class="fi fi-sel" onchange="renderSP()"><option value="">All Origins</option></select>
             <select id="sp-s" class="fi fi-sel" onchange="renderSP()">
@@ -574,23 +726,24 @@ footer img{height:16px;opacity:.35;vertical-align:middle;}
 <!-- COMPARE PAGE -->
 <div id="page-compare" class="page">
   <div class="fp">
-    <div class="fp-hero"><div class="fp-hi"><div class="fp-h1">Compare Prices</div><div class="fp-sub">FOB source vs terminal destination — see the margin</div></div></div>
-    <div class="fp-body" style="max-width:820px">
-      <div style="margin-bottom:16px">
-        <select id="cmp-sel" onchange="doCompare()" class="fi fi-sel" style="min-width:220px;font-size:13px;padding:8px 10px">
-          <option value="">Select a commodity…</option>
+    <div class="fp-hero"><div class="fp-hi"><div class="fp-h1">Compare Prices</div><div class="fp-sub">See the margin between FOB source and terminal destination</div></div></div>
+    <div class="fp-body" style="max-width:800px">
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:700;color:var(--ink3);margin-bottom:6px;">Select a commodity</label>
+        <select id="cmp-sel" onchange="doCompare()" class="fi fi-sel" style="min-width:240px;font-size:14px;padding:10px 12px;">
+          <option value="">Choose…</option>
         </select>
       </div>
       <div id="cmp-res" class="hidden">
         <div class="flow-card" id="cmp-flow"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" id="cmp-panels">
-          <div class="tbl-wrap">
-            <div style="padding:9px 12px;border-bottom:1px solid var(--line);background:var(--bg2)"><span style="font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4)">📦 FOB Sources</span></div>
-            <div id="cmp-ship" style="padding:10px 12px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" id="cmp-panels">
+          <div class="listings-card">
+            <div style="padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg2)"><span style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink4)">📦 FOB Sources</span></div>
+            <div id="cmp-ship" style="padding:12px 14px"></div>
           </div>
-          <div class="tbl-wrap">
-            <div style="padding:9px 12px;border-bottom:1px solid var(--line);background:var(--bg2)"><span style="font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4)">🏪 Terminal Markets</span></div>
-            <div id="cmp-term" style="padding:10px 12px"></div>
+          <div class="listings-card">
+            <div style="padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg2)"><span style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink4)">🏪 Terminal Markets</span></div>
+            <div id="cmp-term" style="padding:12px 14px"></div>
           </div>
         </div>
       </div>
@@ -606,7 +759,7 @@ footer img{height:16px;opacity:.35;vertical-align:middle;}
       <div class="sp-box">
         <input id="sp-in" type="text" placeholder="Search any commodity…"
           oninput="doSearch()" onkeydown="if(event.key==='Escape')go('home')" autocomplete="off">
-        <svg class="sp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <svg class="sp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </div>
       <div class="sp-info" id="sp-info"></div>
     </div>
@@ -619,14 +772,13 @@ const API='https://produce-iq-production.up.railway.app';
 const $=id=>document.getElementById(id);
 const esc=s=>(s||'').replace(/'/g,"\\'");
 
-// State
 let termData=[],shipData=[],dates=[],cache={};
 let movers={rising:[],falling:[]};
 let activeCT='vegetables';
 let tFiltered=[],tPage=1,tpFiltered=[],tpPage=1;
 const PG=30;
 const MOVORD={'Much Higher':0,'Higher':1,'Slightly Higher':2,'Unchanged':3,'Slightly Lower':4,'Lower':5,'Much Lower':6};
-let priceChart=null;
+let priceChart=null,chainOpen=true;
 
 // Helpers
 const money=r=>{const lo=parseFloat(r.price_low),hi=r.price_high?parseFloat(r.price_high):null;return hi&&Math.abs(hi-lo)>.01?`$${lo.toFixed(2)}–${hi.toFixed(2)}`:`$${lo.toFixed(2)}`;};
@@ -637,7 +789,6 @@ const mb=m=>m?`<span class="b b-${mc(m)}">${ma(m)} ${m}</span>`:`<span class="b 
 const sb=s=>s?`<span class="b b-sz">${s}</span>`:`<span style="color:var(--ink4)">—</span>`;
 const ob=r=>r.organic?`<span class="b b-org">ORG</span> `:'';
 
-// Commodity images
 const IMGS={
   'tomato':'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1200&q=80',
   'cilantro':'https://images.unsplash.com/photo-1556909211-36987daf7b4d?w=1200&q=80',
@@ -650,7 +801,6 @@ const IMGS={
   'onion':'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=1200&q=80',
   'apple':'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=1200&q=80',
   'orange':'https://images.unsplash.com/photo-1547514701-42782101795e?w=1200&q=80',
-  'lemon':'https://images.unsplash.com/photo-1590502593747-42a996133562?w=1200&q=80',
   'grape':'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=1200&q=80',
   'avocado':'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=1200&q=80',
   'strawberr':'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=1200&q=80',
@@ -659,18 +809,25 @@ const IMGS={
   'mushroom':'https://images.unsplash.com/photo-1611280282783-29f20e8a3091?w=1200&q=80',
   'celery':'https://images.unsplash.com/photo-1580391564590-aeca65c5e2d3?w=1200&q=80',
   'spinach':'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=1200&q=80',
-  'kale':'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=1200&q=80',
-  'eggplant':'https://images.unsplash.com/photo-1528821128474-27f963b062bf?w=1200&q=80',
   'potato':'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=1200&q=80',
   'garlic':'https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=1200&q=80',
   'ginger':'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=1200&q=80',
   'lime':'https://images.unsplash.com/photo-1548489671-3f6e80e6ec85?w=1200&q=80',
+  'lemon':'https://images.unsplash.com/photo-1590502593747-42a996133562?w=1200&q=80',
   'pineapple':'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=1200&q=80',
+  'eggplant':'https://images.unsplash.com/photo-1528821128474-27f963b062bf?w=1200&q=80',
+  'kale':'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=1200&q=80',
 };
-function getImg(name){
-  const l=name.toLowerCase();
-  for(const[k,u]of Object.entries(IMGS)){if(l.includes(k))return u;}
-  return'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80';
+function getImg(n){const l=n.toLowerCase();for(const[k,u]of Object.entries(IMGS)){if(l.includes(k))return u;}return'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80';}
+function getEmoji(n){
+  const l=n.toLowerCase();
+  const map=[['tomato','🍅'],['cilantro','🌿'],['pepper','🫑'],['broccoli','🥦'],['lettuce','🥬'],
+    ['carrot','🥕'],['onion','🧅'],['potato','🥔'],['mushroom','🍄'],['cucumber','🥒'],
+    ['asparagus','🌱'],['apple','🍎'],['orange','🍊'],['grape','🍇'],['avocado','🥑'],
+    ['strawberr','🍓'],['watermelon','🍉'],['mango','🥭'],['lemon','🍋'],['lime','🍋'],
+    ['eggplant','🍆'],['garlic','🧄'],['ginger','🫚'],['spinach','🥬'],['kale','🥬']];
+  for(const[k,e]of map){if(l.includes(k))return e;}
+  return'🌾';
 }
 
 // Nav
@@ -688,6 +845,14 @@ document.addEventListener('keydown',e=>{
   if(e.key==='/'&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();go('search');}
 });
 
+// Category tabs style
+const ctStyle=(active)=>`padding:9px 16px;font-size:13px;font-weight:700;background:none;border:none;border-bottom:2px solid ${active?'var(--g)':'transparent'};cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s,border-color .12s;color:${active?'var(--g)':'var(--ink3)'};`;
+function setCTStyles(ct){
+  ['vegetables','fruits','onions_potatoes','nuts'].forEach(k=>{
+    const el=$('ct-'+k);if(el)el.style.cssText=ctStyle(k===ct);
+  });
+}
+
 // Init
 async function init(){
   try{
@@ -701,7 +866,7 @@ async function init(){
       cache[dates[i].date]=d;
     }
     loadHomeData();
-    buildHints();
+    buildQuickChips();
     fetch(`${API}/dates?market_type=shipping_point&commodity_type=vegetables`)
       .then(r=>r.json()).then(async sd=>{
         if(sd.length)shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=vegetables`)).json();
@@ -718,16 +883,7 @@ async function loadHomeData(){
     $('ss-f').textContent=mv.falling?.length||0;
     $('ss-s').textContent=Math.max(0,comms.size-(mv.rising?.length||0)-(mv.falling?.length||0));
     $('ss-t').textContent=comms.size;
-    try{
-      const fr=await(await fetch(`${API}/freshness`)).json();
-      if(fr.terminal){
-        const d=new Date(fr.terminal+'T00:00:00');
-        const diff=Math.round((new Date()-d)/86400000);
-        $('ss-d').textContent=`${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${diff===0?'today':diff===1?'yesterday':diff+'d ago'}`;
-      }
-    }catch(e){}
     renderMovers();buildFilters();filterTbl();buildCompare();
-    // Build terminal page filters too
     const mkts=[...new Set(termData.map(d=>d.market))].sort();
     const vars=[...new Set(termData.map(d=>d.variety).filter(Boolean))].sort();
     $('tp-m').innerHTML='<option value="">All Markets</option>'+mkts.map(m=>`<option>${m}</option>`).join('');
@@ -736,12 +892,8 @@ async function loadHomeData(){
   }catch(e){console.error(e);}
 }
 
-// Category switch
 async function setCT(ct){
-  activeCT=ct;
-  ['vegetables','fruits','onions_potatoes','nuts'].forEach(k=>{
-    const el=$('ct-'+k);if(el)el.className='ct'+(k===ct?' active':'');
-  });
+  activeCT=ct;setCTStyles(ct);
   $('mv-up').innerHTML='<div class="mv-empty">Loading…</div>';
   $('mv-dn').innerHTML='<div class="mv-empty">Loading…</div>';
   try{
@@ -760,37 +912,55 @@ async function setCT(ct){
   }catch(e){}
 }
 
-// Hero search
-function buildHints(){
-  const top=['Cilantro','Tomatoes','Broccoli','Asparagus','Peppers, Bell Type','Mushrooms'];
+// Quick chips
+function buildQuickChips(){
+  const top=['Cilantro','Tomatoes','Broccoli','Asparagus','Peppers, Bell Type','Mushrooms','Avocados'];
+  const mvMap={};[...(movers.rising||[]),...(movers.falling||[])].forEach(m=>mvMap[m.commodity]=m);
   const have=new Set(termData.map(d=>d.commodity));
   const chips=top.filter(c=>have.has(c)).slice(0,5);
-  $('hints').innerHTML=chips.map(c=>`<span class="hint" onclick="goComm('${esc(c)}')">${c}</span>`).join('');
+  $('quick-chips').innerHTML=chips.map(c=>{
+    const rows=termData.filter(d=>d.commodity===c);
+    const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
+    return`<div class="quick-chip" onclick="goComm('${esc(c)}')">
+      <span>${getEmoji(c)}</span>
+      <span>${c}</span>
+      <span class="qc-price">$${avg.toFixed(2)}</span>
+    </div>`;
+  }).join('');
 }
+
+// Hero search
 function hSearch(){
   const q=$('hi').value.toLowerCase().trim();
   const dd=$('hdd');
   if(!q){dd.classList.remove('open');return;}
   const comms=[...new Set(termData.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q)).slice(0,6);
   const mvMap={};[...(movers.rising||[]),...(movers.falling||[])].forEach(m=>mvMap[m.commodity]=m);
-  if(!comms.length){dd.innerHTML='<div class="dd-empty">No results</div>';dd.classList.add('open');return;}
+  if(!comms.length){dd.innerHTML='<div style="padding:20px;text-align:center;font-size:14px;font-weight:600;color:var(--ink4)">No results found</div>';dd.classList.add('open');return;}
   dd.innerHTML=comms.map(c=>{
     const rows=termData.filter(d=>d.commodity===c);
     const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
     const m=mvMap[c];
     const chg=m?`<span class="${m.pct_change>0?'up':'dn'}">${m.pct_change>0?'+':''}${m.pct_change.toFixed(1)}%</span>`:`<span class="fl">—</span>`;
-    return`<div class="dd-row" onclick="goComm('${esc(c)}')">
-      <div><div class="dd-name">${c}</div><div class="dd-sub">${rows.length} listings · ${[...new Set(rows.map(r=>r.market))].length} markets</div></div>
-      <div style="text-align:right;flex-shrink:0"><div class="dd-price">$${avg.toFixed(2)}</div><div class="dd-chg">${chg}</div></div>
+    return`<div class="dd-item" onclick="goComm('${esc(c)}')">
+      <div class="dd-icon">${getEmoji(c)}</div>
+      <div>
+        <div class="dd-name">${c}</div>
+        <div class="dd-meta">${rows.length} listings · ${[...new Set(rows.map(r=>r.market))].length} markets</div>
+      </div>
+      <div class="dd-r">
+        <div class="dd-price">$${avg.toFixed(2)}</div>
+        <div class="dd-chg">${chg}</div>
+      </div>
     </div>`;
-  }).join('')+`<div class="dd-more" onclick="go('search');$('sp-in').value='${q}';doSearch()">View all results →</div>`;
+  }).join('')+`<div class="dd-footer" onclick="go('search');$('sp-in').value='${q}';doSearch()">See all results for "${q}" →</div>`;
   dd.classList.add('open');
 }
 function hKey(e){
   if(e.key==='Enter'){const q=$('hi').value.trim();if(q){go('search');$('sp-in').value=q;doSearch();}}
   if(e.key==='Escape')$('hdd').classList.remove('open');
 }
-document.addEventListener('click',e=>{if(!e.target.closest('.srch-wrap'))$('hdd').classList.remove('open');});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))$('hdd').classList.remove('open');});
 function goComm(name){$('hdd').classList.remove('open');go('commodity',name);}
 
 // Movers
@@ -801,9 +971,12 @@ function renderMovers(){
   const mkRow=(m,isUp)=>{
     const rows=termData.filter(d=>d.commodity===m.commodity);
     const avg=rows.length?rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/rows.length:0;
-    const bw=Math.max(4,Math.round((Math.abs(m.dollar_change)/maxC)*40));
+    const bw=Math.max(4,Math.round((Math.abs(m.dollar_change)/maxC)*44));
     return`<div class="mv-row" onclick="goComm('${esc(m.commodity)}')">
-      <div><div class="mv-name">${m.commodity}</div><div class="mv-n">${rows.length} listing${rows.length!==1?'s':''}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+        <div style="font-size:20px;flex-shrink:0">${getEmoji(m.commodity)}</div>
+        <div><div class="mv-name">${m.commodity}</div><div class="mv-listings">${rows.length} listing${rows.length!==1?'s':''}</div></div>
+      </div>
       <div class="mv-r">
         <div class="mv-price">$${avg.toFixed(2)}</div>
         <div class="mv-chg ${isUp?'up':'dn'}">${isUp?'+':''}${m.pct_change.toFixed(1)}%</div>
@@ -831,10 +1004,9 @@ function wkChg(c){
 }
 function filterTbl(){
   const q=$('tf-q').value.toLowerCase().trim();
-  const m=$('tf-m').value,s=$('tf-s').value,org=$('tf-org').checked;
+  const m=$('tf-m').value,s=$('tf-s').value;
   tFiltered=termData.filter(d=>{
     if(m&&d.market!==m)return false;
-    if(org&&!d.organic)return false;
     if(q&&!`${d.commodity} ${d.variety||''} ${d.origin||''} ${d.market}`.toLowerCase().includes(q))return false;
     return true;
   });
@@ -845,26 +1017,29 @@ function filterTbl(){
   tPage=1;renderTbl();
 }
 function renderTbl(){
-  const st=(tPage-1)*PG,items=tFiltered.slice(st,st+PG);
-  const tot=Math.ceil(tFiltered.length/PG)||1;
-  $('tbl-m').textContent=`${tFiltered.length} results`;
+  const st=(tPage-1)*PG,items=tFiltered.slice(st,st+PG),tot=Math.ceil(tFiltered.length/PG)||1;
+  $('tbl-meta').textContent=`${tFiltered.length} results`;
   $('tbl-pi').textContent=`${tFiltered.length} results · Page ${tPage}/${tot}`;
   $('tbl-prev').disabled=tPage<=1;$('tbl-next').disabled=tPage>=tot;
   $('tbl-body').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<tr onclick="goComm('${esc(r.commodity)}')">
-      <td>${ob(r)}<span style="font-weight:500">${r.commodity}</span><div style="font-size:11px;color:var(--ink4)">${r.variety||''}</div></td>
+      <td><span style="font-size:16px;margin-right:6px">${getEmoji(r.commodity)}</span>${ob(r)}<span style="font-weight:700">${r.commodity}</span>${r.variety?`<div style="font-size:11px;font-weight:600;color:var(--ink4)">${r.variety}</div>`:''}
+      </td>
       <td class="sm">${r.market}</td>
-      <td class="r"><span style="font-weight:500;color:var(--g)">${money(r)}</span></td>
-      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:11px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r"><span style="font-size:15px;font-weight:500;color:var(--g)">${money(r)}</span></td>
+      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px;font-weight:500">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
       <td class="r">${mb(r.movement)}</td>
       <td class="sm">${r.origin||'—'}</td>
     </tr>`;
-  }).join('')||'<tr><td colspan="6" style="padding:32px;text-align:center;color:var(--ink4)">No results</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="padding:32px;text-align:center;font-size:14px;font-weight:700;color:var(--ink4)">No results found</td></tr>';
   $('tbl-mob').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<div class="mc" onclick="goComm('${esc(r.commodity)}')">
-      <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px">${getEmoji(r.commodity)}</div>
+        <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      </div>
       <div><div class="mc-price">${money(r)}</div><div class="mc-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
     </div>`;
   }).join('');
@@ -872,22 +1047,22 @@ function renderTbl(){
 function tPrev(){if(tPage>1){tPage--;renderTbl();}}
 function tNext(){tPage++;renderTbl();}
 
-// ═══════════════════════════════════════════════
-// COMMODITY DETAIL — with chart, origins, photo
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
+// COMMODITY DETAIL
+// ═══════════════════════════════════
 let curComm='',curCPTab='terminal';
-const accState={chain:true};
 
-function togAcc(k){
-  accState[k]=!accState[k];
-  const body=$('body-'+k),chev=$('chev-'+k),hdr=$('acc-chain').querySelector('.acc-hdr');
-  if(body)body.className='acc-body'+(accState[k]?'':' hidden');
-  if(chev){chev.textContent=accState[k]?'▲':'▼';chev.className='acc-c'+(accState[k]?' open':'');}
-  if(hdr)hdr.className='acc-hdr'+(accState[k]?'':' closed');
+function togChain(){
+  chainOpen=!chainOpen;
+  const body=$('chain-body'),chev=$('chev-chain'),hdr=$('chain-hd-el');
+  body.className='chain-body'+(chainOpen?'':' hidden');
+  chev.textContent=chainOpen?'▲':'▼';
+  chev.className='chain-chev'+(chainOpen?' open':'');
+  hdr.className='chain-hd'+(chainOpen?'':' closed');
 }
 
 async function loadComm(name){
-  curComm=name;curCPTab='terminal';accState.chain=true;
+  curComm=name;curCPTab='terminal';chainOpen=true;
   document.querySelectorAll('.ctb').forEach(b=>b.classList.remove('active'));
   document.querySelector('[data-tab="terminal"]')?.classList.add('active');
 
@@ -895,47 +1070,48 @@ async function loadComm(name){
   const fr=shipData.filter(d=>d.commodity===name&&d.price_low!=null);
   const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===name);
 
-  // Hero photo
-  const imgUrl=getImg(name);
-  $('cp-img').style.cssText=`background-image:url('${imgUrl}');position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .5s;`;
+  // Photo
+  const bg=$('cp-bg');
+  bg.style.backgroundImage=`url('${getImg(name)}')`;
+  bg.style.opacity='0';
   const img=new Image();
-  img.onload=()=>{ $('cp-img').style.opacity='1'; };
-  img.onerror=()=>{ $('cp-img').style.background='linear-gradient(135deg,#1a3d1f,#245228)';$('cp-img').style.opacity='1'; };
-  img.src=imgUrl;
+  img.onload=()=>{bg.style.opacity='1';};
+  img.onerror=()=>{bg.style.opacity='1';bg.style.background='linear-gradient(135deg,#1c4220,#2d6334)';};
+  img.src=getImg(name);
 
-  // Name
   $('cp-name').textContent=name;
   const mkts=[...new Set(tr.map(r=>r.market))];
   const dt=tr[0]?.report_date;
-  $('cp-sub').textContent=`${mkts.length} terminal market${mkts.length!==1?'s':''} · ${fr.length} FOB source${fr.length!==1?'s':''}${dt?' · '+new Date(dt+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):''}`;
+  $('cp-tags').innerHTML=
+    `<span class="cp-tag">${mkts.length} markets</span>`+
+    (fr.length?`<span class="cp-tag">${fr.length} FOB sources</span>`:'')+
+    (dt?`<span class="cp-tag">${new Date(dt+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>`:'');
 
-  // Change badge
   if(mv){
     const up=mv.pct_change>0;
-    $('cp-chg').innerHTML=`<div class="cp-pct ${up?'up':'dn'}" style="color:${up?'#ff8a80':'#69d3a7'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</div><div class="cp-amt">${up?'+':''}$${mv.dollar_change.toFixed(2)} vs last week</div>`;
+    $('cp-chg').innerHTML=`<div class="cp-pct" style="color:${up?'#ff9a8d':'#7de8b5'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</div><div class="cp-amt">${up?'+':''}$${mv.dollar_change.toFixed(2)} vs last week</div>`;
   }else $('cp-chg').innerHTML='';
 
-  // 5-stat bar
+  // Stats bar
   const sortTR=[...tr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
   const sortFR=[...fr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
   const avgTerm=tr.length?tr.reduce((s,d)=>s+parseFloat(d.price_low),0)/tr.length:null;
   const loFOB=sortFR.length?parseFloat(sortFR[0].price_low):null;
-  const hiTerm=sortTR.length?parseFloat(sortTR[sortTR.length-1].price_low):null;
   const spread=(loFOB&&avgTerm)?avgTerm-loFOB:null;
   const spreadPct=(spread&&loFOB)?((spread/loFOB)*100).toFixed(0):null;
   $('cps-fob').textContent=loFOB?`$${loFOB.toFixed(2)}`:'—';
-  $('cps-fob-sub').textContent=sortFR.length?`${sortFR[0].origin||sortFR[0].market||''}`:'';
+  $('cps-fob-s').textContent=sortFR[0]?.origin||sortFR[0]?.market||'';
   $('cps-term').textContent=avgTerm?`$${avgTerm.toFixed(2)}`:'—';
-  $('cps-term-sub').textContent=tr.length?`${tr.length} listings`:'';
-  $('cps-spread').textContent=spread?`$${spread.toFixed(2)}`:'—';
-  $('cps-spread-sub').textContent=spreadPct?`${spreadPct}% margin`:'';
-  $('cps-cheap').textContent=sortFR.length?(sortFR[0].origin||sortFR[0].market||'—'):'—';
-  $('cps-cheap-sub').textContent=loFOB?`$${loFOB.toFixed(2)}`:'';
+  $('cps-term-s').textContent=tr.length?`${tr.length} listings`:'';
+  $('cps-spr').textContent=spread?`$${spread.toFixed(2)}`:'—';
+  $('cps-spr-s').textContent=spreadPct?`${spreadPct}% margin`:'';
+  $('cps-src').textContent=sortFR[0]?`${(sortFR[0].origin||sortFR[0].market||'—').split(',')[0]}`:'—';
+  $('cps-src-s').textContent=loFOB?`$${loFOB.toFixed(2)} FOB`:'';
   if(mv){
     const up=mv.pct_change>0;
     $('cps-mom').innerHTML=`<span class="${up?'up':'dn'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</span>`;
-    $('cps-mom-sub').textContent='vs last week';
-  }else{$('cps-mom').textContent='—';$('cps-mom-sub').textContent='';}
+    $('cps-mom-s').textContent='vs last week';
+  }else{$('cps-mom').textContent='—';$('cps-mom-s').textContent='';}
 
   // Signal
   const sig=mkSig(tr,fr,mv);
@@ -944,47 +1120,51 @@ async function loadComm(name){
     const iD=sig.includes('Lower')||sig.includes('softening');
     const el=$('cp-signal');
     el.className=`signal ${iU?'up':iD?'dn':'nt'}`;
-    el.innerHTML=`<span style="font-size:15px">${iU?'⚠️':iD?'📉':'📊'}</span><div><div class="sig-lbl">Market Signal</div><div class="sig-txt">${sig}</div></div>`;
+    el.innerHTML=`<span style="font-size:18px">${iU?'⚠️':iD?'📉':'📊'}</span><div><div class="sig-lbl">Market Signal</div><div class="sig-txt">${sig}</div></div>`;
     el.classList.remove('hidden');
   }else $('cp-signal').classList.add('hidden');
 
-  // Price chart — fetch 30-day trend
+  // Chart
   renderChart(name);
 
-  // Origins panel
+  // Origins
   $('origins-meta').textContent=`${sortFR.length} source${sortFR.length!==1?'s':''}`;
   if(sortFR.length){
     const maxP=parseFloat(sortFR[sortFR.length-1].price_low)||1;
     const minP=parseFloat(sortFR[0].price_low);
     $('origin-list').innerHTML=sortFR.slice(0,6).map((r,i)=>{
       const p=parseFloat(r.price_low);
-      const pct=Math.round(((p-minP)/(maxP-minP||1))*100);
+      const pct=maxP>minP?Math.round(((p-minP)/(maxP-minP))*100):0;
       return`<div class="origin-item">
-        <div style="flex:1;min-width:0">
+        <div class="origin-rank ${i===0?'first':''}">${i+1}</div>
+        <div class="origin-main">
           <div class="origin-name">${r.origin||r.market||'—'}</div>
-          <div class="origin-region">${r.size?r.size+' · ':''}${r.market||''}</div>
-          <div class="origin-bar-wrap"><div class="origin-bar-fill" style="width:${Math.max(4,100-pct)}%;background:${i===0?'var(--teal)':'var(--g-md)'}"></div></div>
+          <div class="origin-sub">${r.size?r.size+' · ':''}${r.movement?ma(r.movement)+' '+r.movement:''}</div>
+          <div class="origin-bar-wrap"><div class="origin-bar" style="width:${Math.max(6,100-pct)}%;background:${i===0?'var(--teal)':'var(--g-md)'}"></div></div>
         </div>
-        <div style="text-align:right;flex-shrink:0;margin-left:12px">
+        <div class="origin-r">
           <div class="origin-price">$${p.toFixed(2)}</div>
           <div class="origin-mov ${mc(r.movement)}">${r.movement?`${ma(r.movement)} ${r.movement}`:'—'}</div>
         </div>
       </div>`;
     }).join('');
   }else{
-    $('origin-list').innerHTML='<div style="padding:16px;font-size:12px;color:var(--ink4);text-align:center">No FOB data available</div>';
+    $('origin-list').innerHTML='<div style="padding:20px;text-align:center;font-size:13px;font-weight:700;color:var(--ink4)">No FOB data available</div>';
   }
 
-  // Price chain
+  // Chain
   if(sortFR.length&&sortTR.length){
-    $('acc-chain').classList.remove('hidden');
+    $('chain-wrap').classList.remove('hidden');
     $('chain-meta').textContent=`${sortFR.length} source${sortFR.length!==1?'s':''}`;
-    $('body-chain').innerHTML=sortFR.slice(0,4).map((fob,i)=>{
+    $('chain-body').innerHTML=sortFR.slice(0,4).map((fob,i)=>{
       const term=sortTR[Math.min(i,sortTR.length-1)];
       const fp=parseFloat(fob.price_low),tp=parseFloat(term.price_low);
       const sp=tp-fp,pct=fp>0?((sp/fp)*100).toFixed(0):'?';
       return`<div class="chain-row">
-        <div class="chain-org"><div class="chain-oname">${fob.origin||fob.market||'—'}</div><div class="chain-osub">${fob.size||''} ${fob.movement?`· <span class="${mc(fob.movement)}">${ma(fob.movement)} ${fob.movement}</span>`:''}</div></div>
+        <div class="chain-org">
+          <div class="chain-oname">${fob.origin||fob.market||'—'}</div>
+          <div class="chain-osub">${fob.size?fob.size+' · ':''}${fob.movement?ma(fob.movement)+' '+fob.movement:''}</div>
+        </div>
         <div class="chain-fob">$${fp.toFixed(2)}</div>
         <div class="chain-arr">→</div>
         <div class="chain-spr">+${pct}%</div>
@@ -992,63 +1172,51 @@ async function loadComm(name){
         <div class="chain-term">$${tp.toFixed(2)}</div>
       </div>`;
     }).join('');
-    $('body-chain').className='acc-body';
-    $('acc-chain').querySelector('.acc-hdr').className='acc-hdr';
-    $('chev-chain').textContent='▲';$('chev-chain').className='acc-c open';
-  }else $('acc-chain').classList.add('hidden');
+    // Ensure open state
+    $('chain-body').className='chain-body';
+    $('chain-hd-el').className='chain-hd';
+    $('chev-chain').textContent='▲';$('chev-chain').className='chain-chev open';
+    chainOpen=true;
+  }else $('chain-wrap').classList.add('hidden');
 
   cpTab('terminal');
 }
 
 async function renderChart(name){
   try{
-    const trend=await(await fetch(`${API}/commodity/${encodeURIComponent(name)}/trend?days=30&market_type=terminal`)).json();
+    const trend=await(await fetch(`${API}/commodity/${encodeURIComponent(name)}/trend?days=30`)).json();
     if(priceChart){priceChart.destroy();priceChart=null;}
-    if(!trend||!trend.length){
-      $('chart-meta').textContent='No trend data';
-      $('price-chart').getContext('2d').clearRect(0,0,1000,400);
-      return;
-    }
+    if(!trend?.length){$('chart-meta').textContent='No trend data';return;}
     $('chart-meta').textContent=`${trend.length} days`;
-    const labels=trend.map(t=>{
-      const d=new Date(t.date+'T00:00:00');
-      return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    });
+    const labels=trend.map(t=>new Date(t.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
     const prices=trend.map(t=>t.avg_price);
     const ctx=$('price-chart').getContext('2d');
-    const gradient=ctx.createLinearGradient(0,0,0,180);
-    gradient.addColorStop(0,'rgba(26,61,31,.15)');
-    gradient.addColorStop(1,'rgba(26,61,31,0)');
+    const grad=ctx.createLinearGradient(0,0,0,180);
+    grad.addColorStop(0,'rgba(28,66,32,.18)');
+    grad.addColorStop(1,'rgba(28,66,32,0)');
     priceChart=new Chart(ctx,{
       type:'line',
-      data:{
-        labels,
-        datasets:[{
-          label:'Avg Price',
-          data:prices,
-          borderColor:'#1a3d1f',
-          borderWidth:2,
-          backgroundColor:gradient,
-          fill:true,
-          tension:.4,
-          pointRadius:0,
-          pointHoverRadius:4,
-          pointHoverBackgroundColor:'#1a3d1f',
-        }]
-      },
+      data:{labels,datasets:[{
+        data:prices,borderColor:'#1c4220',borderWidth:2.5,
+        backgroundColor:grad,fill:true,tension:.4,
+        pointRadius:0,pointHoverRadius:5,
+        pointHoverBackgroundColor:'#1c4220',
+        pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,
+      }]},
       options:{
         responsive:true,maintainAspectRatio:false,
         plugins:{legend:{display:false},tooltip:{
           mode:'index',intersect:false,
           backgroundColor:'#fff',borderColor:'#e8e8e5',borderWidth:1,
-          titleColor:'#111',bodyColor:'#5a5a56',
-          titleFont:{family:"'Geist Mono',monospace",size:10},
-          bodyFont:{family:"'Geist Mono',monospace",size:12},
+          padding:10,cornerRadius:10,
+          titleColor:'#1a1a18',bodyColor:'#737373',
+          titleFont:{family:"'Nunito',sans-serif",size:12,weight:'700'},
+          bodyFont:{family:"'JetBrains Mono',monospace",size:13,weight:'500'},
           callbacks:{label:ctx=>`$${ctx.parsed.y.toFixed(2)}`}
         }},
         scales:{
-          x:{grid:{display:false},ticks:{font:{family:"'Geist Mono',monospace",size:9},color:'#a0a09a',maxTicksLimit:6}},
-          y:{grid:{color:'#f4f4f2'},ticks:{font:{family:"'Geist Mono',monospace",size:9},color:'#a0a09a',callback:v=>`$${v.toFixed(0)}`},border:{display:false}}
+          x:{grid:{display:false},ticks:{font:{family:"'Nunito',sans-serif",size:10,weight:'600'},color:'#b0b0a8',maxTicksLimit:6}},
+          y:{grid:{color:'#f0f0ee'},border:{display:false},ticks:{font:{family:"'JetBrains Mono',monospace",size:10},color:'#b0b0a8',callback:v=>`$${v.toFixed(0)}`}}
         }
       }
     });
@@ -1063,24 +1231,24 @@ function cpTab(tab){
   const fr=shipData.filter(d=>d.commodity.toLowerCase().includes(curComm.toLowerCase().slice(0,5))&&d.price_low!=null);
   if(tab==='terminal'){
     const srt=[...tr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-    $('cp-thead').innerHTML='<tr><th>Market</th><th>Variety</th><th>Origin</th><th class="r">Size</th><th class="r">Price</th><th class="r">Mostly</th></tr>';
-    $('cp-tbody').innerHTML=srt.map((r,i)=>`<tr>
-      <td style="font-weight:500">${r.market}</td>
+    $('cp-th').innerHTML='<tr><th>Market</th><th>Variety</th><th>Origin</th><th class="r">Size</th><th class="r">Price</th><th class="r">Mostly</th></tr>';
+    $('cp-tb').innerHTML=srt.map((r,i)=>`<tr>
+      <td style="font-weight:700">${r.market}</td>
       <td class="sm">${r.variety||'—'}</td>
       <td class="sm">${r.origin||'—'}</td>
       <td class="r">${sb(r.size)}</td>
-      <td class="r"><span style="font-weight:500;color:${i===0?'var(--g)':'var(--ink2)'}">${money(r)}</span>${i===0?' <span class="b b-low">LOW</span>':''}</td>
+      <td class="r"><span style="font-weight:600;color:${i===0?'var(--g)':'var(--ink)'}">${money(r)}</span>${i===0?' <span class="b b-low">BEST</span>':''}</td>
       <td class="r sm">${mostly(r)||'—'}</td>
-    </tr>`).join('')||'<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--ink4)">No terminal data</td></tr>';
+    </tr>`).join('')||'<tr><td colspan="6" style="padding:24px;text-align:center;font-weight:700;color:var(--ink4)">No terminal data</td></tr>';
   }else{
     const srt=[...fr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-    $('cp-thead').innerHTML='<tr><th>Origin</th><th class="r">Size</th><th class="r">FOB Price</th><th class="r">Movement</th></tr>';
-    $('cp-tbody').innerHTML=srt.map((r,i)=>`<tr>
-      <td style="font-weight:${i===0?600:400}">${r.origin||r.market||'—'}${i===0?' <span class="b b-low">LOW</span>':''}</td>
+    $('cp-th').innerHTML='<tr><th>Origin</th><th class="r">Size</th><th class="r">FOB Price</th><th class="r">Movement</th></tr>';
+    $('cp-tb').innerHTML=srt.map((r,i)=>`<tr>
+      <td style="font-weight:${i===0?700:600}">${getEmoji(r.commodity)} ${r.origin||r.market||'—'}${i===0?' <span class="b b-low">LOWEST</span>':''}</td>
       <td class="r">${sb(r.size)}</td>
-      <td class="r"><span style="font-weight:500">${money(r)}</span></td>
+      <td class="r"><span style="font-weight:600">${money(r)}</span></td>
       <td class="r">${mb(r.movement)}</td>
-    </tr>`).join('')||'<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--ink4)">No FOB data</td></tr>';
+    </tr>`).join('')||'<tr><td colspan="4" style="padding:24px;text-align:center;font-weight:700;color:var(--ink4)">No FOB data</td></tr>';
   }
 }
 
@@ -1099,11 +1267,10 @@ function mkSig(tr,fr,mv){
 // Terminal page
 function filterTp(){
   const q=$('tp-q').value.toLowerCase().trim();
-  const m=$('tp-m').value,v=$('tp-v').value,s=$('tp-s').value,org=$('tp-org').checked;
+  const m=$('tp-m').value,v=$('tp-v').value,s=$('tp-s').value;
   tpFiltered=termData.filter(d=>{
     if(m&&d.market!==m)return false;
     if(v&&d.variety!==v)return false;
-    if(org&&!d.organic)return false;
     if(q&&!`${d.commodity} ${d.variety||''} ${d.origin||''} ${d.market}`.toLowerCase().includes(q))return false;
     return true;
   });
@@ -1113,25 +1280,27 @@ function filterTp(){
   tpPage=1;renderTp();
 }
 function renderTp(){
-  const st=(tpPage-1)*PG,items=tpFiltered.slice(st,st+PG);
-  const tot=Math.ceil(tpFiltered.length/PG)||1;
+  const st=(tpPage-1)*PG,items=tpFiltered.slice(st,st+PG),tot=Math.ceil(tpFiltered.length/PG)||1;
   $('tp-pi').textContent=`${tpFiltered.length} results · Page ${tpPage}/${tot}`;
   $('tp-prev').disabled=tpPage<=1;$('tp-next').disabled=tpPage>=tot;
   $('tp-body').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<tr onclick="goComm('${esc(r.commodity)}')">
-      <td>${ob(r)}<span style="font-weight:500">${r.commodity}</span></td>
+      <td><span style="font-size:16px;margin-right:6px">${getEmoji(r.commodity)}</span><span style="font-weight:700">${r.commodity}</span></td>
       <td class="sm">${r.variety||'—'}</td><td class="sm">${r.origin||'—'}</td>
-      <td style="font-size:13px">${r.market}</td>
+      <td style="font-size:13px;font-weight:600">${r.market}</td>
       <td class="r">${sb(r.size)}</td>
-      <td class="r"><span style="font-weight:500;color:var(--g)">${money(r)}</span></td>
-      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:11px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r"><span style="font-weight:600;color:var(--g)">${money(r)}</span></td>
+      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
     </tr>`;
-  }).join('')||'<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--ink4)">No results</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="padding:32px;text-align:center;font-weight:700;color:var(--ink4)">No results</td></tr>';
   $('tp-mob').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<div class="mc" onclick="goComm('${esc(r.commodity)}')">
-      <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px">${getEmoji(r.commodity)}</div>
+        <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      </div>
       <div><div class="mc-price">${money(r)}</div><div class="mc-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
     </div>`;
   }).join('');
@@ -1151,7 +1320,7 @@ async function loadSP(){
     $('sp-og').innerHTML='<option value="">All Origins</option>'+origs.map(o=>`<option>${o}</option>`).join('');
     $('sp-loading').classList.add('hidden');$('sp-view').classList.remove('hidden');
     renderSP();
-  }catch(e){$('sp-loading').textContent='Error.';}
+  }catch(e){$('sp-loading').textContent='Error loading data.';}
 }
 function renderSP(){
   const q=($('sp-q')?.value||'').toLowerCase();
@@ -1175,21 +1344,21 @@ function renderSP(){
   let last=null;
   $('sp-body').innerHTML=rows.map((r,i)=>{
     const isNew=r.commodity!==last;last=r.commodity;
-    return`<tr onclick="goComm('${esc(r.commodity)}')" style="${isNew&&i>0?'border-top:2px solid var(--line2)':''}">
-      <td>${isNew?`<span style="font-weight:500">${r.commodity}</span>`:`<span style="color:var(--ink4)">″</span>`}</td>
+    return`<tr onclick="goComm('${esc(r.commodity)}')" style="${isNew&&i>0?'border-top:2px solid var(--line)':''}">
+      <td>${isNew?`<span style="font-size:15px;margin-right:5px">${getEmoji(r.commodity)}</span><span style="font-weight:700">${r.commodity}</span>`:`<span style="color:var(--ink4);padding-left:20px">″</span>`}</td>
       <td class="sm">${r.origin||r.market||'—'}</td>
-      <td class="r"><span style="font-weight:500">${money(r)}</span></td>
+      <td class="r"><span style="font-weight:600">${money(r)}</span></td>
       <td class="r sm">${mostly(r)||'—'}</td>
       <td class="r">${mb(r.movement)}</td>
       <td class="r sm">${r.trading_activity||'—'}</td>
     </tr>`;
-  }).join('')||'<tr><td colspan="6" style="padding:32px;text-align:center;color:var(--ink4)">No results</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="padding:32px;text-align:center;font-weight:700;color:var(--ink4)">No results</td></tr>';
 }
 
 // Compare
 function buildCompare(){
   const comms=[...new Set(termData.map(d=>d.commodity))].sort();
-  $('cmp-sel').innerHTML='<option value="">Select a commodity…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
+  $('cmp-sel').innerHTML='<option value="">Choose…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
 }
 function doCompare(){
   const c=$('cmp-sel').value;
@@ -1203,13 +1372,13 @@ function doCompare(){
     const mg=parseFloat(hi.price_low)-parseFloat(lo.price_low);
     $('cmp-flow').innerHTML=`
       <div class="fn"><div class="fn-lbl">Lowest FOB</div><div class="fn-price" style="color:var(--ink2)">$${parseFloat(lo.price_low).toFixed(2)}</div><div class="fn-place">${lo.origin||lo.market}</div></div>
-      <div class="fn-mid"><div class="fn-margin">+$${mg.toFixed(2)}</div><div class="fn-line"></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--ink4);margin-top:4px">MARGIN</div></div>
+      <div class="fn-mid"><div class="fn-margin">+$${mg.toFixed(2)}</div><div class="fn-line"></div><div class="fn-mlbl">Margin</div></div>
       <div class="fn"><div class="fn-lbl">Highest Terminal</div><div class="fn-price" style="color:var(--g)">$${parseFloat(hi.price_low).toFixed(2)}</div><div class="fn-place">${hi.market}</div></div>`;
   }else{
-    $('cmp-flow').innerHTML='<span style="color:var(--ink4);font-size:13px">Insufficient data.</span>';
+    $('cmp-flow').innerHTML='<span style="font-size:14px;font-weight:600;color:var(--ink4)">Not enough data for comparison.</span>';
   }
-  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="color:var(--ink3)">${r.origin||r.market}</span><span style="font-family:var(--mono);font-weight:500">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<span style="font-size:12px;color:var(--ink4)">No data</span>';
-  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="color:var(--ink3)">${r.market}</span><span style="font-family:var(--mono);font-weight:500;color:var(--g)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<span style="font-size:12px;color:var(--ink4)">No data</span>';
+  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:600;color:var(--ink2)">${r.origin||r.market}</span><span style="font-family:var(--mono);font-weight:500">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<span style="font-size:13px;font-weight:600;color:var(--ink4)">No data</span>';
+  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:600;color:var(--ink2)">${r.market}</span><span style="font-family:var(--mono);font-weight:500;color:var(--g)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<span style="font-size:13px;font-weight:600;color:var(--ink4)">No data</span>';
 }
 
 // Search page
@@ -1222,13 +1391,15 @@ function doSearch(){
     const rows=termData.filter(t=>t.commodity===c&&t.market_type==='terminal');
     const avg=rows.reduce((s,i)=>s+parseFloat(i.price_low),0)/(rows.length||1);
     const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===c);
+    const imgUrl=getImg(c);
     return`<div onclick="goComm('${esc(c)}')" class="sp-card">
-      <div class="sp-cn">${c}</div>
+      <div class="sp-card-img" style="background-image:url('${imgUrl}')"></div>
+      <div class="sp-cn">${getEmoji(c)} ${c}</div>
       <div class="sp-cm">${rows.length} listings · ${[...new Set(rows.map(i=>i.market))].length} markets</div>
       <div class="sp-cp">$${avg.toFixed(2)}</div>
-      ${mv?`<div style="font-family:var(--mono);font-size:10px;margin-top:4px" class="${mv.pct_change>0?'up':'dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}% vs last week</div>`:''}
+      ${mv?`<div class="sp-chg ${mv.pct_change>0?'up':'dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}% vs last week</div>`:''}
     </div>`;
-  }).join('')||'<div style="grid-column:1/-1;color:var(--ink4);font-size:13px">No results found</div>';
+  }).join('')||'<div style="grid-column:1/-1;font-size:14px;font-weight:700;color:var(--ink4)">No results found</div>';
 }
 
 init();
