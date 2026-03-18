@@ -8,25 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:       #0f0f0d;
-            --bg2:      #161614;
-            --bg3:      #1e1e1b;
-            --bg4:      #252521;
-            --border:   #2e2e29;
-            --border2:  #3a3a34;
-            --muted:    #6b6b60;
-            --sub:      #9b9b8e;
-            --text:     #e8e8de;
-            --bright:   #f5f5ed;
-            --amber:    #f0a500;
-            --amber2:   #d48c00;
-            --amber-dim:#3d2a00;
-            --green:    #4caf7d;
-            --green-dim:#0e2e1c;
-            --red:      #e05c5c;
-            --red-dim:  #2e0f0f;
-            --orange:   #e8803a;
-            --blue:     #5b9bd5;
+            --bg:       #f8f7f4;
+            --bg2:      #ffffff;
+            --bg3:      #f2f1ee;
+            --bg4:      #eceae6;
+            --border:   #e5e3de;
+            --border2:  #d4d1ca;
+            --muted:    #a09d96;
+            --sub:      #6b6860;
+            --text:     #2c2b27;
+            --bright:   #1a1916;
+            --amber:    #c47f00;
+            --amber2:   #a86d00;
+            --amber-dim:#fff3d6;
+            --green:    #1a7a4a;
+            --green-dim:#e8f5ee;
+            --red:      #c0392b;
+            --red-dim:  #fdf0ee;
+            --orange:   #c45c1a;
+            --blue:     #2563ab;
             --serif:    'DM Serif Display', Georgia, serif;
             --mono:     'DM Mono', 'Courier New', monospace;
             --sans:     'DM Sans', system-ui, sans-serif;
@@ -47,7 +47,7 @@
 
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg2); }
+        ::-webkit-scrollbar-track { background: var(--bg3); }
         ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
         /* ── Pages ── */
@@ -57,7 +57,7 @@
         /* ── Header ── */
         #header {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(15,15,13,.95);
+            background: rgba(255,255,255,.97);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
         }
@@ -93,9 +93,10 @@
             cursor: pointer;
             transition: color .15s, background .15s;
             white-space: nowrap;
+            font-family: var(--sans);
         }
         .nav-btn:hover { color: var(--text); background: var(--bg3); }
-        .nav-btn.active { color: var(--amber); background: var(--amber-dim); }
+        .nav-btn.active { color: var(--amber); background: var(--amber-dim); font-weight: 600; }
         .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
         .search-trigger {
             display: flex; align-items: center; gap: 6px;
@@ -107,9 +108,10 @@
             font-size: 12px;
             cursor: pointer;
             transition: border-color .15s;
+            font-family: var(--sans);
         }
         .search-trigger:hover { border-color: var(--border2); color: var(--sub); }
-        .kbd { font-family: var(--mono); font-size: 10px; background: var(--bg4); padding: 1px 5px; border-radius: 3px; }
+        .kbd { font-family: var(--mono); font-size: 10px; background: var(--bg4); color: var(--sub); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
 
         /* Mobile nav */
         .nav-mobile {
@@ -133,29 +135,32 @@
 
         /* ── Category Strip (home) ── */
         .cat-strip {
-            display: flex; gap: 4px;
-            padding: 12px 16px 0;
+            display: flex; gap: 0;
+            padding: 0 16px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
             overflow-x: auto;
             scrollbar-width: none;
         }
         .cat-strip::-webkit-scrollbar { display: none; }
         .cat-btn {
             display: flex; align-items: center; gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            background: var(--bg2);
-            color: var(--sub);
-            font-size: 12px; font-weight: 500;
+            padding: 10px 18px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: none;
+            color: var(--muted);
+            font-size: 13px; font-weight: 500;
+            font-family: var(--sans);
             cursor: pointer;
-            transition: all .15s;
+            transition: color .15s, border-color .15s;
             white-space: nowrap; flex-shrink: 0;
+            margin-bottom: -1px;
         }
-        .cat-btn:hover { border-color: var(--border2); color: var(--text); }
+        .cat-btn:hover { color: var(--text); }
         .cat-btn.active {
-            border-color: var(--amber);
-            background: var(--amber-dim);
             color: var(--amber);
+            border-bottom-color: var(--amber);
         }
 
         /* ── Ticker bar ── */
@@ -165,7 +170,7 @@
             height: 32px;
             display: flex;
             align-items: center;
-            background: var(--bg2);
+            background: var(--bg3);
         }
         .ticker-label {
             padding: 0 12px;
@@ -178,6 +183,7 @@
             height: 100%;
             display: flex; align-items: center;
             flex-shrink: 0;
+            background: var(--amber-dim);
         }
         .ticker-track {
             display: flex;
@@ -219,9 +225,10 @@
         /* ── Watchlist panel ── */
         .watchlist-panel {
             border-right: 1px solid var(--border);
+            background: var(--bg2);
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 130px);
+            height: calc(100vh - 148px);
             position: sticky;
             top: 52px;
             overflow: hidden;
@@ -235,10 +242,10 @@
             }
         }
         .wl-header {
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; gap: 8px;
-            background: var(--bg2);
+            background: var(--bg3);
         }
         .wl-filter-btn {
             padding: 4px 10px;
@@ -249,12 +256,13 @@
             color: var(--muted);
             cursor: pointer;
             transition: all .12s;
+            font-family: var(--sans);
         }
         .wl-filter-btn:hover { color: var(--text); border-color: var(--border2); }
-        .wl-filter-btn.active { background: var(--bg4); border-color: var(--border2); color: var(--text); }
+        .wl-filter-btn.active { background: var(--bg2); border-color: var(--border2); color: var(--text); font-weight: 600; }
         .wl-search {
             flex: 1;
-            background: var(--bg3);
+            background: var(--bg2);
             border: 1px solid var(--border);
             border-radius: 4px;
             padding: 4px 8px;
@@ -263,7 +271,7 @@
             font-family: var(--sans);
             outline: none;
         }
-        .wl-search:focus { border-color: var(--border2); }
+        .wl-search:focus { border-color: var(--amber); }
         .wl-search::placeholder { color: var(--muted); }
 
         .wl-cols {
@@ -271,7 +279,7 @@
             grid-template-columns: 1fr 70px 58px 52px;
             padding: 6px 16px;
             border-bottom: 1px solid var(--border);
-            background: var(--bg);
+            background: var(--bg3);
         }
         .wl-col-label {
             font-family: var(--mono);
@@ -288,6 +296,7 @@
             flex: 1;
             overflow-y: auto;
             scrollbar-width: thin;
+            background: var(--bg2);
         }
         .wl-row {
             display: grid;
@@ -297,8 +306,9 @@
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background .1s;
+            background: var(--bg2);
         }
-        .wl-row:hover { background: var(--bg2); }
+        .wl-row:hover { background: var(--bg3); }
         .wl-row.active {
             background: var(--amber-dim);
             border-left: 2px solid var(--amber);
@@ -326,7 +336,8 @@
         .detail-panel {
             overflow-y: auto;
             padding: 24px 28px;
-            max-height: calc(100vh - 130px);
+            max-height: calc(100vh - 148px);
+            background: var(--bg);
         }
         @media (max-width: 900px) {
             .detail-panel { max-height: none; padding: 16px; }
@@ -355,7 +366,9 @@
                 font-size: 12px;
                 color: var(--amber);
                 cursor: pointer;
-                background: var(--bg2);
+                background: var(--bg3);
+                font-family: var(--mono);
+                font-weight: 500;
             }
         }
         @media (min-width: 901px) {
@@ -410,9 +423,9 @@
             margin-bottom: 16px;
             display: flex; align-items: flex-start; gap: 10px;
         }
-        .signal-card.up { border-color: #3a1a1a; background: var(--red-dim); }
-        .signal-card.down { border-color: #0e2a1a; background: var(--green-dim); }
-        .signal-card.neutral { border-color: var(--border); background: var(--bg2); }
+        .signal-card.up      { border-color: #f5c6c2; background: var(--red-dim); }
+        .signal-card.down    { border-color: #c3e8d4; background: var(--green-dim); }
+        .signal-card.neutral { border-color: var(--border); background: var(--bg3); }
         .signal-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
         .signal-label { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
         .signal-text { font-size: 13px; color: var(--text); }
@@ -421,13 +434,15 @@
         .section-hdr {
             display: flex; align-items: center; justify-content: space-between;
             padding: 10px 14px;
-            background: var(--bg2);
+            background: var(--bg3);
             border: 1px solid var(--border);
             border-bottom: none;
             border-radius: var(--radius) var(--radius) 0 0;
             cursor: pointer;
             user-select: none;
+            transition: background .1s;
         }
+        .section-hdr:hover { background: var(--bg4); }
         .section-hdr.collapsed { border-radius: var(--radius); border-bottom: 1px solid var(--border); }
         .section-hdr-title {
             font-family: var(--mono);
@@ -437,7 +452,7 @@
             text-transform: uppercase;
             color: var(--sub);
         }
-        .section-hdr-meta { font-size: 11px; color: var(--muted); }
+        .section-hdr-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); }
         .section-hdr-chevron { font-size: 10px; color: var(--muted); transition: transform .2s; }
         .section-hdr-chevron.open { transform: rotate(180deg); }
         .section-body {
@@ -446,6 +461,7 @@
             border-radius: 0 0 var(--radius) var(--radius);
             overflow: hidden;
             margin-bottom: 12px;
+            background: var(--bg2);
         }
 
         /* ── Price chain ── */
@@ -482,7 +498,7 @@
             color: var(--muted);
             padding: 8px 14px;
             text-align: left;
-            background: var(--bg);
+            background: var(--bg3);
             border-bottom: 1px solid var(--border);
             font-weight: 500;
         }
@@ -492,11 +508,12 @@
             font-size: 12px;
             color: var(--text);
             border-bottom: 1px solid var(--border);
+            background: var(--bg2);
         }
         .data-table td.r { text-align: right; font-family: var(--mono); }
         .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:hover td { background: var(--bg2); }
-        .data-table tr.best td { background: rgba(240,165,0,.05); }
+        .data-table tr:hover td { background: var(--bg3); }
+        .data-table tr.best td { background: var(--amber-dim); }
 
         /* ── Terminal Markets full page table ── */
         .page-table-wrap {
@@ -513,7 +530,7 @@
             color: var(--muted);
             padding: 10px 14px;
             text-align: left;
-            background: var(--bg2);
+            background: var(--bg3);
             border-bottom: 1px solid var(--border);
             font-weight: 500;
         }
@@ -523,11 +540,12 @@
             font-size: 13px;
             border-bottom: 1px solid var(--border);
             color: var(--text);
+            background: var(--bg2);
         }
         .page-table tbody td.r { text-align: right; font-family: var(--mono); }
         .page-table tbody td.mono { font-family: var(--mono); font-size: 12px; }
         .page-table tbody tr:last-child td { border-bottom: none; }
-        .page-table tbody tr:hover td { background: var(--bg2); cursor: pointer; }
+        .page-table tbody tr:hover td { background: var(--bg3); cursor: pointer; }
 
         /* Mobile cards for tables */
         .mob-card {
@@ -535,12 +553,13 @@
             padding: 12px 16px;
             cursor: pointer;
             transition: background .1s;
+            background: var(--bg2);
         }
-        .mob-card:hover { background: var(--bg2); }
+        .mob-card:hover { background: var(--bg3); }
         .mob-card:last-child { border-bottom: none; }
         .mob-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
         .mob-card-name { font-size: 13px; font-weight: 500; color: var(--bright); }
-        .mob-card-price { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--green); }
+        .mob-card-price { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--amber); }
         .mob-card-sub { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .mob-card-meta { font-size: 11px; color: var(--muted); }
         .mob-card-chg { font-family: var(--mono); font-size: 11px; }
@@ -554,12 +573,12 @@
             border-radius: 3px;
             font-weight: 500;
         }
-        .pill-org { background: var(--green-dim); color: var(--green); border: 1px solid #1a4a2e; }
-        .pill-size { background: var(--bg4); color: var(--sub); border: 1px solid var(--border); }
-        .pill-up { background: var(--red-dim); color: var(--red); }
-        .pill-down { background: var(--green-dim); color: var(--green); }
-        .pill-flat { background: var(--bg4); color: var(--muted); }
-        .pill-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid #4a3200; }
+        .pill-org  { background: var(--green-dim); color: var(--green); border: 1px solid #c3e8d4; }
+        .pill-size { background: var(--bg3); color: var(--sub); border: 1px solid var(--border); }
+        .pill-up   { background: var(--red-dim); color: var(--red); border: 1px solid #f5c6c2; }
+        .pill-down { background: var(--green-dim); color: var(--green); border: 1px solid #c3e8d4; }
+        .pill-flat { background: var(--bg4); color: var(--muted); border: 1px solid var(--border); }
+        .pill-amber{ background: var(--amber-dim); color: var(--amber); border: 1px solid #f5d98a; }
 
         /* ── Text utils ── */
         .t-up { color: var(--red); }
@@ -602,10 +621,10 @@
             align-items: center;
             padding: 12px 16px;
             border-bottom: 1px solid var(--border);
-            background: var(--bg2);
+            background: var(--bg3);
         }
         .filter-input, .filter-select {
-            background: var(--bg3);
+            background: var(--bg2);
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 6px 10px;
@@ -615,10 +634,10 @@
             outline: none;
             transition: border-color .15s;
         }
-        .filter-input:focus, .filter-select:focus { border-color: var(--border2); }
+        .filter-input:focus, .filter-select:focus { border-color: var(--amber); }
         .filter-input::placeholder { color: var(--muted); }
         .filter-select { cursor: pointer; }
-        .filter-select option { background: var(--bg2); }
+        .filter-select option { background: var(--bg2); color: var(--text); }
 
         /* ── Buttons ── */
         .btn {
@@ -633,9 +652,9 @@
         }
         .btn-amber {
             background: var(--amber);
-            color: #0f0f0d;
+            color: #ffffff;
         }
-        .btn-amber:hover { background: #e09800; }
+        .btn-amber:hover { background: var(--amber2); }
         .btn-ghost {
             background: var(--bg3);
             border: 1px solid var(--border);
@@ -669,6 +688,7 @@
             display: flex;
             gap: 0;
             border-bottom: 1px solid var(--border);
+            background: var(--bg2);
         }
         .stat-item {
             flex: 1;
@@ -735,12 +755,12 @@
             border-radius: var(--radius);
             padding: 14px;
             cursor: pointer;
-            transition: border-color .15s, background .15s;
+            transition: border-color .15s, box-shadow .15s;
         }
-        .search-card:hover { border-color: var(--border2); background: var(--bg3); }
-        .search-card-name { font-size: 14px; font-weight: 500; color: var(--bright); margin-bottom: 4px; }
-        .search-card-meta { font-size: 11px; color: var(--muted); }
-        .search-card-price { font-family: var(--mono); font-size: 18px; color: var(--amber); margin-top: 8px; }
+        .search-card:hover { border-color: var(--amber); box-shadow: 0 2px 12px rgba(196,127,0,.08); }
+        .search-card-name { font-size: 14px; font-weight: 600; color: var(--bright); margin-bottom: 4px; }
+        .search-card-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+        .search-card-price { font-family: var(--mono); font-size: 20px; color: var(--amber); margin-top: 8px; font-weight: 500; }
 
         /* ── Commodity detail full page ── */
         #page-commodity .comm-hero {
@@ -775,11 +795,11 @@
         /* ── Quick price check ── */
         .qpc-result {
             display: none;
-            background: var(--bg2);
-            border: 1px solid var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid #f0d070;
             border-radius: var(--radius);
             padding: 16px;
-            margin-bottom: 16px;
+            margin: 0 16px 16px;
         }
         .qpc-result.show { display: block; }
         .qpc-price { font-family: var(--serif); font-size: 36px; color: var(--amber); line-height: 1; }
@@ -817,8 +837,9 @@
             font-size: 11px;
             color: var(--muted);
             font-family: var(--mono);
+            background: var(--bg2);
         }
-        footer img { height: 20px; opacity: .4; vertical-align: middle; margin-right: 8px; }
+        footer img { height: 20px; opacity: .5; vertical-align: middle; margin-right: 8px; }
     </style>
 </head>
 <body>
@@ -1092,12 +1113,12 @@
 <div id="page-commodity" class="page">
     <div class="comm-hero" style="padding:20px 16px;border-bottom:1px solid var(--border);background:var(--bg2)">
         <div style="max-width:1400px;margin:0 auto">
-            <button onclick="history.back()" style="font-size:12px;color:var(--amber);background:none;border:none;cursor:pointer;margin-bottom:8px;font-family:var(--mono)">← Back</button>
+            <button onclick="history.back()" style="font-size:12px;color:var(--amber);background:none;border:none;cursor:pointer;margin-bottom:8px;font-family:var(--mono);font-weight:500">← Back</button>
             <div style="font-family:var(--serif);font-size:28px;color:var(--bright);letter-spacing:-.02em" id="commodity-title"></div>
-            <div style="font-size:12px;color:var(--muted);margin-top:4px" id="commodity-subtitle"></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;font-family:var(--mono)" id="commodity-subtitle"></div>
         </div>
     </div>
-    <div class="comm-tabs">
+    <div class="comm-tabs" style="background:var(--bg2);border-bottom:1px solid var(--border)">
         <button class="comm-tab-btn active" data-tab="terminal" onclick="showTab('terminal')">Terminal Markets</button>
         <button class="comm-tab-btn" data-tab="shipping" onclick="showTab('shipping')">FOB Sources</button>
     </div>
