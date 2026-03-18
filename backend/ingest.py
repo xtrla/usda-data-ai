@@ -39,20 +39,37 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Add more from https://mymarketnews.ams.usda.gov/public_data
 # market_type: "terminal" or "shipping_point"
 REPORT_SLUGS = [
-    # ── Terminal Markets ─────────────────────────────────────────
-    {"slug_id": 2232, "code": "NX_FV010", "market": "New York",      "market_type": "terminal"},
-    {"slug_id": 2315, "code": "NX_FV020", "market": "New York",      "market_type": "terminal"},
-    {"slug_id": 945,  "code": "HC_FV010", "market": "Los Angeles",   "market_type": "terminal"},
-    {"slug_id": 946,  "code": "HC_FV020", "market": "Los Angeles",   "market_type": "terminal"},
-    {"slug_id": 1094, "code": "MH_FV010", "market": "Miami",         "market_type": "terminal"},
-    {"slug_id": 1095, "code": "MH_FV020", "market": "Miami",         "market_type": "terminal"},
-    {"slug_id": 1150, "code": "CH_FV010", "market": "Chicago",       "market_type": "terminal"},
-    {"slug_id": 1151, "code": "CH_FV020", "market": "Chicago",       "market_type": "terminal"},
-    {"slug_id": 1200, "code": "DA_FV010", "market": "Dallas",        "market_type": "terminal"},
-    {"slug_id": 1201, "code": "DA_FV020", "market": "Dallas",        "market_type": "terminal"},
-    # ── Shipping Points (FOB) ────────────────────────────────────
-    {"slug_id": 1780, "code": "fvdfob",   "market": "National FOB",  "market_type": "shipping_point"},
-    {"slug_id": 1781, "code": "fvwtrds",  "market": "National Trends","market_type": "shipping_point"},
+    # ── Terminal Markets (destination wholesale prices) ──────────
+    {"slug_id": 2232, "code": "NX_FV010", "market": "New York",        "market_type": "terminal"},
+    {"slug_id": 2315, "code": "NX_FV020", "market": "New York",        "market_type": "terminal"},
+    {"slug_id": 945,  "code": "HC_FV010", "market": "Los Angeles",     "market_type": "terminal"},
+    {"slug_id": 946,  "code": "HC_FV020", "market": "Los Angeles",     "market_type": "terminal"},
+    {"slug_id": 1094, "code": "MH_FV010", "market": "Miami",           "market_type": "terminal"},
+    {"slug_id": 1095, "code": "MH_FV020", "market": "Miami",           "market_type": "terminal"},
+    {"slug_id": 1150, "code": "CH_FV010", "market": "Chicago",         "market_type": "terminal"},
+    {"slug_id": 1151, "code": "CH_FV020", "market": "Chicago",         "market_type": "terminal"},
+    # ── Shipping Points (FOB origin prices) ─────────────────────
+    # California — Fresno (fruits + vegetables, daily)
+    {"slug_id": 2390, "code": "FR_FV110", "market": "Fresno",          "market_type": "shipping_point"},
+    {"slug_id": 2391, "code": "FR_FV120", "market": "Fresno",          "market_type": "shipping_point"},
+    # Florida — Orlando (fruits + vegetables, daily)
+    {"slug_id": 2399, "code": "OR_FV110", "market": "Orlando",         "market_type": "shipping_point"},
+    {"slug_id": 2400, "code": "OR_FV120", "market": "Orlando",         "market_type": "shipping_point"},
+    # Florida — Orlando imports (tropical fruits via Miami/Orlando ports)
+    {"slug_id": 2401, "code": "OR_FV111", "market": "Orlando Imports", "market_type": "shipping_point"},
+    # Arizona/Mexico crossings — Phoenix (fruits + vegetables, daily)
+    {"slug_id": 2402, "code": "IX_FV110", "market": "Phoenix",         "market_type": "shipping_point"},
+    {"slug_id": 2403, "code": "IX_FV120", "market": "Phoenix",         "market_type": "shipping_point"},
+    # Southeast — Raleigh NC (vegetables, seasonal)
+    {"slug_id": 2404, "code": "RA_FV110", "market": "Raleigh",         "market_type": "shipping_point"},
+    {"slug_id": 2405, "code": "RA_FV120", "market": "Raleigh",         "market_type": "shipping_point"},
+    # Southeast — Thomasville GA (vegetables, daily)
+    {"slug_id": 2410, "code": "TV_FV120", "market": "Thomasville",     "market_type": "shipping_point"},
+    {"slug_id": 2411, "code": "TH_FV120", "market": "Thomasville",     "market_type": "shipping_point"},
+    # Miami imports (tropical fruit through Miami port)
+    {"slug_id": 2395, "code": "MH_FV111", "market": "Miami Imports",   "market_type": "shipping_point"},
+    # National weekly trends — price direction + movement summary
+    {"slug_id": 1662, "code": "FVWTRDS",  "market": "National Trends", "market_type": "shipping_point"},
 ]
 
 
