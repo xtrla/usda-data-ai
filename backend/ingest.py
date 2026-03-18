@@ -75,6 +75,20 @@ REPORT_SLUGS = [
 
 # ── USDA Fetch ───────────────────────────────────────────────────────────────
 
+def fetch_latest_report(slug_id: int) -> list[dict]:
+    """Fetch the most recently published report for a slug (no date filter)."""
+    url = f"{MARS_BASE}/reports/{slug_id}/report details"
+    params = {"lastReports": 1}
+    resp = requests.get(url, params=params, auth=(MARS_KEY, ""), timeout=30)
+    if resp.status_code in (404, 401):
+        return []
+    resp.raise_for_status()
+    data = resp.json()
+    if isinstance(data, list):
+        return data
+    return data.get("results", [])
+
+
 def fetch_report(slug_id: int, report_date: str = None) -> list[dict]:
     """
     Fetch price detail rows from MARS API for a given slug.
@@ -423,6 +437,9 @@ def run(target_date: str = None):
     """
     Ingest all configured report slugs for today (or target_date if given).
     target_date format: "MM/DD/YYYY"
+
+    If today has no data yet (USDA not published), automatically falls back
+    to the most recent available date for each report.
     """
     if not target_date:
         target_date = date.today().strftime("%m/%d/%Y")
@@ -441,8 +458,17 @@ def run(target_date: str = None):
             log.error("Failed to fetch %s: %s", code, e)
             continue
 
+        # If no data for today, try fetching the most recent available report
         if not raw_rows:
-            log.info("  No data for %s on %s", code, target_date)
+            log.info("  No data for %s on %s — trying latest available...", code, target_date)
+            try:
+                raw_rows = fetch_latest_report(slug_id)
+            except Exception as e:
+                log.error("Failed to fetch latest %s: %s", code, e)
+                continue
+
+        if not raw_rows:
+            log.info("  No data available for %s", code)
             continue
 
         log.info("  Got %d raw rows from API", len(raw_rows))
