@@ -42,7 +42,7 @@ def health():
 def get_dates(market_type: Optional[str] = None):
     """Return the last 30 available report dates with record counts."""
     try:
-        q = supabase.table(TABLE).select("report_date, market_type")
+        q = supabase.table(TABLE).select("report_date, market_type").order("report_date", desc=True).limit(100000)
         if market_type:
             q = q.eq("market_type", market_type)
         result = q.execute()

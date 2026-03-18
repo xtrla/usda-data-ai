@@ -461,6 +461,7 @@
             document.querySelectorAll(`[data-nav="${page}"]`).forEach(n => n.classList.add('active'));
             window.scrollTo(0, 0);
             if (page === 'commodity' && param) loadCommodity(param);
+            if (page === 'shipping') renderShippingPage();
         }
 
         // ── Init ─────────────────────────────────────────────────────
@@ -799,27 +800,51 @@
         }
 
         // ── Shipping Page ────────────────────────────────────────────
-        function renderShippingPage() {
-            const shippingData = terminalData.filter(d => d.market_type === 'shipping_point');
+        let shippingData = [];
 
-            if (!shippingData.length) {
+        async function renderShippingPage() {
+            document.getElementById('shipping-table').innerHTML =
+                '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Loading...</td></tr>';
+
+            try {
+                // Fetch latest date for shipping points
+                const datesRes = await fetch(`${API}/dates?market_type=shipping_point`);
+                const shippingDates = await datesRes.json();
+
+                if (!shippingDates.length) {
+                    document.getElementById('shipping-table').innerHTML =
+                        '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">No shipping point data available yet.</td></tr>';
+                    return;
+                }
+
+                const latestDate = shippingDates[0].date;
+                const res = await fetch(`${API}/commodities/by-date/${latestDate}?market_type=shipping_point`);
+                shippingData = await res.json();
+
+                if (!shippingData.length) {
+                    document.getElementById('shipping-table').innerHTML =
+                        '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">No shipping point data for latest date.</td></tr>';
+                    return;
+                }
+
+                document.getElementById('shipping-table').innerHTML = shippingData
+                    .sort((a, b) => a.commodity.localeCompare(b.commodity))
+                    .map(r => `
+                    <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${r.commodity}')">
+                        <td class="px-4 py-3 font-medium text-earth-800">${r.commodity}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${r.variety || '–'}</td>
+                        <td class="px-4 py-3 text-earth-500">${r.origin || r.market || '–'}</td>
+                        <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(r.size)}</td>
+                        <td class="px-4 py-3 text-right font-semibold text-orange-600">${formatPrice(r)}</td>
+                        <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(r.movement)}">${movementArrow(r.movement)} ${r.movement || '–'}</span></td>
+                        <td class="px-4 py-3 text-right text-earth-400 text-sm hidden md:table-cell">${r.trading_activity || '–'}</td>
+                    </tr>`).join('');
+
+            } catch(e) {
+                console.error('renderShippingPage error', e);
                 document.getElementById('shipping-table').innerHTML =
-                    '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Shipping point data loads from live USDA feed. Run the ingestion script to populate.</td></tr>';
-                return;
+                    '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Error loading data.</td></tr>';
             }
-
-            document.getElementById('shipping-table').innerHTML = shippingData
-                .sort((a, b) => a.commodity.localeCompare(b.commodity))
-                .map(r => `
-                <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${r.commodity}')">
-                    <td class="px-4 py-3 font-medium text-earth-800">${r.commodity}</td>
-                    <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${r.variety || '–'}</td>
-                    <td class="px-4 py-3 text-earth-500">${r.origin || '–'}</td>
-                    <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(r.size)}</td>
-                    <td class="px-4 py-3 text-right font-semibold text-orange-600">${formatPrice(r)}</td>
-                    <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(r.movement)}">${movementArrow(r.movement)} ${r.movement || '–'}</span></td>
-                    <td class="px-4 py-3 text-right text-earth-400 text-sm hidden md:table-cell">${r.trading_activity || '–'}</td>
-                </tr>`).join('');
         }
 
         // ── Compare Page ─────────────────────────────────────────────
