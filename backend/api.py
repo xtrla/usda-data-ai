@@ -526,3 +526,62 @@ def verify_live(
         "mars_api_raw":  live_summary,
         "our_db_rows":   db_rows,
     }
+
+
+# ── One-time DB cleanup endpoint ──────────────────────────────────────────────
+
+@app.post("/admin/cleanup-origins")
+def cleanup_origins():
+    """
+    Directly deletes all rows with bad/un-normalized origin strings from the DB.
+    Call this once after deploying normalization fixes — no workflow run needed.
+    POST https://your-api/admin/cleanup-origins
+    """
+    results = {}
+
+    # Exact bad origin strings
+    bad_origins = [
+        "Oxnard District California",
+        "South And Central District California",
+        "South And Central California And Mexico Crossings Through Southern California And San Luis Arizona",
+        "Mexico Crossings Through Nogales Arizona",
+        "Western Arizona",
+        "Lower Rio Grande Valley Texas",
+        "Imperial Coachella And Palo Verde Valleys California",
+    ]
+    for origin in bad_origins:
+        try:
+            r = supabase.table(TABLE).delete().eq("origin", origin).execute()
+            n = len(r.data) if r.data else 0
+            if n: results[origin] = f"deleted {n}"
+        except Exception as e:
+            results[origin] = f"error: {e}"
+
+    # LIKE patterns for partial matches
+    like_patterns = [
+        "%Coachella Valleys Ca%",
+        "%Calexico And San Lu%",
+        "%Crossings Through Nogales Arizona%",
+        "%San Luis Arizona%",
+        "%South And Central District%",
+        "%Fob Sc%",
+    ]
+    for pattern in like_patterns:
+        try:
+            r = supabase.table(TABLE).delete().like("origin", pattern).execute()
+            n = len(r.data) if r.data else 0
+            if n: results[f"LIKE:{pattern}"] = f"deleted {n}"
+        except Exception as e:
+            results[f"LIKE:{pattern}"] = f"error: {e}"
+
+    # Movement patterns — size codes and variety names bleeding in
+    movement_patterns = ["S Lower", "S Higher", "S About", "S Steady", "Curly ", "Plain ", "Lacinato "]
+    for pattern in movement_patterns:
+        try:
+            r = supabase.table(TABLE).delete().like("movement", f"%{pattern}%").execute()
+            n = len(r.data) if r.data else 0
+            if n: results[f"movement:{pattern}"] = f"deleted {n}"
+        except Exception as e:
+            results[f"movement:{pattern}"] = f"error: {e}"
+
+    return {"cleaned": results, "total_operations": len(results)}
