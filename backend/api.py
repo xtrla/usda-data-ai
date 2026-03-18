@@ -568,6 +568,9 @@ def cleanup_origins():
         "%San Luis Arizona%",
         "%South And Central District%",
         "%Fob Sc%",
+        "%Through Calexico%",
+        "%Western Az,%",
+        "%Valleys Ca,%",
     ]
     for pattern in like_patterns:
         try:

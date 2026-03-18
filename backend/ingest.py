@@ -624,7 +624,9 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "market_type":        report_meta["market_type"],
         "commodity":          normalize_commodity(commodity),
         "variety":            variety_raw[:100] or None,
-        "origin":             normalize_origin(raw.get("origin") or raw.get("district") or raw.get("reporting_city") or ""),
+        # For shipping point reports, district contains the verbose region name (preferred)
+        # origin may contain a short country name — use district first if available
+        "origin":             normalize_origin(raw.get("district") or raw.get("origin") or raw.get("reporting_city") or ""),
         "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
         "grade":              extract_grade(grade_text) or grade_field.title() or None,
