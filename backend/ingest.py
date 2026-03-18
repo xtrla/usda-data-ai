@@ -828,6 +828,36 @@ def run(target_date: str = None):
         except Exception as e:
             log.warning("Origin cleanup failed for '%s': %s", bad_origin, e)
 
+    # Coachella/Imperial long-form cleanup — delete by partial match since
+    # title-cased variants may not exactly match the BAD_ORIGINS list
+    LIKE_ORIGINS = [
+        "%Coachella Valleys Ca%",
+        "%Calexico And San Lu%",
+        "%South And Central District%",
+        "%Crossings Through Nogales Arizona%",
+        "%San Luis Arizona%",
+    ]
+    for pattern in LIKE_ORIGINS:
+        try:
+            result = supabase.table(TABLE).delete().like("origin", pattern).execute()
+            deleted = len(result.data) if result.data else 0
+            if deleted:
+                log.info("Origin LIKE cleanup: deleted %d rows matching '%s'", deleted, pattern)
+        except Exception as e:
+            log.warning("Origin LIKE cleanup failed: %s", e)
+
+    # Movement cleanup: delete rows where movement contains size codes or variety prefixes
+    # These were stored before the movement parser fix and have stale values
+    BAD_MOVEMENT_PATTERNS = ["S Lower", "S Higher", "S Steady", "S About", "Curly ", "Plain ", "Lacinato "]
+    for pattern in BAD_MOVEMENT_PATTERNS:
+        try:
+            result = supabase.table(TABLE).delete().like("movement", f"%{pattern}%").execute()
+            deleted = len(result.data) if result.data else 0
+            if deleted:
+                log.info("Movement cleanup: deleted %d rows matching pattern '%s'", deleted, pattern)
+        except Exception as e:
+            log.warning("Movement cleanup failed for '%s': %s", pattern, e)
+
     for report_meta in REPORT_SLUGS:
         slug_id = report_meta["slug_id"]
         code = report_meta["code"]
