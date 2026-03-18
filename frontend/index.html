@@ -794,6 +794,8 @@
             // Deduplicate: same origin + size + price_low = same row
             const seen = new Set();
             const dedupedFOB = fobRows.filter(r => {
+                // Exclude national trends rows (no actual price)
+                if (!r.price_low && r.price_low !== 0) return false;
                 const key = `${r.origin||r.market}|${r.size||''}|${r.price_low}`;
                 if (seen.has(key)) return false;
                 seen.add(key);
