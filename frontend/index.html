@@ -161,65 +161,65 @@
                         <div class="text-earth-300 text-sm">← Select a commodity to see market details</div>
                     </div>
 
-                    <div id="home-detail" class="hidden space-y-4">
+                    <div id="home-detail" class="hidden space-y-3">
 
-                        <!-- Row 1: Title + date + week-over-week -->
+                        <!-- ZONE 1: Headline -->
                         <div class="flex items-start justify-between">
                             <div>
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <h2 id="detail-title" class="text-2xl font-bold text-earth-900"></h2>
                                     <span id="detail-report-date" class="text-xs font-medium text-earth-400 bg-earth-100 px-2 py-1 rounded-md hidden"></span>
                                 </div>
-                                <div id="detail-meta" class="text-sm text-earth-500 mt-1"></div>
+                                <div id="detail-meta" class="text-xs text-earth-400 mt-1"></div>
                             </div>
-                            <div id="detail-change-badge" class="text-right"></div>
+                            <div id="detail-change-badge" class="text-right shrink-0 ml-4"></div>
                         </div>
 
-                        <!-- Row 2: Terminal markets — front and center -->
+                        <!-- ZONE 2: Signal card -->
+                        <div id="detail-signal" class="hidden rounded-xl px-4 py-3 border" style="background:#f8fdf9;border-color:#bbf7d0">
+                            <div class="text-xs font-semibold text-leaf-700 uppercase tracking-wide mb-1">Market Signal</div>
+                            <div id="detail-signal-text" class="text-sm font-medium text-earth-800"></div>
+                        </div>
+
+                        <!-- ZONE 3: Price chain — visual rows per source -->
+                        <div id="detail-chain" class="hidden detail-panel overflow-hidden">
+                            <div class="px-4 py-2.5 border-b border-earth-100 flex items-center justify-between bg-earth-50">
+                                <span class="text-xs font-semibold text-earth-500 uppercase tracking-wide">Price Chain · Best Sources → Terminal</span>
+                                <span class="text-xs text-earth-400">FOB + spread = terminal</span>
+                            </div>
+                            <div id="detail-chain-rows" class="divide-y divide-earth-50"></div>
+                        </div>
+
+                        <!-- ZONE 4: Terminal detail (collapsed) -->
                         <div class="detail-panel">
-                            <div class="px-4 py-3 border-b border-earth-100 flex items-center justify-between">
-                                <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">Terminal Markets</span>
-                                <span class="text-xs text-earth-400">Destination wholesale price</span>
+                            <div class="px-4 py-3 flex items-center justify-between cursor-pointer select-none border-b border-earth-100"
+                                 onclick="toggleTerminal()">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">All Terminal Listings</span>
+                                    <span id="detail-terminal-summary" class="text-xs text-earth-400"></span>
+                                </div>
+                                <span id="detail-terminal-chevron" class="text-earth-300 text-xs">▼ Show</span>
                             </div>
-                            <div class="grid px-4 py-2 bg-earth-50 border-b border-earth-100" style="grid-template-columns:1fr 90px 80px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
-                                <span>Market · Variety · Size</span><span class="text-right">Price</span><span class="text-right">Origin</span>
-                            </div>
-                            <div id="detail-terminal-rows"></div>
-                        </div>
-
-                        <!-- Row 3: Price chain strip -->
-                        <div id="detail-margin" class="hidden detail-panel px-5 py-4">
-                            <div class="flex items-center gap-4 flex-wrap">
-                                <div>
-                                    <div class="db-label">Lowest FOB</div>
-                                    <div id="margin-fob" class="text-xl font-bold text-orange-500"></div>
+                            <div id="detail-terminal-expanded" class="hidden">
+                                <div class="grid px-4 py-2 bg-earth-50 border-b border-earth-100" style="grid-template-columns:1fr 100px 70px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
+                                    <span>Market · Variety · Size</span><span class="text-right">Price</span><span class="text-right">Origin</span>
                                 </div>
-                                <div class="text-earth-200 text-xl font-light">→</div>
-                                <div>
-                                    <div class="db-label">Best Terminal</div>
-                                    <div id="margin-terminal" class="text-xl font-bold text-leaf-600"></div>
-                                </div>
-                                <div class="text-earth-200 text-xl font-light">=</div>
-                                <div>
-                                    <div class="db-label">Gross Spread</div>
-                                    <div id="margin-spread" class="text-xl font-bold"></div>
-                                </div>
-                                <div class="text-xs text-earth-400 ml-auto" id="margin-note"></div>
+                                <div id="detail-terminal-rows"></div>
                             </div>
                         </div>
 
-                        <!-- Row 4: FOB origins — collapsed summary, expand for detail -->
+                        <!-- ZONE 5: All FOB sources (collapsed) -->
                         <div class="detail-panel" id="detail-fob-panel">
                             <div class="px-4 py-3 flex items-center justify-between cursor-pointer select-none"
-                                 onclick="toggleFOB()" id="detail-fob-header">
+                                 onclick="toggleFOB()">
                                 <div class="flex items-center gap-3">
-                                    <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">Shipping Points (FOB)</span>
+                                    <span class="text-xs font-semibold text-earth-600 uppercase tracking-wide">All FOB Sources</span>
                                     <span id="detail-fob-summary" class="text-xs text-earth-400"></span>
                                 </div>
-                                <span id="detail-fob-chevron" class="text-earth-300 text-sm">▼ Show</span>
+                                <span id="detail-fob-chevron" class="text-earth-300 text-xs">▼ Show</span>
                             </div>
                             <div id="detail-fob-expanded" class="hidden">
-                                <div class="grid px-4 py-2 bg-earth-50 border-t border-earth-100" style="grid-template-columns:1fr 60px 100px 80px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
+                                <div class="grid px-4 py-2 bg-earth-50 border-t border-earth-100" style="grid-template-columns:1fr 60px 110px 80px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
                                     <span>Origin</span><span class="text-right">Size</span><span class="text-right">FOB Price</span><span class="text-right">Movement</span>
                                 </div>
                                 <div id="detail-fob-rows"></div>
@@ -709,49 +709,102 @@
         function toggleFOB() {
             fobExpanded = !fobExpanded;
             document.getElementById('detail-fob-expanded').classList.toggle('hidden', !fobExpanded);
+        let fobExpanded = false;
+        let terminalExpanded = false;
+
+        function toggleFOB() {
+            fobExpanded = !fobExpanded;
+            document.getElementById('detail-fob-expanded').classList.toggle('hidden', !fobExpanded);
             document.getElementById('detail-fob-chevron').textContent = fobExpanded ? '▲ Hide' : '▼ Show';
+        }
+
+        function toggleTerminal() {
+            terminalExpanded = !terminalExpanded;
+            document.getElementById('detail-terminal-expanded').classList.toggle('hidden', !terminalExpanded);
+            document.getElementById('detail-terminal-chevron').textContent = terminalExpanded ? '▲ Hide' : '▼ Show';
+        }
+
+        function generateSignal(sortedTermRows, sortedFOB, moverInfo) {
+            const signals = [];
+            if (!sortedTermRows.length) return null;
+
+            const bestTerm = parseFloat(sortedTermRows[0].price_low);
+            const loFOB = sortedFOB.length ? parseFloat(sortedFOB[0].price_low) : null;
+            const spread = loFOB ? bestTerm - loFOB : null;
+            const pctSpread = loFOB ? ((spread / loFOB) * 100) : null;
+
+            // Direction signal
+            const allRising  = sortedFOB.length && sortedFOB.every(r => (r.movement||'').includes('Higher'));
+            const allFalling = sortedFOB.length && sortedFOB.every(r => (r.movement||'').includes('Lower'));
+            const mixedMov   = sortedFOB.length && !allRising && !allFalling;
+            const risingCount  = sortedFOB.filter(r => (r.movement||'').includes('Higher')).length;
+            const fallingCount = sortedFOB.filter(r => (r.movement||'').includes('Lower')).length;
+
+            if (allRising)  signals.push(`All ${sortedFOB.length} shipping regions moving Higher — supply tightening`);
+            else if (allFalling) signals.push(`All ${sortedFOB.length} shipping regions moving Lower — supply building`);
+            else if (risingCount > fallingCount && risingCount > 0)
+                signals.push(`${risingCount} of ${sortedFOB.length} regions Higher, ${fallingCount} Lower — market firming`);
+            else if (fallingCount > risingCount && fallingCount > 0)
+                signals.push(`${fallingCount} of ${sortedFOB.length} regions Lower — market softening`);
+
+            // Spread signal
+            if (pctSpread !== null) {
+                if (pctSpread < 10) signals.push(`Thin margin — only ${pctSpread.toFixed(0)}% spread between FOB and terminal`);
+                else if (pctSpread > 60) signals.push(`Wide ${pctSpread.toFixed(0)}% spread — strong terminal premium over FOB`);
+            }
+
+            // Week-over-week
+            if (moverInfo) {
+                const pct = Math.abs(moverInfo.pct_change);
+                if (pct > 20) signals.push(`Terminal price ${moverInfo.pct_change > 0 ? 'up' : 'down'} ${pct.toFixed(0)}% vs last week — significant move`);
+            }
+
+            return signals[0] || null;
         }
 
         function selectDashboardCommodity(name) {
             selectedCommodity = name;
             fobExpanded = false;
+            terminalExpanded = false;
             renderWatchlist();
+
             document.getElementById('home-detail-empty').classList.add('hidden');
             document.getElementById('home-detail').classList.remove('hidden');
-            const fobExp = document.getElementById('detail-fob-expanded');
-            if (fobExp) fobExp.classList.add('hidden');
-            const fobChev = document.getElementById('detail-fob-chevron');
-            if (fobChev) fobChev.textContent = '▼ Show';
+            document.getElementById('detail-fob-expanded').classList.add('hidden');
+            document.getElementById('detail-terminal-expanded').classList.add('hidden');
+            document.getElementById('detail-fob-chevron').textContent = '▼ Show';
+            document.getElementById('detail-terminal-chevron').textContent = '▼ Show';
 
             const termRows = terminalData.filter(d => d.commodity === name);
             const fobRows  = shippingData.filter(d => d.commodity === name);
             const moverInfo = [...(dashboardMovers.rising||[]), ...(dashboardMovers.falling||[])].find(m => m.commodity === name);
 
+            // Headline
             document.getElementById('detail-title').textContent = name;
             const markets = [...new Set(termRows.map(r => r.market))];
             document.getElementById('detail-meta').textContent =
-                `${termRows.length} listings · ${markets.length} market${markets.length !== 1 ? 's' : ''}` +
-                (fobRows.length ? ` · ${fobRows.length} FOB sources` : ' · No FOB data');
+                `${markets.length} terminal market${markets.length!==1?'s':''} · ${fobRows.filter(r=>r.price_low).length} FOB sources`;
 
+            // Date badge
             const termDate = termRows[0]?.report_date;
-            const fobDate  = fobRows[0]?.report_date;
             const reportDateEl = document.getElementById('detail-report-date');
-            if (termDate || fobDate) {
-                const d = new Date((termDate || fobDate) + 'T00:00:00');
-                reportDateEl.textContent = 'Data: ' + d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+            if (termDate) {
+                const d = new Date(termDate + 'T00:00:00');
+                reportDateEl.textContent = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
                 reportDateEl.classList.remove('hidden');
             } else { reportDateEl.classList.add('hidden'); }
 
+            // Week-over-week badge
             if (moverInfo) {
                 const up = moverInfo.pct_change > 0;
                 document.getElementById('detail-change-badge').innerHTML = `
-                    <div class="${up ? 'text-red-500' : 'text-leaf-600'} text-3xl font-bold tabular-nums">${up?'↑':'↓'} ${Math.abs(moverInfo.pct_change).toFixed(1)}%</div>
-                    <div class="text-sm text-earth-400">${up?'+':'-'}$${Math.abs(moverInfo.dollar_change).toFixed(2)} vs last week</div>`;
+                    <div class="${up?'text-red-500':'text-leaf-600'} text-2xl font-bold">${up?'↑':'↓'} ${Math.abs(moverInfo.pct_change).toFixed(1)}%</div>
+                    <div class="text-xs text-earth-400">${up?'+':'-'}$${Math.abs(moverInfo.dollar_change).toFixed(2)} vs last week</div>`;
             } else {
-                document.getElementById('detail-change-badge').innerHTML = '<div class="text-earth-300 text-sm">No week-over-week data</div>';
+                document.getElementById('detail-change-badge').innerHTML = '<div class="text-xs text-earth-300">No week-over-week</div>';
             }
 
-            // Terminal — deduplicate by market+variety+size+price, sort cheapest first
+            // Deduplicate terminal rows
             const termSeen = new Set();
             const sortedTermRows = termRows.filter(r => {
                 const key = `${r.market}|${r.variety||''}|${r.size||''}|${r.price_low}`;
@@ -759,26 +812,7 @@
                 termSeen.add(key); return true;
             }).sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
 
-            const bestPrice = sortedTermRows.length ? Math.min(...sortedTermRows.map(r => parseFloat(r.price_low))) : null;
-            let bestAwarded = false;
-            document.getElementById('detail-terminal-rows').innerHTML = sortedTermRows.length
-                ? sortedTermRows.map(r => {
-                    const price = parseFloat(r.price_low);
-                    const isBest = !bestAwarded && price === bestPrice;
-                    if (isBest) bestAwarded = true;
-                    const priceStr = r.price_high && parseFloat(r.price_high) !== price
-                        ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}` : `$${price.toFixed(2)}`;
-                    const qb = r.quality_note ? `<span class="text-xs ${r.quality_note.includes('fair') ? 'text-red-400' : 'text-amber-500'} ml-1">${r.quality_note}</span>` : '';
-                    return `<div class="detail-market-row ${isBest ? 'bg-leaf-50/60' : ''}">
-                        <div><span class="text-earth-700 font-medium">${r.market}</span>${isBest ? '<span class="text-xs text-leaf-500 font-semibold ml-1.5">BEST</span>' : ''}${qb}
-                            <div class="text-xs text-earth-400 mt-0.5">${r.variety||''} ${r.size ? '· '+r.size : ''} ${r.package ? '· '+r.package : ''}</div>
-                        </div>
-                        <span class="text-right font-semibold ${isBest?'text-leaf-600':'text-earth-600'} tabular-nums">${priceStr}</span>
-                        <span class="text-right text-earth-400 text-xs">${r.origin||'–'}</span>
-                    </div>`;
-                }).join('') : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No terminal data</div>';
-
-            // FOB — deduplicate, filter no-price, sort cheapest first
+            // Deduplicate FOB rows
             const fobSeen = new Set();
             const sortedFOB = fobRows.filter(r => {
                 if (!r.price_low && r.price_low !== 0) return false;
@@ -787,25 +821,103 @@
                 fobSeen.add(key); return true;
             }).sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
 
-            // FOB collapsed summary
-            const fobSummaryEl = document.getElementById('detail-fob-summary');
-            if (fobSummaryEl && sortedFOB.length) {
-                const lo = parseFloat(sortedFOB[0].price_low);
-                const org = sortedFOB[0].origin || sortedFOB[0].market || '';
-                const mov = sortedFOB[0].movement || '';
-                const mc = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
-                const ma = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '';
-                fobSummaryEl.innerHTML = `${sortedFOB.length} origins · <span class="font-semibold text-orange-500">from $${lo.toFixed(2)}</span> · ${org} <span class="${mc}">${ma} ${mov||'steady'}</span>`;
-            } else if (fobSummaryEl) { fobSummaryEl.textContent = 'No FOB data'; }
+            // ── ZONE 2: Signal ──────────────────────────────────────────────
+            const signal = generateSignal(sortedTermRows, sortedFOB, moverInfo);
+            const signalEl = document.getElementById('detail-signal');
+            if (signal) {
+                document.getElementById('detail-signal-text').textContent = signal;
+                signalEl.classList.remove('hidden');
+            } else { signalEl.classList.add('hidden'); }
 
-            // FOB detail rows
-            document.getElementById('detail-fob-rows').innerHTML = sortedFOB.length
-                ? sortedFOB.map((r, i) => {
+            // ── ZONE 3: Price chain rows ────────────────────────────────────
+            const chainEl = document.getElementById('detail-chain');
+            const chainRows = document.getElementById('detail-chain-rows');
+            if (sortedFOB.length && sortedTermRows.length) {
+                const bestTerm = parseFloat(sortedTermRows[0].price_low);
+                const bestTermStr = `$${bestTerm.toFixed(2)}`;
+                const bestMarket = sortedTermRows[0].market;
+
+                // Show top 4 FOB sources in chain view
+                const chainSources = sortedFOB.slice(0, 4);
+                chainRows.innerHTML = chainSources.map((r, i) => {
+                    const fobLo = parseFloat(r.price_low);
+                    const fobHi = r.price_high ? parseFloat(r.price_high) : fobLo;
+                    const spread = bestTerm - fobLo;
+                    const pct = ((spread / fobLo) * 100).toFixed(0);
                     const mov = r.movement || '';
-                    const mc = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
-                    const ma = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                    const movColor = mov.includes('Higher') ? '#ef4444' : mov.includes('Lower') ? '#16a34a' : '#a8a29e';
+                    const movArrow = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                    const spreadColor = spread > 0 ? '#16a34a' : '#ef4444';
+                    const fobStr = fobHi !== fobLo ? `$${fobLo.toFixed(2)}–${fobHi.toFixed(2)}` : `$${fobLo.toFixed(2)}`;
+                    return `
+                    <div class="px-4 py-3 flex items-center gap-3 ${i===0?'bg-orange-50/40':''}">
+                        <div class="w-32 shrink-0">
+                            <div class="text-sm font-semibold text-earth-800">${r.origin||r.market||'–'}</div>
+                            <div class="text-xs text-earth-400">${r.size||''}</div>
+                        </div>
+                        <div class="shrink-0">
+                            <div class="text-base font-bold text-orange-600">${fobStr}</div>
+                            <div class="text-xs font-medium" style="color:${movColor}">${movArrow} ${mov||'steady'}</div>
+                        </div>
+                        <div class="flex-1 flex items-center gap-1 px-2">
+                            <div class="flex-1 h-px bg-earth-200 relative">
+                                <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-1 text-xs font-bold" style="color:${spreadColor}">+$${spread.toFixed(2)} (${pct}%)</div>
+                            </div>
+                            <span class="text-earth-300 text-sm">→</span>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <div class="text-base font-bold text-leaf-600">${bestTermStr}</div>
+                            <div class="text-xs text-earth-400">${bestMarket}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                chainEl.classList.remove('hidden');
+            } else { chainEl.classList.add('hidden'); }
+
+            // ── ZONE 4: Terminal summary + collapsed detail ─────────────────
+            const bestPrice = sortedTermRows.length ? parseFloat(sortedTermRows[0].price_low) : null;
+            document.getElementById('detail-terminal-summary').textContent = sortedTermRows.length
+                ? `${sortedTermRows.length} listing${sortedTermRows.length!==1?'s':''} · best $${bestPrice.toFixed(2)}`
+                : 'No data';
+
+            let bestAwarded = false;
+            document.getElementById('detail-terminal-rows').innerHTML = sortedTermRows.length
+                ? sortedTermRows.map(r => {
                     const price = parseFloat(r.price_low);
+                    const isBest = !bestAwarded && price === bestPrice;
+                    if (isBest) bestAwarded = true;
                     const priceStr = r.price_high && parseFloat(r.price_high) !== price
+                        ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}` : `$${price.toFixed(2)}`;
+                    const qb = r.quality_note ? `<span class="text-xs ${r.quality_note.includes('fair')?'text-red-400':'text-amber-500'} ml-1">${r.quality_note}</span>` : '';
+                    return `<div class="detail-market-row ${isBest?'bg-leaf-50/60':''}">
+                        <div><span class="text-earth-700 font-medium">${r.market}</span>${isBest?'<span class="text-xs text-leaf-500 font-semibold ml-1.5">BEST</span>':''}${qb}
+                            <div class="text-xs text-earth-400 mt-0.5">${r.variety||''} ${r.size?'· '+r.size:''} ${r.package?'· '+r.package:''}</div>
+                        </div>
+                        <span class="text-right font-semibold ${isBest?'text-leaf-600':'text-earth-600'} tabular-nums">${priceStr}</span>
+                        <span class="text-right text-earth-400 text-xs">${r.origin||'–'}</span>
+                    </div>`;
+                }).join('') : '<div class="px-4 py-5 text-center text-earth-300 text-sm">No terminal data</div>';
+
+            // ── ZONE 5: FOB summary + collapsed detail ──────────────────────
+            if (sortedFOB.length) {
+                const loFOB = parseFloat(sortedFOB[0].price_low);
+                const loOrg = sortedFOB[0].origin || '';
+                const loMov = sortedFOB[0].movement || '';
+                const mc = loMov.includes('Higher')?'text-red-500':loMov.includes('Lower')?'text-leaf-600':'text-earth-400';
+                const ma = loMov.includes('Higher')?'↑':loMov.includes('Lower')?'↓':'';
+                document.getElementById('detail-fob-summary').innerHTML =
+                    `${sortedFOB.length} origins · <span class="font-semibold text-orange-500">from $${loFOB.toFixed(2)}</span> · ${loOrg} <span class="${mc}">${ma} ${loMov||'steady'}</span>`;
+            } else {
+                document.getElementById('detail-fob-summary').textContent = 'No FOB data';
+            }
+
+            document.getElementById('detail-fob-rows').innerHTML = sortedFOB.length
+                ? sortedFOB.map((r,i) => {
+                    const mov = r.movement||'';
+                    const mc = mov.includes('Higher')?'text-red-500':mov.includes('Lower')?'text-leaf-600':'text-earth-400';
+                    const ma = mov.includes('Higher')?'↑':mov.includes('Lower')?'↓':'–';
+                    const price = parseFloat(r.price_low);
+                    const priceStr = r.price_high && parseFloat(r.price_high)!==price
                         ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}` : `$${price.toFixed(2)}`;
                     return `<div class="fob-row ${i===0?'bg-orange-50/50':''}">
                         <div><span class="text-earth-700 font-medium">${r.origin||r.market||'–'}</span>${i===0?'<span class="text-xs text-orange-500 font-semibold ml-1.5">LOW</span>':''}</div>
@@ -813,23 +925,7 @@
                         <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">${priceStr}</span>
                         <span class="text-right ${mc} font-medium text-xs">${ma} ${mov||'–'}</span>
                     </div>`;
-                }).join('') : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No FOB data</div>';
-
-            // Price chain strip
-            if (sortedFOB.length && sortedTermRows.length) {
-                const loFOB = parseFloat(sortedFOB[0].price_low);
-                const bestTerm = parseFloat(sortedTermRows[0].price_low);
-                const spread = bestTerm - loFOB;
-                document.getElementById('margin-fob').textContent = `$${loFOB.toFixed(2)}`;
-                document.getElementById('margin-terminal').textContent = `$${bestTerm.toFixed(2)}`;
-                document.getElementById('margin-spread').innerHTML = spread > 0
-                    ? `<span class="text-leaf-600 font-bold">+$${spread.toFixed(2)}</span>`
-                    : `<span class="text-red-500 font-bold">$${spread.toFixed(2)}</span>`;
-                document.getElementById('margin-note').textContent = spread > 0
-                    ? `${((spread/loFOB)*100).toFixed(0)}% gross spread · freight not included`
-                    : 'Terminal at or below FOB';
-                document.getElementById('detail-margin').classList.remove('hidden');
-            } else { document.getElementById('detail-margin').classList.add('hidden'); }
+                }).join('') : '<div class="px-4 py-5 text-center text-earth-300 text-sm">No FOB data</div>';
         }
 
         async function renderHome() {
