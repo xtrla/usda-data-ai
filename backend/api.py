@@ -408,3 +408,121 @@ def get_movers(
         return {"rising": rising, "falling": falling}
     except Exception as e:
         raise HTTPException(500, str(e))
+
+
+# ── Live verification endpoint ─────────────────────────────────────────────────
+
+@app.get("/verify")
+def verify_live(
+    commodity: str = Query(..., description="Commodity name e.g. 'Cilantro'"),
+    slug_id: Optional[int] = Query(default=2315, description="MARS slug ID (default: NX_FV020 New York terminal)"),
+    date: Optional[str] = Query(default=None, description="Report date MM/DD/YYYY (default: latest)"),
+):
+    """
+    Live verification tool — calls the MARS API directly and returns:
+    1. Raw API rows for the commodity (what USDA actually says)
+    2. What's stored in our DB for the same commodity
+    3. Side-by-side diff of key price fields
+
+    Use this to verify data integrity without waiting for a workflow run.
+    Example: /verify?commodity=Cilantro
+    Example: /verify?commodity=Artichokes&slug_id=2403
+    """
+    import requests
+    from datetime import date as date_cls
+
+    MARS_KEY = os.getenv("MARS_API_KEY", "")
+    MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
+
+    if not MARS_KEY:
+        raise HTTPException(503, "MARS_API_KEY not configured on this server")
+
+    # ── 1. Fetch from MARS API live ──────────────────────────────────────────
+    url = f"{MARS_BASE}/reports/{slug_id}/report details"
+    params = {}
+    if date:
+        params["q"] = f"report_date={date}"
+    else:
+        params["lastReports"] = 1
+
+    try:
+        resp = requests.get(url, params=params, auth=(MARS_KEY, ""), timeout=15)
+        resp.raise_for_status()
+        raw = resp.json()
+        all_rows = raw if isinstance(raw, list) else raw.get("results", [])
+    except Exception as e:
+        raise HTTPException(502, f"MARS API error: {e}")
+
+    # Filter to requested commodity (case-insensitive)
+    comm_lower = commodity.lower()
+    live_rows = [
+        r for r in all_rows
+        if (r.get("commodity") or "").lower() == comm_lower
+    ]
+
+    # Get report date from data
+    live_date = all_rows[0].get("report_date") if all_rows else None
+
+    # Summarise live rows — key fields only
+    live_summary = []
+    for r in live_rows:
+        live_summary.append({
+            "commodity":    r.get("commodity"),
+            "variety":      r.get("variety") or r.get("var"),
+            "origin":       r.get("origin") or r.get("district") or r.get("reporting_city"),
+            "size":         r.get("item_size"),
+            "package":      r.get("package") or r.get("pkg"),
+            "price_low":    r.get("low_price"),
+            "price_high":   r.get("high_price"),
+            "movement":     r.get("movement") or r.get("market_tone_comments", "")[:80],
+        })
+
+    # ── 2. Fetch from our DB ─────────────────────────────────────────────────
+    try:
+        db_result = (
+            supabase.table(TABLE)
+            .select("commodity,variety,origin,size,package,price_low,price_high,movement,report_date,market,market_type")
+            .ilike("commodity", f"%{commodity}%")
+            .eq("slug_id", str(slug_id))
+            .order("report_date", desc=True)
+            .limit(50)
+            .execute()
+        )
+        db_rows = db_result.data or []
+    except Exception as e:
+        db_rows = []
+
+    db_date = db_rows[0]["report_date"] if db_rows else None
+
+    # ── 3. Diff summary ──────────────────────────────────────────────────────
+    live_prices = sorted(set(
+        float(r["price_low"]) for r in live_summary if r["price_low"] is not None
+    ))
+    db_prices = sorted(set(
+        float(r["price_low"]) for r in db_rows if r.get("price_low") is not None
+    ))
+
+    prices_match = live_prices == db_prices
+    date_match   = live_date and db_date and live_date.split("/")[2] in db_date
+
+    return {
+        "status": "✅ MATCH" if (prices_match and date_match) else "⚠️ MISMATCH",
+        "commodity": commodity,
+        "slug_id": slug_id,
+        "dates": {
+            "mars_api":  live_date,
+            "our_db":    db_date,
+            "match":     date_match,
+        },
+        "row_counts": {
+            "mars_api":  len(live_rows),
+            "our_db":    len(db_rows),
+        },
+        "prices": {
+            "mars_api":  live_prices,
+            "our_db":    db_prices,
+            "match":     prices_match,
+        },
+        "mars_api_raw":  live_summary,
+        "our_db_rows":   db_rows,
+    }
