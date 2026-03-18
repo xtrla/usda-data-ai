@@ -530,7 +530,7 @@ def verify_live(
 
 # ── One-time DB cleanup endpoint ──────────────────────────────────────────────
 
-@app.post("/admin/cleanup-origins")
+@app.get("/admin/cleanup-origins")
 def cleanup_origins():
     """
     Directly deletes all rows with bad/un-normalized origin strings from the DB.
