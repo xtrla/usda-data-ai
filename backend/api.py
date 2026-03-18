@@ -267,8 +267,52 @@ def search(
 
 # ── Stats ─────────────────────────────────────────────────────────────────────
 
-@app.get("/stats")
-def get_stats():
+@app.get("/freshness")
+def get_freshness():
+    """
+    Return the most recent report_date in the DB per market type.
+    Used by frontend to show honest data freshness, not today's date.
+    """
+    try:
+        result = (
+            supabase.table(TABLE)
+            .select("report_date, market_type, market, source_report")
+            .order("report_date", desc=True)
+            .limit(10000)
+            .execute()
+        )
+        if not result.data:
+            return {"terminal": None, "shipping_point": None, "latest": None, "by_market": {}}
+
+        terminal_date   = None
+        shipping_date   = None
+        by_market: dict = {}
+
+        for row in result.data:
+            mt     = row.get("market_type")
+            market = row.get("market", "")
+            rd     = row.get("report_date")
+            if not rd:
+                continue
+            if mt == "terminal" and (terminal_date is None or rd > terminal_date):
+                terminal_date = rd
+            if mt == "shipping_point" and (shipping_date is None or rd > shipping_date):
+                shipping_date = rd
+            if market and (market not in by_market or rd > by_market[market]):
+                by_market[market] = rd
+
+        latest = max(filter(None, [terminal_date, shipping_date]), default=None)
+        return {
+            "terminal":       terminal_date,
+            "shipping_point": shipping_date,
+            "latest":         latest,
+            "by_market":      by_market,
+        }
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+
     """Dashboard stats: total records, unique commodities, markets, dates."""
     try:
         result = (

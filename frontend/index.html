@@ -819,7 +819,7 @@
                         </div>
                         <span class="text-right text-earth-400">${r.size || '–'}</span>
                         <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">${priceStr}</span>
-                        <span class="text-right ${movColor} font-medium text-xs">${movArrow} ${mov || '–'}</span>
+                        <span class="text-right ${movColor} font-medium text-xs" title="${mov || ''}">${movArrow} ${mov ? (mov.length > 12 ? mov.slice(0,12) + '…' : mov) : '–'}</span>
                     </div>`;
                 }).join('')
                 : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No FOB shipping point data</div>';
@@ -868,17 +868,26 @@
                 if (rising)  summary.push(`${rising} rising`);
                 if (falling) summary.push(`${falling} falling`);
                 if (steady)  summary.push(`${steady} steady`);
-                // Get most recent report date from terminal data
-                const latestDate = terminalData.length
-                    ? terminalData.reduce((a,b) => a.report_date > b.report_date ? a : b).report_date
-                    : null;
-                const latestLabel = latestDate
-                    ? new Date(latestDate + 'T00:00:00').toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})
-                    : null;
+                // Fetch actual data freshness from API — never use client date
+                let freshnessLabel = '';
+                try {
+                    const fresh = await (await fetch(`${API}/freshness`)).json();
+                    if (fresh.terminal) {
+                        const d = new Date(fresh.terminal + 'T00:00:00');
+                        const label = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+                        // How stale is it?
+                        const today = new Date(); today.setHours(0,0,0,0);
+                        const diffDays = Math.round((today - d) / 86400000);
+                        const staleNote = diffDays === 0 ? 'today'
+                            : diffDays === 1 ? 'yesterday'
+                            : `${diffDays} days ago`;
+                        freshnessLabel = ` · data as of ${label} (${staleNote})`;
+                    }
+                } catch(e) { /* freshness is non-critical */ }
 
                 document.getElementById('home-market-summary').textContent =
                     summary.length
-                        ? summary.join(' · ') + ' · ' + commodities.size + ' commodities' + (latestLabel ? ' · as of ' + latestLabel : '')
+                        ? summary.join(' · ') + ' · ' + commodities.size + ' commodities' + freshnessLabel
                         : 'Market data loaded';
 
                 renderWatchlist();
