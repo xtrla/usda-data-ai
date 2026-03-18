@@ -749,6 +749,17 @@ def run(target_date: str = None):
     log.info("Starting ingestion for %s", target_date)
     grand_total = 0
 
+    # Nuclear cleanup: delete any rows older than 30 days regardless of slug
+    # This ensures no stale historical data ever accumulates in the DB
+    cutoff = (date.today() - __import__('datetime').timedelta(days=30)).isoformat()
+    try:
+        result = supabase.table(TABLE).delete().lt("report_date", cutoff).execute()
+        deleted = len(result.data) if result.data else 0
+        if deleted:
+            log.info("Cleanup: deleted %d rows older than %s", deleted, cutoff)
+    except Exception as e:
+        log.warning("Cleanup failed: %s", e)
+
     for report_meta in REPORT_SLUGS:
         slug_id = report_meta["slug_id"]
         code = report_meta["code"]
@@ -793,6 +804,10 @@ def run(target_date: str = None):
         actual_report_date_str = actual_report_date.isoformat()
         log.info("  Got %d raw rows, report_date=%s (fallback=%s)", len(raw_rows), actual_report_date_str, used_fallback)
 
+        # Always purge old rows for this slug once we know the current date —
+        # even if build fails, stale data must not remain
+        purge_old_rows(slug_id, actual_report_date_str)
+
         built = []
         for raw in raw_rows:
             row = build_row(raw, report_meta)
@@ -802,7 +817,6 @@ def run(target_date: str = None):
         log.info("  Built %d valid rows", len(built))
 
         if built:
-            purge_old_rows(slug_id, actual_report_date_str)
             upserted = upsert_rows(built)
             grand_total += upserted
             log.info("  Upserted %d rows for %s", upserted, code)
