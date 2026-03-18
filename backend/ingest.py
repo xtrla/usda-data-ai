@@ -231,6 +231,101 @@ GRADE_PATTERNS = [
 ]
 
 
+# ── Commodity name normalizer ────────────────────────────────────────────────
+# USDA uses different naming conventions between terminal and shipping point
+# reports. Terminal: "Squash, Butternut"  Shipping point: "Squash" var="Butternut"
+# This map ensures both resolve to the same canonical name in Supabase.
+# Key = what the API returns (lowercased), Value = canonical display name.
+
+COMMODITY_MAP = {
+    # Squash variants — shipping point reports use "squash" + variety field
+    "squash, acorn":           "Squash, Acorn",
+    "squash, butternut":       "Squash, Butternut",
+    "squash, delicata":        "Squash, Delicata",
+    "squash, grey":            "Squash, Grey",
+    "squash, kabocha":         "Squash, Kabocha",
+    "squash, spaghetti":       "Squash, Spaghetti",
+    "squash, yellow crookneck": "Squash, Yellow Crookneck",
+    "squash, yellow straightneck": "Squash, Yellow Straightneck",
+    "squash, zucchini":        "Squash, Zucchini",
+    "squash":                  "Squash",
+    # Tomato variants
+    "tomatoes":                "Tomatoes",
+    "tomatoes, cherry":        "Tomatoes, Cherry",
+    "tomatoes, grape type":    "Tomatoes, Grape Type",
+    "tomatoes, plum type":     "Tomatoes, Plum Type",
+    # Pepper variants
+    "peppers (bell type)":     "Peppers (Bell Type)",
+    "peppers, bell type":      "Peppers (Bell Type)",
+    "peppers, anaheim":        "Peppers, Anaheim",
+    "peppers, jalapeno":       "Peppers, Jalapeno",
+    "peppers, poblano":        "Peppers, Poblano",
+    "peppers, serrano":        "Peppers, Serrano",
+    "peppers, habanero":       "Peppers, Habanero",
+    # Lettuce variants
+    "lettuce, iceberg":        "Lettuce, Iceberg",
+    "lettuce, romaine":        "Lettuce, Romaine",
+    "lettuce, green leaf":     "Lettuce, Green Leaf",
+    "lettuce, red leaf":       "Lettuce, Red Leaf",
+    "lettuce, boston":         "Lettuce, Boston",
+    # Onion variants
+    "onions, dry":             "Onions",
+    "onions dry":              "Onions",
+    "onions":                  "Onions",
+    "onions green":            "Onions, Green",
+    "onions, green":           "Onions, Green",
+    # Common name fixes
+    "sweet potatoes":          "Sweet Potatoes",
+    "potatoes":                "Potatoes",
+    "avocados":                "Avocados",
+    "strawberries":            "Strawberries",
+    "blueberries":             "Blueberries",
+    "raspberries":             "Raspberries",
+    "blackberries":            "Blackberries",
+    "grapes":                  "Grapes",
+    "mangoes":                 "Mangoes",
+    "pineapples":              "Pineapples",
+    "watermelons":             "Watermelons",
+    "cantaloupes":             "Cantaloupes",
+    "honeydews":               "Honeydews",
+    "oranges":                 "Oranges",
+    "lemons":                  "Lemons",
+    "limes":                   "Limes",
+    "grapefruit":              "Grapefruit",
+    "tangerines":              "Tangerines",
+    "apples":                  "Apples",
+    "pears":                   "Pears",
+    "peaches":                 "Peaches",
+    "plums":                   "Plums",
+    "cherries":                "Cherries",
+    "asparagus":               "Asparagus",
+    "broccoli":                "Broccoli",
+    "cauliflower":             "Cauliflower",
+    "cabbage":                 "Cabbage",
+    "celery":                  "Celery",
+    "carrots":                 "Carrots",
+    "cucumbers":               "Cucumbers",
+    "eggplant":                "Eggplant",
+    "garlic":                  "Garlic",
+    "spinach":                 "Spinach",
+    "corn, sweet":             "Corn, Sweet",
+    "mushrooms":               "Mushrooms",
+}
+
+def normalize_commodity(raw_name: str) -> str:
+    """
+    Normalize commodity name to canonical form used across all report types.
+    Preserves sub-commodity distinctions (Squash, Butternut vs Squash, Zucchini).
+    """
+    if not raw_name:
+        return ""
+    key = raw_name.strip().lower()
+    if key in COMMODITY_MAP:
+        return COMMODITY_MAP[key]
+    # Default: title case but preserve comma-separated sub-names
+    return raw_name.strip().title()
+
+
 def extract_grade(text: str) -> str | None:
     text_lower = text.lower()
     for pat in GRADE_PATTERNS:
@@ -294,6 +389,39 @@ def normalize_trading(trading_val) -> str | None:
         "light": "Light",
     }
     return mapping.get(s.lower(), s.title())
+
+
+# ── Origin normalizer ────────────────────────────────────────────────────────
+# Shipping point reports return verbose district names — normalize to clean form.
+ORIGIN_MAP = {
+    "mexico crossings through nogales arizona": "Nogales, AZ",
+    "nogales fob sc":                           "Nogales, AZ",
+    "phoenix fob sc":                           "Phoenix, AZ",
+    "fresno (fr) fob sc":                       "Fresno, CA",
+    "orlando (oviedo) fob sc":                  "Orlando, FL",
+    "orlando (imports) fob sc":                 "Orlando Imports",
+    "south florida":                            "South Florida",
+    "central florida":                          "Central Florida",
+    "mexico - texas crossing":                  "Mexico/Texas",
+    "mexico - nogales":                         "Nogales, AZ",
+    "salinas-watsonville california":           "Salinas, CA",
+    "central coast california":                 "Central Coast, CA",
+    "san joaquin valley california":            "San Joaquin, CA",
+    "oxnard district california":               "Oxnard, CA",
+    "western arizona":                          "Western AZ",
+    "imperial valley california":               "Imperial Valley, CA",
+    "columbia basin washington":                "Columbia Basin, WA",
+}
+
+def normalize_origin(raw: str) -> str | None:
+    if not raw:
+        return None
+    key = raw.strip().lower()
+    if key in ORIGIN_MAP:
+        return ORIGIN_MAP[key]
+    # Clean up verbose district names — title case, max 100 chars
+    cleaned = raw.strip().title()[:100]
+    return cleaned or None
 
 
 # ── Row builder ──────────────────────────────────────────────────────────────
@@ -376,9 +504,9 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "report_date":        report_date,
         "market":             report_meta["market"],
         "market_type":        report_meta["market_type"],
-        "commodity":          commodity.title(),
+        "commodity":          normalize_commodity(commodity),
         "variety":            variety_raw[:100] or None,
-        "origin":             (raw.get("origin") or raw.get("district") or "").strip().title()[:100] or None,
+        "origin":             normalize_origin(raw.get("origin") or raw.get("district") or raw.get("reporting_city") or ""),
         "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
         "grade":              extract_grade(grade_text) or grade_field.title() or None,
@@ -477,11 +605,14 @@ def run(target_date: str = None):
             continue
 
         log.info("  Got %d raw rows from API", len(raw_rows))
-        # Log first row keys and sample so we can verify field names
+        # Log sample to verify field names and commodity names
         if raw_rows:
             import json
             log.info("  Sample row keys: %s", list(raw_rows[0].keys()))
             log.info("  Sample row: %s", json.dumps(raw_rows[0], default=str)[:500])
+            # Log unique commodity names for mapping verification
+            raw_commodities = list(set(r.get("commodity","") for r in raw_rows if r.get("commodity")))[:20]
+            log.info("  Commodities in this report: %s", raw_commodities)
 
         built = []
         for raw in raw_rows:
