@@ -9,7 +9,7 @@ from supabase import create_client
 from typing import Optional
 import os
 
-app = FastAPI(title="agraX API", version="3.0.0")
+app = FastAPI(title="agraX API", version="4.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,18 +33,20 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.get("/")
 def health():
-    return {"status": "ok", "version": "3.0.0", "service": "agraX API"}
+    return {"status": "ok", "version": "4.0.0", "service": "agraX API"}
 
 
 # ── Dates ─────────────────────────────────────────────────────────────────────
 
 @app.get("/dates")
-def get_dates(market_type: Optional[str] = None):
+def get_dates(market_type: Optional[str] = None, commodity_type: Optional[str] = None):
     """Return the last 30 available report dates with record counts."""
     try:
         q = supabase.table(TABLE).select("report_date, market_type").order("report_date", desc=True).limit(100000)
         if market_type:
             q = q.eq("market_type", market_type)
+        if commodity_type:
+            q = q.eq("commodity_type", commodity_type)
         result = q.execute()
 
         if not result.data:
@@ -70,12 +72,9 @@ def get_by_date(
     market_type: Optional[str] = None,
     market: Optional[str] = None,
     commodity: Optional[str] = None,
+    commodity_type: Optional[str] = None,
     organic: Optional[bool] = None,
 ):
-    """
-    Return all produce_prices rows for a given date.
-    Supports filtering by market_type, market, commodity, organic.
-    """
     try:
         q = (
             supabase.table(TABLE)
@@ -89,6 +88,8 @@ def get_by_date(
             q = q.eq("market", market)
         if commodity:
             q = q.ilike("commodity", f"%{commodity}%")
+        if commodity_type:
+            q = q.eq("commodity_type", commodity_type)
         if organic is not None:
             q = q.eq("organic", organic)
 
@@ -106,15 +107,11 @@ def get_commodity(
     report_date: Optional[str] = None,
     market: Optional[str] = None,
     market_type: Optional[str] = None,
+    commodity_type: Optional[str] = None,
     organic: Optional[bool] = None,
     limit: int = Query(default=500, le=2000),
 ):
-    """
-    Return all listings for a commodity, grouped ready for the detail page.
-    If no date given, returns the most recent report date available.
-    """
     try:
-        # Resolve latest date if not supplied
         if not report_date:
             date_res = (
                 supabase.table(TABLE)
@@ -139,16 +136,16 @@ def get_commodity(
             q = q.eq("market", market)
         if market_type:
             q = q.eq("market_type", market_type)
+        if commodity_type:
+            q = q.eq("commodity_type", commodity_type)
         if organic is not None:
             q = q.eq("organic", organic)
 
         result = q.execute()
         rows = result.data or []
 
-        # Sort: market → variety → size
         def sort_key(r):
             size_val = r.get("size") or "zzz"
-            # sort numerically by extracting leading digits
             import re
             m = re.match(r"(\d+)", size_val)
             size_num = int(m.group(1)) if m else 9999
@@ -246,18 +243,21 @@ def search(
     q: str,
     limit: int = Query(default=100, le=500),
     market_type: Optional[str] = None,
+    commodity_type: Optional[str] = None,
 ):
     """Search commodities by name. Returns latest price for each match."""
     try:
         query = (
             supabase.table(TABLE)
-            .select("commodity, market, variety, origin, price_low, price_high, size, grade, quality_note, organic, report_date, market_type")
+            .select("commodity, market, variety, origin, price_low, price_high, size, grade, quality_note, organic, report_date, market_type, commodity_type")
             .ilike("commodity", f"%{q}%")
             .order("report_date", desc=True)
             .limit(limit)
         )
         if market_type:
             query = query.eq("market_type", market_type)
+        if commodity_type:
+            query = query.eq("commodity_type", commodity_type)
 
         result = query.execute()
         return result.data or []
@@ -348,6 +348,7 @@ def get_freshness():
 @app.get("/movers")
 def get_movers(
     market_type: str = "terminal",
+    commodity_type: str = "vegetables",
     days_back: int = Query(default=7, le=30),
 ):
     """
@@ -359,6 +360,7 @@ def get_movers(
             supabase.table(TABLE)
             .select("commodity, price_low, report_date")
             .eq("market_type", market_type)
+            .eq("commodity_type", commodity_type)
             .order("report_date", desc=True)
             .limit(100000)
             .execute()

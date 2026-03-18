@@ -41,32 +41,116 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Staleness threshold: skip fallback data older than this many days
 MAX_FALLBACK_DAYS = 14
 
+def _slug(slug_id, code, market, market_type):
+    """Derive commodity_type from report code suffix."""
+    suffix = code.split("_")[-1].upper() if "_" in code else ""
+    if suffix in ("FV020",):
+        ct = "vegetables"
+    elif suffix in ("FV010", "FV110", "FV111"):
+        ct = "fruits"
+    elif suffix in ("FV030", "FV120"):
+        ct = "onions_potatoes"
+    elif suffix in ("FV040", "FV140"):
+        ct = "nuts"
+    else:
+        ct = "vegetables"  # fallback
+    return {"slug_id": slug_id, "code": code, "market": market, "market_type": market_type, "commodity_type": ct}
+
 REPORT_SLUGS = [
-    # ── Terminal Markets ─────────────────────────────────────────
-    # NX_FV010 (slug 2232) — confirmed 404 every run, removed
-    {"slug_id": 2315, "code": "NX_FV020", "market": "New York",        "market_type": "terminal"},
-    # HC_FV010/020 (slugs 945/946) — confirmed 404, LA terminal not available via MARS
-    # MH_FV010 (slug 1094) — 404 every run, removed
-    # MH_FV020 (slug 1095) — returns Butter/Cheese cold storage, wrong report, removed
-    # CH_FV010/020 (slugs 1150/1151) — confirmed 404, Chicago not available via MARS
-    # ── Shipping Points (FOB origin prices) ─────────────────────
-    {"slug_id": 2390, "code": "FR_FV110", "market": "Fresno",          "market_type": "shipping_point"},
-    {"slug_id": 2391, "code": "FR_FV120", "market": "Fresno",          "market_type": "shipping_point"},
-    {"slug_id": 2399, "code": "OR_FV110", "market": "Orlando",         "market_type": "shipping_point"},
-    {"slug_id": 2400, "code": "OR_FV120", "market": "Orlando",         "market_type": "shipping_point"},
-    {"slug_id": 2401, "code": "OR_FV111", "market": "Orlando Imports", "market_type": "shipping_point"},
-    {"slug_id": 2402, "code": "IX_FV110", "market": "Phoenix",         "market_type": "shipping_point"},
-    {"slug_id": 2403, "code": "IX_FV120", "market": "Nogales",         "market_type": "shipping_point"},
-    # RA_FV110 (slug 2404) — seasonal fruit, last data June 2025, skip until summer
-    {"slug_id": 2405, "code": "RA_FV120", "market": "Raleigh",         "market_type": "shipping_point"},
-    # TV_FV120 (slug 2410) — returning Jan 2026 data, seasonal, skip
-    {"slug_id": 2411, "code": "TH_FV120", "market": "Thomasville",     "market_type": "shipping_point"},
-    {"slug_id": 2395, "code": "MH_FV111", "market": "Miami Imports",   "market_type": "shipping_point"},
-    # FVWTRDS (slug 1662) — National Trends, different schema, handled separately below
+    # ── Terminal Markets ─────────────────────────────────────────────────────
+    # New York
+    _slug(2315, "NX_FV020", "New York",     "terminal"),  # Vegetables
+    _slug(2314, "NX_FV010", "New York",     "terminal"),  # Fruits
+    _slug(2316, "NX_FV030", "New York",     "terminal"),  # Onions & Potatoes
+    _slug(2317, "NX_FV040", "New York",     "terminal"),  # Nuts
+
+    # Los Angeles
+    _slug(2307, "HC_FV020", "Los Angeles",  "terminal"),
+    _slug(2306, "HC_FV010", "Los Angeles",  "terminal"),
+    _slug(2308, "HC_FV030", "Los Angeles",  "terminal"),
+    _slug(2309, "HC_FV040", "Los Angeles",  "terminal"),
+
+    # Miami
+    _slug(2311, "MH_FV020", "Miami",        "terminal"),
+    _slug(2310, "MH_FV010", "Miami",        "terminal"),
+    _slug(2312, "MH_FV030", "Miami",        "terminal"),
+    _slug(2313, "MH_FV040", "Miami",        "terminal"),
+
+    # Chicago
+    _slug(2291, "HX_FV020", "Chicago",      "terminal"),
+    _slug(2290, "HX_FV010", "Chicago",      "terminal"),
+    _slug(2292, "HX_FV030", "Chicago",      "terminal"),
+    _slug(2293, "HX_FV040", "Chicago",      "terminal"),
+
+    # Philadelphia
+    _slug(2319, "NA_FV020", "Philadelphia", "terminal"),
+    _slug(2318, "NA_FV010", "Philadelphia", "terminal"),
+    _slug(2320, "NA_FV030", "Philadelphia", "terminal"),
+    _slug(2321, "NA_FV040", "Philadelphia", "terminal"),
+
+    # Baltimore
+    _slug(2282, "BP_FV020", "Baltimore",    "terminal"),
+    _slug(2281, "BP_FV010", "Baltimore",    "terminal"),
+    _slug(2283, "BP_FV030", "Baltimore",    "terminal"),
+    _slug(2284, "BP_FV040", "Baltimore",    "terminal"),
+
+    # Boston
+    _slug(2286, "BH_FV020", "Boston",       "terminal"),
+    _slug(2285, "BH_FV010", "Boston",       "terminal"),
+    _slug(2287, "BH_FV030", "Boston",       "terminal"),
+    _slug(2288, "BH_FV040", "Boston",       "terminal"),
+
+    # Atlanta
+    _slug(2278, "AJ_FV020", "Atlanta",      "terminal"),
+    _slug(2277, "AJ_FV010", "Atlanta",      "terminal"),
+    _slug(2279, "AJ_FV030", "Atlanta",      "terminal"),
+    _slug(2280, "AJ_FV040", "Atlanta",      "terminal"),
+
+    # Detroit
+    _slug(2303, "DU_FV020", "Detroit",      "terminal"),
+    _slug(2302, "DU_FV010", "Detroit",      "terminal"),
+    _slug(2304, "DU_FV030", "Detroit",      "terminal"),
+    _slug(2305, "DU_FV040", "Detroit",      "terminal"),
+
+    # San Francisco
+    _slug(2323, "SX_FV020", "San Francisco","terminal"),
+    _slug(2322, "SX_FV010", "San Francisco","terminal"),
+    _slug(2324, "SX_FV030", "San Francisco","terminal"),
+    _slug(2325, "SX_FV040", "San Francisco","terminal"),
+
+    # Columbia SC — confirmed slug 2295 (veg); FV010/030/040 slugs TBD — will 404-skip gracefully
+    _slug(2295, "CA_FV020", "Columbia",     "terminal"),
+    _slug(2294, "CA_FV010", "Columbia",     "terminal"),
+    _slug(2296, "CA_FV030", "Columbia",     "terminal"),
+    _slug(2297, "CA_FV040", "Columbia",     "terminal"),
+
+    # Asheville NC — confirmed slug 3914 (veg); adjacent slugs estimated
+    _slug(3914, "AS_FV020", "Asheville",    "terminal"),
+    _slug(3913, "AS_FV010", "Asheville",    "terminal"),
+    _slug(3915, "AS_FV030", "Asheville",    "terminal"),
+    # No FV040 for Asheville
+
+    # Raleigh NC terminal — confirmed slug 2405 (veg); adjacent slugs estimated
+    _slug(2405, "RA_FV020", "Raleigh",      "terminal"),
+    _slug(2404, "RA_FV010", "Raleigh",      "terminal"),
+    _slug(2406, "RA_FV030", "Raleigh",      "terminal"),
+    # No FV040 for Raleigh
+
+    # ── Shipping Points (FOB origin prices) ──────────────────────────────────
+    _slug(2390, "FR_FV110", "Fresno",          "shipping_point"),  # Fruits
+    _slug(2391, "FR_FV120", "Fresno",          "shipping_point"),  # Onions & Potatoes
+    _slug(2399, "OR_FV110", "Orlando",         "shipping_point"),
+    _slug(2400, "OR_FV120", "Orlando",         "shipping_point"),
+    _slug(2401, "OR_FV111", "Orlando Imports", "shipping_point"),
+    _slug(2402, "IX_FV110", "Phoenix",         "shipping_point"),
+    _slug(2403, "IX_FV120", "Nogales",         "shipping_point"),
+    _slug(2411, "TH_FV120", "Thomasville",     "shipping_point"),
+    _slug(2395, "MH_FV111", "Miami Imports",   "shipping_point"),
+    # FVWTRDS (slug 1662) — National Trends, different schema, handled separately
 ]
 
 # National Trends report — different field schema, ingested separately
-TRENDS_SLUG = {"slug_id": 1662, "code": "FVWTRDS", "market": "National Trends", "market_type": "shipping_point"}
+TRENDS_SLUG = {"slug_id": 1662, "code": "FVWTRDS", "market": "National Trends", "market_type": "shipping_point", "commodity_type": "vegetables"}
 
 
 # ── USDA Fetch ───────────────────────────────────────────────────────────────
@@ -641,6 +725,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "supply_note":        supply_note.upper()[:200] or None,
         "slug_id":            report_meta["slug_id"],
         "source_report":      report_meta["code"],
+        "commodity_type":     report_meta.get("commodity_type", "vegetables"),
     }
     # Compute row_hash for deduplication
     hash_str = "|".join([
@@ -718,6 +803,7 @@ def build_trends_row(raw: dict) -> dict | None:
         "supply_note":      (raw.get("price_tone_detail") or "")[:200] or None,
         "slug_id":          1662,
         "source_report":    "FVWTRDS",
+        "commodity_type":   "vegetables",
         "row_hash":         hashlib.md5(hash_str.encode()).hexdigest(),
     }
 

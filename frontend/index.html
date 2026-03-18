@@ -129,6 +129,13 @@
 
                 <!-- LEFT: Commodity watchlist -->
                 <div class="w-full md:w-96 shrink-0">
+                    <!-- Category tabs -->
+                    <div class="flex gap-1 mb-3 bg-earth-100 p-1 rounded-xl">
+                        <button onclick="setCommodityType('vegetables')" id="ct-vegetables" class="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-white text-earth-800 shadow-sm">🥦 Vegetables</button>
+                        <button onclick="setCommodityType('fruits')" id="ct-fruits" class="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-earth-500 hover:text-earth-700">🍎 Fruits</button>
+                        <button onclick="setCommodityType('onions_potatoes')" id="ct-onions_potatoes" class="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-earth-500 hover:text-earth-700">🧅 O&P</button>
+                        <button onclick="setCommodityType('nuts')" id="ct-nuts" class="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-earth-500 hover:text-earth-700">🌰 Nuts</button>
+                    </div>
                     <!-- Filter tabs -->
                     <div class="flex items-center gap-2 mb-3">
                         <button onclick="setWatchlistFilter('all')" id="wf-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-earth-800 text-white">All</button>
@@ -590,14 +597,14 @@
         // ── Init ─────────────────────────────────────────────────────
         async function init() {
             try {
-                dates = await (await fetch(`${API}/dates`)).json();
+                dates = await (await fetch(`${API}/dates?commodity_type=vegetables`)).json();
                 if (!dates.length) return;
 
-                datesData[dates[0].date] = await (await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
+                datesData[dates[0].date] = await (await fetch(`${API}/commodities/by-date/${dates[0].date}?commodity_type=vegetables`)).json();
                 terminalData = datesData[dates[0].date].filter(d => d.market_type === 'terminal');
 
                 for (let i = 1; i <= 6 && i < dates.length; i++) {
-                    const d = await (await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json();
+                    const d = await (await fetch(`${API}/commodities/by-date/${dates[i].date}?commodity_type=vegetables`)).json();
                     datesData[dates[i].date] = d;
                 }
 
@@ -605,11 +612,11 @@
                 renderTerminalPage();
                 renderComparePage();
                 // Pre-fetch shipping data for home FOB section
-                fetch(`${API}/dates?market_type=shipping_point`)
+                fetch(`${API}/dates?market_type=shipping_point&commodity_type=vegetables`)
                     .then(r => r.json())
-                    .then(async dates => {
-                        if (dates.length) {
-                            const res = await fetch(`${API}/commodities/by-date/${dates[0].date}?market_type=shipping_point`);
+                    .then(async spDates => {
+                        if (spDates.length) {
+                            const res = await fetch(`${API}/commodities/by-date/${spDates[0].date}?market_type=shipping_point&commodity_type=vegetables`);
                             shippingData = await res.json();
                             renderHome(); // re-render with FOB data
                         }
@@ -624,6 +631,68 @@
         let dashboardMovers = { rising: [], falling: [] };
         let watchlistFilter = 'all';
         let selectedCommodity = null;
+        let activeCommodityType = 'vegetables';
+
+        const CATEGORY_LABELS = {
+            vegetables:    '🥦 Vegetables',
+            fruits:        '🍎 Fruits',
+            onions_potatoes: '🧅 Onions & Potatoes',
+            nuts:          '🌰 Nuts',
+        };
+
+        async function setCommodityType(ct) {
+            activeCommodityType = ct;
+            selectedCommodity = null;
+
+            // Update tab styles
+            ['vegetables','fruits','onions_potatoes','nuts'].forEach(k => {
+                const el = document.getElementById('ct-' + k);
+                if (!el) return;
+                el.className = k === ct
+                    ? 'flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-white text-earth-800 shadow-sm'
+                    : 'flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-earth-500 hover:text-earth-700';
+            });
+
+            // Reset detail panel
+            document.getElementById('home-detail-empty').classList.remove('hidden');
+            document.getElementById('home-detail').classList.add('hidden');
+
+            // Reload data for this category
+            document.getElementById('home-watchlist').innerHTML =
+                '<div class="px-4 py-8 text-center text-earth-400 text-sm">Loading ' + CATEGORY_LABELS[ct] + '...</div>';
+
+            try {
+                const [datesRes, moversRes] = await Promise.all([
+                    fetch(`${API}/dates?market_type=terminal&commodity_type=${ct}`).then(r => r.json()),
+                    fetch(`${API}/movers?market_type=terminal&commodity_type=${ct}`).then(r => r.json()),
+                ]);
+
+                if (datesRes.length) {
+                    const latest = await fetch(`${API}/commodities/by-date/${datesRes[0].date}?commodity_type=${ct}`).then(r => r.json());
+                    terminalData = latest.filter(d => d.market_type === 'terminal');
+                } else {
+                    terminalData = [];
+                }
+
+                // Also refresh shipping data for this category
+                fetch(`${API}/dates?market_type=shipping_point&commodity_type=${ct}`)
+                    .then(r => r.json())
+                    .then(async spDates => {
+                        if (spDates.length) {
+                            const res = await fetch(`${API}/commodities/by-date/${spDates[0].date}?market_type=shipping_point&commodity_type=${ct}`);
+                            shippingData = await res.json();
+                            renderHome();
+                        }
+                    }).catch(() => {});
+
+                dashboardMovers = moversRes;
+                renderHome();
+            } catch(e) {
+                console.error('setCommodityType error', e);
+                document.getElementById('home-watchlist').innerHTML =
+                    '<div class="px-4 py-8 text-center text-red-400 text-sm">Error loading data</div>';
+            }
+        }
 
         function setWatchlistFilter(f) {
             watchlistFilter = f;
@@ -925,8 +994,8 @@
 
         async function renderHome() {
             try {
-                // Fetch movers
-                const movers = await (await fetch(`${API}/movers?market_type=terminal`)).json();
+                // Fetch movers for active category
+                const movers = await (await fetch(`${API}/movers?market_type=terminal&commodity_type=${activeCommodityType}`)).json();
                 dashboardMovers = movers;
 
                 // Stats
@@ -940,10 +1009,12 @@
                 document.getElementById('snap-steady').textContent  = steady;
                 document.getElementById('snap-total').textContent   = commodities.size;
 
+                const catLabel = CATEGORY_LABELS[activeCommodityType] || activeCommodityType;
                 const summary = [];
                 if (rising)  summary.push(`${rising} rising`);
                 if (falling) summary.push(`${falling} falling`);
                 if (steady)  summary.push(`${steady} steady`);
+
                 // Fetch actual data freshness from API — never use client date
                 let freshnessLabel = '';
                 try {
@@ -951,7 +1022,6 @@
                     if (fresh.terminal) {
                         const d = new Date(fresh.terminal + 'T00:00:00');
                         const label = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
-                        // How stale is it?
                         const today = new Date(); today.setHours(0,0,0,0);
                         const diffDays = Math.round((today - d) / 86400000);
                         const staleNote = diffDays === 0 ? 'today'
@@ -962,15 +1032,17 @@
                 } catch(e) { /* freshness is non-critical */ }
 
                 document.getElementById('home-market-summary').textContent =
-                    summary.length
+                    catLabel + ' · ' + (summary.length
                         ? summary.join(' · ') + ' · ' + commodities.size + ' commodities' + freshnessLabel
-                        : 'Market data loaded';
+                        : 'Market data loaded');
 
                 renderWatchlist();
 
                 // Auto-select first mover if nothing selected
                 if (!selectedCommodity && movers.rising?.length) {
                     selectDashboardCommodity(movers.rising[0].commodity);
+                } else if (!selectedCommodity && commodities.size > 0) {
+                    selectDashboardCommodity([...commodities][0]);
                 }
 
             } catch (e) {
