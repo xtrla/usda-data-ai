@@ -411,10 +411,18 @@ def normalize_movement(mov_val) -> str | None:
     if s.lower() in direct:
         return direct[s.lower()]
 
-    # Verbose comment — find first direction mention (dominant) then score overall
-    sl = s.lower()
+    # Strip variety/size prefixes before parsing direction
+    # e.g. "Curly Slightly Higher, Plain About Steady" -> parse "Slightly Higher"
+    # e.g. "18-30S Slightly Higher, 12S About Steady" -> parse "Slightly Higher"
+    import re
+    s_clean = re.sub(r'\b\d+[-]?\d*[Ss]\b', '', s)
+    variety_words = (r'\b(Curly|Plain|Root|Italian|Flat|Lacinato|Tuscan|Globe|Roma|'
+                     r'Round|Baby|Green|Red|Yellow|Orange|Large|Medium|Small|Jumbo|Xlge|Xxlge)\b')
+    s_clean = re.sub(variety_words, '', s_clean, flags=re.IGNORECASE)
+    s_clean = re.sub(r'\s+', ' ', s_clean).strip()
+    sl = s_clean.lower() if s_clean else s.lower()
 
-    # Find position of each direction's first mention — earlier = more dominant
+    # Find position of each direction first mention — earlier = more dominant
     directions = {
         "Much Higher":  "much higher",
         "Slightly Higher": "slightly higher",
@@ -491,6 +499,11 @@ ORIGIN_MAP = {
     "imperial, coachella, and palo verde valleys california": "Imperial/Coachella, CA",
     "imperial coachella and palo verde valleys california": "Imperial/Coachella, CA",
     "imperial and coachella valley california": "Imperial/Coachella, CA",
+    # Exact string seen in logs from FVWTRDS national trends district field
+    "imperial, coachella valleys ca, central and western az, mexico crossings through calexico and san lu": "Imperial/Coachella CA, Western AZ",
+    "imperial coachella valleys ca central and western az mexico crossings through calexico and san lu": "Imperial/Coachella CA, Western AZ",
+    "imperial and coachella valley california, western arizona, mexico crossings thru calexico and san lu": "Imperial/Coachella CA, Western AZ",
+    "imperial and coachella valley ca, western az, mexico crossings thru calexico": "Imperial/Coachella CA, Western AZ",
     "palo verde valley california": "Palo Verde, CA",
     "lower colorado river district arizona": "Lower Colorado, AZ",
     "yuma arizona": "Yuma, AZ",
