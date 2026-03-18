@@ -346,15 +346,20 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     if price_low is None:
         return None  # skip rows with no price
 
-    # ── Confirmed MARS API field names from live response ──────────────────
-    # appearance, quality, condition are THREE separate fields
-    # quality_note = combine all three for best coverage
-    appearance_field = str(raw.get("appearance") or "").strip().lower()
+    # ── Field names vary between terminal and shipping point reports ────────
+    # Terminal:      appearance, quality, condition, package, variety, item_size
+    # Shipping Point: appear,    quality, cond,      pkg,     var,     item_size
+    appearance_field = str(raw.get("appearance") or raw.get("appear") or "").strip().lower()
     quality_field    = str(raw.get("quality") or "").strip().lower()
-    condition_field  = str(raw.get("condition") or "").strip().lower()
+    condition_field  = str(raw.get("condition") or raw.get("cond") or "").strip().lower()
     size_field       = str(raw.get("item_size") or "").strip()
     grade_field      = str(raw.get("grade") or "").strip()
-    supply_note      = str(raw.get("market_tone_comments") or raw.get("offerings_comments") or "").strip()
+    supply_note      = str(raw.get("market_tone_comments") or raw.get("offerings_comments") or raw.get("supply_tone_comments") or "").strip()
+
+    # Package field — terminal uses 'package', shipping point uses 'pkg'
+    package_raw = str(raw.get("package") or raw.get("pkg") or "").strip()
+    # Variety field — terminal uses 'variety', shipping point uses 'var'
+    variety_raw = str(raw.get("variety") or raw.get("var") or "").strip().upper()
 
     # Combine all quality signals for parsing
     quality_combined = " ".join(filter(None, [appearance_field, quality_field, condition_field, size_field]))
@@ -372,9 +377,9 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "market":             report_meta["market"],
         "market_type":        report_meta["market_type"],
         "commodity":          commodity.title(),
-        "variety":            (raw.get("variety") or "").strip().upper() or None,
-        "origin":             (raw.get("origin") or raw.get("district") or "").strip().title() or None,
-        "package":            normalize_package(raw.get("package")),
+        "variety":            variety_raw[:100] or None,
+        "origin":             (raw.get("origin") or raw.get("district") or "").strip().title()[:100] or None,
+        "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
         "grade":              extract_grade(grade_text) or grade_field.title() or None,
         "quality_note":       extract_quality_note(appearance_field, quality_field, condition_field),
@@ -385,7 +390,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "price_mostly_high":  mostly_high,
         "movement":           normalize_movement(raw.get("movement") or raw.get("market_tone_comments")),
         "trading_activity":   normalize_trading(raw.get("trading_desc") or raw.get("unit_sales")),
-        "supply_note":        supply_note.upper() or None,
+        "supply_note":        supply_note.upper()[:200] or None,
         "slug_id":            report_meta["slug_id"],
         "source_report":      report_meta["code"],
     }
