@@ -359,21 +359,49 @@ def normalize_package(pkg_val) -> str | None:
 
 
 def normalize_movement(mov_val) -> str | None:
+    """
+    Parse movement/tone into a clean direction word.
+    Handles both clean values ("Higher") and verbose comments
+    ("18-30S Slightly Higher, 12S About Steady.") by scoring
+    direction mentions and returning the dominant one.
+    """
     if not mov_val:
         return None
     s = str(mov_val).strip()
-    # Normalize USDA movement strings
-    mapping = {
+
+    # Direct clean match first
+    direct = {
         "much higher": "Much Higher",
-        "higher": "Higher",
         "slightly higher": "Slightly Higher",
-        "generally unchanged": "Unchanged",
-        "unchanged": "Unchanged",
+        "higher": "Higher",
+        "much lower": "Much Lower",
         "slightly lower": "Slightly Lower",
         "lower": "Lower",
-        "much lower": "Much Lower",
+        "generally unchanged": "Unchanged",
+        "about steady": "Unchanged",
+        "near steady": "Unchanged",
+        "generally steady": "Unchanged",
+        "unchanged": "Unchanged",
+        "steady": "Unchanged",
     }
-    return mapping.get(s.lower(), s.title())
+    if s.lower() in direct:
+        return direct[s.lower()]
+
+    # Verbose comment — score direction mentions
+    sl = s.lower()
+    scores = {
+        "Much Higher":  sl.count("much higher") * 3,
+        "Higher":       sl.count("slightly higher") * 2 + sl.count("higher"),
+        "Much Lower":   sl.count("much lower") * 3,
+        "Lower":        sl.count("slightly lower") * 2 + sl.count("lower"),
+        "Unchanged":    sl.count("about steady") + sl.count("steady") + sl.count("unchanged"),
+    }
+    # "much higher" also contains "higher" — remove double-count
+    scores["Higher"] = max(0, scores["Higher"] - scores["Much Higher"] * 3)
+    scores["Lower"]  = max(0, scores["Lower"]  - scores["Much Lower"]  * 3)
+
+    best = max(scores, key=scores.get)
+    return best if scores[best] > 0 else None
 
 
 def normalize_trading(trading_val) -> str | None:
@@ -395,22 +423,38 @@ def normalize_trading(trading_val) -> str | None:
 # Shipping point reports return verbose district names — normalize to clean form.
 ORIGIN_MAP = {
     "mexico crossings through nogales arizona": "Nogales, AZ",
-    "nogales fob sc":                           "Nogales, AZ",
-    "phoenix fob sc":                           "Phoenix, AZ",
-    "fresno (fr) fob sc":                       "Fresno, CA",
-    "orlando (oviedo) fob sc":                  "Orlando, FL",
-    "orlando (imports) fob sc":                 "Orlando Imports",
-    "south florida":                            "South Florida",
-    "central florida":                          "Central Florida",
-    "mexico - texas crossing":                  "Mexico/Texas",
-    "mexico - nogales":                         "Nogales, AZ",
-    "salinas-watsonville california":           "Salinas, CA",
-    "central coast california":                 "Central Coast, CA",
-    "san joaquin valley california":            "San Joaquin, CA",
-    "oxnard district california":               "Oxnard, CA",
-    "western arizona":                          "Western AZ",
-    "imperial valley california":               "Imperial Valley, CA",
-    "columbia basin washington":                "Columbia Basin, WA",
+    "south and central california and mexico crossings through southern california and san luis arizona": "Southern CA / San Luis, AZ",
+    "mexico crossings through southern california and san luis arizona": "San Luis, AZ",
+    "south and central california": "Southern CA",
+    "mexico - nogales": "Nogales, AZ",
+    "nogales fob sc": "Nogales, AZ",
+    "western arizona": "Western AZ",
+    "phoenix fob sc": "Phoenix, AZ",
+    "fresno (fr) fob sc": "Fresno, CA",
+    "salinas-watsonville california": "Salinas, CA",
+    "salinas-watsonville": "Salinas, CA",
+    "central coast california": "Central Coast, CA",
+    "san joaquin valley california": "San Joaquin, CA",
+    "san joaquin valley": "San Joaquin, CA",
+    "oxnard district california": "Oxnard, CA",
+    "oxnard district": "Oxnard, CA",
+    "imperial valley california": "Imperial Valley, CA",
+    "imperial valley": "Imperial Valley, CA",
+    "coachella valley california": "Coachella Valley, CA",
+    "coachella valley": "Coachella Valley, CA",
+    "orlando (oviedo) fob sc": "Orlando, FL",
+    "orlando (imports) fob sc": "Orlando Imports",
+    "south florida": "South Florida",
+    "central florida": "Central Florida",
+    "north florida": "North Florida",
+    "mexico - texas crossing": "Mexico/Texas",
+    "rio grande valley texas": "Rio Grande, TX",
+    "rio grande valley": "Rio Grande, TX",
+    "columbia basin washington": "Columbia Basin, WA",
+    "columbia basin": "Columbia Basin, WA",
+    "eastern carolina": "Eastern NC",
+    "southeastern georgia": "Southeast GA",
+    "southwest georgia": "Southwest GA",
 }
 
 def normalize_origin(raw: str) -> str | None:
@@ -541,6 +585,27 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
 
 # ── Upsert ───────────────────────────────────────────────────────────────────
 
+def purge_old_rows(slug_id: int, keep_date: str):
+    """
+    Delete all rows for a slug that are NOT from keep_date.
+    Prevents stale data from old reports polluting results.
+    keep_date format: "YYYY-MM-DD"
+    """
+    try:
+        result = (
+            supabase.table(TABLE)
+            .delete()
+            .eq("slug_id", str(slug_id))
+            .neq("report_date", keep_date)
+            .execute()
+        )
+        deleted = len(result.data) if result.data else 0
+        if deleted:
+            log.info("  Purged %d stale rows for slug %s (kept %s)", deleted, slug_id, keep_date)
+    except Exception as e:
+        log.warning("  Could not purge old rows for slug %s: %s", slug_id, e)
+
+
 def upsert_rows(rows: list[dict]) -> int:
     """
     Upsert rows using row_hash as the conflict target.
@@ -571,8 +636,11 @@ def run(target_date: str = None):
     Ingest all configured report slugs for today (or target_date if given).
     target_date format: "MM/DD/YYYY"
 
-    If today has no data yet (USDA not published), automatically falls back
-    to the most recent available date for each report.
+    Strategy:
+    1. Try today's date first
+    2. If no data, fall back to lastReports=1 (most recent published)
+    3. After fetching, purge any older rows for that slug so stale data
+       from previous runs never pollutes the results
     """
     if not target_date:
         target_date = date.today().strftime("%m/%d/%Y")
@@ -585,15 +653,17 @@ def run(target_date: str = None):
         code = report_meta["code"]
         log.info("Fetching %s (slug %s)...", code, slug_id)
 
+        used_fallback = False
         try:
             raw_rows = fetch_report(slug_id, target_date)
         except Exception as e:
             log.error("Failed to fetch %s: %s", code, e)
             continue
 
-        # If no data for today, try fetching the most recent available report
+        # If no data for today, fall back to most recently published report
         if not raw_rows:
             log.info("  No data for %s on %s — trying latest available...", code, target_date)
+            used_fallback = True
             try:
                 raw_rows = fetch_latest_report(slug_id)
             except Exception as e:
@@ -604,15 +674,22 @@ def run(target_date: str = None):
             log.info("  No data available for %s", code)
             continue
 
-        log.info("  Got %d raw rows from API", len(raw_rows))
+        log.info("  Got %d raw rows from API (fallback=%s)", len(raw_rows), used_fallback)
+
         # Log sample to verify field names and commodity names
-        if raw_rows:
-            import json
-            log.info("  Sample row keys: %s", list(raw_rows[0].keys()))
-            log.info("  Sample row: %s", json.dumps(raw_rows[0], default=str)[:500])
-            # Log unique commodity names for mapping verification
-            raw_commodities = list(set(r.get("commodity","") for r in raw_rows if r.get("commodity")))[:20]
-            log.info("  Commodities in this report: %s", raw_commodities)
+        import json
+        log.info("  Sample row keys: %s", list(raw_rows[0].keys()))
+        log.info("  Sample row: %s", json.dumps(raw_rows[0], default=str)[:500])
+        raw_commodities = sorted(set(r.get("commodity","") for r in raw_rows if r.get("commodity")))
+        log.info("  Commodities in this report (%d): %s", len(raw_commodities), raw_commodities)
+
+        # Detect the actual report date from the data
+        sample_date_raw = raw_rows[0].get("report_date") or raw_rows[0].get("report_begin_date") or ""
+        try:
+            actual_report_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date().isoformat()
+        except Exception:
+            actual_report_date = date.today().isoformat()
+        log.info("  Report date in data: %s", actual_report_date)
 
         built = []
         for raw in raw_rows:
@@ -621,9 +698,14 @@ def run(target_date: str = None):
                 built.append(row)
 
         log.info("  Built %d valid rows", len(built))
-        upserted = upsert_rows(built)
-        grand_total += upserted
-        log.info("  Upserted %d rows for %s", upserted, code)
+
+        if built:
+            # Purge stale rows for this slug before upserting fresh data
+            # This ensures old Jan/Feb data doesn't persist alongside March data
+            purge_old_rows(slug_id, actual_report_date)
+            upserted = upsert_rows(built)
+            grand_total += upserted
+            log.info("  Upserted %d rows for %s (report_date=%s)", upserted, code, actual_report_date)
 
     log.info("Ingestion complete. Total rows upserted: %d", grand_total)
     return grand_total
