@@ -436,10 +436,15 @@ def normalize_movement(mov_val) -> str | None:
     # The direction mentioned first is dominant
     dominant = min(first_pos, key=first_pos.get)
 
-    # Collapse "Slightly Higher/Lower" → "Higher/Lower" for cleaner display
+    # Map to clean display labels
     collapse = {
+        "Much Higher":    "Much Higher",
         "Slightly Higher": "Higher",
+        "Higher":          "Higher",
+        "Much Lower":     "Much Lower",
         "Slightly Lower":  "Lower",
+        "Lower":           "Lower",
+        "Unchanged":       "Steady",
     }
     return collapse.get(dominant, dominant)
 
@@ -482,6 +487,14 @@ ORIGIN_MAP = {
     "imperial valley": "Imperial Valley, CA",
     "coachella valley california": "Coachella Valley, CA",
     "coachella valley": "Coachella Valley, CA",
+    "imperial, coachella and palo verde valleys california": "Imperial/Coachella, CA",
+    "imperial, coachella, and palo verde valleys california": "Imperial/Coachella, CA",
+    "imperial coachella and palo verde valleys california": "Imperial/Coachella, CA",
+    "imperial and coachella valley california": "Imperial/Coachella, CA",
+    "palo verde valley california": "Palo Verde, CA",
+    "lower colorado river district arizona": "Lower Colorado, AZ",
+    "yuma arizona": "Yuma, AZ",
+    "yuma district arizona": "Yuma, AZ",
     "orlando (oviedo) fob sc": "Orlando, FL",
     "orlando (imports) fob sc": "Orlando Imports",
     "south florida": "South Florida",
