@@ -298,16 +298,62 @@
     <div id="page-shipping" class="page">
         <section class="bg-gradient-to-b from-orange-50 to-earth-50 border-b border-earth-200">
             <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="text-2xl">📦</span>
-                    <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Shipping Points</h1>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <span class="text-2xl">📦</span>
+                            <h1 class="text-2xl md:text-3xl font-bold text-earth-900">Shipping Points</h1>
+                        </div>
+                        <p class="text-earth-500">F.O.B. prices at origin — what producers receive at source.</p>
+                    </div>
+                    <!-- Mode toggle -->
+                    <div class="flex items-center gap-1 bg-white border border-earth-200 rounded-lg p-1">
+                        <button id="mode-buyer" onclick="setShippingMode('buyer')" class="px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white transition-all">Best Price</button>
+                        <button id="mode-pulse" onclick="setShippingMode('pulse')" class="px-4 py-2 rounded-md text-sm font-medium text-earth-500 hover:text-earth-700 transition-all">Market Pulse</button>
+                    </div>
                 </div>
-                <p class="text-earth-500">F.O.B. prices at origin — what producers receive at source.</p>
             </div>
         </section>
         <main class="max-w-7xl mx-auto px-4 py-8">
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <div class="overflow-x-auto">
+            <div id="shipping-loading" class="text-center py-12 text-earth-400 text-sm">Loading...</div>
+
+            <!-- BUYER MODE: commodity cards -->
+            <div id="shipping-buyer-view" class="hidden">
+                <div id="shipping-search-bar" class="mb-5">
+                    <input type="text" id="shipping-search" placeholder="Search commodity..." 
+                        class="px-4 py-2.5 border border-earth-300 rounded-lg text-sm w-full max-w-xs"
+                        oninput="renderShippingBuyer()"/>
+                </div>
+                <div id="shipping-cards" class="space-y-4"></div>
+            </div>
+
+            <!-- PULSE MODE: movement groups -->
+            <div id="shipping-pulse-view" class="hidden">
+                <div class="grid md:grid-cols-3 gap-5 mb-8">
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded">↑ RISING</span>
+                            <span class="text-xs text-earth-400">Higher prices at source</span>
+                        </div>
+                        <div id="pulse-rising" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-earth-100 text-earth-600 text-xs font-semibold px-2 py-1 rounded">→ STEADY</span>
+                            <span class="text-xs text-earth-400">Unchanged</span>
+                        </div>
+                        <div id="pulse-steady" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-leaf-100 text-leaf-700 text-xs font-semibold px-2 py-1 rounded">↓ FALLING</span>
+                            <span class="text-xs text-earth-400">Buy opportunity</span>
+                        </div>
+                        <div id="pulse-falling" class="space-y-2"></div>
+                    </div>
+                </div>
+                <!-- Full pulse table -->
+                <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
                     <table class="w-full">
                         <thead class="bg-earth-50 border-b border-earth-200">
                             <tr class="text-xs text-earth-500 uppercase">
@@ -315,13 +361,13 @@
                                 <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Variety</th>
                                 <th class="text-left px-4 py-3 font-medium">Origin</th>
                                 <th class="text-center px-4 py-3 font-medium hidden lg:table-cell">Size</th>
-                                <th class="text-right px-4 py-3 font-medium">Price Range</th>
-                                <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">Movement</th>
-                                <th class="text-right px-4 py-3 font-medium hidden md:table-cell">Trading</th>
+                                <th class="text-right px-4 py-3 font-medium">FOB Price</th>
+                                <th class="text-center px-4 py-3 font-medium">Movement</th>
+                                <th class="text-center px-4 py-3 font-medium hidden md:table-cell">Trading</th>
                             </tr>
                         </thead>
                         <tbody id="shipping-table" class="divide-y divide-earth-100">
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Loading shipping data...</td></tr>
+                            <tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -801,50 +847,168 @@
 
         // ── Shipping Page ────────────────────────────────────────────
         let shippingData = [];
+        let shippingMode = 'buyer';
+
+        function setShippingMode(mode) {
+            shippingMode = mode;
+            document.getElementById('mode-buyer').className = mode === 'buyer'
+                ? 'px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white transition-all'
+                : 'px-4 py-2 rounded-md text-sm font-medium text-earth-500 hover:text-earth-700 transition-all';
+            document.getElementById('mode-pulse').className = mode === 'pulse'
+                ? 'px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white transition-all'
+                : 'px-4 py-2 rounded-md text-sm font-medium text-earth-500 hover:text-earth-700 transition-all';
+            document.getElementById('shipping-buyer-view').classList.toggle('hidden', mode !== 'buyer');
+            document.getElementById('shipping-pulse-view').classList.toggle('hidden', mode !== 'pulse');
+            if (mode === 'buyer') renderShippingBuyer();
+            if (mode === 'pulse') renderShippingPulse();
+        }
 
         async function renderShippingPage() {
-            document.getElementById('shipping-table').innerHTML =
-                '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Loading...</td></tr>';
+            document.getElementById('shipping-loading').classList.remove('hidden');
+            document.getElementById('shipping-buyer-view').classList.add('hidden');
+            document.getElementById('shipping-pulse-view').classList.add('hidden');
 
             try {
-                // Fetch latest date for shipping points
                 const datesRes = await fetch(`${API}/dates?market_type=shipping_point`);
                 const shippingDates = await datesRes.json();
-
                 if (!shippingDates.length) {
-                    document.getElementById('shipping-table').innerHTML =
-                        '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">No shipping point data available yet.</td></tr>';
+                    document.getElementById('shipping-loading').textContent = 'No shipping point data available yet.';
                     return;
                 }
-
                 const latestDate = shippingDates[0].date;
                 const res = await fetch(`${API}/commodities/by-date/${latestDate}?market_type=shipping_point`);
                 shippingData = await res.json();
-
-                if (!shippingData.length) {
-                    document.getElementById('shipping-table').innerHTML =
-                        '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">No shipping point data for latest date.</td></tr>';
-                    return;
-                }
-
-                document.getElementById('shipping-table').innerHTML = shippingData
-                    .sort((a, b) => a.commodity.localeCompare(b.commodity))
-                    .map(r => `
-                    <tr class="hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity','${r.commodity}')">
-                        <td class="px-4 py-3 font-medium text-earth-800">${r.commodity}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${r.variety || '–'}</td>
-                        <td class="px-4 py-3 text-earth-500">${r.origin || r.market || '–'}</td>
-                        <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(r.size)}</td>
-                        <td class="px-4 py-3 text-right font-semibold text-orange-600">${formatPrice(r)}</td>
-                        <td class="px-4 py-3 text-right hidden sm:table-cell"><span class="${movementClass(r.movement)}">${movementArrow(r.movement)} ${r.movement || '–'}</span></td>
-                        <td class="px-4 py-3 text-right text-earth-400 text-sm hidden md:table-cell">${r.trading_activity || '–'}</td>
-                    </tr>`).join('');
-
+                document.getElementById('shipping-loading').classList.add('hidden');
+                setShippingMode('buyer');
             } catch(e) {
                 console.error('renderShippingPage error', e);
-                document.getElementById('shipping-table').innerHTML =
-                    '<tr><td colspan="7" class="px-4 py-8 text-center text-earth-400">Error loading data.</td></tr>';
+                document.getElementById('shipping-loading').textContent = 'Error loading data.';
             }
+        }
+
+        function tradingBadge(t) {
+            if (!t) return '';
+            const cls = t === 'Active' ? 'bg-leaf-100 text-leaf-700'
+                      : t === 'Slow'   ? 'bg-red-100 text-red-600'
+                      : 'bg-earth-100 text-earth-500';
+            return `<span class="text-xs px-2 py-0.5 rounded-full font-medium ${cls}">${t}</span>`;
+        }
+
+        function buySellSignal(row) {
+            const mov = (row.movement || '').toLowerCase();
+            const trading = (row.trading_activity || '').toLowerCase();
+            if (mov.includes('lower') && (trading === 'active' || trading === 'fairly active'))
+                return `<span class="text-xs bg-leaf-100 text-leaf-700 font-semibold px-2 py-0.5 rounded-full">BUY</span>`;
+            if (mov.includes('higher') && trading === 'active')
+                return `<span class="text-xs bg-red-100 text-red-600 font-semibold px-2 py-0.5 rounded-full">TIGHT</span>`;
+            return '';
+        }
+
+        function renderShippingBuyer() {
+            const search = (document.getElementById('shipping-search')?.value || '').toLowerCase();
+            // Group by commodity
+            const grouped = {};
+            shippingData.forEach(r => {
+                const key = r.commodity;
+                if (search && !key.toLowerCase().includes(search)) return;
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(r);
+            });
+
+            const cards = Object.entries(grouped)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([commodity, rows]) => {
+                    // Sort origins by lowest price
+                    rows.sort((a, b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+                    const bestRow = rows[0];
+                    const signal = buySellSignal(bestRow);
+
+                    const originRows = rows.map((r, i) => {
+                        const isLowest = i === 0;
+                        const mov = r.movement || '';
+                        const movColor = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
+                        const movArrow = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                        return `
+                        <div class="flex items-center justify-between py-2 ${i < rows.length - 1 ? 'border-b border-earth-100' : ''}">
+                            <div class="flex items-center gap-3 min-w-0">
+                                ${isLowest ? '<span class="shrink-0 text-xs bg-orange-100 text-orange-700 font-semibold px-1.5 py-0.5 rounded">LOW</span>' : '<span class="shrink-0 w-8"></span>'}
+                                <div class="min-w-0">
+                                    <div class="text-sm font-medium text-earth-800 truncate">${r.origin || r.market || '–'}</div>
+                                    <div class="text-xs text-earth-400">${r.variety || ''} ${r.size ? sizePill(r.size) : ''}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="${movColor} text-sm font-medium">${movArrow} ${mov}</span>
+                                ${tradingBadge(r.trading_activity)}
+                                <span class="font-bold ${isLowest ? 'text-orange-600' : 'text-earth-600'} text-sm">${formatPrice(r)}</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    return `
+                    <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <div class="px-4 py-3 bg-earth-50 border-b border-earth-200 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-earth-800 cursor-pointer hover:text-leaf-600" onclick="navigate('commodity','${commodity}')">${commodity}</span>
+                                ${signal}
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-earth-400">${rows.length} origin${rows.length > 1 ? 's' : ''}</span>
+                                <span class="text-sm font-bold text-orange-600">from ${formatPrice(bestRow)}</span>
+                            </div>
+                        </div>
+                        <div class="px-4">${originRows}</div>
+                    </div>`;
+                }).join('');
+
+            document.getElementById('shipping-cards').innerHTML = cards ||
+                '<p class="text-earth-400 text-sm text-center py-8">No results found.</p>';
+        }
+
+        function renderShippingPulse() {
+            const rising  = shippingData.filter(r => (r.movement||'').includes('Higher'));
+            const falling = shippingData.filter(r => (r.movement||'').includes('Lower'));
+            const steady  = shippingData.filter(r => !rising.includes(r) && !falling.includes(r));
+
+            const miniCard = (r, color) => `
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-earth-50 cursor-pointer hover:bg-earth-100" onclick="navigate('commodity','${r.commodity}')">
+                    <div>
+                        <div class="text-sm font-medium text-earth-800">${r.commodity}</div>
+                        <div class="text-xs text-earth-400">${r.origin || r.market || ''}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold ${color} text-sm">${formatPrice(r)}</div>
+                        ${tradingBadge(r.trading_activity)}
+                    </div>
+                </div>`;
+
+            document.getElementById('pulse-rising').innerHTML  = rising.slice(0,8).map(r => miniCard(r, 'text-red-500')).join('') || '<p class="text-xs text-earth-400">None</p>';
+            document.getElementById('pulse-falling').innerHTML = falling.slice(0,8).map(r => miniCard(r, 'text-leaf-600')).join('') || '<p class="text-xs text-earth-400">None</p>';
+            document.getElementById('pulse-steady').innerHTML  = steady.slice(0,8).map(r => miniCard(r, 'text-earth-500')).join('') || '<p class="text-xs text-earth-400">None</p>';
+
+            // Full table
+            document.getElementById('shipping-table').innerHTML = shippingData
+                .sort((a, b) => {
+                    const order = {'Much Higher':0,'Higher':1,'Slightly Higher':2,'Unchanged':3,'Slightly Lower':4,'Lower':5,'Much Lower':6};
+                    return (order[a.movement]??3) - (order[b.movement]??3) || a.commodity.localeCompare(b.commodity);
+                })
+                .map((r, i) => {
+                    const mov = r.movement || '';
+                    const movColor = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
+                    const movArrow = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                    return `
+                    <tr class="${i%2===1?'bg-earth-50/50':''} hover:bg-orange-50 cursor-pointer" onclick="navigate('commodity','${r.commodity}')">
+                        <td class="px-4 py-3 font-medium text-earth-800">${r.commodity}</td>
+                        <td class="px-4 py-3 text-earth-500 text-sm hidden sm:table-cell">${r.variety || '–'}</td>
+                        <td class="px-4 py-3 text-earth-500 text-sm">${r.origin || r.market || '–'}</td>
+                        <td class="px-4 py-3 text-center hidden lg:table-cell">${sizePill(r.size)}</td>
+                        <td class="px-4 py-3 text-right font-semibold text-orange-600">${formatPrice(r)}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="${movColor} font-medium text-sm">${movArrow} ${mov || '–'}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center hidden md:table-cell">${tradingBadge(r.trading_activity)}</td>
+                    </tr>`;
+                }).join('');
         }
 
         // ── Compare Page ─────────────────────────────────────────────
