@@ -38,39 +38,35 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Report slug IDs to ingest daily.
 # Add more from https://mymarketnews.ams.usda.gov/public_data
 # market_type: "terminal" or "shipping_point"
+# Staleness threshold: skip fallback data older than this many days
+MAX_FALLBACK_DAYS = 14
+
 REPORT_SLUGS = [
-    # ── Terminal Markets (destination wholesale prices) ──────────
-    {"slug_id": 2232, "code": "NX_FV010", "market": "New York",        "market_type": "terminal"},
+    # ── Terminal Markets ─────────────────────────────────────────
+    # NX_FV010 (slug 2232) — confirmed 404 every run, removed
     {"slug_id": 2315, "code": "NX_FV020", "market": "New York",        "market_type": "terminal"},
-    {"slug_id": 945,  "code": "HC_FV010", "market": "Los Angeles",     "market_type": "terminal"},
-    {"slug_id": 946,  "code": "HC_FV020", "market": "Los Angeles",     "market_type": "terminal"},
-    {"slug_id": 1094, "code": "MH_FV010", "market": "Miami",           "market_type": "terminal"},
-    {"slug_id": 1095, "code": "MH_FV020", "market": "Miami",           "market_type": "terminal"},
-    {"slug_id": 1150, "code": "CH_FV010", "market": "Chicago",         "market_type": "terminal"},
-    {"slug_id": 1151, "code": "CH_FV020", "market": "Chicago",         "market_type": "terminal"},
+    # HC_FV010/020 (slugs 945/946) — confirmed 404, LA terminal not available via MARS
+    # MH_FV010 (slug 1094) — 404 every run, removed
+    # MH_FV020 (slug 1095) — returns Butter/Cheese cold storage, wrong report, removed
+    # CH_FV010/020 (slugs 1150/1151) — confirmed 404, Chicago not available via MARS
     # ── Shipping Points (FOB origin prices) ─────────────────────
-    # California — Fresno (fruits + vegetables, daily)
     {"slug_id": 2390, "code": "FR_FV110", "market": "Fresno",          "market_type": "shipping_point"},
     {"slug_id": 2391, "code": "FR_FV120", "market": "Fresno",          "market_type": "shipping_point"},
-    # Florida — Orlando (fruits + vegetables, daily)
     {"slug_id": 2399, "code": "OR_FV110", "market": "Orlando",         "market_type": "shipping_point"},
     {"slug_id": 2400, "code": "OR_FV120", "market": "Orlando",         "market_type": "shipping_point"},
-    # Florida — Orlando imports (tropical fruits via Miami/Orlando ports)
     {"slug_id": 2401, "code": "OR_FV111", "market": "Orlando Imports", "market_type": "shipping_point"},
-    # Arizona/Mexico crossings — Phoenix (fruits + vegetables, daily)
     {"slug_id": 2402, "code": "IX_FV110", "market": "Phoenix",         "market_type": "shipping_point"},
-    {"slug_id": 2403, "code": "IX_FV120", "market": "Phoenix",         "market_type": "shipping_point"},
-    # Southeast — Raleigh NC (vegetables, seasonal)
-    {"slug_id": 2404, "code": "RA_FV110", "market": "Raleigh",         "market_type": "shipping_point"},
+    {"slug_id": 2403, "code": "IX_FV120", "market": "Nogales",         "market_type": "shipping_point"},
+    # RA_FV110 (slug 2404) — seasonal fruit, last data June 2025, skip until summer
     {"slug_id": 2405, "code": "RA_FV120", "market": "Raleigh",         "market_type": "shipping_point"},
-    # Southeast — Thomasville GA (vegetables, daily)
-    {"slug_id": 2410, "code": "TV_FV120", "market": "Thomasville",     "market_type": "shipping_point"},
+    # TV_FV120 (slug 2410) — returning Jan 2026 data, seasonal, skip
     {"slug_id": 2411, "code": "TH_FV120", "market": "Thomasville",     "market_type": "shipping_point"},
-    # Miami imports (tropical fruit through Miami port)
     {"slug_id": 2395, "code": "MH_FV111", "market": "Miami Imports",   "market_type": "shipping_point"},
-    # National weekly trends — price direction + movement summary
-    {"slug_id": 1662, "code": "FVWTRDS",  "market": "National Trends", "market_type": "shipping_point"},
+    # FVWTRDS (slug 1662) — National Trends, different schema, handled separately below
 ]
+
+# National Trends report — different field schema, ingested separately
+TRENDS_SLUG = {"slug_id": 1662, "code": "FVWTRDS", "market": "National Trends", "market_type": "shipping_point"}
 
 
 # ── USDA Fetch ───────────────────────────────────────────────────────────────
@@ -310,6 +306,34 @@ COMMODITY_MAP = {
     "spinach":                 "Spinach",
     "corn, sweet":             "Corn, Sweet",
     "mushrooms":               "Mushrooms",
+    # Onions — national trends uses "Onions Green" (no comma), others use "Onions, Green"
+    "onions green":            "Onions, Green",
+    "onions, green":           "Onions, Green",
+    "onions, dry":             "Onions",
+    "onions dry":              "Onions",
+    # Tropical/specialty — seen in Miami/Orlando imports
+    "dragon fruit (pitaya)":   "Dragon Fruit",
+    "pepino":                  "Pepino",
+    "plantains":               "Plantains",
+    "coconuts":                "Coconuts",
+    "tangelos":                "Tangelos",
+    "blood orange":            "Blood Orange",
+    "papaya":                  "Papaya",
+    "nectarines":              "Nectarines",
+    "peaches":                 "Peaches",
+    "plums":                   "Plums",
+    "apples":                  "Apples",
+    "pears":                   "Pears",
+    "potatoes":                "Potatoes",
+    "peppers, other":          "Peppers, Other",
+    "taro":                    "Taro",
+    "calabaza":                "Calabaza",
+    "chayote":                 "Chayote",
+    "malanga/ yautia":         "Malanga/Yautia",
+    "malanga/yautia":          "Malanga/Yautia",
+    "yams (names)":            "Yams",
+    "yuca (cassava)":          "Yuca (Cassava)",
+    "batatas":                 "Batatas",
 }
 
 def normalize_commodity(raw_name: str) -> str:
@@ -585,6 +609,67 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
 
 # ── Upsert ───────────────────────────────────────────────────────────────────
 
+def build_trends_row(raw: dict) -> dict | None:
+    """
+    Parse a FVWTRDS National Trends row into our schema.
+    These have completely different fields from terminal/shipping point rows:
+      movement_tone, trading_tone, price_tone, district, commodity
+    We store them as shipping_point rows with movement derived from price_tone/movement_tone.
+    """
+    commodity = (raw.get("commodity") or "").strip()
+    if not commodity:
+        return None
+
+    date_raw = raw.get("report_date") or raw.get("report_begin_date") or ""
+    try:
+        report_date = datetime.strptime(date_raw, "%m/%d/%Y").date().isoformat()
+    except Exception:
+        report_date = date.today().isoformat()
+
+    # Price tone is most useful for movement direction
+    movement_raw = raw.get("price_tone") or raw.get("movement_tone") or ""
+    movement = normalize_movement(movement_raw)
+
+    # District is the growing region
+    district_raw = (raw.get("district") or "").strip()
+    origin = normalize_origin(district_raw) if district_raw else None
+
+    # No actual prices in trends report — skip rows without meaningful data
+    if not movement and not origin:
+        return None
+
+    hash_str = "|".join([
+        report_date, "FVWTRDS",
+        normalize_commodity(commodity),
+        origin or "",
+        movement or "",
+    ])
+
+    return {
+        "report_date":      report_date,
+        "market":           "National Trends",
+        "market_type":      "shipping_point",
+        "commodity":        normalize_commodity(commodity),
+        "variety":          None,
+        "origin":           origin,
+        "package":          None,
+        "size":             None,
+        "grade":            None,
+        "quality_note":     None,
+        "organic":          False,
+        "price_low":        None,
+        "price_high":       None,
+        "price_mostly_low": None,
+        "price_mostly_high":None,
+        "movement":         movement,
+        "trading_activity": normalize_trading(raw.get("trading_tone")),
+        "supply_note":      (raw.get("price_tone_detail") or "")[:200] or None,
+        "slug_id":          1662,
+        "source_report":    "FVWTRDS",
+        "row_hash":         hashlib.md5(hash_str.encode()).hexdigest(),
+    }
+
+
 def purge_old_rows(slug_id: int, keep_date: str):
     """
     Delete all rows for a slug that are NOT from keep_date.
@@ -674,22 +759,23 @@ def run(target_date: str = None):
             log.info("  No data available for %s", code)
             continue
 
-        log.info("  Got %d raw rows from API (fallback=%s)", len(raw_rows), used_fallback)
-
-        # Log sample to verify field names and commodity names
-        import json
-        log.info("  Sample row keys: %s", list(raw_rows[0].keys()))
-        log.info("  Sample row: %s", json.dumps(raw_rows[0], default=str)[:500])
-        raw_commodities = sorted(set(r.get("commodity","") for r in raw_rows if r.get("commodity")))
-        log.info("  Commodities in this report (%d): %s", len(raw_commodities), raw_commodities)
-
         # Detect the actual report date from the data
         sample_date_raw = raw_rows[0].get("report_date") or raw_rows[0].get("report_begin_date") or ""
         try:
-            actual_report_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date().isoformat()
+            actual_report_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date()
         except Exception:
-            actual_report_date = date.today().isoformat()
-        log.info("  Report date in data: %s", actual_report_date)
+            actual_report_date = date.today()
+
+        # Skip stale fallback data — if best available is >14 days old, not worth showing
+        if used_fallback:
+            age_days = (date.today() - actual_report_date).days
+            if age_days > MAX_FALLBACK_DAYS:
+                log.info("  Skipping %s — fallback data is %d days old (%s), too stale",
+                         code, age_days, actual_report_date.isoformat())
+                continue
+
+        actual_report_date_str = actual_report_date.isoformat()
+        log.info("  Got %d raw rows, report_date=%s (fallback=%s)", len(raw_rows), actual_report_date_str, used_fallback)
 
         built = []
         for raw in raw_rows:
@@ -700,12 +786,39 @@ def run(target_date: str = None):
         log.info("  Built %d valid rows", len(built))
 
         if built:
-            # Purge stale rows for this slug before upserting fresh data
-            # This ensures old Jan/Feb data doesn't persist alongside March data
-            purge_old_rows(slug_id, actual_report_date)
+            purge_old_rows(slug_id, actual_report_date_str)
             upserted = upsert_rows(built)
             grand_total += upserted
-            log.info("  Upserted %d rows for %s (report_date=%s)", upserted, code, actual_report_date)
+            log.info("  Upserted %d rows for %s", upserted, code)
+
+    # ── National Trends (FVWTRDS) — separate schema ──────────────────────────
+    log.info("Fetching FVWTRDS (slug 1662) — National Trends...")
+    try:
+        trends_rows = fetch_report(1662, target_date) or fetch_latest_report(1662)
+        if trends_rows:
+            sample_date_raw = trends_rows[0].get("report_date") or trends_rows[0].get("report_begin_date") or ""
+            try:
+                trends_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date()
+            except Exception:
+                trends_date = date.today()
+
+            age_days = (date.today() - trends_date).days
+            if age_days <= MAX_FALLBACK_DAYS:
+                trends_date_str = trends_date.isoformat()
+                built_trends = []
+                for raw in trends_rows:
+                    row = build_trends_row(raw)
+                    if row:
+                        built_trends.append(row)
+                if built_trends:
+                    purge_old_rows(1662, trends_date_str)
+                    upserted = upsert_rows(built_trends)
+                    grand_total += upserted
+                    log.info("  Upserted %d trends rows (report_date=%s)", upserted, trends_date_str)
+            else:
+                log.info("  Trends data is %d days old, skipping", age_days)
+    except Exception as e:
+        log.error("Failed to fetch FVWTRDS: %s", e)
 
     log.info("Ingestion complete. Total rows upserted: %d", grand_total)
     return grand_total
