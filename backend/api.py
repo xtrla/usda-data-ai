@@ -548,6 +548,9 @@ def cleanup_origins():
         "Western Arizona",
         "Lower Rio Grande Valley Texas",
         "Imperial Coachella And Palo Verde Valleys California",
+        "Lower Rio Grande Valley Texas",
+        "South And Central District California",
+        "Mexico Crossings Through Texas",
     ]
     for origin in bad_origins:
         try:
