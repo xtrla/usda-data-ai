@@ -741,12 +741,22 @@ def upsert_rows(rows: list[dict]) -> int:
     if not rows:
         return 0
 
+    # Deduplicate by row_hash within this batch — last write wins
+    # (duplicate hashes in same batch cause ON CONFLICT DO UPDATE errors)
+    seen: dict = {}
+    for r in rows:
+        seen[r["row_hash"]] = r
+    deduped = list(seen.values())
+    if len(deduped) < len(rows):
+        log.info("  Deduped %d → %d rows (removed %d duplicate hashes)",
+                 len(rows), len(deduped), len(rows) - len(deduped))
+
     BATCH = 500
     total = 0
-    for i in range(0, len(rows), BATCH):
-        chunk = rows[i : i + BATCH]
-        # Use merge (not ignore_duplicates) so movement/origin get updated
-        # when normalization improves — row_hash stays same, fields update
+    for i in range(0, len(deduped), BATCH):
+        chunk = deduped[i : i + BATCH]
+        # merge (ignore_duplicates=False) so origin/movement update when
+        # normalization improves without needing a separate delete pass
         result = (
             supabase.table(TABLE)
             .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
