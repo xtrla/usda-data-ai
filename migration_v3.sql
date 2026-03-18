@@ -20,3 +20,12 @@ CREATE INDEX IF NOT EXISTS idx_produce_commodity_type
 
 CREATE INDEX IF NOT EXISTS idx_produce_commodity_type_date
   ON produce_prices (commodity_type, report_date DESC);
+
+-- ============================================================
+-- HOTFIX: Drop legacy unique index that conflicts with row_hash upsert
+-- The old idx_produce_unique uses price columns in the key which causes
+-- conflicts when the same row exists with slightly different prices.
+-- Our row_hash index (uq_row_hash / uq_produce_daily_row) is the correct one.
+-- ============================================================
+DROP INDEX IF EXISTS idx_produce_unique;
+ALTER TABLE produce_prices DROP CONSTRAINT IF EXISTS idx_produce_unique;
