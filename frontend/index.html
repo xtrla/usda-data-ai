@@ -182,7 +182,7 @@
                                     <span class="text-xs text-earth-400">Destination (wholesale)</span>
                                 </div>
                                 <div class="grid px-4 py-2 bg-earth-50 border-b border-earth-100" style="grid-template-columns:1fr 80px 70px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e">
-                                    <span>Market</span><span class="text-right">Price</span><span class="text-right">Variety</span>
+                                    <span>Market · Variety · Size</span><span class="text-right">Price</span><span class="text-right">Origin</span>
                                 </div>
                                 <div id="detail-terminal-rows"></div>
                             </div>
@@ -701,20 +701,22 @@
 
         function selectDashboardCommodity(name) {
             selectedCommodity = name;
-            renderWatchlist(); // re-render to update active state
+            renderWatchlist();
 
             document.getElementById('home-detail-empty').classList.add('hidden');
             document.getElementById('home-detail').classList.remove('hidden');
 
+            // FIX 1: Exact commodity name match only — no partial matching
             const termRows = terminalData.filter(d => d.commodity === name);
-            const fobRows  = shippingData.filter(d => d.commodity === name || d.commodity.toLowerCase().includes(name.toLowerCase().slice(0,5)));
+            const fobRows  = shippingData.filter(d => d.commodity === name);
             const moverInfo = [...(dashboardMovers.rising||[]), ...(dashboardMovers.falling||[])].find(m => m.commodity === name);
 
             // Title + meta
             document.getElementById('detail-title').textContent = name;
             const markets = [...new Set(termRows.map(r => r.market))];
             document.getElementById('detail-meta').textContent =
-                `${termRows.length} listings · ${markets.length} market${markets.length !== 1 ? 's' : ''}${fobRows.length ? ` · ${fobRows.length} FOB source${fobRows.length !== 1 ? 's' : ''}` : ''}`;
+                `${termRows.length} listings · ${markets.length} market${markets.length !== 1 ? 's' : ''}` +
+                (fobRows.length ? ` · ${fobRows.length} FOB listing${fobRows.length !== 1 ? 's' : ''}` : ' · No FOB data');
 
             // Change badge
             if (moverInfo) {
@@ -727,52 +729,100 @@
                     '<div class="text-earth-300 text-sm">No week-over-week data</div>';
             }
 
-            // Terminal rows — group by market, show best price per market
-            const byMarket = {};
-            termRows.forEach(r => {
-                if (!byMarket[r.market] || parseFloat(r.price_low) < parseFloat(byMarket[r.market].price_low))
-                    byMarket[r.market] = r;
+            // FIX 2: Terminal rows — show ALL rows grouped by market+variety, not just best per market
+            // Sort by market then price
+            const sortedTermRows = [...termRows].sort((a, b) => {
+                const mCmp = (a.market||'').localeCompare(b.market||'');
+                if (mCmp !== 0) return mCmp;
+                const vCmp = (a.variety||'').localeCompare(b.variety||'');
+                if (vCmp !== 0) return vCmp;
+                return parseFloat(a.price_low) - parseFloat(b.price_low);
             });
-            const sortedMarkets = Object.values(byMarket).sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
 
-            document.getElementById('detail-terminal-rows').innerHTML = sortedMarkets.length
-                ? sortedMarkets.map((r, i) => `
-                    <div class="detail-market-row ${i === 0 ? 'bg-leaf-50/60' : ''}">
-                        <span class="text-earth-700 font-medium">${r.market}${i===0?' <span class="text-xs text-leaf-500 font-semibold ml-1">BEST</span>':''}</span>
-                        <span class="text-right font-semibold ${i===0?'text-leaf-600':'text-earth-600'} tabular-nums">$${parseFloat(r.price_low).toFixed(2)}</span>
-                        <span class="text-right text-earth-400 text-xs">${r.variety || '–'}</span>
-                    </div>`).join('')
-                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No terminal data</div>';
+            // Find overall best price for BEST badge
+            const bestPrice = sortedTermRows.length
+                ? Math.min(...sortedTermRows.map(r => parseFloat(r.price_low)))
+                : null;
 
-            // FOB rows
-            const sortedFOB = [...fobRows].sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+            // Group by market for visual separation
+            let lastMarket = null;
+            document.getElementById('detail-terminal-rows').innerHTML = sortedTermRows.length
+                ? sortedTermRows.map(r => {
+                    const isNewMarket = r.market !== lastMarket;
+                    lastMarket = r.market;
+                    const price = parseFloat(r.price_low);
+                    const isBest = price === bestPrice;
+                    const priceStr = r.price_high && parseFloat(r.price_high) !== price
+                        ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}`
+                        : `$${price.toFixed(2)}`;
+                    const qualityBadge = r.quality_note
+                        ? `<span class="text-xs ${r.quality_note.includes('fair') ? 'text-red-400' : 'text-amber-500'} ml-1">${r.quality_note}</span>`
+                        : '';
+                    return `
+                    <div class="detail-market-row ${isBest ? 'bg-leaf-50/60' : ''} ${isNewMarket && lastMarket !== r.market ? 'border-t-2 border-earth-100' : ''}">
+                        <div>
+                            <span class="text-earth-700 font-medium">${r.market}</span>
+                            ${isBest ? '<span class="text-xs text-leaf-500 font-semibold ml-1.5">BEST</span>' : ''}
+                            ${qualityBadge}
+                            <div class="text-xs text-earth-400 mt-0.5">${r.variety || ''} ${r.size ? '· ' + r.size : ''} ${r.package ? '· ' + r.package : ''}</div>
+                        </div>
+                        <span class="text-right font-semibold ${isBest ? 'text-leaf-600' : 'text-earth-600'} tabular-nums">${priceStr}</span>
+                        <span class="text-right text-earth-400 text-xs">${r.origin || '–'}</span>
+                    </div>`;
+                }).join('')
+                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No terminal market data</div>';
+
+            // FIX 3: FOB rows — deduplicate by origin+size+price, show price range not just low
+            // Deduplicate: same origin + size + price_low = same row
+            const seen = new Set();
+            const dedupedFOB = fobRows.filter(r => {
+                const key = `${r.origin||r.market}|${r.size||''}|${r.price_low}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            const sortedFOB = dedupedFOB.sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low));
+
             document.getElementById('detail-fob-rows').innerHTML = sortedFOB.length
                 ? sortedFOB.map((r, i) => {
                     const mov = r.movement || '';
                     const movColor = mov.includes('Higher') ? 'text-red-500' : mov.includes('Lower') ? 'text-leaf-600' : 'text-earth-400';
                     const movArrow = mov.includes('Higher') ? '↑' : mov.includes('Lower') ? '↓' : '–';
+                    const price = parseFloat(r.price_low);
+                    const priceStr = r.price_high && parseFloat(r.price_high) !== price
+                        ? `$${price.toFixed(2)}–${parseFloat(r.price_high).toFixed(2)}`
+                        : `$${price.toFixed(2)}`;
                     return `
                     <div class="fob-row ${i===0?'bg-orange-50/50':''}">
-                        <span class="text-earth-700 font-medium">${r.origin || r.market || '–'}${i===0?' <span class="text-xs text-orange-500 font-semibold ml-1">LOW</span>':''}</span>
+                        <div>
+                            <span class="text-earth-700 font-medium">${r.origin || r.market || '–'}</span>
+                            ${i===0 ? '<span class="text-xs text-orange-500 font-semibold ml-1.5">LOW</span>' : ''}
+                            <div class="text-xs text-earth-400 mt-0.5">${r.variety || ''} ${r.trading_activity ? '· ' + r.trading_activity : ''}</div>
+                        </div>
                         <span class="text-right text-earth-400">${r.size || '–'}</span>
-                        <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">$${parseFloat(r.price_low).toFixed(2)}</span>
-                        <span class="text-right ${movColor} font-medium">${movArrow} ${mov || '–'}</span>
+                        <span class="text-right font-semibold ${i===0?'text-orange-600':'text-earth-600'} tabular-nums">${priceStr}</span>
+                        <span class="text-right ${movColor} font-medium text-xs">${movArrow} ${mov || '–'}</span>
                     </div>`;
                 }).join('')
-                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No FOB data</div>';
+                : '<div class="px-4 py-6 text-center text-earth-300 text-sm">No FOB shipping point data</div>';
 
-            // Margin panel
-            if (sortedFOB.length && sortedMarkets.length) {
+            // FIX 4: Margin — only show if FOB data exists AND makes sense (FOB < terminal)
+            if (sortedFOB.length && sortedTermRows.length) {
                 const lowestFOB = parseFloat(sortedFOB[0].price_low);
-                const avgTerminal = sortedMarkets.reduce((s,r) => s + parseFloat(r.price_low), 0) / sortedMarkets.length;
-                const spread = avgTerminal - lowestFOB;
+                // Use median terminal price (more representative than avg which is skewed by quality tiers)
+                const termPrices = sortedTermRows.map(r => parseFloat(r.price_low)).sort((a,b) => a-b);
+                const medianTerminal = termPrices[Math.floor(termPrices.length / 2)];
+                const bestTerminal = termPrices[0];
+                const spread = medianTerminal - lowestFOB;
+
                 document.getElementById('margin-fob').textContent = `$${lowestFOB.toFixed(2)}`;
-                document.getElementById('margin-terminal').textContent = `$${avgTerminal.toFixed(2)}`;
-                document.getElementById('margin-spread').textContent = `$${spread.toFixed(2)}`;
-                document.getElementById('margin-note').textContent =
-                    spread > 0
-                        ? `${((spread/lowestFOB)*100).toFixed(0)}% gross margin before freight & handling`
-                        : 'Terminal price at or below FOB — unusual market condition';
+                document.getElementById('margin-terminal').textContent = `$${medianTerminal.toFixed(2)} median`;
+                document.getElementById('margin-spread').innerHTML = spread > 0
+                    ? `<span class="text-leaf-600">+$${spread.toFixed(2)}</span>`
+                    : `<span class="text-red-500">$${spread.toFixed(2)}</span>`;
+                document.getElementById('margin-note').textContent = spread > 0
+                    ? `${((spread/lowestFOB)*100).toFixed(0)}% gross spread · best terminal $${bestTerminal.toFixed(2)} · freight not included`
+                    : 'Terminal median below FOB — check if commodities match across report types';
                 document.getElementById('detail-margin').classList.remove('hidden');
             } else {
                 document.getElementById('detail-margin').classList.add('hidden');
