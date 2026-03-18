@@ -745,9 +745,11 @@ def upsert_rows(rows: list[dict]) -> int:
     total = 0
     for i in range(0, len(rows), BATCH):
         chunk = rows[i : i + BATCH]
+        # Use merge (not ignore_duplicates) so movement/origin get updated
+        # when normalization improves — row_hash stays same, fields update
         result = (
             supabase.table(TABLE)
-            .upsert(chunk, on_conflict="row_hash", ignore_duplicates=True)
+            .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
             .execute()
         )
         total += len(chunk)
@@ -776,7 +778,6 @@ def run(target_date: str = None):
     grand_total = 0
 
     # Nuclear cleanup: delete any rows older than 30 days regardless of slug
-    # This ensures no stale historical data ever accumulates in the DB
     cutoff = (date.today() - __import__('datetime').timedelta(days=30)).isoformat()
     try:
         result = supabase.table(TABLE).delete().lt("report_date", cutoff).execute()
@@ -785,6 +786,37 @@ def run(target_date: str = None):
             log.info("Cleanup: deleted %d rows older than %s", deleted, cutoff)
     except Exception as e:
         log.warning("Cleanup failed: %s", e)
+
+    # Origin normalization cleanup: delete rows with known un-normalized origin strings
+    # These have different row_hashes from the normalized versions so they persist
+    # across normal purge cycles. Must be explicitly deleted.
+    BAD_ORIGINS = [
+        "Oxnard District California",
+        "South And Central District California",
+        "South And Central California And Mexico Crossings Through Southern California And San Luis Arizona",
+        "Mexico Crossings Through Nogales Arizona",
+        "Fresno (Fr) Fob Sc",
+        "Orlando (Oviedo) Fob Sc",
+        "Orlando (Imports) Fob Sc",
+        "Phoenix Fob Sc",
+        "Nogales Fob Sc",
+        "Thomasville (Tv) Fob Sc",
+        "Thomasville (Th) Fob Sc",
+        "Raleigh Fob Sc",
+        "Miami Fob Sc",
+        "Imperial, Coachella Valleys Ca, Central And Western Az, Mexico Crossings Through Calexico And San Lu",
+        "Imperial Coachella And Palo Verde Valleys California",
+        "Lower Rio Grande Valley Texas",
+        "Western Arizona",
+    ]
+    for bad_origin in BAD_ORIGINS:
+        try:
+            result = supabase.table(TABLE).delete().eq("origin", bad_origin).execute()
+            deleted = len(result.data) if result.data else 0
+            if deleted:
+                log.info("Origin cleanup: deleted %d rows with origin='%s'", deleted, bad_origin)
+        except Exception as e:
+            log.warning("Origin cleanup failed for '%s': %s", bad_origin, e)
 
     for report_meta in REPORT_SLUGS:
         slug_id = report_meta["slug_id"]
