@@ -306,6 +306,13 @@ nav{
 .chart-meta{font-family:var(--mono);font-size:10px;color:var(--text3);}
 .chart-area{padding:20px 32px;height:200px;position:relative;}
 .origins-list{overflow:auto;}
+/* ── ORIGIN MAP ─────────────────────────── */
+#origin-map .us-state{fill:#e8ede5;stroke:#fff;stroke-width:.6;}
+#origin-map .us-state:hover{fill:#dde6d8;}
+.map-dot{cursor:pointer;transition:r .15s;}
+.map-dot:hover{opacity:.85;}
+.map-dot-ring{fill:none;stroke-width:1.5;opacity:.4;}
+
 .or{
   display:flex;align-items:center;gap:12px;
   padding:13px 20px;border-bottom:1px solid var(--rule);
@@ -522,14 +529,18 @@ footer img{height:13px;opacity:.25;filter:invert(1);}
   <!-- Signal -->
   <div id="cp-signal" class="hidden"></div>
 
-  <!-- Chart + Origins -->
+  <!-- Chart + Origin Map -->
   <div class="cp-chart-row">
     <div>
       <div class="chart-hd"><span class="chart-lbl">30-day price trend</span><span class="chart-meta" id="chart-meta"></span></div>
       <div class="chart-area"><canvas id="price-chart"></canvas></div>
     </div>
     <div>
-      <div class="chart-hd"><span class="chart-lbl">FOB origins</span><span class="chart-meta" id="origins-meta"></span></div>
+      <div class="chart-hd"><span class="chart-lbl">FOB origin map</span><span class="chart-meta" id="origins-meta"></span></div>
+      <div id="origin-map-wrap" style="position:relative;background:var(--surface2);">
+        <svg id="origin-map" viewBox="0 0 280 230" style="width:100%;display:block;"></svg>
+        <div id="map-tooltip" style="display:none;position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--rule2);border-radius:4px;padding:8px 10px;font-size:11px;z-index:10;min-width:130px;box-shadow:0 4px 12px rgba(0,0,0,.08)"></div>
+      </div>
       <div class="origins-list" id="origin-list"></div>
     </div>
   </div>
@@ -946,6 +957,9 @@ async function loadComm(name){
   // Chart
   renderChart(name);
 
+  // Origin map
+  renderOriginMap(sortFR);
+
   // Origins
   $('origins-meta').textContent=`${sortFR.length} source${sortFR.length!==1?'s':''}`;
   if(sortFR.length){
@@ -1208,6 +1222,167 @@ function doSearch(){
       ${mv?`<div class="sc-chg ${mv.pct_change>0?'p-up':'p-dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}% vs last week</div>`:''}
     </div>`;
   }).join('')||'<div style="grid-column:1/-1;padding:32px;color:var(--text3);font-size:13px">No results</div>';
+}
+
+
+// ═══════════════════════════════════════
+// ORIGIN MAP
+// ═══════════════════════════════════════
+
+// Real coordinates → SVG space for a US-centric Albers-like projection
+// viewBox 0 0 280 230, continental US fits roughly x:20-260 y:20-200
+const ORIGIN_COORDS = {
+  'Nogales, AZ':          [67,  145],
+  'Yuma, AZ':             [57,  148],
+  'Western AZ':           [60,  138],
+  'Phoenix, AZ':          [68,  138],
+  'San Luis, AZ':         [58,  150],
+  'Imperial Valley, CA':  [48,  152],
+  'Imperial/Coachella, CA':[52, 148],
+  'Coachella Valley, CA': [52,  148],
+  'Oxnard, CA':           [38,  140],
+  'Southern CA':          [45,  145],
+  'Central Coast, CA':    [34,  130],
+  'Salinas, CA':          [30,  125],
+  'San Joaquin, CA':      [35,  118],
+  'Fresno, CA':           [37,  120],
+  'Columbia Basin, WA':   [42,   72],
+  'South Florida':        [200, 165],
+  'Central Florida':      [195, 158],
+  'North Florida':        [188, 150],
+  'Orlando, FL':          [196, 158],
+  'Orlando Imports':      [196, 158],
+  'Rio Grande, TX':       [118, 165],
+  'Laredo, TX':           [120, 160],
+  'El Paso, TX':          [92,  150],
+  'Mexico/Texas':         [115, 163],
+  'Eastern NC':           [215, 115],
+  'Southeast GA':         [205, 135],
+  'Southwest GA':         [198, 138],
+  'Imperial/Coachella CA, Western AZ': [55, 148],
+  'Palo Verde, CA':       [55,  145],
+  'Lower Colorado, AZ':   [60,  145],
+};
+
+// Simplified US state outlines as SVG path data (Albers-projected, scaled to 280x230)
+const US_PATHS = [
+  // West Coast
+  'M 28,68 L 30,72 28,80 25,92 22,105 20,118 22,128 28,138 34,142 38,148 44,155 46,158 50,160 55,155 58,158 60,162 65,158 68,152 72,148 78,145 80,140 78,130 75,120 72,110 70,100 68,88 65,78 60,68 55,62 48,58 42,58 36,60 30,62 Z',
+  // Mountain states rough outline
+  'M 80,68 L 78,145 100,145 105,148 110,145 115,145 118,170 125,168 128,165 130,162 132,145 135,140 138,130 135,118 132,108 130,98 128,88 126,78 122,70 118,65 110,62 100,62 90,64 Z',
+  // Plains / Midwest
+  'M 130,62 L 132,145 140,148 148,148 155,145 162,142 168,138 172,128 175,118 172,108 170,98 168,88 165,78 162,68 158,62 150,58 142,58 136,60 Z',
+  // Southeast
+  'M 162,108 L 165,138 168,148 172,158 178,165 185,170 192,172 200,170 205,165 208,158 205,148 200,138 195,128 190,118 185,112 180,108 172,106 168,106 Z',
+  // Northeast / Mid-Atlantic
+  'M 168,62 L 170,108 178,108 185,112 192,112 198,108 205,100 210,92 212,82 210,72 205,65 198,60 190,58 180,58 172,60 Z',
+  // Great Lakes / Upper Midwest
+  'M 158,58 L 162,108 170,108 172,106 178,108 185,112 192,112 198,108 210,92 215,82 215,72 210,65 205,60 195,56 185,54 175,54 165,56 Z',
+];
+
+function renderOriginMap(fobRows) {
+  const svg = $('origin-map');
+  const tip = $('map-tooltip');
+  if(!svg) return;
+
+  // Draw base map
+  let html = '';
+  US_PATHS.forEach(d => {
+    html += `<path class="us-state" d="${d}"/>`;
+  });
+
+  // Mexico outline hint
+  html += `<path d="M 45,158 L 50,162 60,168 75,172 90,175 105,172 115,172 120,168 125,165 128,165" fill="none" stroke="#c8d4c0" stroke-width=".8" stroke-dasharray="3,2"/>`;
+  html += `<text x="90" y="182" font-size="7" fill="#c8d4c0" font-family="DM Sans,sans-serif" text-anchor="middle">MEXICO</text>`;
+
+  // Gather dots — group by location, take best price
+  const byLoc = {};
+  fobRows.forEach(r => {
+    const loc = r.origin || r.market;
+    if(!loc) return;
+    const coords = ORIGIN_COORDS[loc];
+    if(!coords) return;
+    const price = parseFloat(r.price_low);
+    if(!byLoc[loc] || price < byLoc[loc].price) {
+      byLoc[loc] = { loc, price, movement: r.movement, size: r.size, coords };
+    }
+  });
+
+  const dots = Object.values(byLoc);
+  if(!dots.length) {
+    html += `<text x="140" y="115" font-size="11" fill="#7a9470" font-family="DM Sans,sans-serif" text-anchor="middle">No FOB data</text>`;
+    svg.innerHTML = html;
+    return;
+  }
+
+  // Color by movement
+  const dotColor = mov => {
+    if(!mov) return '#7a9470';
+    if(mov.includes('Higher')) return '#b53a2a';
+    if(mov.includes('Lower')) return '#1a6b2e';
+    return '#1a4a1f';
+  };
+
+  // Draw connector lines from dots to edges (subtle)
+  dots.forEach(d => {
+    const [x, y] = d.coords;
+    html += `<circle class="map-dot-ring" cx="${x}" cy="${y}" r="9" stroke="${dotColor(d.movement)}"/>`;
+  });
+
+  dots.forEach((d, i) => {
+    const [x, y] = d.coords;
+    const color = dotColor(d.movement);
+    const esc = s => (s||'').replace(/'/g,"\\'");
+    html += `<circle class="map-dot" cx="${x}" cy="${y}" r="5.5"
+      fill="${color}" opacity=".9"
+      onmouseenter="showMapTip(event,'${esc(d.loc)}','${d.price.toFixed(2)}','${esc(d.movement||'Steady')}')"
+      onmouseleave="hideMapTip()"/>`;
+    // Price label for top 3
+    if(i < 3) {
+      const lx = x > 140 ? x - 10 : x + 10;
+      const anchor = x > 140 ? 'end' : 'start';
+      html += `<text x="${lx}" y="${y+1}" font-size="7.5" font-weight="500"
+        font-family="DM Mono,monospace" fill="${color}" text-anchor="${anchor}"
+        dominant-baseline="middle">$${d.price.toFixed(2)}</text>`;
+    }
+  });
+
+  // Legend
+  html += `
+    <rect x="4" y="208" width="82" height="18" rx="2" fill="var(--surface)" stroke="var(--rule)" stroke-width=".5"/>
+    <circle cx="12" cy="217" r="4" fill="#b53a2a"/>
+    <text x="19" y="220" font-size="7" font-family="DM Sans,sans-serif" fill="#3d5438">Rising</text>
+    <circle cx="44" cy="217" r="4" fill="#1a6b2e"/>
+    <text x="51" y="220" font-size="7" font-family="DM Sans,sans-serif" fill="#3d5438">Falling</text>
+    <circle cx="76" cy="217" r="4" fill="#1a4a1f"/>
+    <text x="83" y="220" font-size="7" font-family="DM Sans,sans-serif" fill="#3d5438">Steady</text>
+  `;
+
+  svg.innerHTML = html;
+}
+
+function showMapTip(e, loc, price, movement) {
+  const tip = $('map-tooltip');
+  const wrap = $('origin-map-wrap');
+  if(!tip||!wrap) return;
+  const wr = wrap.getBoundingClientRect();
+  const er = e.target.getBoundingClientRect();
+  const x = er.left - wr.left + 10;
+  const y = er.top - wr.top - 10;
+  const mc = movement.includes('Higher') ? '#b53a2a' : movement.includes('Lower') ? '#1a6b2e' : '#7a9470';
+  const ma = movement.includes('Higher') ? '↑' : movement.includes('Lower') ? '↓' : '→';
+  tip.innerHTML = `
+    <div style="font-weight:600;color:var(--text);margin-bottom:3px">${loc}</div>
+    <div style="font-family:var(--mono);font-size:13px;color:var(--amber)">$${price}</div>
+    <div style="font-size:10px;color:${mc};margin-top:2px">${ma} ${movement}</div>
+  `;
+  tip.style.left = Math.min(x, 140) + 'px';
+  tip.style.top = Math.max(y - 60, 4) + 'px';
+  tip.style.display = 'block';
+}
+function hideMapTip() {
+  const tip = $('map-tooltip');
+  if(tip) tip.style.display = 'none';
 }
 
 init();
