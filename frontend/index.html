@@ -73,19 +73,32 @@ button,input,select{font-family:var(--sans);}
 .sd-more:active{background:var(--g-lt);}
 
 /* ── CAT TABS ────────────── */
-.cat-tabs{
-  display:flex;overflow-x:auto;scrollbar-width:none;
+.cat-scroll{
+  display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
   background:var(--white);border-bottom:1px solid var(--line);
+  padding:12px 16px;
 }
-.cat-tabs::-webkit-scrollbar{display:none}
+.cat-scroll::-webkit-scrollbar{display:none}
 .ct{
-  flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:600;
-  color:var(--ink3);background:none;border:none;cursor:pointer;
-  border-bottom:2px solid transparent;white-space:nowrap;
-  transition:color .1s,border-color .1s;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  flex-shrink:0;padding:0 12px;
+  font-size:11px;font-weight:600;color:var(--ink3);
+  background:none;border:none;cursor:pointer;
+  transition:color .1s;white-space:nowrap;
 }
-.ct.active{color:var(--g);border-bottom-color:var(--g);}
-.ct:active{background:var(--bg);}
+.ct:first-child{padding-left:0;}
+.ct.active{color:var(--g);}
+.ct:active{opacity:.7;}
+.ct-img{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--bg);
+  border:2.5px solid var(--line);
+  overflow:hidden;flex-shrink:0;
+  transition:border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.ct.active .ct-img{border-color:var(--g);box-shadow:0 0 0 2px var(--g-lt);}
+.ct-img img{width:100%;height:100%;object-fit:cover;display:block;}
 
 /* ── FILTER BAR ──────────── */
 .filter-bar{
@@ -319,11 +332,23 @@ button,input,select{font-family:var(--sans);}
   </div>
 
   <!-- Cat tabs -->
-  <div class="cat-tabs">
-    <button class="ct active" onclick="setCT('vegetables')" id="ct-v">Vegetables</button>
-    <button class="ct" onclick="setCT('fruits')" id="ct-f">Fruits</button>
-    <button class="ct" onclick="setCT('onions_potatoes')" id="ct-o">Onions &amp; Pot.</button>
-    <button class="ct" onclick="setCT('nuts')" id="ct-n">Nuts</button>
+  <div class="cat-scroll">
+    <button class="ct active" onclick="setCT('vegetables')" id="ct-v">
+      <div class="ct-img"><img src="https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=128&q=70" alt=""></div>
+      Vegetables
+    </button>
+    <button class="ct" onclick="setCT('fruits')" id="ct-f">
+      <div class="ct-img"><img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=128&q=70" alt=""></div>
+      Fruits
+    </button>
+    <button class="ct" onclick="setCT('onions_potatoes')" id="ct-o">
+      <div class="ct-img"><img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=128&q=70" alt=""></div>
+      Onions &amp; Potatoes
+    </button>
+    <button class="ct" onclick="setCT('nuts')" id="ct-n">
+      <div class="ct-img"><img src="https://images.unsplash.com/photo-1525706080974-fe57a1a1b4a3?w=128&q=70" alt=""></div>
+      Nuts
+    </button>
   </div>
 
   <!-- Filter bar -->
@@ -652,6 +677,8 @@ async function setCT(ct){
   activeCT=ct;
   [['vegetables','ct-v'],['fruits','ct-f'],['onions_potatoes','ct-o'],['nuts','ct-n']].forEach(([k,id])=>{
     const el=$(id);if(el)el.className='ct'+(k===ct?' active':'');
+    // scroll active into view
+    if(k===ct&&el){el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
   });
   try{
     const[dr,mr]=await Promise.all([
