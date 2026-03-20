@@ -279,6 +279,7 @@ body{
   display:flex;align-items:flex-end;justify-content:center;
   backdrop-filter:blur(2px);
 }
+.modal-overlay.hidden{display:none!important;}
 @media(min-width:640px){
   .modal-overlay{align-items:center;}
 }
@@ -652,7 +653,8 @@ function openModal(name){
   buildModal(name);
 }
 function closeModal(e){
-  if(e&&e.target!==$('modal-overlay'))return;
+  // If called from overlay click, only close if clicking backdrop itself
+  if(e&&e.type==='click'&&e.target!==$('modal-overlay'))return;
   document.body.style.overflow='';
   $('modal-overlay').classList.add('hidden');
 }
