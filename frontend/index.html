@@ -3,344 +3,358 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>agraX — Produce Market Intelligence</title>
+<title>agraX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g:#1a7a4a;
-  --g2:#155f3a;
-  --g-lt:#eaf4ef;
-  --g-md:#a8d5bc;
+  --g:#1f6b3a;
+  --g-lt:#edf7f1;
+  --g-md:#b3d9c3;
   --ink:#111827;
   --ink2:#374151;
   --ink3:#6b7280;
   --ink4:#9ca3af;
   --line:#e5e7eb;
   --line2:#d1d5db;
-  --bg:#f5f5f0;
-  --surface:#ffffff;
-  --surface2:#f9faf8;
-  --red:#dc2626;
+  --bg:#f9fafb;
+  --white:#ffffff;
+  --red:#b91c1c;
   --red-lt:#fef2f2;
   --sans:'Inter',system-ui,sans-serif;
   --mono:'JetBrains Mono',monospace;
-  --sb:224px;
-  --nav:54px;
 }
-html,body{height:100%;background:var(--bg);}
+html,body{min-height:100vh;background:var(--bg);}
 body{font-family:var(--sans);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 button,input,select{font-family:var(--sans);}
 .hidden{display:none!important;}
 
-/* ── NAV ─────────────────────────────────── */
+/* ── NAV ───────────────────────────── */
 nav{
-  height:var(--nav);
-  background:var(--surface);
+  background:var(--white);
   border-bottom:1px solid var(--line);
-  display:flex;align-items:center;
-  padding:0 24px;gap:4px;
-  position:sticky;top:0;z-index:300;
+  position:sticky;top:0;z-index:100;
+  height:52px;display:flex;align-items:center;
+  padding:0 32px;gap:8px;
 }
 .nav-logo{
+  font-size:16px;font-weight:700;color:var(--ink);
+  letter-spacing:-.02em;cursor:pointer;
   display:flex;align-items:center;gap:8px;
-  font-size:17px;font-weight:700;color:var(--ink);
-  text-decoration:none;flex-shrink:0;margin-right:28px;
-  letter-spacing:-.025em;cursor:pointer;
+  margin-right:24px;flex-shrink:0;
 }
-.nav-logo img{height:22px;}
+.nav-logo img{height:20px;}
 .nav-links{display:flex;gap:2px;flex:1;}
 .nl{
-  padding:6px 14px;font-size:14px;font-weight:500;
-  color:var(--ink3);background:none;border:none;cursor:pointer;
-  border-bottom:2px solid transparent;transition:color .12s;
-  white-space:nowrap;border-radius:6px;
+  padding:5px 12px;border-radius:6px;
+  font-size:13px;font-weight:500;color:var(--ink3);
+  background:none;border:none;cursor:pointer;
+  transition:color .1s,background .1s;
 }
-.nl:hover{color:var(--ink);background:var(--surface2);}
+.nl:hover{color:var(--ink);background:var(--bg);}
 .nl.active{color:var(--g);font-weight:600;}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.nav-search{
-  display:flex;align-items:center;gap:8px;
-  background:var(--surface2);border:1px solid var(--line2);
-  border-radius:7px;padding:6px 12px;cursor:pointer;
-  font-size:12px;color:var(--ink4);
-  transition:border-color .12s;
+.nav-cats{display:flex;gap:2px;}
+.nc{
+  padding:4px 10px;border-radius:5px;
+  font-size:12px;font-weight:500;color:var(--ink4);
+  background:none;border:none;cursor:pointer;
+  transition:all .1s;white-space:nowrap;
 }
-.nav-search:hover{border-color:var(--g);}
-.nav-search kbd{font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--line2);padding:1px 5px;border-radius:3px;}
-
-/* ── LAYOUT ──────────────────────────────── */
-.layout{display:flex;min-height:calc(100vh - var(--nav));}
-
-/* ── SIDEBAR ─────────────────────────────── */
-.sidebar{
-  width:var(--sb);flex-shrink:0;
-  background:var(--surface);
-  border-right:1px solid var(--line);
-  padding:16px 0;
-  position:sticky;top:var(--nav);
-  height:calc(100vh - var(--nav));
-  overflow-y:auto;scrollbar-width:none;
+.nc:hover{color:var(--ink2);}
+.nc.active{background:var(--g);color:var(--white);}
+.nav-srch{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line2);background:var(--white);
+  font-size:12px;color:var(--ink4);cursor:pointer;
+  transition:border-color .1s;
 }
-.sidebar::-webkit-scrollbar{display:none}
-.sb-sect{margin-bottom:20px;}
-.sb-lbl{
-  font-size:10px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink4);
-  padding:0 16px;margin-bottom:4px;
-}
-.sb-item{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 16px;font-size:13px;font-weight:500;
-  color:var(--ink3);cursor:pointer;
-  transition:background .1s,color .1s;
-  position:relative;
-}
-.sb-item:hover{background:var(--surface2);color:var(--ink);}
-.sb-item.active{background:var(--g-lt);color:var(--g);font-weight:600;}
-.sb-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--g);}
-.sb-icon{width:26px;height:26px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
-.sb-item.active .sb-icon{background:var(--g-md);}
-.sb-count{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4);}
-.sb-mkt{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12px;font-weight:500;color:var(--ink3);cursor:pointer;transition:background .1s,color .1s;}
-.sb-mkt:hover{background:var(--surface2);color:var(--ink);}
-.sb-mkt-dot{width:5px;height:5px;border-radius:50%;background:var(--g-md);flex-shrink:0;}
-@media(max-width:900px){.sidebar{display:none;}}
+.nav-srch:hover{border-color:var(--g);}
+.nav-srch kbd{font-family:var(--mono);font-size:10px;}
+@media(max-width:700px){.nav-cats{display:none;}.nav-links{display:none;}}
 
-/* ── MAIN ────────────────────────────────── */
-.main{flex:1;min-width:0;}
+/* ── PAGE WRAPPER ──────────────────── */
+.page{display:none;}
+.page.on{display:block;}
 
-/* ── HOME ────────────────────────────────── */
-.home-top{
-  padding:28px 32px 22px;
-  background:var(--surface);
+/* ── SHARED SECTION HEADER ─────────── */
+.sh{
+  padding:24px 32px 16px;
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;
+}
+.sh-title{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.sh-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
+.sh-meta{font-size:12px;color:var(--ink4);font-family:var(--mono);}
+@media(max-width:640px){.sh{padding:16px;}}
+
+/* ── HOME HERO ─────────────────────── */
+.hero{
+  background:var(--white);
   border-bottom:1px solid var(--line);
+  padding:40px 32px 28px;
 }
-.h-crumb{font-size:11px;color:var(--ink4);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
-.h-crumb span{color:var(--g);font-weight:500;}
-.h-title{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:3px;}
-.h-sub{font-size:13px;color:var(--ink3);margin-bottom:20px;}
-.h-search{
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg);border:1.5px solid var(--line2);
-  border-radius:8px;padding:10px 14px;max-width:540px;
-  position:relative;transition:border-color .15s,box-shadow .15s;
+.hero-title{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:4px;}
+.hero-sub{font-size:14px;color:var(--ink3);margin-bottom:22px;}
+.search-box{
+  position:relative;max-width:520px;
 }
-.h-search:focus-within{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,122,74,.07);}
-.h-search input{flex:1;border:none;background:none;outline:none;font-size:14px;color:var(--ink);}
-.h-search input::placeholder{color:var(--ink4);}
-.h-search svg{color:var(--ink4);flex-shrink:0;}
-.srch-dd{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line2);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:100;overflow:hidden;display:none;}
-.srch-dd.open{display:block;}
-.dd-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--line);cursor:pointer;gap:12px;transition:background .08s;}
+.search-box input{
+  width:100%;padding:11px 42px 11px 14px;
+  border:1.5px solid var(--line2);border-radius:7px;
+  font-size:14px;color:var(--ink);background:var(--white);
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.search-box input:focus{
+  border-color:var(--g);
+  box-shadow:0 0 0 3px rgba(31,107,58,.07);
+}
+.search-box input::placeholder{color:var(--ink4);}
+.search-box svg{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;}
+.search-dd{
+  position:absolute;left:0;right:0;top:calc(100% + 5px);
+  background:var(--white);border:1px solid var(--line2);
+  border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.1);
+  z-index:50;overflow:hidden;display:none;
+}
+.search-dd.open{display:block;}
+.dd-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--line);
+  cursor:pointer;gap:12px;transition:background .08s;
+}
 .dd-row:last-child{border-bottom:none;}
-.dd-row:hover{background:var(--surface2);}
+.dd-row:hover{background:var(--bg);}
 .dd-name{font-size:13px;font-weight:600;}
 .dd-sub{font-size:11px;color:var(--ink4);margin-top:1px;}
 .dd-price{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g);text-align:right;flex-shrink:0;}
 .dd-chg{font-family:var(--mono);font-size:10px;text-align:right;margin-top:2px;}
-.dd-more{padding:10px 16px;font-size:12px;font-weight:600;color:var(--g);border-top:1px solid var(--line);cursor:pointer;transition:background .08s;}
-.dd-more:hover{background:var(--g-lt);}
-.qp-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;}
-.qp{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--line2);background:var(--surface);font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .12s;}
+.dd-foot{padding:9px 14px;font-size:12px;font-weight:500;color:var(--g);border-top:1px solid var(--line);cursor:pointer;}
+.dd-foot:hover{background:var(--g-lt);}
+.qp-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+.qp{
+  display:flex;align-items:center;gap:6px;padding:4px 11px;
+  border-radius:20px;border:1px solid var(--line2);
+  background:var(--white);font-size:12px;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .1s;
+}
 .qp:hover{border-color:var(--g);color:var(--g);background:var(--g-lt);}
 .qp-p{font-family:var(--mono);font-size:11px;color:var(--ink4);}
+@media(max-width:640px){.hero{padding:20px 16px;}}
 
-/* Stats */
-.stats-bar{display:flex;border-bottom:1px solid var(--line);background:var(--surface);overflow-x:auto;scrollbar-width:none;}
+/* ── STATS BAR ─────────────────────── */
+.stats-bar{
+  display:flex;background:var(--white);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;
+}
 .stats-bar::-webkit-scrollbar{display:none}
-.s-item{flex:1;min-width:120px;padding:14px 20px;border-right:1px solid var(--line);}
-.s-item:last-child{border-right:none;}
-.s-val{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1;}
-.s-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-top:4px;}
+.sb{flex:1;min-width:100px;padding:14px 20px;border-right:1px solid var(--line);}
+.sb:last-child{border-right:none;}
+.sb-val{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1;}
+.sb-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-top:4px;}
 
-/* Cat tabs */
-.cat-tabs{display:flex;padding:0 32px;border-bottom:1px solid var(--line);background:var(--surface);overflow-x:auto;scrollbar-width:none;}
-.cat-tabs::-webkit-scrollbar{display:none}
-.ctt{padding:10px 16px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;white-space:nowrap;}
-.ctt:hover{color:var(--ink);}
-.ctt.active{color:var(--g);border-bottom-color:var(--g);font-weight:600;}
-
-/* Movers */
-.movers-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:24px 32px;background:var(--bg);}
-@media(max-width:580px){.movers-row{grid-template-columns:1fr;}}
-.mv-box{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-.mv-box-hd{padding:11px 16px;border-bottom:1px solid var(--line);background:var(--surface2);display:flex;align-items:center;gap:7px;}
-.mv-dot{width:7px;height:7px;border-radius:50%;}
-.mv-box-title{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);}
-.mv-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .08s;gap:10px;}
+/* ── MOVERS ────────────────────────── */
+.movers{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 32px 24px;}
+@media(max-width:560px){.movers{grid-template-columns:1fr;padding:0 16px 20px;}}
+.mv-box{background:var(--white);border:1px solid var(--line);border-radius:7px;overflow:hidden;}
+.mv-hd{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg);}
+.mv-dot{width:6px;height:6px;border-radius:50%;}
+.mv-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);}
+.mv-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--line);
+  cursor:pointer;gap:10px;transition:background .08s;
+}
 .mv-row:last-child{border-bottom:none;}
-.mv-row:hover{background:var(--surface2);}
+.mv-row:hover{background:var(--bg);}
 .mv-name{font-size:13px;font-weight:600;}
-.mv-ct{font-size:10px;color:var(--ink4);margin-top:1px;font-family:var(--mono);}
-.mv-price{font-family:var(--mono);font-size:14px;font-weight:500;text-align:right;}
-.mv-chg{font-family:var(--mono);font-size:11px;text-align:right;margin-top:2px;}
-.mv-empty{padding:20px 16px;font-size:12px;color:var(--ink4);text-align:center;}
+.mv-ct{font-size:10px;color:var(--ink4);margin-top:1px;}
+.mv-price{font-family:var(--mono);font-size:13px;font-weight:500;text-align:right;}
+.mv-chg{font-family:var(--mono);font-size:11px;text-align:right;margin-top:1px;}
+.mv-empty{padding:18px 14px;font-size:12px;color:var(--ink4);text-align:center;}
 
-/* Table */
-.tbl-section{padding:0 32px 32px;background:var(--bg);}
-.tbl-sect-hd{display:flex;align-items:baseline;justify-content:space-between;padding:20px 0 12px;flex-wrap:wrap;gap:8px;}
-.tbl-sect-title{font-size:16px;font-weight:700;color:var(--ink);}
-.tbl-sect-meta{font-size:12px;color:var(--ink4);}
-.tbl-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-.tbl-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--line);}
-.fi{background:var(--surface);border:1px solid var(--line2);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;color:var(--ink);outline:none;transition:border-color .12s;}
+/* ── DATA TABLE ────────────────────── */
+.tbl-wrap{background:var(--white);border:1px solid var(--line);border-radius:7px;overflow:hidden;margin:0 32px 32px;}
+@media(max-width:640px){.tbl-wrap{margin:0 16px 24px;}}
+.tbl-toolbar{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg);
+}
+.fi{
+  background:var(--white);border:1px solid var(--line2);border-radius:6px;
+  padding:5px 9px;font-size:12px;font-weight:500;color:var(--ink);
+  outline:none;transition:border-color .12s;
+}
 .fi:focus{border-color:var(--g);}
 .fi::placeholder{color:var(--ink4);}
-.fi option{background:var(--surface);}
+.fi option{background:var(--white);}
 .tbl{width:100%;border-collapse:collapse;}
-.tbl thead th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);padding:10px 16px;text-align:left;background:var(--surface2);border-bottom:1px solid var(--line);white-space:nowrap;}
-.tbl thead th.r{text-align:right;}
-.tbl tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--line);color:var(--ink);}
-.tbl tbody td.r{text-align:right;font-family:var(--mono);}
-.tbl tbody td.dim{color:var(--ink3);font-size:12px;}
-.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl th{
+  font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink4);padding:9px 14px;text-align:left;
+  background:var(--bg);border-bottom:1px solid var(--line);white-space:nowrap;
+}
+.tbl th.r{text-align:right;}
+.tbl td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--line);}
+.tbl td.r{text-align:right;font-family:var(--mono);}
+.tbl td.dim{color:var(--ink3);font-size:12px;}
+.tbl tr:last-child td{border-bottom:none;}
 .tbl tbody tr{cursor:pointer;transition:background .07s;}
-.tbl tbody tr:hover td{background:var(--surface2);}
-.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface2);border-top:1px solid var(--line);}
+.tbl tbody tr:hover td{background:var(--bg);}
+.pager{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;border-top:1px solid var(--line);background:var(--bg);
+}
 .pi{font-family:var(--mono);font-size:10px;color:var(--ink4);}
-.pbtn{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer;transition:all .12s;}
+.pbtn{
+  padding:4px 11px;border-radius:5px;font-size:12px;font-weight:500;
+  border:1px solid var(--line2);background:var(--white);color:var(--ink2);
+  cursor:pointer;transition:all .1s;
+}
 .pbtn:hover:not(:disabled){border-color:var(--g);color:var(--g);}
-.pbtn:disabled{opacity:.3;cursor:default;}
-.mob-list{display:none;}
-.mob-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .07s;gap:10px;}
-.mob-row:hover{background:var(--surface2);}
-.mob-name{font-size:13px;font-weight:600;}
-.mob-sub{font-size:11px;color:var(--ink3);margin-top:1px;}
-.mob-price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--g);text-align:right;}
-.mob-chg{font-family:var(--mono);font-size:11px;text-align:right;margin-top:2px;}
-@media(max-width:640px){.mob-list{display:block;}.tbl-desktop{display:none!important;}.tbl-section,.movers-row,.home-top,.fp-body{padding-left:16px;padding-right:16px;}}
+.pbtn:disabled{opacity:.35;cursor:default;}
+.mob-cards{display:none;}
+.mc{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;gap:10px;transition:background .07s;}
+.mc:hover{background:var(--bg);}
+.mc-name{font-size:13px;font-weight:600;}
+.mc-sub{font-size:11px;color:var(--ink3);margin-top:1px;}
+.mc-price{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g);text-align:right;}
+.mc-chg{font-family:var(--mono);font-size:11px;text-align:right;margin-top:1px;}
+@media(max-width:600px){.mob-cards{display:block;}.tbl-desktop{display:none!important;}}
 
-/* Badges */
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+/* ── CONDITION CHIPS ───────────────── */
+.chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
 .chip-up{background:var(--red-lt);color:var(--red);}
 .chip-dn{background:var(--g-lt);color:var(--g);}
-.chip-fl{background:var(--surface2);color:var(--ink4);border:1px solid var(--line);}
-.chip-lim{background:#fef3c7;color:#92400e;}
-.chip-best{background:#fef3c7;color:#92400e;}
-.chip-org{background:var(--g-lt);color:var(--g);}
+.chip-fl{background:var(--bg);color:var(--ink4);border:1px solid var(--line);}
+.chip-best{background:#fef9c3;color:#854d0e;}
 .up{color:var(--red);}
 .dn{color:var(--g);}
 .fl{color:var(--ink4);}
 
-/* ═══════════════════════════════
+/* ═══════════════════════════════════
    COMMODITY DETAIL
-════════════════════════════════ */
-.cp-top{padding:24px 32px 0;background:var(--surface);border-bottom:1px solid var(--line);}
-.cp-crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink4);margin-bottom:14px;}
-.cp-crumb button{background:none;border:none;cursor:pointer;font-size:11px;color:var(--g);font-weight:500;padding:0;}
-.cp-crumb button:hover{text-decoration:underline;}
-.cp-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
-.cp-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:var(--g-lt);color:var(--g);font-size:11px;font-weight:600;}
-.cp-main-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap;}
-.cp-name{font-size:34px;font-weight:700;color:var(--ink);letter-spacing:-.025em;line-height:1.1;}
+════════════════════════════════════ */
+.cp-header{
+  background:var(--white);border-bottom:1px solid var(--line);
+  padding:24px 32px;
+}
+@media(max-width:640px){.cp-header{padding:16px;}}
+.cp-back{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:500;color:var(--ink3);
+  background:none;border:none;cursor:pointer;
+  margin-bottom:14px;padding:0;transition:color .1s;
+}
+.cp-back:hover{color:var(--g);}
+.cp-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:8px;flex-wrap:wrap;}
+.cp-name{font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-.02em;}
 .cp-chg-block{text-align:right;flex-shrink:0;}
-.cp-pct{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1;}
-.cp-amt{font-family:var(--mono);font-size:11px;color:var(--ink4);margin-top:3px;}
-.cp-desc{font-size:13px;color:var(--ink3);margin-bottom:20px;max-width:580px;}
+.cp-pct{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1;}
+.cp-amt{font-family:var(--mono);font-size:11px;color:var(--ink4);margin-top:2px;}
+.cp-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.cp-tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;border:1px solid var(--line2);color:var(--ink3);}
 
-/* At a Glance */
-.glance{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);}
-.gl{padding:20px 22px;border-right:1px solid var(--line);background:var(--surface);}
-.gl:last-child{border-right:none;}
-.gl-lbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:10px;}
-.gl-val{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1;}
-.gl-val.g{color:var(--g);}
-.gl-sub{font-size:12px;color:var(--ink3);margin-top:5px;}
-.gl-chg{font-family:var(--mono);font-size:12px;font-weight:500;margin-top:2px;}
-.gl-dot-row{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--g);margin-top:5px;}
-.gl-dot{width:7px;height:7px;border-radius:50%;background:var(--g);}
-@media(max-width:800px){.glance{grid-template-columns:1fr 1fr;}.gl:nth-child(2){border-right:none;}.gl:nth-child(3),.gl:nth-child(4){border-top:1px solid var(--line);}.gl:nth-child(4){border-right:none;}}
-@media(max-width:480px){.glance{grid-template-columns:1fr;}.gl{border-right:none!important;border-top:1px solid var(--line)!important;}.glance .gl:first-child{border-top:none!important;}}
+/* 3-stat row */
+.stat3{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--line);}
+@media(max-width:600px){.stat3{grid-template-columns:1fr;}}
+.s3{padding:18px 24px;border-right:1px solid var(--line);background:var(--white);}
+.s3:last-child{border-right:none;background:var(--g);}
+.s3-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;}
+.s3-lbl-inv{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px;}
+.s3-val{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--ink);line-height:1;}
+.s3-val-inv{font-family:var(--mono);font-size:24px;font-weight:500;color:#fff;line-height:1;}
+.s3-badge{font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,.2);color:#fff;margin-left:8px;}
+.s3-sub{font-size:11px;color:var(--ink4);margin-top:5px;}
+.s3-sub-inv{font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;}
+@media(max-width:600px){.s3:last-child{border-right:none;border-top:1px solid rgba(255,255,255,.15);}}
 
 /* Signal */
 .signal{display:flex;align-items:flex-start;gap:10px;padding:12px 32px;border-bottom:1px solid var(--line);font-size:13px;}
-.signal.up{background:#fff8f7;}
-.signal.dn{background:#f0faf5;}
+.signal.up{background:#fff8f8;}
+.signal.dn{background:#f0faf4;}
 .signal.nt{background:var(--g-lt);}
 .sig-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0;}
-.sig-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:2px;}
+.sig-lbl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:2px;}
 .sig-txt{font-size:13px;font-weight:500;color:var(--ink2);}
 
-/* Chart + Map */
-.chart-map-grid{display:grid;grid-template-columns:1fr 300px;border-bottom:1px solid var(--line);}
-.chart-map-grid>div:first-child{border-right:1px solid var(--line);}
-@media(max-width:820px){.chart-map-grid{grid-template-columns:1fr;}.chart-map-grid>div:first-child{border-right:none;border-bottom:1px solid var(--line);}}
-.section-hd{padding:14px 32px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
-.section-lbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);}
-.section-meta{font-family:var(--mono);font-size:11px;color:var(--ink4);}
-.chart-area{padding:20px 32px;height:200px;position:relative;background:var(--surface);}
+/* Chart + Origins grid */
+.cp-grid{display:grid;grid-template-columns:1fr 300px;border-bottom:1px solid var(--line);}
+.cp-grid>div:first-child{border-right:1px solid var(--line);}
+@media(max-width:820px){.cp-grid{grid-template-columns:1fr;}.cp-grid>div:first-child{border-right:none;border-bottom:1px solid var(--line);}}
+.cp-sec-hd{padding:12px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--bg);}
+.cp-sec-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);}
+.cp-sec-meta{font-family:var(--mono);font-size:10px;color:var(--ink4);}
+.chart-area{padding:18px 24px;height:195px;position:relative;background:var(--white);}
 
 /* Origin map */
-.map-outer{position:relative;background:var(--surface);}
+.map-wrap{position:relative;background:var(--white);}
 #origin-map .us-land{fill:#dde8d8;stroke:#fff;stroke-width:.7;}
-#origin-map .us-land:hover{fill:#d4e0cf;}
-.map-tip{display:none;position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line2);border-radius:6px;padding:9px 12px;font-size:11px;z-index:10;min-width:140px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.map-tip{display:none;position:absolute;pointer-events:none;background:var(--white);border:1px solid var(--line2);border-radius:6px;padding:9px 12px;font-size:11px;z-index:10;min-width:140px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
 
-/* Origin list */
-.or{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--surface);}
+/* Origins ranked list */
+.or{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--white);}
 .or:last-child{border-bottom:none;}
-.or-rank{width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2);color:var(--ink4);}
+.or-rank{width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);color:var(--ink4);}
 .or-rank.first{background:var(--g);color:#fff;}
 .or-name{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .or-loc{font-size:10px;color:var(--ink4);margin-top:1px;}
 .or-price{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--g);flex-shrink:0;text-align:right;}
-.or-mov{font-family:var(--mono);font-size:10px;margin-top:2px;text-align:right;}
+.or-mov{font-family:var(--mono);font-size:10px;margin-top:1px;text-align:right;}
 
-/* Regional table */
-.rpd-hd{padding:20px 32px 14px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;background:var(--bg);}
-.rpd-title{font-size:16px;font-weight:700;color:var(--ink);}
-.rpd-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
-.rpd-legend{display:flex;gap:12px;font-size:11px;color:var(--ink4);}
-.rpd-li{display:flex;align-items:center;gap:4px;}
-.rpd-dot{width:6px;height:6px;border-radius:50%;}
-.rpd-tbl{width:100%;border-collapse:collapse;}
-.rpd-tbl thead th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);padding:10px 16px;text-align:left;background:var(--surface2);border-bottom:1px solid var(--line);white-space:nowrap;}
-.rpd-tbl thead th.r{text-align:right;}
-.rpd-tbl tbody td{padding:14px 16px;font-size:13px;border-bottom:1px solid var(--line);color:var(--ink);}
-.rpd-tbl tbody td.r{text-align:right;font-family:var(--mono);}
-.rpd-tbl tbody td.dim{color:var(--ink3);font-size:12px;}
-.rpd-tbl tbody td.price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--g);}
-.rpd-tbl tbody tr:last-child td{border-bottom:none;}
-.rpd-tbl tbody tr:hover td{background:var(--surface2);}
-.mkt-name{font-size:13px;font-weight:600;}
-.mkt-sub{font-size:11px;color:var(--ink4);margin-top:2px;}
+/* Regional table section */
+.reg-hd{
+  padding:20px 32px 14px;
+  display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+@media(max-width:640px){.reg-hd{padding:16px 16px 12px;}}
+.reg-title{font-size:16px;font-weight:700;color:var(--ink);}
+.reg-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
+.reg-legend{display:flex;gap:12px;font-size:11px;color:var(--ink4);}
+.reg-leg{display:flex;align-items:center;gap:4px;}
+.reg-dot{width:5px;height:5px;border-radius:50%;}
 
 /* Detail tabs */
-.detail-tabs{display:flex;padding:0 0 0 32px;border-bottom:1px solid var(--line);background:var(--surface);}
-.dtab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;}
+.dtabs{display:flex;border-bottom:1px solid var(--line);background:var(--white);padding:0 32px;}
+@media(max-width:640px){.dtabs{padding:0 16px;}}
+.dtab{padding:11px 14px;font-size:13px;font-weight:500;color:var(--ink3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .1s,border-color .1s;}
 .dtab.active{color:var(--g);border-bottom-color:var(--g);font-weight:600;}
 .dtab:hover:not(.active){color:var(--ink);}
 
-/* ── OTHER PAGES ─────────────────────── */
-.fp-top{padding:28px 32px 20px;background:var(--surface);border-bottom:1px solid var(--line);}
-.fp-h1{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:3px;}
+/* ── OTHER PAGES ──────────────────── */
+.fp-hd{padding:28px 32px 20px;background:var(--white);border-bottom:1px solid var(--line);}
+@media(max-width:640px){.fp-hd{padding:16px;}}
+.fp-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:3px;}
 .fp-sub{font-size:13px;color:var(--ink3);}
 .fp-body{padding:24px 32px;}
-.flow-card{display:flex;align-items:center;gap:24px;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;flex-wrap:wrap;}
+@media(max-width:640px){.fp-body{padding:16px;}}
+
+/* Compare flow */
+.flow{display:flex;align-items:center;gap:20px;padding:22px;background:var(--white);border:1px solid var(--line);border-radius:7px;margin-bottom:16px;flex-wrap:wrap;}
 .fn{flex:1;min-width:100px;}
-.fn-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--ink4);margin-bottom:8px;}
+.fn-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:8px;}
 .fn-price{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1;}
-.fn-place{font-size:12px;color:var(--ink3);margin-top:5px;}
+.fn-place{font-size:12px;color:var(--ink3);margin-top:4px;}
 .fn-mid{flex-shrink:0;text-align:center;}
-.fn-spr{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--ink);}
-.fn-line{width:52px;height:1px;background:var(--line2);margin:6px auto;}
-.fn-lbl2{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--ink4);margin-top:4px;}
-.srch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:20px;}
-.sc{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;cursor:pointer;transition:border-color .12s,box-shadow .12s;}
-.sc:hover{border-color:var(--g);box-shadow:0 2px 10px rgba(26,122,74,.08);}
-.sc-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.fn-spr{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink);}
+.fn-line{width:48px;height:1px;background:var(--line2);margin:5px auto;}
+.fn-lbl2{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);}
+
+/* Search results */
+.srch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:20px;}
+.sc{background:var(--white);border:1px solid var(--line);border-radius:7px;padding:14px;cursor:pointer;transition:border-color .1s,box-shadow .1s;}
+.sc:hover{border-color:var(--g);box-shadow:0 2px 10px rgba(31,107,58,.07);}
+.sc-name{font-size:13px;font-weight:700;margin-bottom:3px;}
 .sc-meta{font-size:11px;color:var(--ink4);font-family:var(--mono);}
-.sc-price{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--g);margin-top:10px;}
-.sc-chg{font-family:var(--mono);font-size:11px;margin-top:3px;}
+.sc-price{font-family:var(--mono);font-size:19px;font-weight:500;color:var(--g);margin-top:9px;}
+.sc-chg{font-family:var(--mono);font-size:11px;margin-top:2px;}
 
-/* Origin map CSS */
-#origin-map .us-land{fill:#dde8d8;stroke:#fff;stroke-width:.7;}
-
-footer{padding:16px 32px;border-top:1px solid var(--line);font-size:11px;color:var(--ink4);background:var(--surface);display:flex;align-items:center;gap:10px;}
-footer img{height:14px;opacity:.35;}
+footer{padding:14px 32px;border-top:1px solid var(--line);font-size:11px;color:var(--ink4);background:var(--white);display:flex;align-items:center;gap:8px;}
+footer img{height:13px;opacity:.3;}
 </style>
 </head>
 <body>
@@ -352,185 +366,134 @@ footer img{height:14px;opacity:.35;}
   </div>
   <div class="nav-links">
     <button onclick="go('home')"     data-n="home"     class="nl active">Home</button>
-    <button onclick="go('terminal')" data-n="terminal" class="nl">Markets</button>
+    <button onclick="go('terminal')" data-n="terminal" class="nl">Terminal Markets</button>
     <button onclick="go('shipping')" data-n="shipping" class="nl">Shipping Points</button>
     <button onclick="go('compare')"  data-n="compare"  class="nl">Compare</button>
   </div>
   <div class="nav-right">
-    <div class="nav-search" onclick="go('search')">
+    <div class="nav-cats">
+      <button class="nc active" onclick="setCT('vegetables')"     id="nc-v">Vegetables</button>
+      <button class="nc"         onclick="setCT('fruits')"          id="nc-f">Fruits</button>
+      <button class="nc"         onclick="setCT('onions_potatoes')" id="nc-o">Onions &amp; Pot.</button>
+      <button class="nc"         onclick="setCT('nuts')"            id="nc-n">Nuts</button>
+    </div>
+    <div class="nav-srch" onclick="go('search')">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Search commodities… <kbd>/</kbd>
+      Search <kbd>/</kbd>
     </div>
   </div>
 </nav>
 
-<div class="layout">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="sb-sect">
-    <div class="sb-lbl">Categories</div>
-    <div class="sb-item active" onclick="setCT('vegetables')" id="sb-vegetables">
-      <div class="sb-icon">🥦</div>Vegetables
-      <span class="sb-count" id="sb-vegetables-c"></span>
-    </div>
-    <div class="sb-item" onclick="setCT('fruits')" id="sb-fruits">
-      <div class="sb-icon">🍎</div>Fruits
-      <span class="sb-count" id="sb-fruits-c"></span>
-    </div>
-    <div class="sb-item" onclick="setCT('onions_potatoes')" id="sb-onions_potatoes">
-      <div class="sb-icon">🧅</div>Onions &amp; Potatoes
-      <span class="sb-count" id="sb-onions_potatoes-c"></span>
-    </div>
-    <div class="sb-item" onclick="setCT('nuts')" id="sb-nuts">
-      <div class="sb-icon">🌰</div>Nuts
-      <span class="sb-count" id="sb-nuts-c"></span>
-    </div>
-  </div>
-  <div class="sb-sect">
-    <div class="sb-lbl">Terminal Markets</div>
-    <div id="sb-mkts"></div>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div class="main" id="main-area">
-
-<!-- HOME -->
-<div id="page-home">
-  <div class="home-top">
-    <div class="h-crumb">agraX &rsaquo; <span>Dashboard</span></div>
-    <div class="h-title">Wholesale Produce Prices</div>
-    <div class="h-sub">Live USDA terminal market and FOB shipping point data for growers, brokers &amp; distributors</div>
-    <div class="h-search">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<!-- ══════════ HOME ══════════════════ -->
+<div id="page-home" class="page on">
+  <div class="hero">
+    <div class="hero-title">Wholesale Produce Prices</div>
+    <div class="hero-sub">Live USDA data for growers, brokers &amp; distributors</div>
+    <div class="search-box">
       <input id="hi" type="text" placeholder="Search any commodity — cilantro, tomatoes, avocados…"
         oninput="hSearch()" onkeydown="hKey(event)" autocomplete="off" spellcheck="false">
-      <div class="srch-dd" id="hdd"></div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <div class="search-dd" id="hdd"></div>
     </div>
     <div class="qp-row" id="qp-row"></div>
   </div>
 
   <div class="stats-bar">
-    <div class="s-item"><div class="s-val up" id="ss-r">—</div><div class="s-lbl">Rising</div></div>
-    <div class="s-item"><div class="s-val dn" id="ss-f">—</div><div class="s-lbl">Falling</div></div>
-    <div class="s-item"><div class="s-val fl" id="ss-s">—</div><div class="s-lbl">Steady</div></div>
-    <div class="s-item"><div class="s-val" id="ss-t">—</div><div class="s-lbl">Commodities</div></div>
-    <div class="s-item"><div class="s-val" id="ss-d" style="font-size:13px;color:var(--ink3)">—</div><div class="s-lbl">Updated</div></div>
+    <div class="sb"><div class="sb-val up" id="ss-r">—</div><div class="sb-lbl">Rising</div></div>
+    <div class="sb"><div class="sb-val dn" id="ss-f">—</div><div class="sb-lbl">Falling</div></div>
+    <div class="sb"><div class="sb-val fl" id="ss-s">—</div><div class="sb-lbl">Steady</div></div>
+    <div class="sb"><div class="sb-val" id="ss-t">—</div><div class="sb-lbl">Commodities</div></div>
+    <div class="sb"><div class="sb-val" id="ss-d" style="font-size:13px;color:var(--ink3)">—</div><div class="sb-lbl">Updated</div></div>
   </div>
 
-  <div class="cat-tabs">
-    <button onclick="setCT('vegetables')"     id="ctt-v" class="ctt active">Vegetables</button>
-    <button onclick="setCT('fruits')"          id="ctt-f" class="ctt">Fruits</button>
-    <button onclick="setCT('onions_potatoes')" id="ctt-o" class="ctt">Onions &amp; Potatoes</button>
-    <button onclick="setCT('nuts')"            id="ctt-n" class="ctt">Nuts</button>
-  </div>
-
-  <div style="padding:20px 32px 12px;background:var(--bg)">
-    <div style="font-size:16px;font-weight:700;color:var(--ink)">Today's Movers</div>
-  </div>
-  <div class="movers-row">
+  <div class="sh"><div><div class="sh-title">Today's Movers</div></div><div class="sh-meta" id="mv-meta"></div></div>
+  <div class="movers">
     <div class="mv-box">
-      <div class="mv-box-hd"><div class="mv-dot" style="background:var(--red)"></div><span class="mv-box-title">Rising this week</span></div>
+      <div class="mv-hd"><div class="mv-dot" style="background:var(--red)"></div><span class="mv-lbl">Rising</span></div>
       <div id="mv-up"></div>
     </div>
     <div class="mv-box">
-      <div class="mv-box-hd"><div class="mv-dot" style="background:var(--g)"></div><span class="mv-box-title">Falling this week</span></div>
+      <div class="mv-hd"><div class="mv-dot" style="background:var(--g)"></div><span class="mv-lbl">Falling</span></div>
       <div id="mv-dn"></div>
     </div>
   </div>
 
-  <div class="tbl-section">
-    <div class="tbl-sect-hd">
-      <div class="tbl-sect-title">All Listings</div>
-      <div class="tbl-sect-meta" id="tbl-meta"></div>
+  <div class="sh"><div><div class="sh-title">All Listings</div></div><div class="sh-meta" id="tbl-meta"></div></div>
+  <div class="tbl-wrap">
+    <div class="tbl-toolbar">
+      <div style="position:relative">
+        <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="tf-q" class="fi" style="padding-left:26px;min-width:145px" placeholder="Filter…" oninput="filterTbl()">
+      </div>
+      <select id="tf-m" class="fi" onchange="filterTbl()"><option value="">All Markets</option></select>
+      <select id="tf-s" class="fi" onchange="filterTbl()">
+        <option value="comm">A → Z</option>
+        <option value="pl">Price ↑</option>
+        <option value="ph">Price ↓</option>
+        <option value="chg">Biggest Change</option>
+      </select>
     </div>
-    <div class="tbl-card">
-      <div class="tbl-filters">
-        <div style="position:relative">
-          <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="tf-q" class="fi" style="padding-left:26px;min-width:150px" placeholder="Filter…" oninput="filterTbl()">
-        </div>
-        <select id="tf-m" class="fi" onchange="filterTbl()"><option value="">All Markets</option></select>
-        <select id="tf-s" class="fi" onchange="filterTbl()">
-          <option value="comm">A → Z</option>
-          <option value="pl">Price ↑</option>
-          <option value="ph">Price ↓</option>
-          <option value="chg">Biggest Change</option>
-        </select>
-      </div>
-      <div class="tbl-desktop" style="overflow-x:auto">
-        <table class="tbl"><thead><tr>
-          <th>Commodity</th><th>Market</th>
-          <th class="r">Price</th><th class="r">vs Last Week</th>
-          <th class="r">Market Condition</th><th>Origin</th>
-        </tr></thead><tbody id="tbl-body"></tbody></table>
-      </div>
-      <div class="mob-list" id="tbl-mob"></div>
-      <div class="pager">
-        <span class="pi" id="tbl-pi"></span>
-        <div style="display:flex;gap:6px">
-          <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
-          <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
-        </div>
+    <div class="tbl-desktop" style="overflow-x:auto">
+      <table class="tbl"><thead><tr>
+        <th>Commodity</th>
+        <th>Market</th>
+        <th class="r">Price</th>
+        <th class="r">vs Last Week</th>
+        <th class="r">Condition</th>
+        <th>Origin</th>
+      </tr></thead><tbody id="tbl-body"></tbody></table>
+    </div>
+    <div class="mob-cards" id="tbl-mob"></div>
+    <div class="pager">
+      <span class="pi" id="tbl-pi"></span>
+      <div style="display:flex;gap:6px">
+        <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
+        <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
       </div>
     </div>
   </div>
-  <footer><img src="agrax-logo.png" alt="">agraX · Data from USDA Agricultural Marketing Service</footer>
+  <footer><img src="agrax-logo.png" alt="">agraX · USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- COMMODITY DETAIL -->
-<div id="page-commodity" class="hidden">
-  <div class="cp-top">
-    <div class="cp-crumb">
-      <button onclick="history.back()">← All commodities</button>
-      &rsaquo; <span id="cp-crumb-name" style="color:var(--ink3)"></span>
-    </div>
-    <div class="cp-badges" id="cp-badges"></div>
-    <div class="cp-main-row">
+<!-- ══════════ COMMODITY DETAIL ══════ -->
+<div id="page-commodity" class="page">
+  <div class="cp-header">
+    <button onclick="history.back()" class="cp-back">← All commodities</button>
+    <div class="cp-row">
       <div class="cp-name" id="cp-name"></div>
       <div class="cp-chg-block" id="cp-chg"></div>
     </div>
-    <div class="cp-desc" id="cp-desc"></div>
+    <div class="cp-tags" id="cp-tags"></div>
+  </div>
 
-    <!-- At a Glance -->
-    <div class="glance">
-      <div class="gl">
-        <div class="gl-lbl">Today's FOB Avg</div>
-        <div class="gl-val" id="gl-fob">—</div>
-        <div class="gl-sub" id="gl-fob-s"></div>
-        <div class="gl-chg" id="gl-fob-c"></div>
-      </div>
-      <div class="gl">
-        <div class="gl-lbl">Weekly Price Change</div>
-        <div class="gl-val" id="gl-chg">—</div>
-        <div class="gl-sub" id="gl-chg-s"></div>
-      </div>
-      <div class="gl">
-        <div class="gl-lbl">Cheapest Source</div>
-        <div class="gl-val g" id="gl-src">—</div>
-        <div class="gl-sub" id="gl-src-s"></div>
-        <div class="gl-dot-row" id="gl-src-avail"></div>
-      </div>
-      <div class="gl">
-        <div class="gl-lbl">Terminal Premium</div>
-        <div class="gl-val" id="gl-spr">—</div>
-        <div class="gl-sub" id="gl-spr-s"></div>
-      </div>
+  <div class="stat3">
+    <div class="s3">
+      <div class="s3-lbl">FOB Avg · Origin</div>
+      <div class="s3-val" id="s3-fob">—</div>
+      <div class="s3-sub" id="s3-fob-s"></div>
+    </div>
+    <div class="s3">
+      <div class="s3-lbl">Terminal Avg · National</div>
+      <div class="s3-val" id="s3-term">—</div>
+      <div class="s3-sub" id="s3-term-s"></div>
+    </div>
+    <div class="s3">
+      <div class="s3-lbl-inv">Net Spread · Margin</div>
+      <div class="s3-val-inv" id="s3-spr">—</div>
+      <div class="s3-sub-inv" id="s3-spr-s"></div>
     </div>
   </div>
 
   <div id="cp-signal" class="hidden"></div>
 
-  <!-- Chart + Map -->
-  <div class="chart-map-grid">
+  <div class="cp-grid">
     <div>
-      <div class="section-hd"><span class="section-lbl">30-Day Price Trend</span><span class="section-meta" id="chart-meta"></span></div>
+      <div class="cp-sec-hd"><span class="cp-sec-lbl">30-Day Price Trend</span><span class="cp-sec-meta" id="chart-meta"></span></div>
       <div class="chart-area"><canvas id="price-chart"></canvas></div>
     </div>
     <div>
-      <div class="section-hd"><span class="section-lbl">FOB Origin Map</span><span class="section-meta" id="origins-meta"></span></div>
-      <div class="map-outer">
+      <div class="cp-sec-hd"><span class="cp-sec-lbl">FOB Origin Map</span><span class="cp-sec-meta" id="origins-meta"></span></div>
+      <div class="map-wrap">
         <svg id="origin-map" viewBox="0 0 280 230" style="width:100%;display:block;"></svg>
         <div class="map-tip" id="map-tip"></div>
       </div>
@@ -538,55 +501,48 @@ footer img{height:14px;opacity:.35;}
     </div>
   </div>
 
-  <!-- Regional Price Directory -->
-  <div class="rpd-hd">
-    <div>
-      <div class="rpd-title">Regional Price Directory</div>
-      <div class="rpd-sub">Daily terminal pricing updates by major hub</div>
-    </div>
-    <div class="rpd-legend">
-      <div class="rpd-li"><div class="rpd-dot" style="background:var(--red)"></div>Rising</div>
-      <div class="rpd-li"><div class="rpd-dot" style="background:var(--g)"></div>Falling</div>
-      <div class="rpd-li"><div class="rpd-dot" style="background:var(--ink4)"></div>Steady</div>
+  <div class="reg-hd">
+    <div><div class="reg-title">Prices by Terminal Market</div><div class="reg-sub">Daily terminal pricing by major hub</div></div>
+    <div class="reg-legend">
+      <div class="reg-leg"><div class="reg-dot" style="background:var(--red)"></div>Rising</div>
+      <div class="reg-leg"><div class="reg-dot" style="background:var(--g)"></div>Falling</div>
+      <div class="reg-leg"><div class="reg-dot" style="background:var(--ink4)"></div>Steady</div>
     </div>
   </div>
-  <div class="tbl-card" style="margin:0 32px 24px;border-radius:8px;overflow:hidden">
+  <div class="tbl-wrap" style="margin-bottom:20px">
     <div style="overflow-x:auto">
-      <table class="rpd-tbl">
-        <thead><tr>
-          <th>Market Terminal</th>
-          <th class="r">Current Price (Avg)</th>
-          <th class="r">FOB Source</th>
-          <th class="r">Spread</th>
-          <th class="r">Movement</th>
-          <th class="r">Market Condition</th>
-        </tr></thead>
-        <tbody id="rpd-tbody"></tbody>
-      </table>
+      <table class="tbl"><thead><tr>
+        <th>Market Terminal</th>
+        <th class="r">Price</th>
+        <th class="r">FOB Source</th>
+        <th class="r">Spread</th>
+        <th class="r">vs Last Week</th>
+        <th class="r">Condition</th>
+      </tr></thead><tbody id="reg-tbody"></tbody></table>
     </div>
   </div>
 
-  <div class="detail-tabs">
+  <div class="dtabs">
     <button class="dtab active" data-tab="terminal" onclick="cpTab('terminal')">Terminal Listings</button>
     <button class="dtab" data-tab="fob" onclick="cpTab('fob')">FOB Sources</button>
   </div>
-  <div style="margin:0 32px 32px">
-    <div class="tbl-card" style="border-radius:0 0 8px 8px">
-      <div style="overflow-x:auto"><table class="tbl"><thead id="cp-th"></thead><tbody id="cp-tb"></tbody></table></div>
+  <div class="tbl-wrap" style="border-top:none;border-radius:0 0 7px 7px">
+    <div style="overflow-x:auto">
+      <table class="tbl"><thead id="cp-th"></thead><tbody id="cp-tb"></tbody></table>
     </div>
   </div>
   <footer><img src="agrax-logo.png" alt="">agraX · USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- TERMINAL -->
-<div id="page-terminal" class="hidden">
-  <div class="fp-top"><div class="fp-h1">Terminal Markets</div><div class="fp-sub">Destination wholesale prices at major US city markets</div></div>
-  <div class="fp-body">
-    <div class="tbl-card">
-      <div class="tbl-filters">
+<!-- ══════════ TERMINAL ═══════════════ -->
+<div id="page-terminal" class="page">
+  <div class="fp-hd"><div class="fp-title">Terminal Markets</div><div class="fp-sub">Destination wholesale prices at major US city markets</div></div>
+  <div style="padding:0 32px 32px" class="fp-body">
+    <div class="tbl-wrap" style="margin:0">
+      <div class="tbl-toolbar">
         <div style="position:relative">
           <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="tp-q" class="fi" style="padding-left:26px;min-width:150px" placeholder="Search…" oninput="filterTp()">
+          <input id="tp-q" class="fi" style="padding-left:26px;min-width:145px" placeholder="Search…" oninput="filterTp()">
         </div>
         <select id="tp-m" class="fi" onchange="filterTp()"><option value="">All Markets</option></select>
         <select id="tp-v" class="fi" onchange="filterTp()"><option value="">All Varieties</option></select>
@@ -596,11 +552,12 @@ footer img{height:14px;opacity:.35;}
       </div>
       <div class="tbl-desktop" style="overflow-x:auto">
         <table class="tbl"><thead><tr>
-          <th>Commodity</th><th>Variety</th><th>Origin</th><th>Market</th>
-          <th class="r">Size</th><th class="r">Price</th><th class="r">vs Wk</th>
+          <th>Commodity</th><th>Market</th><th>Origin</th>
+          <th class="r">Size</th><th class="r">Price</th>
+          <th class="r">vs Last Week</th><th class="r">Condition</th>
         </tr></thead><tbody id="tp-body"></tbody></table>
       </div>
-      <div class="mob-list" id="tp-mob"></div>
+      <div class="mob-cards" id="tp-mob"></div>
       <div class="pager">
         <span class="pi" id="tp-pi"></span>
         <div style="display:flex;gap:6px">
@@ -613,22 +570,22 @@ footer img{height:14px;opacity:.35;}
   <footer><img src="agrax-logo.png" alt="">agraX · USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- SHIPPING -->
-<div id="page-shipping" class="hidden">
-  <div class="fp-top"><div class="fp-h1">Shipping Points</div><div class="fp-sub">FOB origin prices — what shippers charge at the source</div></div>
+<!-- ══════════ SHIPPING ═══════════════ -->
+<div id="page-shipping" class="page">
+  <div class="fp-hd"><div class="fp-title">Shipping Points</div><div class="fp-sub">FOB origin prices — what shippers charge at the source</div></div>
   <div class="fp-body">
     <div id="sp-loading" style="padding:32px;text-align:center;font-size:13px;color:var(--ink4)">Loading…</div>
     <div id="sp-view" class="hidden">
-      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:11px;font-family:var(--mono);flex-wrap:wrap">
+      <div style="display:flex;gap:16px;margin-bottom:10px;font-size:11px;font-family:var(--mono);flex-wrap:wrap">
         <span id="sp-u" class="up"></span><span id="sp-d" class="dn"></span>
         <span id="sp-st" style="color:var(--ink4)"></span><span id="sp-tot" style="color:var(--ink4)"></span>
         <span id="sp-date" style="color:var(--ink4);margin-left:auto"></span>
       </div>
-      <div class="tbl-card">
-        <div class="tbl-filters">
+      <div class="tbl-wrap" style="margin:0">
+        <div class="tbl-toolbar">
           <div style="position:relative">
             <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--ink4)" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input id="sp-q" class="fi" style="padding-left:26px;min-width:140px" placeholder="Search…" oninput="renderSP()">
+            <input id="sp-q" class="fi" style="padding-left:26px;min-width:135px" placeholder="Search…" oninput="renderSP()">
           </div>
           <select id="sp-og" class="fi" onchange="renderSP()"><option value="">All Origins</option></select>
           <select id="sp-s" class="fi" onchange="renderSP()">
@@ -640,7 +597,7 @@ footer img{height:14px;opacity:.35;}
           <table class="tbl"><thead><tr>
             <th>Commodity</th><th>Origin</th>
             <th class="r">FOB Price</th><th class="r">Mostly</th>
-            <th class="r">Movement</th><th class="r">Trading</th>
+            <th class="r">Condition</th><th class="r">Trading</th>
           </tr></thead><tbody id="sp-body"></tbody></table>
         </div>
       </div>
@@ -649,26 +606,24 @@ footer img{height:14px;opacity:.35;}
   <footer><img src="agrax-logo.png" alt="">agraX · USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- COMPARE -->
-<div id="page-compare" class="hidden">
-  <div class="fp-top"><div class="fp-h1">Compare Prices</div><div class="fp-sub">FOB source vs. terminal destination — see the margin</div></div>
+<!-- ══════════ COMPARE ════════════════ -->
+<div id="page-compare" class="page">
+  <div class="fp-hd"><div class="fp-title">Compare</div><div class="fp-sub">FOB source vs. terminal destination — see the margin</div></div>
   <div class="fp-body">
     <div style="margin-bottom:20px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px">Select commodity</div>
-      <select id="cmp-sel" onchange="doCompare()" class="fi" style="min-width:240px;font-size:13px;padding:8px 12px">
-        <option value="">Choose a commodity…</option>
-      </select>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px">Select commodity</div>
+      <select id="cmp-sel" onchange="doCompare()" class="fi" style="min-width:240px;font-size:13px;padding:7px 10px"><option value="">Choose…</option></select>
     </div>
     <div id="cmp-res" class="hidden">
-      <div class="flow-card" id="cmp-flow"></div>
+      <div class="flow" id="cmp-flow"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="tbl-card">
-          <div style="padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface2)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4)">FOB Sources</span></div>
-          <div id="cmp-ship" style="padding:0"></div>
+        <div class="tbl-wrap" style="margin:0">
+          <div style="padding:9px 14px;border-bottom:1px solid var(--line);background:var(--bg)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4)">FOB Sources</span></div>
+          <div id="cmp-ship"></div>
         </div>
-        <div class="tbl-card">
-          <div style="padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface2)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4)">Terminal Markets</span></div>
-          <div id="cmp-term" style="padding:0"></div>
+        <div class="tbl-wrap" style="margin:0">
+          <div style="padding:9px 14px;border-bottom:1px solid var(--line);background:var(--bg)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4)">Terminal Markets</span></div>
+          <div id="cmp-term"></div>
         </div>
       </div>
     </div>
@@ -676,24 +631,19 @@ footer img{height:14px;opacity:.35;}
   <footer><img src="agrax-logo.png" alt="">agraX · USDA Agricultural Marketing Service</footer>
 </div>
 
-<!-- SEARCH -->
-<div id="page-search" class="hidden">
-  <div class="fp-top">
-    <div class="fp-h1" style="margin-bottom:14px">Search Commodities</div>
-    <div class="h-search" style="max-width:560px">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<!-- ══════════ SEARCH ═════════════════ -->
+<div id="page-search" class="page">
+  <div class="fp-hd">
+    <div class="fp-title" style="margin-bottom:14px">Search</div>
+    <div class="search-box" style="max-width:520px">
       <input id="sp-in" type="text" placeholder="Search any commodity…"
         oninput="doSearch()" onkeydown="if(event.key==='Escape')go('home')" autocomplete="off">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </div>
     <div id="sp-info" style="font-size:11px;font-weight:500;color:var(--ink4);margin-top:8px;font-family:var(--mono)"></div>
   </div>
-  <div style="padding:20px 32px">
-    <div class="srch-grid" id="sp-res"></div>
-  </div>
+  <div class="fp-body"><div class="srch-grid" id="sp-res"></div></div>
 </div>
-
-</div><!-- end main-area -->
-</div><!-- end layout -->
 
 <script>
 const API='https://produce-iq-production.up.railway.app';
@@ -706,37 +656,28 @@ let activeCT='vegetables';
 let tFiltered=[],tPage=1,tpFiltered=[],tpPage=1;
 const PG=30;
 const MOVORD={'Much Higher':0,'Higher':1,'Slightly Higher':2,'Unchanged':3,'Slightly Lower':4,'Lower':5,'Much Lower':6};
-let priceChart=null;
-let curComm='',curCPTab='terminal';
+let priceChart=null,curComm='';
 
+// Helpers
 const money=r=>{const lo=parseFloat(r.price_low),hi=r.price_high?parseFloat(r.price_high):null;return hi&&Math.abs(hi-lo)>.01?`$${lo.toFixed(2)}–${hi.toFixed(2)}`:`$${lo.toFixed(2)}`;};
 const mostly=r=>(r.price_mostly_low&&r.price_mostly_high)?`$${parseFloat(r.price_mostly_low).toFixed(2)}–${parseFloat(r.price_mostly_high).toFixed(2)}`:'';
 const mc=m=>{if(!m)return'fl';if(m.includes('Higher'))return'up';if(m.includes('Lower'))return'dn';return'fl';};
 const ma=m=>{if(!m)return'→';if(m.includes('Higher'))return'↑';if(m.includes('Lower'))return'↓';return'→';};
-const mchip=m=>{
+const cond=m=>{
   if(!m)return`<span class="chip chip-fl">→ Steady</span>`;
   const c=mc(m);
   return`<span class="chip ${c==='up'?'chip-up':c==='dn'?'chip-dn':'chip-fl'}">${ma(m)} ${m}</span>`;
 };
-const mcond=m=>{
-  if(!m)return`<span class="chip chip-fl">Steady</span>`;
-  if(m.includes('Much Higher')||m.includes('Much Lower'))return`<span class="chip chip-lim">${ma(m)} ${m}</span>`;
-  if(m.includes('Higher'))return`<span class="chip chip-up">${ma(m)} ${m}</span>`;
-  if(m.includes('Lower'))return`<span class="chip chip-dn">${ma(m)} ${m}</span>`;
-  return`<span class="chip chip-fl">→ Steady</span>`;
-};
-const sb=s=>s?`<span style="font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;background:var(--surface2);color:var(--ink3);border:1px solid var(--line)">${s}</span>`:`<span style="color:var(--ink4)">—</span>`;
-const ob=r=>r.organic?`<span class="chip chip-org" style="margin-right:5px">ORG</span>`:'';
+const sz=s=>s?`<span style="font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg);color:var(--ink3);border:1px solid var(--line)">${s}</span>`:`<span class="dim">—</span>`;
+const ob=r=>r.organic?`<span class="chip chip-dn" style="margin-right:4px">ORG</span>`:'';
 
+// Navigation
 const PAGES=['home','commodity','terminal','shipping','compare','search'];
 function go(pg,param){
-  PAGES.forEach(p=>{
-    const el=$('page-'+p);
-    if(el)el.className=p===pg?'':'hidden';
-  });
+  PAGES.forEach(p=>{const el=$('page-'+p);if(el)el.className='page'+(p===pg?' on':'');});
   document.querySelectorAll('[data-n]').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll(`[data-n="${pg}"]`).forEach(n=>n.classList.add('active'));
-  $('main-area').scrollTo?$('main-area').scrollTo(0,0):window.scrollTo(0,0);
+  window.scrollTo(0,0);
   if(pg==='commodity'&&param)loadComm(param);
   if(pg==='shipping')loadSP();
   if(pg==='search')setTimeout(()=>$('sp-in')?.focus(),80);
@@ -747,6 +688,7 @@ document.addEventListener('keydown',e=>{
 });
 function goComm(n){$('hdd')?.classList.remove('open');go('commodity',n);}
 
+// Init
 async function init(){
   try{
     dates=await(await fetch(`${API}/dates?commodity_type=vegetables`)).json();
@@ -758,19 +700,12 @@ async function init(){
       const d=await(await fetch(`${API}/commodities/by-date/${dates[i].date}?commodity_type=vegetables`)).json();
       cache[dates[i].date]=d;
     }
-    buildSB();
     loadHome();
     fetch(`${API}/dates?market_type=shipping_point&commodity_type=vegetables`)
       .then(r=>r.json()).then(async sd=>{if(sd.length)shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=vegetables`)).json();})
       .catch(()=>{});
   }catch(e){console.error(e);}
 }
-
-function buildSB(){
-  const mkts=['New York','Los Angeles','Chicago','Miami','Philadelphia','Baltimore','Boston','Atlanta','Detroit','San Francisco'];
-  $('sb-mkts').innerHTML=mkts.map(m=>`<div class="sb-mkt" onclick="goMkt('${esc(m)}')"><div class="sb-mkt-dot"></div>${m}</div>`).join('');
-}
-function goMkt(m){go('terminal');setTimeout(()=>{$('tp-m').value=m;filterTp();},100);}
 
 async function loadHome(){
   try{
@@ -781,16 +716,11 @@ async function loadHome(){
     $('ss-f').textContent=mv.falling?.length||0;
     $('ss-s').textContent=Math.max(0,comms.size-(mv.rising?.length||0)-(mv.falling?.length||0));
     $('ss-t').textContent=comms.size;
-    $('sb-vegetables-c').textContent=activeCT==='vegetables'?comms.size:'';
     try{
       const fr=await(await fetch(`${API}/freshness`)).json();
-      if(fr.terminal){
-        const d=new Date(fr.terminal+'T00:00:00');
-        const diff=Math.round((new Date()-d)/86400000);
-        $('ss-d').textContent=`${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${diff===0?'today':diff===1?'yesterday':diff+'d ago'}`;
-      }
+      if(fr.terminal){const d=new Date(fr.terminal+'T00:00:00');const diff=Math.round((new Date()-d)/86400000);$('ss-d').textContent=`${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${diff===0?'today':diff===1?'yesterday':diff+'d ago'}`;}
     }catch(e){}
-    renderMovers();buildFilters();filterTbl();buildCompare();
+    renderMovers();buildHomeFilters();filterTbl();buildCompare();
     const mkts=[...new Set(termData.map(d=>d.market))].sort();
     const vars=[...new Set(termData.map(d=>d.variety).filter(Boolean))].sort();
     $('tp-m').innerHTML='<option value="">All Markets</option>'+mkts.map(m=>`<option>${m}</option>`).join('');
@@ -801,10 +731,8 @@ async function loadHome(){
 
 async function setCT(ct){
   activeCT=ct;
-  ['vegetables','fruits','onions_potatoes','nuts'].forEach(k=>{
-    const sb=$('sb-'+k);if(sb)sb.className='sb-item'+(k===ct?' active':'');
-    const tabs={vegetables:'ctt-v',fruits:'ctt-f',onions_potatoes:'ctt-o',nuts:'ctt-n'};
-    const tt=$(tabs[k]);if(tt)tt.className='ctt'+(k===ct?' active':'');
+  [['vegetables','nc-v'],['fruits','nc-f'],['onions_potatoes','nc-o'],['nuts','nc-n']].forEach(([k,id])=>{
+    const el=$(id);if(el)el.className='nc'+(k===ct?' active':'');
   });
   $('mv-up').innerHTML='<div class="mv-empty">Loading…</div>';
   $('mv-dn').innerHTML='<div class="mv-empty">Loading…</div>';
@@ -813,23 +741,20 @@ async function setCT(ct){
       fetch(`${API}/dates?market_type=terminal&commodity_type=${ct}`).then(r=>r.json()),
       fetch(`${API}/movers?market_type=terminal&commodity_type=${ct}`).then(r=>r.json()),
     ]);
-    if(dr.length){
-      const lat=await(await fetch(`${API}/commodities/by-date/${dr[0].date}?commodity_type=${ct}`)).json();
-      termData=lat.filter(d=>d.market_type==='terminal');
-    }else termData=[];
+    if(dr.length){const lat=await(await fetch(`${API}/commodities/by-date/${dr[0].date}?commodity_type=${ct}`)).json();termData=lat.filter(d=>d.market_type==='terminal');}else termData=[];
     movers=mr;
     fetch(`${API}/dates?market_type=shipping_point&commodity_type=${ct}`)
       .then(r=>r.json()).then(async sd=>{if(sd.length)shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=${ct}`)).json();})
       .catch(()=>{});
-    renderMovers();buildFilters();filterTbl();buildQP();
+    renderMovers();buildHomeFilters();filterTbl();buildQP();
   }catch(e){}
 }
 
 function buildQP(){
-  const top=['Cilantro','Tomatoes','Broccoli','Asparagus','Peppers, Bell Type','Avocados','Mushrooms'];
-  const mvMap={};[...(movers.rising||[]),...(movers.falling||[])].forEach(m=>mvMap[m.commodity]=m);
+  const top=['Cilantro','Tomatoes','Broccoli','Asparagus','Peppers, Bell Type','Avocados'];
   const have=new Set(termData.map(d=>d.commodity));
-  $('qp-row').innerHTML=top.filter(c=>have.has(c)).slice(0,6).map(c=>{
+  const mvMap={};[...(movers.rising||[]),...(movers.falling||[])].forEach(m=>mvMap[m.commodity]=m);
+  $('qp-row').innerHTML=top.filter(c=>have.has(c)).slice(0,5).map(c=>{
     const rows=termData.filter(d=>d.commodity===c);
     const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
     return`<div class="qp" onclick="goComm('${esc(c)}')"><span>${c}</span><span class="qp-p">$${avg.toFixed(2)}</span></div>`;
@@ -837,48 +762,48 @@ function buildQP(){
 }
 
 function hSearch(){
-  const q=$('hi').value.toLowerCase().trim();
-  const dd=$('hdd');
+  const q=$('hi').value.toLowerCase().trim(),dd=$('hdd');
   if(!q){dd.classList.remove('open');return;}
   const comms=[...new Set(termData.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q)).slice(0,7);
   const mvMap={};[...(movers.rising||[]),...(movers.falling||[])].forEach(m=>mvMap[m.commodity]=m);
-  if(!comms.length){dd.innerHTML='<div style="padding:16px;text-align:center;font-size:13px;color:var(--ink4)">No results</div>';dd.classList.add('open');return;}
+  if(!comms.length){dd.innerHTML='<div style="padding:14px;text-align:center;font-size:13px;color:var(--ink4)">No results</div>';dd.classList.add('open');return;}
   dd.innerHTML=comms.map(c=>{
     const rows=termData.filter(d=>d.commodity===c);
     const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
     const m=mvMap[c];
-    const chg=m?`<span class="${m.pct_change>0?'up':'dn'}">${m.pct_change>0?'+':''}${m.pct_change.toFixed(1)}%</span>`:`<span class="fl">—</span>`;
+    const chg=m?`<span class="${m.pct_change>0?'up':'dn'}">${m.pct_change>0?'+':''}${m.pct_change.toFixed(1)}%</span>`:'<span class="fl">—</span>';
     return`<div class="dd-row" onclick="goComm('${esc(c)}')">
       <div><div class="dd-name">${c}</div><div class="dd-sub">${rows.length} listings · ${[...new Set(rows.map(r=>r.market))].length} markets</div></div>
       <div class="dd-price">$${avg.toFixed(2)}<div class="dd-chg">${chg}</div></div>
     </div>`;
-  }).join('')+`<div class="dd-more" onclick="go('search');$('sp-in').value='${q}';doSearch()">View all results for "${q}" →</div>`;
+  }).join('')+`<div class="dd-foot" onclick="go('search');$('sp-in').value='${q}';doSearch()">View all results →</div>`;
   dd.classList.add('open');
 }
 function hKey(e){
   if(e.key==='Enter'){const q=$('hi').value.trim();if(q){go('search');$('sp-in').value=q;doSearch();}}
   if(e.key==='Escape')$('hdd').classList.remove('open');
 }
-document.addEventListener('click',e=>{if(!e.target.closest('.h-search')&&!e.target.closest('.srch-dd'))$('hdd')?.classList.remove('open');});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))$('hdd')?.classList.remove('open');});
 
 function renderMovers(){
   const rising=movers.rising||[],falling=movers.falling||[];
+  $('mv-meta').textContent=`${rising.length} rising · ${falling.length} falling`;
   const mkRow=(m,isUp)=>{
     const rows=termData.filter(d=>d.commodity===m.commodity);
     const avg=rows.length?rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/rows.length:0;
     return`<div class="mv-row" onclick="goComm('${esc(m.commodity)}')">
       <div><div class="mv-name">${m.commodity}</div><div class="mv-ct">${rows.length} listing${rows.length!==1?'s':''}</div></div>
       <div style="text-align:right;flex-shrink:0">
-        <div class="mv-price" style="color:var(--ink)">$${avg.toFixed(2)}</div>
+        <div class="mv-price">$${avg.toFixed(2)}</div>
         <div class="mv-chg ${isUp?'up':'dn'}">${isUp?'+':''}${m.pct_change.toFixed(1)}%</div>
       </div>
     </div>`;
   };
-  $('mv-up').innerHTML=rising.length?rising.slice(0,6).map(m=>mkRow(m,true)).join(''):'<div class="mv-empty">No movers this week</div>';
-  $('mv-dn').innerHTML=falling.length?falling.slice(0,6).map(m=>mkRow(m,false)).join(''):'<div class="mv-empty">No movers this week</div>';
+  $('mv-up').innerHTML=rising.length?rising.slice(0,6).map(m=>mkRow(m,true)).join(''):'<div class="mv-empty">No movers</div>';
+  $('mv-dn').innerHTML=falling.length?falling.slice(0,6).map(m=>mkRow(m,false)).join(''):'<div class="mv-empty">No movers</div>';
 }
 
-function buildFilters(){
+function buildHomeFilters(){
   const mkts=[...new Set(termData.map(d=>d.market))].sort();
   $('tf-m').innerHTML='<option value="">All Markets</option>'+mkts.map(m=>`<option>${m}</option>`).join('');
   buildCompare();
@@ -909,88 +834,67 @@ function renderTbl(){
   $('tbl-body').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<tr onclick="goComm('${esc(r.commodity)}')">
-      <td>${ob(r)}<span style="font-weight:600">${r.commodity}</span>${r.variety?`<div class="dim">${r.variety}</div>`:''}</td>
+      <td>${ob(r)}<span style="font-weight:600">${r.commodity}</span>${r.variety?`<span class="dim" style="margin-left:6px">${r.variety}</span>`:''}</td>
       <td class="dim">${r.market}</td>
       <td class="r" style="font-weight:600;color:var(--g)">${money(r)}</td>
-      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-size:12px;font-family:var(--mono)">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
-      <td class="r">${mcond(r.movement)}</td>
+      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r">${cond(r.movement)}</td>
       <td class="dim">${r.origin||'—'}</td>
     </tr>`;
   }).join('')||'<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--ink4)">No results</td></tr>';
   $('tbl-mob').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
-    return`<div class="mob-row" onclick="goComm('${esc(r.commodity)}')">
-      <div><div class="mob-name">${r.commodity}</div><div class="mob-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
-      <div><div class="mob-price">${money(r)}</div><div class="mob-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
+    return`<div class="mc" onclick="goComm('${esc(r.commodity)}')">
+      <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      <div><div class="mc-price">${money(r)}</div><div class="mc-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
     </div>`;
   }).join('');
 }
 function tPrev(){if(tPage>1){tPage--;renderTbl();}}
 function tNext(){tPage++;renderTbl();}
 
-// ═══════════════════════════════════
+// ═══════════════════════════
 // COMMODITY DETAIL
-// ═══════════════════════════════════
+// ═══════════════════════════
 async function loadComm(name){
-  curComm=name;curCPTab='terminal';
+  curComm=name;
   document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('active'));
   document.querySelector('[data-tab="terminal"]')?.classList.add('active');
 
   const tr=termData.filter(d=>d.commodity===name);
   const fr=shipData.filter(d=>d.commodity===name&&d.price_low!=null);
   const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===name);
-
-  $('cp-name').textContent=name;
-  $('cp-crumb-name').textContent=name;
-
-  const mkts=[...new Set(tr.map(r=>r.market))];
-  const dt=tr[0]?.report_date;
-  $('cp-badges').innerHTML=
-    (dt?`<span class="cp-badge">📅 ${new Date(dt+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>`:'')+
-    `<span class="cp-badge">🏪 ${mkts.length} terminal market${mkts.length!==1?'s':''}</span>`+
-    (fr.length?`<span class="cp-badge">📦 ${fr.length} FOB source${fr.length!==1?'s':''}</span>`:'');
-
-  if(mv){
-    const up=mv.pct_change>0;
-    $('cp-chg').innerHTML=`<div class="cp-pct ${up?'up':'dn'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</div><div class="cp-amt">${up?'+':''}$${mv.dollar_change.toFixed(2)} vs last week</div>`;
-  }else $('cp-chg').innerHTML='';
-
-  $('cp-desc').textContent=`Terminal and shipping point pricing data for the North American wholesale market.`;
-
-  // At a Glance
   const sortTR=[...tr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
   const sortFR=[...fr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
+
+  // Header
+  $('cp-name').textContent=name;
+  const mkts=[...new Set(tr.map(r=>r.market))];
+  const dt=tr[0]?.report_date;
+  $('cp-tags').innerHTML=
+    (dt?`<span class="cp-tag">${new Date(dt+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>`:'')+
+    `<span class="cp-tag">${mkts.length} terminal market${mkts.length!==1?'s':''}</span>`+
+    (fr.length?`<span class="cp-tag">${fr.length} FOB source${fr.length!==1?'s':''}</span>`:'');
+  if(mv){const up=mv.pct_change>0;$('cp-chg').innerHTML=`<div class="cp-pct ${up?'up':'dn'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</div><div class="cp-amt">${up?'+':''}$${mv.dollar_change.toFixed(2)} vs last week</div>`;}
+  else $('cp-chg').innerHTML='';
+
+  // 3-stat bar
   const avgTerm=tr.length?tr.reduce((s,d)=>s+parseFloat(d.price_low),0)/tr.length:null;
   const loFOB=sortFR.length?parseFloat(sortFR[0].price_low):null;
   const spread=(loFOB&&avgTerm)?avgTerm-loFOB:null;
   const spreadPct=(spread&&loFOB)?((spread/loFOB)*100).toFixed(0):null;
 
-  $('gl-fob').innerHTML=loFOB?`$${loFOB.toFixed(2)}`:'<span style="color:var(--ink4)">—</span>';
-  $('gl-fob').className='gl-val'+(loFOB?' g':'');
-  $('gl-fob-s').textContent=sortFR[0]?sortFR[0].origin||sortFR[0].market||'':'No FOB data';
-  $('gl-fob-c').textContent='';
-
-  if(mv){
-    const up=mv.pct_change>0;
-    $('gl-chg').innerHTML=`<span class="${up?'up':'dn'}">${up?'+':''}${mv.pct_change.toFixed(1)}%</span>`;
-    $('gl-chg-s').textContent=up?'Prices rising this week':'Prices falling this week';
-  }else{$('gl-chg').textContent='—';$('gl-chg-s').textContent='';}
-
-  const cheapSrc=sortFR[0]?.origin||sortFR[0]?.market||null;
-  $('gl-src').textContent=cheapSrc?(cheapSrc.split(',')[0]):'—';
-  $('gl-src-s').textContent=loFOB?`$${loFOB.toFixed(2)} FOB`:'';
-  const mov0=sortFR[0]?.movement||'';
-  const avail=mov0.includes('Lower')?'High Availability':mov0.includes('Higher')?'Limited Supply':'Normal Supply';
-  const availColor=mov0.includes('Lower')?'var(--g)':mov0.includes('Higher')?'var(--red)':'var(--ink3)';
-  $('gl-src-avail').innerHTML=cheapSrc?`<div class="gl-dot" style="background:${availColor}"></div><span style="color:${availColor}">${avail}</span>`:'';
-
-  $('gl-spr').innerHTML=spread?`$${spread.toFixed(2)}`:'<span style="color:var(--ink4)">—</span>';
-  $('gl-spr-s').textContent=spreadPct?`${spreadPct}% avg spread · ${tr.length} listings`:'No spread data';
+  $('s3-fob').innerHTML=loFOB?`$${loFOB.toFixed(2)}`:'<span style="color:var(--ink4)">—</span>';
+  $('s3-fob-s').textContent=sortFR[0]?sortFR[0].origin||sortFR[0].market||'':'No FOB data';
+  $('s3-term').innerHTML=avgTerm?`$${avgTerm.toFixed(2)}`:'<span style="color:var(--ink4)">—</span>';
+  $('s3-term-s').textContent=tr.length?`Avg across ${tr.length} listing${tr.length!==1?'s':''}`:''  ;
+  $('s3-spr').innerHTML=spread?`$${spread.toFixed(2)}<span class="s3-badge">${spreadPct}% basis</span>`:'<span style="color:rgba(255,255,255,.4)">—</span>';
+  $('s3-spr-s').textContent=spread?'Terminal minus cheapest FOB':'No spread data';
 
   // Signal
   const sig=mkSig(tr,fr,mv);
   if(sig){
-    const iU=sig.includes('Higher')||sig.includes('firming')||sig.includes('tightening');
+    const iU=sig.includes('Higher')||sig.includes('tightening')||sig.includes('firming');
     const iD=sig.includes('Lower')||sig.includes('softening');
     const el=$('cp-signal');
     el.className=`signal ${iU?'up':iD?'dn':'nt'}`;
@@ -998,27 +902,20 @@ async function loadComm(name){
     el.classList.remove('hidden');
   }else $('cp-signal').classList.add('hidden');
 
-  // Chart
+  // Chart + Map + Origins
   renderChart(name);
-
-  // Map
   renderOriginMap(sortFR);
-
-  // Origins list
   $('origins-meta').textContent=`${sortFR.length} source${sortFR.length!==1?'s':''}`;
   if(sortFR.length){
     const minP=parseFloat(sortFR[0].price_low),maxP=parseFloat(sortFR[sortFR.length-1].price_low)||minP+1;
     $('origin-list').innerHTML=sortFR.slice(0,5).map((r,i)=>{
-      const p=parseFloat(r.price_low);
-      const pct=maxP>minP?Math.round(((p-minP)/(maxP-minP))*100):0;
+      const p=parseFloat(r.price_low),pct=maxP>minP?Math.round(((p-minP)/(maxP-minP))*100):0;
       return`<div class="or">
         <div class="or-rank ${i===0?'first':''}">${i+1}</div>
         <div style="flex:1;min-width:0">
           <div class="or-name">${r.origin||r.market||'—'}</div>
           <div class="or-loc">${r.size?r.size+' · ':''}${r.movement?ma(r.movement)+' '+r.movement:''}</div>
-          <div style="height:2px;background:var(--line);border-radius:1px;margin-top:4px;overflow:hidden">
-            <div style="width:${Math.max(6,100-pct)}%;height:100%;background:${i===0?'var(--g)':'var(--g-md)'};border-radius:1px"></div>
-          </div>
+          <div style="height:2px;background:var(--line);border-radius:1px;margin-top:4px;overflow:hidden"><div style="width:${Math.max(6,100-pct)}%;height:100%;background:${i===0?'var(--g)':'var(--g-md)'};border-radius:1px"></div></div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div class="or-price">$${p.toFixed(2)}</div>
@@ -1026,28 +923,23 @@ async function loadComm(name){
         </div>
       </div>`;
     }).join('');
-  }else{
-    $('origin-list').innerHTML='<div style="padding:20px;font-size:12px;color:var(--ink4);text-align:center">No FOB data available</div>';
-  }
+  }else $('origin-list').innerHTML='<div style="padding:18px 14px;font-size:12px;color:var(--ink4);text-align:center">No FOB data available</div>';
 
-  // Regional table
+  // Regional table — schema: Market Terminal | Price | FOB Source | Spread | vs Last Week | Condition
   const byMkt={};
   tr.forEach(r=>{if(!byMkt[r.market]||parseFloat(r.price_low)<parseFloat(byMkt[r.market].price_low))byMkt[r.market]=r;});
   const mktRows=Object.values(byMkt).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  $('rpd-tbody').innerHTML=mktRows.map((r,i)=>{
+  $('reg-tbody').innerHTML=mktRows.map(r=>{
     const tp=parseFloat(r.price_low);
-    const spr=loFOB?(tp-loFOB).toFixed(2):null;
-    const chg=wkChg(r.commodity);const iU=chg>1,iD=chg<-1;
+    const spr=loFOB?(tp-loFOB):null;
+    const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<tr>
-      <td>
-        <div class="mkt-name">${r.market}</div>
-        ${i===0?'<div class="mkt-sub" style="color:var(--g);font-weight:600">Arrivals available</div>':''}
-      </td>
-      <td class="r price">$${tp.toFixed(2)}</td>
+      <td style="font-weight:600">${r.market}</td>
+      <td class="r" style="font-weight:600;color:var(--g)">$${tp.toFixed(2)}</td>
       <td class="r dim">${loFOB?`$${loFOB.toFixed(2)}`:'—'}</td>
-      <td class="r dim">${spr?`+$${spr}`:'—'}</td>
-      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px">${iU?'+ ':'- '}$${Math.abs(chg*.1).toFixed(2)}</span></td>
-      <td class="r">${mcond(r.movement)}</td>
+      <td class="r dim">${spr!==null?`+$${spr.toFixed(2)}`:'—'}</td>
+      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r">${cond(r.movement)}</td>
     </tr>`;
   }).join('')||'<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--ink4)">No terminal data</td></tr>';
 
@@ -1064,137 +956,85 @@ async function renderChart(name){
     const prices=trend.map(t=>t.avg_price);
     const ctx=$('price-chart').getContext('2d');
     const grad=ctx.createLinearGradient(0,0,0,160);
-    grad.addColorStop(0,'rgba(26,122,74,.12)');
-    grad.addColorStop(1,'rgba(26,122,74,0)');
+    grad.addColorStop(0,'rgba(31,107,58,.12)');grad.addColorStop(1,'rgba(31,107,58,0)');
     priceChart=new Chart(ctx,{
       type:'line',
-      data:{labels,datasets:[{
-        data:prices,borderColor:'#1a7a4a',borderWidth:2,
-        backgroundColor:grad,fill:true,tension:.4,
-        pointRadius:0,pointHoverRadius:4,
-        pointHoverBackgroundColor:'#1a7a4a',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,
-      }]},
+      data:{labels,datasets:[{data:prices,borderColor:'#1f6b3a',borderWidth:2,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,pointHoverRadius:4,pointHoverBackgroundColor:'#1f6b3a',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2}]},
       options:{
         responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{
-          mode:'index',intersect:false,
-          backgroundColor:'#fff',borderColor:'#e5e7eb',borderWidth:1,
-          padding:10,cornerRadius:6,
-          titleColor:'#9ca3af',bodyColor:'#1a7a4a',
-          titleFont:{family:"'Inter',sans-serif",size:11},
-          bodyFont:{family:"'JetBrains Mono',monospace",size:13,weight:'500'},
-          callbacks:{label:ctx=>`$${ctx.parsed.y.toFixed(2)}`}
-        }},
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'#fff',borderColor:'#e5e7eb',borderWidth:1,padding:10,cornerRadius:6,titleColor:'#9ca3af',bodyColor:'#1f6b3a',titleFont:{family:"'Inter',sans-serif",size:11},bodyFont:{family:"'JetBrains Mono',monospace",size:13,weight:'500'},callbacks:{label:ctx=>`$${ctx.parsed.y.toFixed(2)}`}}},
         scales:{
           x:{grid:{display:false},ticks:{font:{family:"'Inter',sans-serif",size:10},color:'#9ca3af',maxTicksLimit:6},border:{color:'#e5e7eb'}},
-          y:{grid:{color:'#f9faf8'},border:{display:false},ticks:{font:{family:"'JetBrains Mono',monospace",size:10},color:'#9ca3af',callback:v=>`$${v.toFixed(0)}`}}
+          y:{grid:{color:'#f3f4f6'},border:{display:false},ticks:{font:{family:"'JetBrains Mono',monospace",size:10},color:'#9ca3af',callback:v=>`$${v.toFixed(0)}`}}
         }
       }
     });
-  }catch(e){$('chart-meta').textContent='Chart unavailable';}
+  }catch(e){$('chart-meta').textContent='Unavailable';}
 }
 
 // Origin map
-const ORIGIN_COORDS={
-  'Nogales, AZ':[67,145],'Yuma, AZ':[57,148],'Western AZ':[60,138],'Phoenix, AZ':[68,138],
-  'San Luis, AZ':[58,150],'Imperial Valley, CA':[48,152],'Imperial/Coachella, CA':[52,148],
-  'Coachella Valley, CA':[52,148],'Oxnard, CA':[38,140],'Southern CA':[45,145],
-  'Central Coast, CA':[34,130],'Salinas, CA':[30,125],'San Joaquin, CA':[35,118],
-  'Fresno, CA':[37,120],'Columbia Basin, WA':[42,72],'South Florida':[200,165],
-  'Central Florida':[195,158],'North Florida':[188,150],'Orlando, FL':[196,158],
-  'Orlando Imports':[196,158],'Rio Grande, TX':[118,165],'Laredo, TX':[120,160],
-  'El Paso, TX':[92,150],'Mexico/Texas':[115,163],'Eastern NC':[215,115],
-  'Southeast GA':[205,135],'Southwest GA':[198,138],'Palo Verde, CA':[55,145],
-  'Lower Colorado, AZ':[60,145],'Imperial/Coachella CA, Western AZ':[55,148],
-};
-const US_PATHS=[
-  'M 28,68 L 30,72 28,80 25,92 22,105 20,118 22,128 28,138 34,142 38,148 44,155 46,158 50,160 55,155 58,158 60,162 65,158 68,152 72,148 78,145 80,140 78,130 75,120 72,110 70,100 68,88 65,78 60,68 55,62 48,58 42,58 36,60 30,62 Z',
-  'M 80,68 L 78,145 100,145 105,148 110,145 115,145 118,170 125,168 128,165 130,162 132,145 135,140 138,130 135,118 132,108 130,98 128,88 126,78 122,70 118,65 110,62 100,62 90,64 Z',
-  'M 130,62 L 132,145 140,148 148,148 155,145 162,142 168,138 172,128 175,118 172,108 170,98 168,88 165,78 162,68 158,62 150,58 142,58 136,60 Z',
-  'M 162,108 L 165,138 168,148 172,158 178,165 185,170 192,172 200,170 205,165 208,158 205,148 200,138 195,128 190,118 185,112 180,108 172,106 168,106 Z',
-  'M 168,62 L 170,108 178,108 185,112 192,112 198,108 205,100 210,92 212,82 210,72 205,65 198,60 190,58 180,58 172,60 Z',
-  'M 158,58 L 162,108 170,108 172,106 178,108 185,112 192,112 198,108 210,92 215,82 215,72 210,65 205,60 195,56 185,54 175,54 165,56 Z',
-];
+const ORIGIN_COORDS={'Nogales, AZ':[67,145],'Yuma, AZ':[57,148],'Western AZ':[60,138],'Phoenix, AZ':[68,138],'San Luis, AZ':[58,150],'Imperial Valley, CA':[48,152],'Imperial/Coachella, CA':[52,148],'Coachella Valley, CA':[52,148],'Oxnard, CA':[38,140],'Southern CA':[45,145],'Central Coast, CA':[34,130],'Salinas, CA':[30,125],'San Joaquin, CA':[35,118],'Fresno, CA':[37,120],'Columbia Basin, WA':[42,72],'South Florida':[200,165],'Central Florida':[195,158],'North Florida':[188,150],'Orlando, FL':[196,158],'Orlando Imports':[196,158],'Rio Grande, TX':[118,165],'Laredo, TX':[120,160],'El Paso, TX':[92,150],'Mexico/Texas':[115,163],'Eastern NC':[215,115],'Southeast GA':[205,135],'Southwest GA':[198,138],'Palo Verde, CA':[55,145],'Lower Colorado, AZ':[60,145],'Imperial/Coachella CA, Western AZ':[55,148]};
+const US_PATHS=['M 28,68 L 30,72 28,80 25,92 22,105 20,118 22,128 28,138 34,142 38,148 44,155 46,158 50,160 55,155 58,158 60,162 65,158 68,152 72,148 78,145 80,140 78,130 75,120 72,110 70,100 68,88 65,78 60,68 55,62 48,58 42,58 36,60 30,62 Z','M 80,68 L 78,145 100,145 105,148 110,145 115,145 118,170 125,168 128,165 130,162 132,145 135,140 138,130 135,118 132,108 130,98 128,88 126,78 122,70 118,65 110,62 100,62 90,64 Z','M 130,62 L 132,145 140,148 148,148 155,145 162,142 168,138 172,128 175,118 172,108 170,98 168,88 165,78 162,68 158,62 150,58 142,58 136,60 Z','M 162,108 L 165,138 168,148 172,158 178,165 185,170 192,172 200,170 205,165 208,158 205,148 200,138 195,128 190,118 185,112 180,108 172,106 168,106 Z','M 168,62 L 170,108 178,108 185,112 192,112 198,108 205,100 210,92 212,82 210,72 205,65 198,60 190,58 180,58 172,60 Z','M 158,58 L 162,108 170,108 172,106 178,108 185,112 192,112 198,108 210,92 215,82 215,72 210,65 205,60 195,56 185,54 175,54 165,56 Z'];
+
 function renderOriginMap(fobRows){
   const svg=$('origin-map');if(!svg)return;
-  let html='';
-  US_PATHS.forEach(d=>{html+=`<path class="us-land" d="${d}"/>`;});
-  html+=`<path d="M 45,158 L 50,162 60,168 75,172 90,175 105,172 115,172 120,168 125,165 128,165" fill="none" stroke="#c8d9c0" stroke-width=".8" stroke-dasharray="3,2"/>`;
-  html+=`<text x="90" y="182" font-size="7" fill="#9ca3af" font-family="Inter,sans-serif" text-anchor="middle">MEXICO</text>`;
+  let h='';
+  US_PATHS.forEach(d=>{h+=`<path class="us-land" d="${d}"/>`;});
+  h+=`<path d="M 45,158 L 50,162 60,168 75,172 90,175 105,172 115,172 120,168 125,165 128,165" fill="none" stroke="#c8d9c0" stroke-width=".8" stroke-dasharray="3,2"/>`;
+  h+=`<text x="90" y="182" font-size="7" fill="#9ca3af" font-family="Inter,sans-serif" text-anchor="middle">MEXICO</text>`;
   const byLoc={};
-  fobRows.forEach(r=>{
-    const loc=r.origin||r.market;if(!loc)return;
-    const coords=ORIGIN_COORDS[loc];if(!coords)return;
-    const price=parseFloat(r.price_low);
-    if(!byLoc[loc]||price<byLoc[loc].price)byLoc[loc]={loc,price,movement:r.movement,coords};
-  });
+  fobRows.forEach(r=>{const loc=r.origin||r.market;if(!loc)return;const coords=ORIGIN_COORDS[loc];if(!coords)return;const price=parseFloat(r.price_low);if(!byLoc[loc]||price<byLoc[loc].price)byLoc[loc]={loc,price,movement:r.movement,coords};});
   const dots=Object.values(byLoc);
-  if(!dots.length){
-    html+=`<text x="140" y="115" font-size="11" fill="#9ca3af" font-family="Inter,sans-serif" text-anchor="middle">No FOB data</text>`;
-    svg.innerHTML=html;return;
-  }
-  const dotClr=mov=>{if(!mov)return'#6b7280';if(mov.includes('Higher'))return'#dc2626';if(mov.includes('Lower'))return'#1a7a4a';return'#374151';};
-  dots.forEach(d=>{
-    const[x,y]=d.coords;
-    html+=`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="${dotClr(d.movement)}" stroke-width="1.5" opacity=".25"/>`;
-  });
+  if(!dots.length){h+=`<text x="140" y="115" font-size="11" fill="#9ca3af" font-family="Inter,sans-serif" text-anchor="middle">No FOB data</text>`;svg.innerHTML=h;return;}
+  const dc=mov=>{if(!mov)return'#6b7280';if(mov.includes('Higher'))return'#b91c1c';if(mov.includes('Lower'))return'#1f6b3a';return'#374151';};
+  dots.forEach(d=>{const[x,y]=d.coords;h+=`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="${dc(d.movement)}" stroke-width="1.5" opacity=".2"/>`;});
   dots.forEach((d,i)=>{
-    const[x,y]=d.coords,color=dotClr(d.movement),e2=s=>(s||'').replace(/'/g,"\\'");
-    html+=`<circle cx="${x}" cy="${y}" r="5.5" fill="${color}" opacity=".9" style="cursor:pointer"
-      onmouseenter="showMTip(event,'${e2(d.loc)}','${d.price.toFixed(2)}','${e2(d.movement||'Steady')}')"
-      onmouseleave="hideMTip()"/>`;
-    if(i<3){
-      const lx=x>140?x-9:x+9,anchor=x>140?'end':'start';
-      html+=`<text x="${lx}" y="${y+1}" font-size="8" font-weight="500" font-family="JetBrains Mono,monospace" fill="${color}" text-anchor="${anchor}" dominant-baseline="middle">$${d.price.toFixed(2)}</text>`;
-    }
+    const[x,y]=d.coords,color=dc(d.movement),e2=s=>(s||'').replace(/'/g,"\\'");
+    h+=`<circle cx="${x}" cy="${y}" r="5.5" fill="${color}" opacity=".88" style="cursor:pointer" onmouseenter="showMTip(event,'${e2(d.loc)}','${d.price.toFixed(2)}','${e2(d.movement||'Steady')}')" onmouseleave="hideMTip()"/>`;
+    if(i<3){const lx=x>140?x-9:x+9,anchor=x>140?'end':'start';h+=`<text x="${lx}" y="${y+1}" font-size="8" font-weight="500" font-family="JetBrains Mono,monospace" fill="${color}" text-anchor="${anchor}" dominant-baseline="middle">$${d.price.toFixed(2)}</text>`;}
   });
-  html+=`<rect x="4" y="210" width="90" height="16" rx="2" fill="white" stroke="#e5e7eb" stroke-width=".5"/>
-    <circle cx="12" cy="218" r="3.5" fill="#dc2626"/>
-    <text x="19" y="221" font-size="7" font-family="Inter,sans-serif" fill="#374151">Rising</text>
-    <circle cx="48" cy="218" r="3.5" fill="#1a7a4a"/>
-    <text x="55" y="221" font-size="7" font-family="Inter,sans-serif" fill="#374151">Falling</text>`;
-  svg.innerHTML=html;
+  h+=`<rect x="4" y="210" width="90" height="16" rx="2" fill="white" stroke="#e5e7eb" stroke-width=".5"/><circle cx="12" cy="218" r="3.5" fill="#b91c1c"/><text x="19" y="221" font-size="7" font-family="Inter,sans-serif" fill="#374151">Rising</text><circle cx="48" cy="218" r="3.5" fill="#1f6b3a"/><text x="55" y="221" font-size="7" font-family="Inter,sans-serif" fill="#374151">Falling</text>`;
+  svg.innerHTML=h;
 }
 function showMTip(e,loc,price,movement){
-  const tip=$('map-tip'),wrap=$('origin-map').closest('.map-outer');
+  const tip=$('map-tip'),wrap=$('origin-map').closest('.map-wrap');
   if(!tip||!wrap)return;
   const wr=wrap.getBoundingClientRect(),er=e.target.getBoundingClientRect();
   const mc2=movement.includes('Higher')?'var(--red)':movement.includes('Lower')?'var(--g)':'var(--ink3)';
   const ma2=movement.includes('Higher')?'↑':movement.includes('Lower')?'↓':'→';
-  tip.innerHTML=`<div style="font-weight:700;color:var(--ink);margin-bottom:3px">${loc}</div>
-    <div style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g)">$${price}</div>
-    <div style="font-size:11px;color:${mc2};margin-top:2px">${ma2} ${movement}</div>`;
+  tip.innerHTML=`<div style="font-weight:700;color:var(--ink);margin-bottom:3px">${loc}</div><div style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--g)">$${price}</div><div style="font-size:11px;color:${mc2};margin-top:2px">${ma2} ${movement}</div>`;
   tip.style.left=Math.min(er.left-wr.left+10,140)+'px';
-  tip.style.top=Math.max(er.top-wr.top-70,4)+'px';
+  tip.style.top=Math.max(er.top-wr.top-75,4)+'px';
   tip.style.display='block';
 }
 function hideMTip(){const t=$('map-tip');if(t)t.style.display='none';}
 
 function cpTab(tab){
-  curCPTab=tab;
   document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('active'));
   document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
   const tr=termData.filter(d=>d.commodity.toLowerCase().includes(curComm.toLowerCase().slice(0,5)));
   const fr=shipData.filter(d=>d.commodity.toLowerCase().includes(curComm.toLowerCase().slice(0,5))&&d.price_low!=null);
   if(tab==='terminal'){
-    $('cp-th').innerHTML='<tr><th>Market Terminal</th><th>Variety</th><th>Origin</th><th class="r">Size</th><th class="r">Price</th><th class="r">Market Condition</th></tr>';
+    // Schema: Market | Variety | Origin | Size | Price | Condition
+    $('cp-th').innerHTML='<tr><th>Market</th><th>Variety</th><th>Origin</th><th class="r">Size</th><th class="r">Price</th><th class="r">Condition</th></tr>';
     const srt=[...tr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
     $('cp-tb').innerHTML=srt.map((r,i)=>`<tr>
-      <td><span style="font-weight:600">${r.market}</span>${i===0?` <span class="chip chip-best" style="margin-left:6px">BEST PRICE</span>`:''}</td>
+      <td style="font-weight:600">${r.market}${i===0?` <span class="chip chip-best" style="margin-left:5px">BEST</span>`:''}</td>
       <td class="dim">${r.variety||'—'}</td>
       <td class="dim">${r.origin||'—'}</td>
-      <td class="r">${sb(r.size)}</td>
+      <td class="r">${sz(r.size)}</td>
       <td class="r" style="font-weight:600;color:${i===0?'var(--g)':'var(--ink)'}">${money(r)}</td>
-      <td class="r">${mcond(r.movement)}</td>
+      <td class="r">${cond(r.movement)}</td>
     </tr>`).join('')||'<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--ink4)">No terminal data</td></tr>';
   }else{
-    $('cp-th').innerHTML='<tr><th>Origin</th><th class="r">Size</th><th class="r">FOB Price</th><th class="r">Market Condition</th></tr>';
+    // Schema: Origin | Size | Price | Condition
+    $('cp-th').innerHTML='<tr><th>Origin</th><th class="r">Size</th><th class="r">Price</th><th class="r">Condition</th></tr>';
     const srt=[...fr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
     $('cp-tb').innerHTML=srt.map((r,i)=>`<tr>
-      <td><span style="font-weight:${i===0?700:400}">${r.origin||r.market||'—'}</span>${i===0?` <span class="chip chip-best" style="margin-left:6px">LOWEST FOB</span>`:''}</td>
-      <td class="r">${sb(r.size)}</td>
+      <td style="font-weight:${i===0?600:400}">${r.origin||r.market||'—'}${i===0?` <span class="chip chip-best" style="margin-left:5px">LOWEST</span>`:''}</td>
+      <td class="r">${sz(r.size)}</td>
       <td class="r" style="font-weight:600;color:var(--g)">${money(r)}</td>
-      <td class="r">${mcond(r.movement)}</td>
+      <td class="r">${cond(r.movement)}</td>
     </tr>`).join('')||'<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--ink4)">No FOB data</td></tr>';
   }
 }
@@ -1203,7 +1043,7 @@ function mkSig(tr,fr,mv){
   const rN=fr.filter(r=>(r.movement||'').includes('Higher')).length;
   const dN=fr.filter(r=>(r.movement||'').includes('Lower')).length;
   const sigs=[];
-  if(fr.length&&rN===fr.length)sigs.push(`All ${fr.length} shipping regions moving Higher — supply tightening`);
+  if(fr.length&&rN===fr.length)sigs.push(`All ${fr.length} shipping regions Higher — supply tightening`);
   else if(fr.length&&dN===fr.length)sigs.push(`All ${fr.length} regions Lower — supply building`);
   else if(rN>dN&&rN>0)sigs.push(`${rN} of ${fr.length} regions Higher — market firming`);
   else if(dN>rN&&dN>0)sigs.push(`${dN} of ${fr.length} regions Lower — market softening`);
@@ -1211,7 +1051,7 @@ function mkSig(tr,fr,mv){
   return sigs[0]||null;
 }
 
-// Terminal page
+// Terminal page — schema: Commodity | Market | Origin | Size | Price | vs Last Week | Condition
 function filterTp(){
   const q=$('tp-q').value.toLowerCase().trim(),m=$('tp-m').value,v=$('tp-v').value,s=$('tp-s').value;
   tpFiltered=termData.filter(d=>{
@@ -1232,24 +1072,26 @@ function renderTp(){
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
     return`<tr onclick="goComm('${esc(r.commodity)}')">
       <td style="font-weight:600">${r.commodity}</td>
-      <td class="dim">${r.variety||'—'}</td><td class="dim">${r.origin||'—'}</td>
-      <td>${r.market}</td><td class="r">${sb(r.size)}</td>
+      <td class="dim">${r.market}</td>
+      <td class="dim">${r.origin||'—'}</td>
+      <td class="r">${sz(r.size)}</td>
       <td class="r" style="font-weight:600;color:var(--g)">${money(r)}</td>
-      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-size:12px;font-family:var(--mono)">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r"><span class="${iU?'up':iD?'dn':'fl'}" style="font-family:var(--mono);font-size:12px">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span></td>
+      <td class="r">${cond(r.movement)}</td>
     </tr>`;
   }).join('')||'<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--ink4)">No results</td></tr>';
   $('tp-mob').innerHTML=items.map(r=>{
     const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
-    return`<div class="mob-row" onclick="goComm('${esc(r.commodity)}')">
-      <div><div class="mob-name">${r.commodity}</div><div class="mob-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
-      <div><div class="mob-price">${money(r)}</div><div class="mob-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
+    return`<div class="mc" onclick="goComm('${esc(r.commodity)}')">
+      <div><div class="mc-name">${r.commodity}</div><div class="mc-sub">${r.market}${r.origin?' · '+r.origin:''}</div></div>
+      <div><div class="mc-price">${money(r)}</div><div class="mc-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div></div>
     </div>`;
   }).join('');
 }
 function tpPrev(){if(tpPage>1){tpPage--;renderTp();}}
 function tpNext(){tpPage++;renderTp();}
 
-// Shipping
+// Shipping — schema: Commodity | Origin | FOB Price | Mostly | Condition | Trading
 async function loadSP(){
   $('sp-loading').classList.remove('hidden');$('sp-view').classList.add('hidden');
   try{
@@ -1259,8 +1101,7 @@ async function loadSP(){
     shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point`)).json();
     const origs=[...new Set(shipData.map(r=>r.origin||r.market).filter(Boolean))].sort();
     $('sp-og').innerHTML='<option value="">All Origins</option>'+origs.map(o=>`<option>${o}</option>`).join('');
-    $('sp-loading').classList.add('hidden');$('sp-view').classList.remove('hidden');
-    renderSP();
+    $('sp-loading').classList.add('hidden');$('sp-view').classList.remove('hidden');renderSP();
   }catch(e){$('sp-loading').textContent='Error.';}
 }
 function renderSP(){
@@ -1277,10 +1118,8 @@ function renderSP(){
   else if(s==='mov')rows.sort((a,b)=>(MOVORD[a.movement]??3)-(MOVORD[b.movement]??3)||a.commodity.localeCompare(b.commodity));
   const rN=rows.filter(r=>(r.movement||'').includes('Higher')).length;
   const dN=rows.filter(r=>(r.movement||'').includes('Lower')).length;
-  $('sp-u').textContent=rN?`↑ ${rN} rising`:'';
-  $('sp-d').textContent=dN?`↓ ${dN} falling`:'';
-  $('sp-st').textContent=`→ ${rows.length-rN-dN} steady`;
-  $('sp-tot').textContent=`${rows.length} total`;
+  $('sp-u').textContent=rN?`↑ ${rN} rising`:'';$('sp-d').textContent=dN?`↓ ${dN} falling`:'';
+  $('sp-st').textContent=`→ ${rows.length-rN-dN} steady`;$('sp-tot').textContent=`${rows.length} total`;
   let last=null;
   $('sp-body').innerHTML=rows.map((r,i)=>{
     const isNew=r.commodity!==last;last=r.commodity;
@@ -1289,7 +1128,7 @@ function renderSP(){
       <td class="dim">${r.origin||r.market||'—'}</td>
       <td class="r" style="font-weight:600;color:var(--g)">${money(r)}</td>
       <td class="r dim">${mostly(r)||'—'}</td>
-      <td class="r">${mcond(r.movement)}</td>
+      <td class="r">${cond(r.movement)}</td>
       <td class="r dim">${r.trading_activity||'—'}</td>
     </tr>`;
   }).join('')||'<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--ink4)">No results</td></tr>';
@@ -1298,7 +1137,7 @@ function renderSP(){
 // Compare
 function buildCompare(){
   const comms=[...new Set(termData.map(d=>d.commodity))].sort();
-  $('cmp-sel').innerHTML='<option value="">Choose a commodity…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
+  $('cmp-sel').innerHTML='<option value="">Choose…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
 }
 function doCompare(){
   const c=$('cmp-sel').value;
@@ -1314,11 +1153,9 @@ function doCompare(){
       <div class="fn"><div class="fn-lbl">Lowest FOB</div><div class="fn-price" style="color:var(--ink2)">$${parseFloat(lo.price_low).toFixed(2)}</div><div class="fn-place">${lo.origin||lo.market}</div></div>
       <div class="fn-mid"><div class="fn-spr">+$${mg.toFixed(2)}</div><div class="fn-line"></div><div class="fn-lbl2">spread</div></div>
       <div class="fn"><div class="fn-lbl">Highest Terminal</div><div class="fn-price" style="color:var(--g)">$${parseFloat(hi.price_low).toFixed(2)}</div><div class="fn-place">${hi.market}</div></div>`;
-  }else{
-    $('cmp-flow').innerHTML='<span style="font-size:13px;color:var(--ink4)">Not enough data.</span>';
-  }
-  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:500">${r.origin||r.market}</span><span style="font-family:var(--mono);font-weight:600;color:var(--ink)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div style="padding:16px;color:var(--ink4);font-size:13px">No data</div>';
-  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:500">${r.market}</span><span style="font-family:var(--mono);font-weight:600;color:var(--g)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div style="padding:16px;color:var(--ink4);font-size:13px">No data</div>';
+  }else $('cmp-flow').innerHTML='<span style="font-size:13px;color:var(--ink4)">Not enough data.</span>';
+  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:500">${r.origin||r.market}</span><span style="font-family:var(--mono);font-weight:600;color:var(--ink)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div style="padding:16px;color:var(--ink4);font-size:13px">No data</div>';
+  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div style="display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px"><span style="font-weight:500">${r.market}</span><span style="font-family:var(--mono);font-weight:600;color:var(--g)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div style="padding:16px;color:var(--ink4);font-size:13px">No data</div>';
 }
 
 // Search
