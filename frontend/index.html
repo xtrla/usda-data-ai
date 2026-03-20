@@ -2,182 +2,265 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>agraX — Produce Prices</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>agraX — Produce Market Prices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
-  --g:#18a058;--g-dk:#0d6638;--g-lt:#e8f8f0;--g-md:#6fce9e;
-  --ink:#111;--ink2:#333;--ink3:#666;--ink4:#aaa;
-  --line:#ebebeb;--line2:#d8d8d8;
-  --bg:#f5f6f8;--white:#fff;
-  --red:#e53e3e;--red-lt:#fff5f5;
-  --dn:#1a7a4a;--dn-lt:#f0fdf6;
-  --sans:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
-  --max:520px;
+  --g:#16a34a;--g-dk:#15803d;--g-lt:#f0fdf4;--g-md:#86efac;
+  --ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;
+  --line:#e2e8f0;--line2:#cbd5e1;
+  --bg:#f8fafc;--white:#ffffff;
+  --red:#dc2626;--red-lt:#fef2f2;
+  --dn:#16a34a;--dn-lt:#f0fdf4;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --max:1100px;
 }
-html{background:#f0f0ee;}
+html{background:#f1f5f9;}
 body{
-  font-family:var(--sans);font-size:15px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;padding-bottom:68px;
-  background:var(--bg);color:var(--ink);
-  max-width:var(--max);margin:0 auto;
-  box-shadow:0 0 0 1px rgba(0,0,0,.06),0 4px 32px rgba(0,0,0,.08);
-  min-height:100vh;
+  font-family:var(--sans);font-size:14px;
+  line-height:1.5;color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  background:#f1f5f9;
 }
-button,input,select{font-family:var(--sans);}
-.hidden{display:none!important;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+@media(max-width:640px){.wrap{padding:0 16px;}}
 
-/* ── TOP BAR ─────────────── */
-.topbar{
-  background:var(--white);height:52px;
-  display:flex;align-items:center;
-  padding:0 16px;gap:12px;
-  position:sticky;top:0;z-index:200;
+/* ── NAV ──────────────────────────── */
+.nav{
+  background:var(--white);
   border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:200;
 }
-.tb-logo{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.03em;cursor:pointer;}
-.tb-logo em{color:var(--g);font-style:normal;}
-.tb-right{margin-left:auto;font-size:11px;color:var(--ink4);font-family:var(--mono);}
+.nav-inner{
+  max-width:var(--max);margin:0 auto;padding:0 24px;
+  height:56px;display:flex;align-items:center;gap:8px;
+}
+.nav-logo{
+  font-size:18px;font-weight:800;color:var(--ink);
+  letter-spacing:-.03em;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  margin-right:28px;flex-shrink:0;
+}
+.nav-logo em{color:var(--g);font-style:normal;}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.nav-links{display:flex;gap:2px;flex:1;}
+.nl{
+  padding:6px 12px;border-radius:6px;
+  font-size:14px;font-weight:500;color:var(--ink3);
+  background:none;border:none;cursor:pointer;
+  transition:color .1s,background .1s;
+}
+.nl:hover{color:var(--ink);background:var(--bg);}
+.nl.active{color:var(--g);font-weight:600;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.nav-srch{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 12px;border-radius:7px;
+  border:1px solid var(--line2);background:var(--bg);
+  font-size:13px;color:var(--ink4);cursor:pointer;
+  transition:border-color .1s;white-space:nowrap;
+}
+.nav-srch:hover{border-color:var(--g);}
+.nav-srch kbd{font-family:var(--mono);font-size:10px;opacity:.6;}
+@media(max-width:640px){
+  .nav-links{display:none;}
+  .nav-logo{margin-right:auto;}
+  .nav-inner{padding:0 16px;}
+}
 
-/* ── HERO ────────────────── */
+/* ── HERO ─────────────────────────── */
 .hero{
   background:var(--white);
-  padding:20px 16px 18px;
   border-bottom:1px solid var(--line);
-  border-left:4px solid var(--g);
+  padding:28px 24px 24px;
 }
-.hero-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-title{font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-.03em;margin-bottom:14px;line-height:1.15;}
+@media(max-width:640px){.hero{padding:20px 16px 18px;}}
+.hero-inner{max-width:var(--max);margin:0 auto;}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px;}
+.hero-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin-bottom:8px;}
+.hero-live-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:pulse 2s infinite;}
+.hero-title{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1.15;}
 .hero-title span{color:var(--g);}
+.hero-stats{display:flex;gap:0;flex-shrink:0;}
+.hstat{text-align:center;padding:8px 20px;border-left:1px solid var(--line);}
+.hstat:first-child{border-left:none;}
+.hstat-val{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ink);line-height:1;}
+.hstat-lbl{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink4);margin-top:3px;}
+@media(max-width:640px){
+  .hero-top{flex-direction:column;gap:12px;margin-bottom:16px;}
+  .hero-title{font-size:22px;}
+  .hero-stats{display:none;}
+}
 .hero-search{
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:10px;
   background:var(--bg);border:1.5px solid var(--line2);
-  border-radius:8px;padding:0 12px;
+  border-radius:8px;padding:0 14px;
+  max-width:580px;
   transition:border-color .15s,box-shadow .15s;
 }
-.hero-search:focus-within{border-color:var(--g);box-shadow:0 0 0 3px rgba(24,160,88,.1);}
+.hero-search:focus-within{border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.08);}
 .hero-search input{
-  flex:1;background:none;border:none;outline:none;
-  font-size:15px;font-weight:400;color:var(--ink);
-  padding:12px 0;
+  flex:1;border:none;background:none;outline:none;
+  font-size:15px;font-weight:400;color:var(--ink);padding:13px 0;
 }
 .hero-search input::placeholder{color:var(--ink4);}
 .hero-search svg{color:var(--ink4);flex-shrink:0;}
-
-/* Search dropdown */
+.search-dd-wrap{position:relative;max-width:580px;}
 .search-dd{
+  position:absolute;left:0;right:0;top:calc(100% + 6px);
   background:var(--white);border:1px solid var(--line2);
-  border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.12);
-  overflow:hidden;
+  border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.12);
+  z-index:100;overflow:hidden;display:none;
 }
+.search-dd.open{display:block;}
 .sd-row{
   display:flex;align-items:center;justify-content:space-between;
-  padding:13px 16px;border-bottom:1px solid var(--line);
-  cursor:pointer;gap:12px;min-height:52px;
+  padding:12px 16px;border-bottom:1px solid var(--line);
+  cursor:pointer;gap:12px;transition:background .08s;
 }
-.sd-row:last-child{border-bottom:none;}
-.sd-row:active{background:var(--bg);}
-.sd-name{font-size:15px;font-weight:600;}
-.sd-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
-.sd-price{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--g);text-align:right;flex-shrink:0;}
-.sd-more{padding:13px 16px;font-size:14px;font-weight:600;color:var(--g);cursor:pointer;}
-.sd-more:active{background:var(--g-lt);}
+.sd-row:last-of-type{border-bottom:none;}
+.sd-row:hover{background:var(--bg);}
+.sd-name{font-size:14px;font-weight:600;}
+.sd-sub{font-size:12px;color:var(--ink4);margin-top:1px;}
+.sd-price{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--g);text-align:right;flex-shrink:0;}
+.sd-chg{font-size:11px;text-align:right;margin-top:2px;}
+.sd-more{padding:11px 16px;font-size:13px;font-weight:600;color:var(--g);cursor:pointer;border-top:1px solid var(--line);}
+.sd-more:hover{background:var(--g-lt);}
 
-/* ── CAT TABS ────────────── */
-.cat-scroll{
-  display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+/* ── CAT STRIP ────────────────────── */
+.cat-strip{
   background:var(--white);border-bottom:1px solid var(--line);
-  padding:14px 16px 12px;
+  padding:14px 24px;
 }
-.cat-scroll::-webkit-scrollbar{display:none}
+@media(max-width:640px){.cat-strip{padding:12px 16px;}}
+.cat-inner{
+  max-width:var(--max);margin:0 auto;
+  display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+}
+.cat-inner::-webkit-scrollbar{display:none}
 .ct{
   display:flex;flex-direction:column;align-items:center;gap:8px;
-  flex-shrink:0;padding:0 14px;
-  font-size:11px;font-weight:600;color:var(--ink3);
+  flex-shrink:0;padding:0 16px;
+  font-size:12px;font-weight:600;color:var(--ink3);
   background:none;border:none;cursor:pointer;
-  transition:color .1s;white-space:nowrap;
+  transition:color .1s;
 }
-.ct:first-child{padding-left:4px;}
+.ct:first-child{padding-left:0;}
 .ct.active{color:var(--g);}
-.ct:not(.active):active{opacity:.7;}
 .ct-img{
-  width:68px;height:68px;border-radius:50%;
-  background:var(--bg);
-  border:3px solid transparent;
+  width:62px;height:62px;border-radius:50%;
+  border:2.5px solid var(--line);
   overflow:hidden;flex-shrink:0;
-  transition:border-color .15s,transform .15s;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  transition:border-color .15s,transform .15s,box-shadow .15s;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
 }
-.ct.active .ct-img{border-color:var(--g);transform:scale(1.05);box-shadow:0 4px 12px rgba(24,160,88,.25);}
-.ct:not(.active):active .ct-img{transform:scale(.95);}
+.ct.active .ct-img{border-color:var(--g);transform:scale(1.06);box-shadow:0 4px 12px rgba(22,163,74,.2);}
 .ct-img img{width:100%;height:100%;object-fit:cover;display:block;}
-.ct-lbl{font-size:11px;font-weight:600;color:var(--ink3);}
-.ct.active .ct-lbl{color:var(--g);}
 
-/* ── FILTER BAR ──────────── */
-.filter-bar{
-  display:flex;gap:8px;padding:10px 16px;
-  background:var(--white);border-bottom:1px solid var(--line);
-  overflow-x:auto;scrollbar-width:none;
+/* ── MAIN LAYOUT ──────────────────── */
+.page-body{
+  max-width:var(--max);margin:24px auto;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:20px;
+  align-items:start;
 }
-.filter-bar::-webkit-scrollbar{display:none}
+@media(max-width:900px){
+  .page-body{grid-template-columns:1fr;padding:0 16px;margin:16px auto;}
+  .sidebar{display:none;}
+}
+
+/* ── SIDEBAR ──────────────────────── */
+.sidebar{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:10px;overflow:hidden;
+  position:sticky;top:76px;
+}
+.sb-hd{padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg);}
+.sb-hd-title{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);}
+.sb-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .08s;
+  font-size:13px;color:var(--ink2);font-weight:500;
+}
+.sb-item:last-child{border-bottom:none;}
+.sb-item:hover{background:var(--bg);}
+.sb-item.active{background:var(--g-lt);color:var(--g);font-weight:600;}
+.sb-item-count{font-family:var(--mono);font-size:11px;color:var(--ink4);}
+.sb-item.active .sb-item-count{color:var(--g-dk);}
+
+/* ── MAIN CONTENT ─────────────────── */
+.main-col{}
+
+/* Toolbar */
+.toolbar{
+  display:flex;gap:8px;align-items:center;
+  margin-bottom:12px;flex-wrap:wrap;
+}
 .fi{
-  background:var(--bg);border:1px solid var(--line2);border-radius:5px;
+  background:var(--white);border:1px solid var(--line2);border-radius:6px;
   padding:7px 10px;font-size:13px;font-weight:500;color:var(--ink);
-  outline:none;transition:border-color .1s;flex-shrink:0;
+  outline:none;transition:border-color .1s;
 }
 .fi:focus{border-color:var(--g);}
 .fi::placeholder{color:var(--ink4);}
 .fi option{background:var(--white);}
-.fi-search{flex:1;min-width:120px;}
+.fi-grow{flex:1;min-width:140px;}
 
-/* ── SECTION LABEL ────────── */
-.sec-lbl{
-  padding:9px 16px;background:var(--bg);
-  font-size:10px;font-weight:700;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ink3);
-  border-bottom:1px solid var(--line);
+/* Results header */
+.results-hd{
   display:flex;align-items:center;justify-content:space-between;
+  padding:0 0 8px;
+  font-size:11px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink4);
+  border-bottom:1px solid var(--line);margin-bottom:0;
 }
-.sec-lbl-r{font-family:var(--mono);font-size:11px;}
 
-/* ── MOBILE ROW (main list) ──────────────── */
-.m-row{
+/* Listing rows */
+.listing-row{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px;border-bottom:1px solid var(--line);
-  background:var(--white);cursor:pointer;gap:12px;min-height:60px;
+  background:var(--white);cursor:pointer;gap:16px;
+  transition:background .08s;
 }
-.m-row:active{background:#f0fdf6;}
-.mr-left{flex:1;min-width:0;}
-.mr-comm{font-size:15px;font-weight:700;color:var(--ink);}
-.mr-sub{font-size:12px;color:var(--ink4);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.mr-right{text-align:right;flex-shrink:0;}
-.mr-price{font-family:var(--mono);font-size:19px;font-weight:800;color:var(--g-dk);}
-.mr-chg{font-family:var(--mono);font-size:12px;margin-top:3px;}
-.mr-date{font-family:var(--mono);font-size:11px;color:var(--ink4);margin-top:2px;}
+.listing-row:first-child{border-radius:10px 10px 0 0;}
+.listing-row:last-child{border-bottom:none;border-radius:0 0 10px 10px;}
+.listing-row:only-child{border-radius:10px;}
+.listing-row:hover{background:var(--g-lt);}
+.lr-left{flex:1;min-width:0;}
+.lr-comm{font-size:15px;font-weight:700;color:var(--ink);}
+.lr-variety{font-size:12px;font-weight:400;color:var(--ink4);margin-left:6px;}
+.lr-sub{font-size:12px;color:var(--ink4);margin-top:3px;}
+.lr-chip{display:inline-flex;margin-top:5px;}
+.lr-right{text-align:right;flex-shrink:0;}
+.lr-price{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g-dk);}
+.lr-chg{font-family:var(--mono);font-size:12px;margin-top:3px;}
+.listing-wrap{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:10px;overflow:hidden;
+}
 
 /* Pager */
 .pager{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;background:var(--white);border-top:1px solid var(--line);
+  padding:12px 16px;border-top:1px solid var(--line);background:var(--bg);
+  border-radius:0 0 10px 10px;
 }
-.page-info{font-family:var(--mono);font-size:11px;color:var(--ink4);}
-.pager-btns{display:flex;gap:8px;}
-.pbtn{
-  padding:9px 16px;border-radius:5px;font-size:13px;font-weight:600;
-  border:1px solid var(--line2);background:var(--bg);color:var(--ink2);
-  cursor:pointer;min-width:72px;
-}
-.pbtn:active{background:var(--line);}
+.pi{font-family:var(--mono);font-size:11px;color:var(--ink4);}
+.pager-btns{display:flex;gap:6px;}
+.pbtn{padding:6px 14px;border-radius:5px;font-size:13px;font-weight:500;border:1px solid var(--line2);background:var(--white);color:var(--ink2);cursor:pointer;}
+.pbtn:hover:not(:disabled){border-color:var(--g);color:var(--g);}
 .pbtn:disabled{opacity:.3;cursor:default;}
 
-/* Condition chips */
-.chip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;}
+/* Chips */
+.chip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;}
 .chip-up{background:var(--red-lt);color:var(--red);}
 .chip-dn{background:var(--dn-lt);color:var(--dn);}
 .chip-fl{background:var(--bg);color:var(--ink4);border:1px solid var(--line);}
@@ -186,293 +269,319 @@ button,input,select{font-family:var(--sans);}
 .dn{color:var(--dn);}
 .fl{color:var(--ink4);}
 
-/* ══════════════════════════════════════
-   COMMODITY POPUP MODAL
-══════════════════════════════════════ */
+/* Org badge */
+.org-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;background:var(--g-lt);color:var(--g);margin-right:4px;}
+
+/* ── MODAL ────────────────────────── */
 .modal-overlay{
   position:fixed;inset:0;z-index:500;
-  background:rgba(0,0,0,.55);
-  display:flex;align-items:flex-end;
-  justify-content:center;
-}
-.modal{
-  background:var(--white);
-  width:100%;max-width:600px;
-  max-height:90vh;
-  border-radius:12px 12px 0 0;
-  overflow:hidden;
-  display:flex;flex-direction:column;
+  background:rgba(15,23,42,.45);
+  display:flex;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(2px);
 }
 @media(min-width:640px){
   .modal-overlay{align-items:center;}
-  .modal{max-height:85vh;border-radius:12px;margin:0 16px;}
 }
-
-/* Modal header */
+.modal{
+  background:var(--white);width:100%;max-width:620px;
+  max-height:90vh;border-radius:16px 16px 0 0;
+  overflow:hidden;display:flex;flex-direction:column;
+}
+@media(min-width:640px){
+  .modal{border-radius:12px;margin:0 16px;max-height:88vh;}
+}
 .modal-hd{
-  background:var(--white);
-  padding:16px 16px 14px;
-  flex-shrink:0;
-  border-bottom:3px solid var(--g);
+  padding:18px 20px 14px;border-bottom:1px solid var(--line);
+  flex-shrink:0;background:var(--white);
 }
-.modal-back{
-  font-size:13px;font-weight:600;color:var(--g);
-  background:none;border:none;cursor:pointer;
-  padding:0;margin-bottom:10px;display:flex;align-items:center;gap:4px;
-}
-.modal-name{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.02em;}
-.modal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
-.modal-tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--bg);color:var(--ink3);border:1px solid var(--line);}
-.modal-chg{font-family:var(--mono);font-size:15px;font-weight:700;margin-top:6px;}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 14px;}
+.modal-close{float:right;font-size:13px;font-weight:600;color:var(--ink3);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:4px 10px;cursor:pointer;}
+.modal-close:hover{border-color:var(--g);color:var(--g);}
+.modal-name{font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px;}
+.modal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.modal-tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--bg);color:var(--ink3);border:1px solid var(--line);}
+.modal-chg{font-family:var(--mono);font-size:14px;font-weight:700;margin-top:8px;}
 
-/* Modal 3-stat */
-.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;flex-shrink:0;border-bottom:1px solid var(--line);}
-.ms{padding:14px 12px;border-right:1px solid var(--line);background:var(--white);}
-.ms:last-child{border-right:none;background:linear-gradient(135deg,#e8f8f0,#d4f0e2);}
-.ms-lbl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:5px;}
-.ms-val{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--ink);line-height:1;}
-.ms-val.g{color:var(--g);}
-.ms-sub{font-size:10px;color:var(--ink4);margin-top:3px;}
-.ms-badge{font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--g);color:#fff;}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--line);flex-shrink:0;}
+.ms{padding:14px 16px;border-right:1px solid var(--line);}
+.ms:last-child{border-right:none;background:var(--g-lt);}
+.ms-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;}
+.ms-val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);line-height:1;}
+.ms-val.g{color:var(--g-dk);}
+.ms-sub{font-size:11px;color:var(--ink4);margin-top:4px;}
+.ms-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--g);color:#fff;}
 
-/* Modal signal */
-.modal-signal{
-  padding:10px 14px;border-bottom:1px solid var(--line);
-  display:flex;gap:8px;align-items:flex-start;font-size:13px;flex-shrink:0;
-}
-.modal-signal.up{background:var(--red-lt);}
+.modal-signal{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:flex-start;font-size:13px;flex-shrink:0;}
+.modal-signal.up{background:#fff5f5;}
 .modal-signal.dn{background:var(--dn-lt);}
 .modal-signal.nt{background:var(--g-lt);}
-.msig-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0;}
-.msig-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:1px;}
-.msig-txt{font-size:13px;font-weight:600;color:var(--ink2);}
+.msig-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.msig-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink4);margin-bottom:1px;}
+.msig-txt{font-size:13px;font-weight:500;color:var(--ink2);}
 
-/* Modal scroll body */
 .modal-body{flex:1;overflow-y:auto;scrollbar-width:thin;}
-.modal-body::-webkit-scrollbar{width:3px;}
-.modal-body::-webkit-scrollbar-thumb{background:var(--line2);}
-
-/* Modal section */
-.modal-sec-hd{
-  padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--line);
-  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink3);
-}
-
-/* Origins in modal */
-.modal-or{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 14px;border-bottom:1px solid var(--line);
-  background:var(--white);
-}
-.mor-rank{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink4);width:18px;flex-shrink:0;}
+.modal-sec{padding:10px 16px;background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--line);}
+.modal-or{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--white);}
+.mor-rank{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink4);width:20px;flex-shrink:0;}
 .mor-rank.first{color:var(--g);}
 .mor-name{font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .mor-sub{font-size:11px;color:var(--ink4);margin-top:2px;}
-.mor-price{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--g);text-align:right;flex-shrink:0;}
+.mor-price{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--g-dk);text-align:right;flex-shrink:0;}
 .mor-mov{font-size:11px;text-align:right;margin-top:2px;}
+.modal-mrow{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--white);gap:12px;}
+.mmr-left{flex:1;min-width:0;}
+.mmr-mkt{font-size:14px;font-weight:700;}
+.mmr-sub{font-size:11px;color:var(--ink4);margin-top:2px;}
+.mmr-right{text-align:right;flex-shrink:0;}
+.mmr-price{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--g-dk);}
+.mmr-meta{font-size:11px;margin-top:2px;}
 
-/* Terminal rows in modal */
-.modal-trow{
-  padding:12px 14px;border-bottom:1px solid var(--line);background:var(--white);
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-}
-.modal-trow-left{flex:1;min-width:0;}
-.modal-trow-mkt{font-size:14px;font-weight:700;}
-.modal-trow-sub{font-size:11px;color:var(--ink4);margin-top:2px;}
-.modal-trow-right{text-align:right;flex-shrink:0;}
-.modal-trow-price{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--g);}
-.modal-trow-meta{font-family:var(--mono);font-size:11px;color:var(--ink4);margin-top:2px;}
+/* ── OTHER PAGES ──────────────────── */
+.page-simple{max-width:var(--max);margin:24px auto;padding:0 24px;}
+@media(max-width:640px){.page-simple{padding:0 16px;margin:16px auto;}}
+.page-title{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--ink4);margin-bottom:16px;}
 
-/* ── BOTTOM NAV ──────────── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:300;
-  background:var(--white);border-top:1px solid var(--line);
-  display:flex;height:60px;
+.compare-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--white);gap:12px;}
+.cmp-lbl{font-size:13px;color:var(--ink2);font-weight:500;}
+.cmp-val{font-family:var(--mono);font-size:16px;font-weight:700;}
+.srch-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--white);cursor:pointer;gap:12px;transition:background .08s;}
+.srch-row:first-child{border-radius:10px 10px 0 0;}
+.srch-row:last-child{border-bottom:none;border-radius:0 0 10px 10px;}
+.srch-row:hover{background:var(--g-lt);}
+.srch-name{font-size:15px;font-weight:700;}
+.srch-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
+.srch-price{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g-dk);text-align:right;flex-shrink:0;}
+.srch-chg{font-size:11px;text-align:right;margin-top:2px;}
+.srch-wrap-box{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+
+.empty{padding:40px 16px;text-align:center;color:var(--ink4);font-size:14px;}
+
+/* Bottom nav (mobile) */
+.bottom-nav{display:none;}
+@media(max-width:640px){
+  .bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:300;
+    background:var(--white);border-top:1px solid var(--line);height:58px;
+  }
+  body{padding-bottom:58px;}
 }
 .bn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  gap:3px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   color:var(--ink4);background:none;border:none;cursor:pointer;
-  border-right:1px solid var(--line);transition:color .1s;
+  border-right:1px solid var(--line);
 }
 .bn:last-child{border-right:none;}
-.bn:active{background:var(--bg);}
-.bn.active{color:var(--g);font-weight:700;}
-.bn-icon{font-size:16px;line-height:1;}
+.bn.active{color:var(--g);}
+.bn-icon{font-size:18px;line-height:1;}
 
-/* ── OTHER PAGES ─────────── */
-.fp-hd{padding:16px 16px 12px;background:var(--white);border-bottom:1px solid var(--line);}
-.fp-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px;}
-.fp-sub{font-size:12px;color:var(--ink4);}
-
-.compare-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;border-bottom:1px solid var(--line);background:var(--white);
-  gap:10px;
+/* Responsive: hide sidebar sections on mobile */
+@media(max-width:900px){
+  .sidebar-section{display:none;}
 }
-.cmp-lbl{font-size:13px;font-weight:500;color:var(--ink2);}
-.cmp-val{font-family:var(--mono);font-size:17px;font-weight:700;}
-
-.srch-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;border-bottom:1px solid var(--line);
-  background:var(--white);cursor:pointer;gap:12px;min-height:56px;
-}
-.srch-row:active{background:var(--g-lt);}
-.srch-name{font-size:15px;font-weight:700;}
-.srch-sub{font-size:12px;color:var(--ink4);margin-top:2px;}
-.srch-price{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g);text-align:right;flex-shrink:0;}
-.srch-chg{font-size:11px;text-align:right;margin-top:2px;}
-
-.empty{padding:36px 16px;text-align:center;color:var(--ink4);font-size:14px;}
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="tb-logo" onclick="go('home')">agra<em>X</em></div>
-  <div class="tb-right" id="tb-upd"></div>
-</div>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="go('home')">
+      <div class="nav-logo-dot"></div>
+      agra<em>X</em>
+    </div>
+    <div class="nav-links">
+      <button class="nl active" onclick="go('home')" data-n="home">Home</button>
+      <button class="nl" onclick="go('terminal')" data-n="terminal">Terminal Markets</button>
+      <button class="nl" onclick="go('shipping')" data-n="shipping">Shipping Points</button>
+      <button class="nl" onclick="go('compare')" data-n="compare">Compare</button>
+    </div>
+    <div class="nav-right">
+      <div class="nav-srch" onclick="go('search')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search <kbd>/</kbd>
+      </div>
+    </div>
+  </div>
+</nav>
 
-<!-- ══ HOME PAGE ══════════════════════════ -->
+<!-- HOME -->
 <div id="page-home">
-
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-tag"><div class="hero-tag-dot"></div>Live USDA Market Data</div>
-    <div class="hero-title">What's the price <span>today?</span></div>
-    <div class="hero-search">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="hi" type="text" placeholder="Search any commodity…"
-        oninput="hSearch()" onkeydown="hKey(event)" autocomplete="off" spellcheck="false">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div>
+          <div class="hero-live"><div class="hero-live-dot"></div>Live USDA Market Data</div>
+          <div class="hero-title">What's the price <span>today?</span></div>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-val" id="hs-comm">—</div><div class="hstat-lbl">Commodities</div></div>
+          <div class="hstat"><div class="hstat-val">10</div><div class="hstat-lbl">Markets</div></div>
+          <div class="hstat"><div class="hstat-val" id="hs-upd" style="font-size:14px;color:var(--ink3)">—</div><div class="hstat-lbl">Updated</div></div>
+        </div>
+      </div>
+      <div class="search-dd-wrap">
+        <div class="hero-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="hi" type="text" placeholder="Search any commodity — cilantro, tomatoes, avocados…"
+            oninput="hSearch()" onkeydown="hKey(event)" autocomplete="off" spellcheck="false">
+        </div>
+        <div id="hdd" class="search-dd"></div>
+      </div>
     </div>
-    <div id="hdd" class="hidden" style="margin-top:8px;border-radius:8px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 8px 24px rgba(0,0,0,.1);"></div>
   </div>
 
-  <!-- Cat tabs -->
-  <div class="cat-scroll">
-    <button class="ct active" onclick="setCT('vegetables')" id="ct-v">
-      <div class="ct-img"><img src="https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=128&q=70" alt=""></div>
-      <span class="ct-lbl">Vegetables</span>
-    </button>
-    <button class="ct" onclick="setCT('fruits')" id="ct-f">
-      <div class="ct-img"><img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=128&q=70" alt=""></div>
-      <span class="ct-lbl">Fruits</span>
-    </button>
-    <button class="ct" onclick="setCT('onions_potatoes')" id="ct-o">
-      <div class="ct-img"><img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=128&q=70" alt=""></div>
-      <span class="ct-lbl">Onions &amp; Pot.</span>
-    </button>
-    <button class="ct" onclick="setCT('nuts')" id="ct-n">
-      <div class="ct-img"><img src="https://images.unsplash.com/photo-1525706080974-fe57a1a1b4a3?w=128&q=70" alt=""></div>
-      <span class="ct-lbl">Nuts</span>
-    </button>
+  <!-- Category strip -->
+  <div class="cat-strip">
+    <div class="cat-inner">
+      <button class="ct active" onclick="setCT('vegetables')" id="ct-v">
+        <div class="ct-img"><img src="https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=128&q=70" alt=""></div>
+        Vegetables
+      </button>
+      <button class="ct" onclick="setCT('fruits')" id="ct-f">
+        <div class="ct-img"><img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=128&q=70" alt=""></div>
+        Fruits
+      </button>
+      <button class="ct" onclick="setCT('onions_potatoes')" id="ct-o">
+        <div class="ct-img"><img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=128&q=70" alt=""></div>
+        Onions &amp; Potatoes
+      </button>
+      <button class="ct" onclick="setCT('nuts')" id="ct-n">
+        <div class="ct-img"><img src="https://images.unsplash.com/photo-1525706080974-fe57a1a1b4a3?w=128&q=70" alt=""></div>
+        Nuts
+      </button>
+    </div>
   </div>
 
-  <!-- Filter bar -->
-  <div class="filter-bar">
-    <input id="tf-q" class="fi fi-search" placeholder="Filter…" oninput="filterTbl()">
-    <select id="tf-m" class="fi" onchange="filterTbl()"><option value="">All Markets</option></select>
-    <select id="tf-s" class="fi" onchange="filterTbl()">
-      <option value="comm">A–Z</option>
-      <option value="pl">Price ↑</option>
-      <option value="ph">Price ↓</option>
-      <option value="chg">Change</option>
-    </select>
-  </div>
+  <!-- Two-col layout -->
+  <div class="page-body">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sb-hd"><div class="sb-hd-title">Terminal Markets</div></div>
+      <div id="sb-mkts"></div>
+    </div>
 
-  <div class="sec-lbl">
-    <span>All Listings</span>
-    <span class="sec-lbl-r" id="tbl-meta"></span>
-  </div>
-
-  <div id="tbl-rows"></div>
-
-  <div class="pager">
-    <span class="page-info" id="tbl-pi"></span>
-    <div class="pager-btns">
-      <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
-      <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
+    <!-- Main listings -->
+    <div class="main-col">
+      <div class="toolbar">
+        <input id="tf-q" class="fi fi-grow" placeholder="Filter listings…" oninput="filterTbl()">
+        <select id="tf-m" class="fi" onchange="filterTbl()"><option value="">All Markets</option></select>
+        <select id="tf-s" class="fi" onchange="filterTbl()">
+          <option value="comm">A → Z</option>
+          <option value="pl">Price ↑</option>
+          <option value="ph">Price ↓</option>
+          <option value="chg">Biggest Change</option>
+        </select>
+      </div>
+      <div class="results-hd">
+        <span>All Listings</span>
+        <span id="tbl-meta"></span>
+      </div>
+      <div class="listing-wrap" id="tbl-rows" style="margin-top:8px"></div>
+      <div class="pager">
+        <span class="pi" id="tbl-pi"></span>
+        <div class="pager-btns">
+          <button id="tbl-prev" onclick="tPrev()" class="pbtn" disabled>← Prev</button>
+          <button id="tbl-next" onclick="tNext()" class="pbtn">Next →</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ══ TERMINAL PAGE ═════════════════════ -->
+<!-- TERMINAL PAGE -->
 <div id="page-terminal" class="hidden">
-  <div class="fp-hd"><div class="fp-title">Terminal Markets</div><div class="fp-sub">Destination prices at major US city markets</div></div>
-  <div class="filter-bar">
-    <input id="tp-q" class="fi fi-search" placeholder="Search…" oninput="filterTp()">
-    <select id="tp-m" class="fi" onchange="filterTp()"><option value="">All Markets</option></select>
-    <select id="tp-s" class="fi" onchange="filterTp()">
-      <option value="comm">A–Z</option><option value="pl">Price ↑</option><option value="ph">Price ↓</option>
-    </select>
-  </div>
-  <div class="sec-lbl"><span>Results</span><span class="sec-lbl-r" id="tp-meta"></span></div>
-  <div id="tp-rows"></div>
-  <div class="pager">
-    <span class="page-info" id="tp-pi"></span>
-    <div class="pager-btns">
-      <button id="tp-prev" onclick="tpPrev()" class="pbtn" disabled>← Prev</button>
-      <button id="tp-next" onclick="tpNext()" class="pbtn">Next →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SHIPPING PAGE ═════════════════════ -->
-<div id="page-shipping" class="hidden">
-  <div class="fp-hd"><div class="fp-title">Shipping Points</div><div class="fp-sub">FOB origin prices at the source</div></div>
-  <div id="sp-loading" style="padding:36px 16px;text-align:center;color:var(--ink4)">Loading…</div>
-  <div id="sp-view" class="hidden">
-    <div class="filter-bar">
-      <input id="sp-q" class="fi fi-search" placeholder="Search…" oninput="renderSP()">
-      <select id="sp-og" class="fi" onchange="renderSP()"><option value="">All Origins</option></select>
-      <select id="sp-s" class="fi" onchange="renderSP()">
-        <option value="comm">A–Z</option><option value="pl">Price ↑</option>
-        <option value="ph">Price ↓</option><option value="mov">Movement</option>
+  <div class="page-simple">
+    <div class="page-title">Terminal Markets</div>
+    <div class="page-sub">Destination wholesale prices at major US city markets</div>
+    <div class="toolbar">
+      <input id="tp-q" class="fi fi-grow" placeholder="Search…" oninput="filterTp()">
+      <select id="tp-m" class="fi" onchange="filterTp()"><option value="">All Markets</option></select>
+      <select id="tp-v" class="fi" onchange="filterTp()"><option value="">All Varieties</option></select>
+      <select id="tp-s" class="fi" onchange="filterTp()">
+        <option value="comm">A → Z</option><option value="pl">Price ↑</option><option value="ph">Price ↓</option>
       </select>
     </div>
-    <div class="sec-lbl"><span id="sp-stats"></span></div>
-    <div id="sp-rows"></div>
+    <div class="results-hd"><span>Results</span><span id="tp-meta"></span></div>
+    <div class="listing-wrap" id="tp-rows" style="margin-top:8px"></div>
+    <div class="pager">
+      <span class="pi" id="tp-pi"></span>
+      <div class="pager-btns">
+        <button id="tp-prev" onclick="tpPrev()" class="pbtn" disabled>← Prev</button>
+        <button id="tp-next" onclick="tpNext()" class="pbtn">Next →</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══ COMPARE PAGE ══════════════════════ -->
+<!-- SHIPPING PAGE -->
+<div id="page-shipping" class="hidden">
+  <div class="page-simple">
+    <div class="page-title">Shipping Points</div>
+    <div class="page-sub">FOB origin prices — what shippers charge at the source</div>
+    <div id="sp-loading" style="padding:40px;text-align:center;color:var(--ink4)">Loading…</div>
+    <div id="sp-view" class="hidden">
+      <div class="toolbar">
+        <input id="sp-q" class="fi fi-grow" placeholder="Search…" oninput="renderSP()">
+        <select id="sp-og" class="fi" onchange="renderSP()"><option value="">All Origins</option></select>
+        <select id="sp-s" class="fi" onchange="renderSP()">
+          <option value="comm">A → Z</option><option value="pl">Price ↑</option>
+          <option value="ph">Price ↓</option><option value="mov">Movement</option>
+        </select>
+      </div>
+      <div class="results-hd"><span id="sp-stats"></span></div>
+      <div class="listing-wrap" id="sp-rows" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARE PAGE -->
 <div id="page-compare" class="hidden">
-  <div class="fp-hd"><div class="fp-title">Compare</div><div class="fp-sub">FOB source vs terminal destination</div></div>
-  <div style="padding:12px 16px;border-bottom:1px solid var(--line);background:var(--white)">
-    <select id="cmp-sel" onchange="doCompare()" style="width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:5px;color:var(--ink);font-size:15px;font-weight:600;padding:11px 10px;outline:none;">
-      <option value="">Select commodity…</option>
+  <div class="page-simple">
+    <div class="page-title">Compare</div>
+    <div class="page-sub">FOB source vs. terminal destination — see the spread</div>
+    <select id="cmp-sel" onchange="doCompare()" style="width:100%;max-width:360px;background:var(--white);border:1.5px solid var(--line2);border-radius:7px;color:var(--ink);font-size:15px;font-weight:500;padding:11px 12px;outline:none;margin-bottom:16px;display:block;">
+      <option value="">Select a commodity…</option>
     </select>
-  </div>
-  <div id="cmp-res" class="hidden">
-    <div id="cmp-flow"></div>
-    <div class="sec-lbl"><span>FOB Sources</span></div>
-    <div id="cmp-ship"></div>
-    <div class="sec-lbl"><span>Terminal Markets</span></div>
-    <div id="cmp-term"></div>
+    <div id="cmp-res" class="hidden">
+      <div id="cmp-flow" class="listing-wrap" style="margin-bottom:16px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="results-hd" style="margin-bottom:8px"><span>FOB Sources</span></div>
+          <div class="listing-wrap" id="cmp-ship"></div>
+        </div>
+        <div>
+          <div class="results-hd" style="margin-bottom:8px"><span>Terminal Markets</span></div>
+          <div class="listing-wrap" id="cmp-term"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══ SEARCH PAGE ═══════════════════════ -->
+<!-- SEARCH PAGE -->
 <div id="page-search" class="hidden">
-  <div class="fp-hd">
-    <div class="fp-title" style="margin-bottom:10px">Search</div>
-    <input id="sp-in" type="text" placeholder="Search any commodity…"
-      style="width:100%;background:var(--bg);border:1.5px solid var(--line2);border-radius:6px;color:var(--ink);font-size:15px;font-weight:500;padding:11px 14px;outline:none;"
-      oninput="doSearch()" autocomplete="off"
-      onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--line2)'">
-    <div id="sp-info" style="font-size:11px;color:var(--ink4);margin-top:6px;font-family:var(--mono)"></div>
+  <div class="page-simple">
+    <div class="page-title" style="margin-bottom:12px">Search</div>
+    <div class="search-dd-wrap" style="max-width:560px;margin-bottom:16px">
+      <div class="hero-search" style="border-radius:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="sp-in" type="text" placeholder="Search any commodity…" oninput="doSearch()" autocomplete="off">
+      </div>
+    </div>
+    <div id="sp-info" style="font-size:12px;color:var(--ink4);margin-bottom:10px;font-family:var(--mono)"></div>
+    <div class="srch-wrap-box" id="sp-res"></div>
   </div>
-  <div id="sp-res"></div>
 </div>
 
-<!-- ══ COMMODITY MODAL ════════════════════ -->
+<!-- COMMODITY MODAL -->
 <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-hd">
-      <button class="modal-back" onclick="closeModal()">✕ Close</button>
+      <div class="modal-handle"></div>
+      <button class="modal-close" onclick="closeModal()">✕ Close</button>
       <div class="modal-name" id="modal-name"></div>
       <div class="modal-tags" id="modal-tags"></div>
       <div class="modal-chg" id="modal-chg"></div>
@@ -484,34 +593,24 @@ button,input,select{font-family:var(--sans);}
     </div>
     <div id="modal-signal" class="hidden"></div>
     <div class="modal-body">
-      <div class="modal-sec-hd">FOB Origins</div>
+      <div class="modal-sec">FOB Origins</div>
       <div id="modal-origins"></div>
-      <div class="modal-sec-hd" style="margin-top:4px">Prices by Terminal Market</div>
+      <div class="modal-sec">Prices by Terminal Market</div>
       <div id="modal-markets"></div>
-      <div class="modal-sec-hd" style="margin-top:4px">All Terminal Listings</div>
+      <div class="modal-sec">All Terminal Listings</div>
       <div id="modal-listings"></div>
-      <div style="height:20px"></div>
+      <div style="height:24px"></div>
     </div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV (mobile only) -->
 <nav class="bottom-nav">
-  <button class="bn active" onclick="go('home')" data-n="home">
-    <div class="bn-icon">⌂</div>Home
-  </button>
-  <button class="bn" onclick="go('terminal')" data-n="terminal">
-    <div class="bn-icon">≡</div>Markets
-  </button>
-  <button class="bn" onclick="go('shipping')" data-n="shipping">
-    <div class="bn-icon">◈</div>FOB
-  </button>
-  <button class="bn" onclick="go('compare')" data-n="compare">
-    <div class="bn-icon">⇄</div>Compare
-  </button>
-  <button class="bn" onclick="go('search')" data-n="search">
-    <div class="bn-icon">⌕</div>Search
-  </button>
+  <button class="bn active" onclick="go('home')" data-n="home"><div class="bn-icon">⌂</div>Home</button>
+  <button class="bn" onclick="go('terminal')" data-n="terminal"><div class="bn-icon">≡</div>Markets</button>
+  <button class="bn" onclick="go('shipping')" data-n="shipping"><div class="bn-icon">◈</div>FOB</button>
+  <button class="bn" onclick="go('compare')" data-n="compare"><div class="bn-icon">⇄</div>Compare</button>
+  <button class="bn" onclick="go('search')" data-n="search"><div class="bn-icon">⌕</div>Search</button>
 </nav>
 
 <script>
@@ -524,16 +623,14 @@ const mostly=r=>(r.price_mostly_low&&r.price_mostly_high)?`$${parseFloat(r.price
 const mc=m=>{if(!m)return'fl';if(m.includes('Higher'))return'up';if(m.includes('Lower'))return'dn';return'fl';};
 const ma=m=>{if(!m)return'→';if(m.includes('Higher'))return'↑';if(m.includes('Lower'))return'↓';return'→';};
 const cond=m=>{if(!m)return`<span class="chip chip-fl">Steady</span>`;const c=mc(m);return`<span class="chip ${c==='up'?'chip-up':c==='dn'?'chip-dn':'chip-fl'}">${ma(m)} ${m}</span>`;};
-const ob=r=>r.organic?`<span class="chip chip-dn" style="margin-right:4px;font-size:10px">ORG</span>`:'';
 
 let termData=[],shipData=[],dates=[],cache={};
 let movers={rising:[],falling:[]};
-let activeCT='vegetables';
+let activeCT='vegetables',activeMkt='';
 let tFiltered=[],tPage=1,tpFiltered=[],tpPage=1;
 const PG=40;
 const MOVORD={'Much Higher':0,'Higher':1,'Slightly Higher':2,'Unchanged':3,'Slightly Lower':4,'Lower':5,'Much Lower':6};
 
-// Nav
 const PAGES=['home','terminal','shipping','compare','search'];
 function go(pg){
   PAGES.forEach(p=>{const el=$('page-'+p);if(el)el.className=p===pg?'':'hidden';});
@@ -543,21 +640,22 @@ function go(pg){
   if(pg==='shipping')loadSP();
   if(pg==='search')setTimeout(()=>$('sp-in')?.focus(),80);
 }
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();go('search');}
+  if(e.key==='Escape'){closeModal();$('hdd').classList.remove('open');}
+});
 
-// ══ MODAL ══════════════════════════
+// Modal
 function openModal(name){
   document.body.style.overflow='hidden';
   $('modal-overlay').classList.remove('hidden');
   buildModal(name);
 }
 function closeModal(e){
-  if(e&&e.target!=$('modal-overlay'))return;
+  if(e&&e.target!==$('modal-overlay'))return;
   document.body.style.overflow='';
   $('modal-overlay').classList.add('hidden');
 }
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){document.body.style.overflow='';$('modal-overlay').classList.add('hidden');$('hdd').classList.add('hidden');}
-});
 
 function buildModal(name){
   const tr=termData.filter(d=>d.commodity===name);
@@ -577,8 +675,7 @@ function buildModal(name){
     (dt?`<span class="modal-tag">${fmtDate(dt)}</span>`:'')+
     `<span class="modal-tag">${mkts.length} market${mkts.length!==1?'s':''}</span>`+
     (fr.length?`<span class="modal-tag">${fr.length} FOB source${fr.length!==1?'s':''}</span>`:'');
-
-  if(mv){const up=mv.pct_change>0;$('modal-chg').innerHTML=`<span class="${up?'up':'dn'}" style="font-family:var(--mono);font-size:15px;font-weight:700">${up?'+':''}${mv.pct_change.toFixed(1)}% vs last week</span>`;}
+  if(mv){const up=mv.pct_change>0;$('modal-chg').innerHTML=`<span class="${up?'up':'dn'}" style="font-family:var(--mono);font-size:14px;font-weight:700">${up?'+':''}${mv.pct_change.toFixed(1)}% vs last week</span>`;}
   else $('modal-chg').innerHTML='';
 
   $('ms-fob').innerHTML=loFOB?`$${loFOB.toFixed(2)}`:'—';
@@ -589,7 +686,6 @@ function buildModal(name){
   $('ms-spr').textContent=spread?`$${spread.toFixed(2)}`:'—';
   $('ms-spr-s').innerHTML=spreadPct?`<span class="ms-badge">${spreadPct}% margin</span>`:'';
 
-  // Signal
   const sig=mkSig(tr,fr,mv);
   if(sig){
     const iU=sig.includes('Higher')||sig.includes('tightening')||sig.includes('firming');
@@ -600,11 +696,10 @@ function buildModal(name){
     el.classList.remove('hidden');
   }else $('modal-signal').classList.add('hidden');
 
-  // FOB Origins
   $('modal-origins').innerHTML=sortFR.length?sortFR.slice(0,6).map((r,i)=>`
     <div class="modal-or">
       <div class="mor-rank ${i===0?'first':''}">#${i+1}</div>
-      <div class="mor-info">
+      <div style="flex:1;min-width:0">
         <div class="mor-name">${r.origin||r.market||'—'}</div>
         <div class="mor-sub">${[r.size,r.movement?ma(r.movement)+' '+r.movement:''].filter(Boolean).join(' · ')}</div>
       </div>
@@ -612,43 +707,38 @@ function buildModal(name){
         <div class="mor-price">$${parseFloat(r.price_low).toFixed(2)}</div>
         <div class="mor-mov ${mc(r.movement)==='up'?'up':mc(r.movement)==='dn'?'dn':'fl'}">${r.movement||'—'}</div>
       </div>
-    </div>`).join('')
-    :'<div class="empty">No FOB data for this commodity</div>';
+    </div>`).join(''):'<div class="empty">No FOB data</div>';
 
-  // By market
   const byMkt={};
   tr.forEach(r=>{if(!byMkt[r.market]||parseFloat(r.price_low)<parseFloat(byMkt[r.market].price_low))byMkt[r.market]=r;});
   const mktRows=Object.values(byMkt).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
   $('modal-markets').innerHTML=mktRows.map((r,i)=>{
-    const tp=parseFloat(r.price_low);
-    const spr=loFOB?(tp-loFOB):null;
+    const tp=parseFloat(r.price_low),spr=loFOB?(tp-loFOB):null;
     const chg=wkChg(r.commodity);const iU=chg>1,iD=chg<-1;
-    return`<div class="modal-trow">
-      <div class="modal-trow-left">
-        <div class="modal-trow-mkt">${r.market}${i===0?` <span class="chip chip-best">BEST</span>`:''}</div>
-        <div class="modal-trow-sub">${fmtDate(r.report_date)}${spr!==null?` · spread +$${spr.toFixed(2)}`:''}</div>
+    return`<div class="modal-mrow">
+      <div class="mmr-left">
+        <div class="mmr-mkt">${r.market}${i===0?` <span class="chip chip-best" style="margin-left:4px">BEST</span>`:''}</div>
+        <div class="mmr-sub">${fmtDate(r.report_date)}${spr!==null?` · spread +$${spr.toFixed(2)}`:''}</div>
       </div>
-      <div class="modal-trow-right">
-        <div class="modal-trow-price" style="color:${i===0?'var(--g)':'var(--ink)'}">$${tp.toFixed(2)}</div>
-        <div class="modal-trow-meta"><span class="${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span> · ${cond(r.movement)}</div>
+      <div class="mmr-right">
+        <div class="mmr-price" style="color:${i===0?'var(--g-dk)':'var(--ink)'}">$${tp.toFixed(2)}</div>
+        <div class="mmr-meta"><span class="${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</span> · ${cond(r.movement)}</div>
       </div>
     </div>`;
   }).join('')||'<div class="empty">No terminal data</div>';
 
-  // All listings
   $('modal-listings').innerHTML=sortTR.map((r,i)=>`
-    <div class="modal-trow">
-      <div class="modal-trow-left">
-        <div class="modal-trow-mkt">${r.market}${i===0?` <span class="chip chip-best">LOWEST</span>`:''}</div>
-        <div class="modal-trow-sub">${[fmtDate(r.report_date),r.variety,r.origin,r.size].filter(Boolean).join(' · ')}</div>
+    <div class="modal-mrow">
+      <div class="mmr-left">
+        <div class="mmr-mkt">${r.market}${i===0?` <span class="chip chip-best" style="margin-left:4px">LOWEST</span>`:''}</div>
+        <div class="mmr-sub">${[fmtDate(r.report_date),r.variety,r.origin,r.size].filter(Boolean).join(' · ')}</div>
       </div>
-      <div class="modal-trow-right">
-        <div class="modal-trow-price">${money(r)}</div>
-        <div class="modal-trow-meta">${cond(r.movement)}</div>
+      <div class="mmr-right">
+        <div class="mmr-price">${money(r)}</div>
+        <div class="mmr-meta">${cond(r.movement)}</div>
       </div>
     </div>`).join('')||'<div class="empty">No listings</div>';
 
-  // Scroll modal body to top
   const body=$('modal-overlay').querySelector('.modal-body');
   if(body)body.scrollTop=0;
 }
@@ -665,7 +755,6 @@ function mkSig(tr,fr,mv){
   return sigs[0]||null;
 }
 
-// Init
 async function init(){
   try{
     dates=await(await fetch(`${API}/dates?commodity_type=vegetables`)).json();
@@ -679,13 +768,22 @@ async function init(){
     }
     try{
       const fr=await(await fetch(`${API}/freshness`)).json();
-      if(fr.terminal){const diff=Math.round((new Date()-new Date(fr.terminal+'T00:00:00'))/86400000);$('tb-upd').textContent=`${fmtDate(fr.terminal)} · ${diff===0?'today':diff===1?'yesterday':diff+'d ago'}`;}
+      if(fr.terminal){
+        const diff=Math.round((new Date()-new Date(fr.terminal+'T00:00:00'))/86400000);
+        const label=diff===0?'Today':diff===1?'Yesterday':diff+'d ago';
+        $('hs-upd').textContent=label;
+      }
     }catch(e){}
     const mv=await(await fetch(`${API}/movers?market_type=terminal&commodity_type=vegetables`)).json();
     movers=mv;
+    const comms=new Set(termData.map(d=>d.commodity));
+    $('hs-comm').textContent=comms.size;
+    buildSidebar();
     const mkts=[...new Set(termData.map(d=>d.market))].sort();
     $('tf-m').innerHTML='<option value="">All Markets</option>'+mkts.map(m=>`<option>${m}</option>`).join('');
     $('tp-m').innerHTML='<option value="">All Markets</option>'+mkts.map(m=>`<option>${m}</option>`).join('');
+    const vars=[...new Set(termData.map(d=>d.variety).filter(Boolean))].sort();
+    $('tp-v').innerHTML='<option value="">All Varieties</option>'+vars.map(v=>`<option>${v}</option>`).join('');
     buildCompare();filterTbl();filterTp();
     fetch(`${API}/dates?market_type=shipping_point&commodity_type=vegetables`)
       .then(r=>r.json()).then(async sd=>{if(sd.length)shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=vegetables`)).json();})
@@ -693,12 +791,27 @@ async function init(){
   }catch(e){console.error(e);}
 }
 
+function buildSidebar(){
+  const mkts=['All Markets','New York','Los Angeles','Chicago','Miami','Philadelphia','Baltimore','Boston','Atlanta','Detroit','San Francisco'];
+  $('sb-mkts').innerHTML=mkts.map((m,i)=>`
+    <div class="sb-item ${i===0?'active':''}" onclick="sbClick('${esc(m)}',this)">
+      <span>${m}</span>
+      <span class="sb-item-count">${i===0?termData.length:termData.filter(d=>d.market===m).length||''}</span>
+    </div>`).join('');
+}
+function sbClick(m,el){
+  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  activeMkt=m==='All Markets'?'':m;
+  $('tf-m').value=activeMkt;
+  filterTbl();
+}
+
 async function setCT(ct){
   activeCT=ct;
   [['vegetables','ct-v'],['fruits','ct-f'],['onions_potatoes','ct-o'],['nuts','ct-n']].forEach(([k,id])=>{
     const el=$(id);if(el)el.className='ct'+(k===ct?' active':'');
-    // scroll active into view
-    if(k===ct&&el){el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
+    if(k===ct&&el)el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   });
   try{
     const[dr,mr]=await Promise.all([
@@ -708,6 +821,8 @@ async function setCT(ct){
     if(dr.length){const lat=await(await fetch(`${API}/commodities/by-date/${dr[0].date}?commodity_type=${ct}`)).json();termData=lat.filter(d=>d.market_type==='terminal');}
     else termData=[];
     movers=mr;
+    $('hs-comm').textContent=new Set(termData.map(d=>d.commodity)).size;
+    buildSidebar();
     fetch(`${API}/dates?market_type=shipping_point&commodity_type=${ct}`)
       .then(r=>r.json()).then(async sd=>{if(sd.length)shipData=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=${ct}`)).json();})
       .catch(()=>{});
@@ -715,27 +830,28 @@ async function setCT(ct){
   }catch(e){}
 }
 
-// Search
 function hSearch(){
   const q=$('hi').value.toLowerCase().trim(),dd=$('hdd');
-  if(!q){dd.classList.add('hidden');return;}
+  if(!q){dd.classList.remove('open');return;}
   const comms=[...new Set(termData.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q)).slice(0,8);
-  if(!comms.length){dd.innerHTML='<div class="search-dd"><div style="padding:14px;color:var(--ink4);font-size:14px">No results</div></div>';dd.classList.remove('hidden');return;}
-  dd.innerHTML='<div class="search-dd">'+comms.map(c=>{
+  if(!comms.length){dd.innerHTML='<div style="padding:14px 16px;color:var(--ink4)">No results</div>';dd.classList.add('open');return;}
+  dd.innerHTML=comms.map(c=>{
     const rows=termData.filter(d=>d.commodity===c);
     const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
-    return`<div class="sd-row" onclick="openModal('${esc(c)}');$('hi').value='';$('hdd').classList.add('hidden')">
+    const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===c);
+    const chg=mv?`<span class="${mv.pct_change>0?'up':'dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}%</span>`:null;
+    return`<div class="sd-row" onclick="openModal('${esc(c)}');$('hi').value='';$('hdd').classList.remove('open')">
       <div><div class="sd-name">${c}</div><div class="sd-sub">${rows.length} listings · ${[...new Set(rows.map(r=>r.market))].length} markets</div></div>
-      <div class="sd-price">$${avg.toFixed(2)}</div>
+      <div><div class="sd-price">$${avg.toFixed(2)}</div>${chg?`<div class="sd-chg">${chg}</div>`:''}</div>
     </div>`;
-  }).join('')+`<div class="sd-more" onclick="go('search');$('sp-in').value='${q}';doSearch();$('hdd').classList.add('hidden')">See all results →</div></div>`;
-  dd.classList.remove('hidden');
+  }).join('')+`<div class="sd-more" onclick="go('search');$('sp-in').value='${q}';doSearch();$('hdd').classList.remove('open')">See all results →</div>`;
+  dd.classList.add('open');
 }
 function hKey(e){
-  if(e.key==='Enter'){const q=$('hi').value.trim();if(q){go('search');$('sp-in').value=q;doSearch();$('hdd').classList.add('hidden');}}
-  if(e.key==='Escape')$('hdd').classList.add('hidden');
+  if(e.key==='Enter'){const q=$('hi').value.trim();if(q){go('search');$('sp-in').value=q;doSearch();$('hdd').classList.remove('open');}}
+  if(e.key==='Escape')$('hdd').classList.remove('open');
 }
-document.addEventListener('click',e=>{if(!e.target.closest('#hi')&&!e.target.closest('#hdd'))$('hdd').classList.add('hidden');});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-dd-wrap'))$('hdd').classList.remove('open');});
 
 function wkChg(c){
   const t=termData.filter(d=>d.commodity===c),w=(cache[dates[6]?.date]||[]).filter(d=>d.commodity===c);
@@ -743,7 +859,23 @@ function wkChg(c){
   return((t.reduce((s,d)=>s+parseFloat(d.price_low),0)/t.length)-(w.reduce((s,d)=>s+parseFloat(d.price_low),0)/w.length))/(w.reduce((s,d)=>s+parseFloat(d.price_low),0)/w.length)*100;
 }
 
-// Home rows — mobile: Commodity | Price | Date+Market+Origin (sub)
+function renderRow(r,chg){
+  const iU=chg>1,iD=chg<-1;
+  const sub=[fmtDate(r.report_date),r.market,r.origin].filter(Boolean).join(' · ');
+  const org=r.organic?`<span class="org-badge">ORG</span>`:'';
+  return`<div class="listing-row" onclick="openModal('${esc(r.commodity)}')">
+    <div class="lr-left">
+      <div class="lr-comm">${org}${r.commodity}${r.variety?`<span class="lr-variety">${r.variety}</span>`:''}</div>
+      <div class="lr-sub">${sub}</div>
+      <div class="lr-chip">${cond(r.movement)}</div>
+    </div>
+    <div class="lr-right">
+      <div class="lr-price">$${parseFloat(r.price_low).toFixed(2)}</div>
+      <div class="lr-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div>
+    </div>
+  </div>`;
+}
+
 function filterTbl(){
   const q=$('tf-q').value.toLowerCase().trim(),m=$('tf-m').value,s=$('tf-s').value;
   tFiltered=termData.filter(d=>{
@@ -760,32 +892,17 @@ function filterTbl(){
 function renderTbl(){
   const st=(tPage-1)*PG,items=tFiltered.slice(st,st+PG),tot=Math.ceil(tFiltered.length/PG)||1;
   $('tbl-meta').textContent=`${tFiltered.length} results`;
-  $('tbl-pi').textContent=`${tFiltered.length} · page ${tPage}/${tot}`;
+  $('tbl-pi').textContent=`${tFiltered.length} results · page ${tPage}/${tot}`;
   $('tbl-prev').disabled=tPage<=1;$('tbl-next').disabled=tPage>=tot;
-  $('tbl-rows').innerHTML=items.map(r=>{
-    const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
-    const sub=[fmtDate(r.report_date),r.market,r.origin].filter(Boolean).join(' · ');
-    return`<div class="m-row" onclick="openModal('${esc(r.commodity)}')">
-      <div class="mr-left">
-        <div class="mr-comm">${ob(r)}${r.commodity}${r.variety?`<span style="font-size:12px;color:var(--ink4);font-weight:400;margin-left:5px">${r.variety}</span>`:''}</div>
-        <div class="mr-sub">${sub}</div>
-        <div style="margin-top:4px">${cond(r.movement)}</div>
-      </div>
-      <div class="mr-right">
-        <div class="mr-price">$${parseFloat(r.price_low).toFixed(2)}</div>
-        <div class="mr-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('')||'<div class="empty">No results</div>';
+  $('tbl-rows').innerHTML=items.map(r=>renderRow(r,wkChg(r.commodity))).join('')||'<div class="empty">No results</div>';
 }
 function tPrev(){if(tPage>1){tPage--;renderTbl();window.scrollTo(0,0);}}
 function tNext(){tPage++;renderTbl();window.scrollTo(0,0);}
 
-// Terminal page rows
 function filterTp(){
-  const q=$('tp-q').value.toLowerCase().trim(),m=$('tp-m').value,s=$('tp-s').value;
+  const q=$('tp-q').value.toLowerCase().trim(),m=$('tp-m').value,v=$('tp-v').value,s=$('tp-s').value;
   tpFiltered=termData.filter(d=>{
-    if(m&&d.market!==m)return false;
+    if(m&&d.market!==m)return false;if(v&&d.variety!==v)return false;
     if(q&&!`${d.commodity} ${d.variety||''} ${d.origin||''} ${d.market}`.toLowerCase().includes(q))return false;
     return true;
   });
@@ -797,27 +914,13 @@ function filterTp(){
 function renderTp(){
   const st=(tpPage-1)*PG,items=tpFiltered.slice(st,st+PG),tot=Math.ceil(tpFiltered.length/PG)||1;
   $('tp-meta').textContent=`${tpFiltered.length} results`;
-  $('tp-pi').textContent=`${tpFiltered.length} · page ${tpPage}/${tot}`;
+  $('tp-pi').textContent=`${tpFiltered.length} results · page ${tpPage}/${tot}`;
   $('tp-prev').disabled=tpPage<=1;$('tp-next').disabled=tpPage>=tot;
-  $('tp-rows').innerHTML=items.map(r=>{
-    const chg=wkChg(r.commodity),iU=chg>1,iD=chg<-1;
-    return`<div class="m-row" onclick="openModal('${esc(r.commodity)}')">
-      <div class="mr-left">
-        <div class="mr-comm">${r.commodity}</div>
-        <div class="mr-sub">${fmtDate(r.report_date)} · ${r.market}${r.origin?' · '+r.origin:''}${r.size?' · '+r.size:''}</div>
-        <div style="margin-top:4px">${cond(r.movement)}</div>
-      </div>
-      <div class="mr-right">
-        <div class="mr-price">$${parseFloat(r.price_low).toFixed(2)}</div>
-        <div class="mr-chg ${iU?'up':iD?'dn':'fl'}">${iU?'↑':iD?'↓':''}${Math.abs(chg).toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('')||'<div class="empty">No results</div>';
+  $('tp-rows').innerHTML=items.map(r=>renderRow(r,wkChg(r.commodity))).join('')||'<div class="empty">No results</div>';
 }
 function tpPrev(){if(tpPage>1){tpPage--;renderTp();window.scrollTo(0,0);}}
 function tpNext(){tpPage++;renderTp();window.scrollTo(0,0);}
 
-// Shipping
 async function loadSP(){
   $('sp-loading').classList.remove('hidden');$('sp-view').classList.add('hidden');
   try{
@@ -843,28 +946,28 @@ function renderSP(){
   else if(s==='mov')rows.sort((a,b)=>(MOVORD[a.movement]??3)-(MOVORD[b.movement]??3)||a.commodity.localeCompare(b.commodity));
   const rN=rows.filter(r=>(r.movement||'').includes('Higher')).length;
   const dN=rows.filter(r=>(r.movement||'').includes('Lower')).length;
-  $('sp-stats').innerHTML=`<span class="up">↑ ${rN}</span>&nbsp;&nbsp;<span class="dn">↓ ${dN}</span>&nbsp;&nbsp;<span class="fl">→ ${rows.length-rN-dN}</span>&nbsp;&nbsp;<span style="color:var(--ink4)">${rows.length} total</span>`;
+  $('sp-stats').innerHTML=`<span class="up">↑ ${rN} rising</span> &nbsp; <span class="dn">↓ ${dN} falling</span> &nbsp; <span class="fl">→ ${rows.length-rN-dN} steady</span> &nbsp; <span style="color:var(--ink4)">${rows.length} total</span>`;
   let last=null;
   $('sp-rows').innerHTML=rows.map((r,i)=>{
     const isNew=r.commodity!==last;last=r.commodity;
-    return`<div class="m-row" onclick="openModal('${esc(r.commodity)}')" style="${isNew&&i>0?'border-top:2px solid var(--line2)':''}">
-      <div class="mr-left">
-        <div class="mr-comm">${r.commodity}</div>
-        <div class="mr-sub">${fmtDate(r.report_date)} · ${r.origin||r.market||'—'}${r.size?' · '+r.size:''}</div>
-        <div style="margin-top:4px">${cond(r.movement)}${r.trading_activity?`<span style="font-size:11px;color:var(--ink4);margin-left:6px">${r.trading_activity}</span>`:''}</div>
+    const sub=[fmtDate(r.report_date),r.origin||r.market,r.size].filter(Boolean).join(' · ');
+    return`<div class="listing-row" onclick="openModal('${esc(r.commodity)}')" style="${isNew&&i>0?'border-top:2px solid var(--line2)':''}">
+      <div class="lr-left">
+        <div class="lr-comm">${r.commodity}</div>
+        <div class="lr-sub">${sub}</div>
+        <div class="lr-chip">${cond(r.movement)}${r.trading_activity?`<span style="font-size:11px;color:var(--ink4);margin-left:6px">${r.trading_activity}</span>`:''}</div>
       </div>
-      <div class="mr-right">
-        <div class="mr-price">$${parseFloat(r.price_low).toFixed(2)}</div>
-        ${mostly(r)?`<div class="mr-date">${mostly(r)}</div>`:''}
+      <div class="lr-right">
+        <div class="lr-price">$${parseFloat(r.price_low).toFixed(2)}</div>
+        ${mostly(r)?`<div style="font-family:var(--mono);font-size:11px;color:var(--ink4);margin-top:2px">${mostly(r)}</div>`:''}
       </div>
     </div>`;
   }).join('')||'<div class="empty">No results</div>';
 }
 
-// Compare
 function buildCompare(){
   const comms=[...new Set(termData.map(d=>d.commodity))].sort();
-  $('cmp-sel').innerHTML='<option value="">Select commodity…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
+  $('cmp-sel').innerHTML='<option value="">Select a commodity…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
 }
 function doCompare(){
   const c=$('cmp-sel').value;
@@ -877,33 +980,26 @@ function doCompare(){
     const hi=term.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low))[0];
     const mg=parseFloat(hi.price_low)-parseFloat(lo.price_low);
     $('cmp-flow').innerHTML=
-      `<div class="compare-row"><span class="cmp-lbl">Lowest FOB</span><span class="cmp-val">$${parseFloat(lo.price_low).toFixed(2)} <span style="font-size:12px;color:var(--ink4);font-weight:400">${lo.origin||lo.market}</span></span></div>`+
-      `<div class="compare-row"><span class="cmp-lbl">Highest Terminal</span><span class="cmp-val" style="color:var(--g)">$${parseFloat(hi.price_low).toFixed(2)} <span style="font-size:12px;color:var(--ink4);font-weight:400">${hi.market}</span></span></div>`+
-      `<div class="compare-row" style="background:var(--g-lt)"><span class="cmp-lbl" style="color:var(--g)">Spread</span><span class="cmp-val" style="color:var(--g)">+$${mg.toFixed(2)}</span></div>`;
+      `<div class="compare-row"><span class="cmp-lbl">Lowest FOB</span><span class="cmp-val">$${parseFloat(lo.price_low).toFixed(2)} <span style="font-size:12px;font-weight:400;color:var(--ink4)">${lo.origin||lo.market}</span></span></div>`+
+      `<div class="compare-row"><span class="cmp-lbl">Highest Terminal</span><span class="cmp-val" style="color:var(--g-dk)">$${parseFloat(hi.price_low).toFixed(2)} <span style="font-size:12px;font-weight:400;color:var(--ink4)">${hi.market}</span></span></div>`+
+      `<div class="compare-row" style="background:var(--g-lt)"><span class="cmp-lbl" style="color:var(--g)">Spread</span><span class="cmp-val" style="color:var(--g-dk)">+$${mg.toFixed(2)}</span></div>`;
   }else $('cmp-flow').innerHTML='<div class="empty">Not enough data</div>';
-  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div class="compare-row"><span class="cmp-lbl">${r.origin||r.market}</span><span class="cmp-val">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty">No FOB data</div>';
-  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div class="compare-row"><span class="cmp-lbl">${r.market}</span><span class="cmp-val" style="color:var(--g)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty">No terminal data</div>';
+  $('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div class="compare-row"><span class="cmp-lbl">${r.origin||r.market}</span><span class="cmp-val">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty">No data</div>';
+  $('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div class="compare-row"><span class="cmp-lbl">${r.market}</span><span class="cmp-val" style="color:var(--g-dk)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty">No data</div>';
 }
 
-// Search page
 function doSearch(){
   const q=($('sp-in')?.value||'').toLowerCase().trim();
   if(!q){$('sp-info').textContent='';$('sp-res').innerHTML='';return;}
   const comms=[...new Set(termData.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q));
-  $('sp-info').textContent=`${comms.length} result${comms.length!==1?'s':''}`;
+  $('sp-info').textContent=`${comms.length} result${comms.length!==1?'s':''} for "${q}"`;
   $('sp-res').innerHTML=comms.map(c=>{
     const rows=termData.filter(t=>t.commodity===c&&t.market_type==='terminal');
     const avg=rows.reduce((s,i)=>s+parseFloat(i.price_low),0)/(rows.length||1);
     const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===c);
     return`<div class="srch-row" onclick="openModal('${esc(c)}')">
-      <div>
-        <div class="srch-name">${c}</div>
-        <div class="srch-sub">${rows.length} listings · ${[...new Set(rows.map(i=>i.market))].length} markets</div>
-      </div>
-      <div>
-        <div class="srch-price">$${avg.toFixed(2)}</div>
-        ${mv?`<div class="srch-chg ${mv.pct_change>0?'up':'dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}% vs wk</div>`:''}
-      </div>
+      <div><div class="srch-name">${c}</div><div class="srch-sub">${rows.length} listings · ${[...new Set(rows.map(i=>i.market))].length} markets</div></div>
+      <div><div class="srch-price">$${avg.toFixed(2)}</div>${mv?`<div class="srch-chg ${mv.pct_change>0?'up':'dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}%</div>`:''}</div>
     </div>`;
   }).join('')||'<div class="empty">No results found</div>';
 }
