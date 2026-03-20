@@ -1,1197 +1,746 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>agraX — Produce Market Intelligence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-/* ── RESET ─────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;-webkit-text-size-adjust:100%;}
-body{
-  font-family:'Inter',system-ui,sans-serif;
-  background:#f8f9ff;
-  color:#0b1c30;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
-button,input,select,textarea{font-family:inherit;}
-img{display:block;max-width:100%;}
-.sg{font-family:'Space Grotesk',sans-serif;}
-.hidden{display:none!important;}
-
-/* ── VARIABLES ─────────────────────── */
-:root{
-  --green:#004532;
-  --green-mid:#065f46;
-  --green-lt:#e8f5ee;
-  --green-pill:rgba(0,69,50,.08);
-  --blue:#4059aa;
-  --red:#ba1a1a;
-  --red-pill:rgba(186,26,26,.08);
-  --text:#0b1c30;
-  --text-2:#3f4944;
-  --text-3:#6f7973;
-  --bg:#f8f9ff;
-  --surf:#ffffff;
-  --surf-lo:#eff4ff;
-  --surf-hi:#dce9ff;
-  --border:rgba(190,201,194,.25);
-  --border-2:rgba(190,201,194,.5);
-  --max:1160px;
-}
-
-/* ── NAV ─────────────────────────────
-   Exact Stitch nav: white bg, thin border,
-   logo left, links next to logo, search center,
-   badge right
-──────────────────────────────────── */
-.nav{
-  position:sticky;top:0;z-index:100;
-  background:#ffffff;
-  border-bottom:1px solid var(--border-2);
-  height:56px;
-  display:flex;align-items:center;
-}
-.nav-inner{
-  width:100%;max-width:var(--max);
-  margin:0 auto;padding:0 32px;
-  display:flex;align-items:center;gap:32px;
-}
-.nav-logo{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:18px;font-weight:700;
-  color:var(--green);letter-spacing:-.02em;
-  cursor:pointer;flex-shrink:0;
-  text-decoration:none;
-}
-.nav-links{
-  display:flex;align-items:center;gap:4px;
-  flex-shrink:0;
-}
-.nav-link{
-  font-size:13px;font-weight:500;color:var(--text-2);
-  padding:5px 10px;border-radius:4px;
-  background:none;border:none;cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:color .12s;
-}
-.nav-link:hover{color:var(--text);}
-.nav-link.active{
-  color:var(--green);font-weight:600;
-  border-bottom:2px solid var(--green);
-}
-.nav-search{
-  flex:1;max-width:400px;
-  position:relative;
-}
-.nav-search input{
-  width:100%;
-  background:var(--surf-lo);
-  border:1px solid var(--border-2);
-  border-radius:8px;
-  padding:8px 12px 8px 36px;
-  font-size:13px;color:var(--text);
-  outline:none;transition:border-color .15s;
-}
-.nav-search input:focus{border-color:var(--blue);}
-.nav-search input::placeholder{color:var(--text-3);}
-.nav-search-ico{
-  position:absolute;left:11px;top:50%;
-  transform:translateY(-50%);
-  color:var(--text-3);pointer-events:none;
-}
-.nav-badge{
-  margin-left:auto;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:11px;font-weight:600;
-  color:var(--text-3);white-space:nowrap;flex-shrink:0;
-}
-/* search dropdown */
-.nav-dd{
-  position:absolute;left:0;right:0;top:calc(100% + 6px);
-  background:var(--surf);border:1px solid var(--border-2);
-  border-radius:8px;
-  box-shadow:0 8px 32px rgba(11,28,48,.08);
-  z-index:50;overflow:hidden;display:none;
-}
-.nav-dd.open{display:block;}
-.ndd-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;border-bottom:1px solid var(--border);
-  cursor:pointer;gap:12px;
-}
-.ndd-row:last-of-type{border-bottom:none;}
-.ndd-row:hover{background:var(--surf-lo);}
-.ndd-name{font-size:13px;font-weight:600;}
-.ndd-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
-.ndd-price{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--green);text-align:right;}
-.ndd-chg{font-size:10px;text-align:right;margin-top:2px;}
-.ndd-more{padding:10px 16px;font-size:12px;font-weight:600;color:var(--blue);border-top:1px solid var(--border);cursor:pointer;}
-.ndd-more:hover{background:var(--surf-lo);}
-@media(max-width:700px){
-  .nav-links{display:none;}
-  .nav-badge{display:none;}
-  .nav-inner{gap:16px;}
-}
-
-/* ── PAGE SHELL ──────────────────────
-   All pages sit inside here, padded from nav
-──────────────────────────────────── */
-.page-wrap{
-  min-height:calc(100vh - 56px);
-  background:var(--bg);
-}
-
-/* ── SHARED LAYOUT CONTAINER ─────── */
-.cnt{
-  max-width:var(--max);margin:0 auto;padding:0 32px;
-}
-@media(max-width:640px){.cnt{padding:0 16px;}}
-
-/* ══════════════════════════════════
-   HOME PAGE
-══════════════════════════════════ */
-/* breadcrumb */
-.bc{
-  display:flex;align-items:center;gap:6px;
-  padding:18px 0 0;
-  font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--text-3);
-}
-.bc-sep{color:var(--text-3);opacity:.5;}
-.bc-curr{color:var(--text);font-weight:700;}
-
-/* page title area */
-.page-hd{padding:16px 0 24px;}
-.page-hd-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-.page-h1{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:36px;font-weight:700;
-  color:var(--text);letter-spacing:-.025em;line-height:1.1;
-  margin-bottom:6px;
-}
-.page-sub{font-size:13px;color:var(--text-3);}
-@media(max-width:640px){.page-h1{font-size:26px;}}
-
-/* category circles strip */
-.cat-strip{
-  display:flex;gap:0;
-  overflow-x:auto;scrollbar-width:none;
-  padding:4px 0 20px;
-  border-bottom:1px solid var(--border);
-  margin-bottom:28px;
-}
-.cat-strip::-webkit-scrollbar{display:none}
-.cat-btn{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  flex-shrink:0;padding:0 20px 0 0;
-  background:none;border:none;cursor:pointer;
-  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--text-3);transition:color .1s;
-}
-.cat-btn.on{color:var(--green);}
-.cat-circle{
-  width:60px;height:60px;border-radius:50%;
-  border:2px solid var(--border-2);
-  overflow:hidden;transition:border-color .15s,transform .15s;
-  box-shadow:0 1px 4px rgba(11,28,48,.06);
-}
-.cat-btn.on .cat-circle{border-color:var(--green);transform:scale(1.05);}
-.cat-circle img{width:100%;height:100%;object-fit:cover;display:block;}
-
-/* two-column layout: sidebar + table */
-.two-col{
-  display:grid;
-  grid-template-columns:188px 1fr;
-  gap:40px;
-}
-@media(max-width:880px){.two-col{grid-template-columns:1fr;gap:0;}}
-
-/* sidebar */
-.sb{padding-top:4px;}
-@media(max-width:880px){.sb{display:none;}}
-.sb-label{
-  font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--text-3);margin-bottom:16px;
-  font-family:'Space Grotesk',sans-serif;
-}
-.sb-items{display:flex;flex-direction:column;gap:10px;}
-.sb-item{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--text-3);cursor:pointer;
-  background:none;border:none;text-align:left;
-  padding:0;transition:color .1s;
-  position:relative;
-}
-.sb-item:hover{color:var(--text);}
-.sb-item.on{color:var(--green);}
-.sb-item.on::before{
-  content:'';position:absolute;left:-16px;top:50%;transform:translateY(-50%);
-  width:3px;height:12px;background:var(--green);border-radius:1px;
-}
-.sb-count{font-size:10px;color:var(--text-3);opacity:.6;}
-
-/* main col */
-.main-col{}
-
-/* toolbar */
-.toolbar{
-  display:flex;gap:10px;align-items:center;
-  margin-bottom:12px;flex-wrap:wrap;
-}
-.tb-search{
-  flex:1;min-width:200px;
-  border:1px solid var(--border-2);border-radius:8px;
-  background:var(--surf);
-  padding:9px 12px;
-  font-size:14px;color:var(--text);outline:none;
-  transition:border-color .15s;
-}
-.tb-search:focus{border-color:var(--blue);}
-.tb-search::placeholder{color:var(--text-3);}
-.tb-sel{
-  background:var(--surf);border:1px solid var(--border-2);
-  border-radius:8px;padding:9px 12px;
-  font-size:13px;font-weight:500;color:var(--text);outline:none;
-  transition:border-color .15s;cursor:pointer;
-}
-.tb-sel:focus{border-color:var(--blue);}
-
-/* result row */
-.result-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:12px;
-}
-.result-lbl{
-  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);
-}
-.pg-btns{display:flex;gap:6px;}
-.pg-btn{
-  padding:6px 14px;border-radius:6px;
-  font-size:12px;font-weight:600;
-  border:1px solid var(--border-2);background:var(--surf);
-  color:var(--text);cursor:pointer;transition:border-color .12s,color .12s;
-}
-.pg-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
-.pg-btn:disabled{opacity:.3;cursor:default;}
-
-/* data table */
-.data-tbl{
-  background:var(--surf);
-  border:1px solid var(--border-2);
-  border-radius:12px;overflow:hidden;
-}
-.tbl-hd{
-  display:grid;
-  grid-template-columns:1fr 130px 130px 130px 110px;
-  padding:10px 20px;
-  background:var(--surf-lo);
-  border-bottom:1px solid var(--border);
-}
-.tbl-hd-c{
-  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--text-3);
-}
-.tbl-hd-c.r{text-align:right;}
-.tbl-row{
-  display:grid;
-  grid-template-columns:1fr 130px 130px 130px 110px;
-  padding:0 20px;min-height:62px;align-items:center;
-  border-bottom:1px solid var(--border);
-  cursor:pointer;transition:background .08s;
-}
-.tbl-row:last-child{border-bottom:none;}
-.tbl-row:hover{background:var(--surf-lo);}
-.tbl-comm{font-size:14px;font-weight:700;color:var(--text);}
-.tbl-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
-.tbl-fob{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;text-align:right;}
-.tbl-chg{text-align:right;}
-.tbl-term{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;text-align:right;color:var(--text);}
-.tbl-status{text-align:right;}
-/* mobile rows */
-.mob-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;border-bottom:1px solid var(--border);
-  cursor:pointer;gap:12px;transition:background .08s;
-}
-.mob-row:last-child{border-bottom:none;}
-.mob-row:hover{background:var(--surf-lo);}
-.mob-comm{font-size:14px;font-weight:700;}
-.mob-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
-.mob-price{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--green);text-align:right;}
-.mob-chg{font-size:12px;text-align:right;margin-top:2px;}
-@media(min-width:701px){.mob-only{display:none!important;}}
-@media(max-width:700px){.desk-only{display:none!important;}}
-
-.tbl-footer{
-  padding:12px 20px;background:var(--surf-lo);
-  display:flex;align-items:center;justify-content:space-between;
-  border-top:1px solid var(--border);
-}
-.tbl-footer-lbl{font-size:11px;color:var(--text-3);}
-
-/* chips */
-.chip{
-  display:inline-flex;align-items:center;
-  padding:3px 9px;border-radius:20px;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:11px;font-weight:700;
-}
-.chip-up{background:rgba(186,26,26,.1);color:#ba1a1a;}
-.chip-dn{background:rgba(0,69,50,.1);color:#004532;}
-.chip-fl{background:var(--surf-lo);color:var(--text-3);}
-.status-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.04em;}
-.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.c-up{color:#ba1a1a;} .c-dn{color:#004532;} .c-fl{color:var(--text-3);}
-.c-green{color:var(--green);}
-
-/* ══════════════════════════════════
-   COMMODITY DETAIL PAGE
-   Matches avocados_agrax_price_detail
-══════════════════════════════════ */
-.cd-wrap{padding:40px 0 80px;}
-@media(max-width:640px){.cd-wrap{padding:20px 0 60px;}}
-
-.cd-hero{margin-bottom:32px;}
-.cd-hero h1{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:56px;font-weight:700;
-  color:var(--text);letter-spacing:-.03em;line-height:1.05;
-  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
-}
-.cd-cat-pill{
-  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
-  padding:4px 12px;border-radius:20px;
-  background:var(--surf-lo);color:var(--text-3);
-}
-.cd-sub{font-size:13px;color:var(--text-3);margin-top:6px;}
-@media(max-width:640px){.cd-hero h1{font-size:36px;}}
-
-/* 3 price blocks */
-.cd-prices{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  border:1px solid var(--border-2);border-radius:8px;
-  overflow:hidden;margin-bottom:40px;
-}
-.cd-pb{
-  padding:28px 24px;background:var(--surf);
-  border-right:1px solid var(--border);
-}
-.cd-pb:last-child{border-right:none;}
-.cd-pb-label{
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--text-3);margin-bottom:14px;
-}
-.cd-pb-price{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:32px;font-weight:700;color:var(--text);line-height:1;
-}
-.cd-pb-chg{
-  display:flex;align-items:center;gap:6px;
-  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;
-  margin-top:10px;
-}
-@media(max-width:640px){
-  .cd-prices{grid-template-columns:1fr;}
-  .cd-pb{border-right:none;border-bottom:1px solid var(--border);}
-  .cd-pb:last-child{border-bottom:none;}
-}
-
-/* detail two-col */
-.cd-cols{display:grid;grid-template-columns:5fr 7fr;gap:40px;align-items:start;}
-@media(max-width:880px){.cd-cols{grid-template-columns:1fr;gap:28px;}}
-
-.cd-sec-title{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:17px;font-weight:700;color:var(--text);
-  margin-bottom:16px;
-  display:flex;align-items:baseline;gap:8px;
-}
-.cd-sec-sub{font-size:13px;font-weight:400;color:var(--text-3);}
-
-/* origins table */
-.origins-tbl{
-  background:var(--surf);border:1px solid var(--border-2);
-  border-radius:8px;overflow:hidden;
-}
-.ot-hd{
-  display:grid;grid-template-columns:1fr 120px 80px;
-  padding:9px 16px;background:var(--surf-lo);
-  border-bottom:1px solid var(--border);
-}
-.ot-h{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);}
-.ot-h.r{text-align:right;}
-.ot-row{
-  display:grid;grid-template-columns:1fr 120px 80px;
-  padding:14px 16px;border-bottom:1px solid var(--border);
-  background:var(--surf);
-}
-.ot-row:last-child{border-bottom:none;}
-.ot-name{font-size:13px;font-weight:700;}
-.ot-pack{font-size:10px;color:var(--text-3);margin-top:2px;}
-.ot-price{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;text-align:right;}
-.ot-chg{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;text-align:right;}
-
-/* mkt condition box */
-.mkt-cond{
-  margin-top:16px;
-  background:var(--green-lt);border-left:4px solid var(--green);
-  border-radius:0 8px 8px 0;padding:18px 20px;
-}
-.mkt-cond-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:12px;}
-.mkt-cond-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.mkt-cond-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:500;}
-.mkt-cond-bullet{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;}
-.spark{display:flex;align-items:flex-end;gap:2px;height:44px;margin-top:12px;}
-.spark-b{flex:1;background:rgba(0,69,50,.15);border-radius:1px;cursor:pointer;transition:background .12s;}
-.spark-b:hover,.spark-b.hi{background:var(--green);}
-.spark-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-top:6px;}
-
-/* terminal grid */
-.term-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:1px;background:var(--border-2);
-  border:1px solid var(--border-2);border-radius:8px;overflow:hidden;
-}
-.tc{
-  background:var(--surf);padding:14px 16px;
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;transition:background .08s;
-}
-.tc:hover{background:var(--surf-lo);}
-.tc-mkt{font-size:13px;font-weight:700;color:var(--text);}
-.tc-date{font-size:10px;color:var(--text-3);margin-top:2px;}
-.tc-price{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;text-align:right;}
-.tc-chg{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;text-align:right;margin-top:2px;}
-
-/* arb box */
-.arb-box{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:16px;border:1px solid var(--border-2);border-radius:8px;
-  margin-top:16px;flex-wrap:wrap;
-}
-.arb-icon{
-  width:36px;height:36px;border-radius:6px;
-  background:rgba(64,89,170,.08);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--blue);font-size:16px;flex-shrink:0;
-}
-.arb-title{font-size:13px;font-weight:700;color:var(--text);}
-.arb-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
-.arb-btn{
-  padding:8px 16px;background:var(--blue);color:#fff;
-  font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  border:none;border-radius:4px;cursor:pointer;white-space:nowrap;
-  transition:opacity .12s;
-}
-.arb-btn:hover{opacity:.85;}
-
-/* ══════════════════════════════════
-   SHIPPING / COMPARE / SEARCH
-══════════════════════════════════ */
-.page-body{padding:28px 0 80px;}
-@media(max-width:640px){.page-body{padding:20px 0 60px;}}
-
-.empty-state{
-  padding:56px 20px;text-align:center;
-  font-size:14px;color:var(--text-3);
-}
-
-.cmp-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:13px 20px;border-bottom:1px solid var(--border);
-}
-.cmp-lbl{font-size:13px;color:var(--text-3);}
-.cmp-val{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;}
-
-/* ── MOBILE BOTTOM NAV ─────────────── */
-.bot-nav{display:none;}
-@media(max-width:640px){
-  .bot-nav{
-    display:flex;position:fixed;bottom:0;left:0;right:0;
-    z-index:200;height:54px;
-    background:#fff;border-top:1px solid var(--border-2);
-  }
-  body{padding-bottom:54px;}
-}
-.bn{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--text-3);background:none;border:none;cursor:pointer;
-  border-right:1px solid var(--border);
-}
-.bn:last-child{border-right:none;}
-.bn.on{color:var(--green);}
-.bn-ico{font-size:15px;line-height:1;}
-
-/* ── FOOTER ─────────────────────────── */
-.footer{
-  border-top:1px solid var(--border-2);
-  padding:40px 0;margin-top:40px;
-  background:var(--bg);
-}
-.footer-inner{
-  max-width:var(--max);margin:0 auto;padding:0 32px;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
-}
-.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--text);letter-spacing:.06em;text-transform:uppercase;}
-.footer-copy{font-size:11px;color:var(--text-3);margin-top:4px;letter-spacing:.04em;text-transform:uppercase;}
-.footer-links{display:flex;gap:24px;}
-.footer-link{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);text-decoration:underline;text-underline-offset:2px;cursor:pointer;transition:color .12s;}
-.footer-link:hover{color:var(--green);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>agraX | Wholesale Produce Prices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leaf: { 50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',800:'#166534',900:'#14532d' },
+                        earth: { 50:'#fafaf9',100:'#f5f5f4',200:'#e7e5e4',300:'#d6d3d1',400:'#a8a29e',500:'#78716c',600:'#57534e',700:'#44403c',800:'#292524',900:'#1c1917' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #fafaf9; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .nav-link.active { color: #16a34a; border-bottom: 2px solid #16a34a; }
+        .card-hover { transition: all 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
+    </style>
 </head>
-<body>
+<body class="font-sans text-earth-800">
 
-<!-- ══ NAV ══════════════════════════ -->
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="nav-logo" onclick="showPage('home')">agraX</div>
-    <div class="nav-links">
-      <button class="nav-link on" data-pg="home" onclick="showPage('home')">Markets</button>
-      <button class="nav-link" data-pg="shipping" onclick="showPage('shipping')">Shipping Points</button>
-      <button class="nav-link" data-pg="compare" onclick="showPage('compare')">Compare</button>
-    </div>
-    <div class="nav-search">
-      <svg class="nav-search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="ni" type="text" placeholder="Search produce: avocados, tomatoes, cilantro…"
-        oninput="navSearch(this.value)" onkeydown="navKey(event)" autocomplete="off" spellcheck="false">
-      <div class="nav-dd" id="ndd"></div>
-    </div>
-    <div class="nav-badge">USDA Live Prices · Updated 3× daily</div>
-  </div>
-</nav>
-
-<!-- ══ PAGE WRAP ═════════════════════ -->
-<div class="page-wrap">
-
-  <!-- ── HOME ──────────────────────── -->
-  <div id="pg-home">
-    <div class="cnt">
-      <div class="bc">
-        <span>Markets</span>
-        <span class="bc-sep">›</span>
-        <span class="bc-curr">Produce</span>
-      </div>
-      <div class="page-hd">
-        <div class="page-hd-row">
-          <div>
-            <h1 class="page-h1">Wholesale Produce Prices</h1>
-            <p class="page-sub">National terminal and FOB shipping point data · USDA Market News</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- category circles -->
-      <div class="cat-strip">
-        <button class="cat-btn on" id="cb-vegetables" onclick="setCT('vegetables')">
-          <div class="cat-circle"><img src="https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=128&q=70" alt=""></div>
-          Vegetables
-        </button>
-        <button class="cat-btn" id="cb-fruits" onclick="setCT('fruits')">
-          <div class="cat-circle"><img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=128&q=70" alt=""></div>
-          Fruits
-        </button>
-        <button class="cat-btn" id="cb-onions_potatoes" onclick="setCT('onions_potatoes')">
-          <div class="cat-circle"><img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=128&q=70" alt=""></div>
-          Onions &amp; Potatoes
-        </button>
-        <button class="cat-btn" id="cb-nuts" onclick="setCT('nuts')">
-          <div class="cat-circle"><img src="https://images.unsplash.com/photo-1525706080974-fe57a1a1b4a3?w=128&q=70" alt=""></div>
-          Nuts
-        </button>
-      </div>
-
-      <div class="two-col">
-        <!-- sidebar -->
-        <div class="sb">
-          <div class="sb-label">Terminal Markets</div>
-          <div class="sb-items" id="sb-items"></div>
-        </div>
-
-        <!-- main -->
-        <div class="main-col">
-          <div class="toolbar">
-            <input id="tf-q" class="tb-search" placeholder="Search by name, region or variety…" oninput="filterHome()">
-            <select id="tf-s" class="tb-sel" onchange="filterHome()">
-              <option value="comm">A → Z</option>
-              <option value="pl">Price ↑</option>
-              <option value="ph">Price ↓</option>
-              <option value="chg">Biggest Change</option>
-            </select>
-          </div>
-
-          <div class="result-row">
-            <span class="result-lbl" id="rl-home"></span>
-            <div class="pg-btns">
-              <button class="pg-btn" id="pp1" onclick="tPrev()" disabled>← Prev</button>
-              <button class="pg-btn" id="pn1" onclick="tNext()">Next →</button>
-            </div>
-          </div>
-
-          <div class="data-tbl">
-            <!-- desktop header -->
-            <div class="tbl-hd desk-only">
-              <div class="tbl-hd-c">Commodity</div>
-              <div class="tbl-hd-c r">FOB Avg</div>
-              <div class="tbl-hd-c r">WoW Change</div>
-              <div class="tbl-hd-c r">Terminal Avg</div>
-              <div class="tbl-hd-c r">Status</div>
-            </div>
-            <div id="home-rows"></div>
-            <div id="home-mob" class="mob-only"></div>
-            <div class="tbl-footer">
-              <span class="tbl-footer-lbl" id="pi-home"></span>
-              <div class="pg-btns">
-                <button class="pg-btn" id="pp2" onclick="tPrev()" disabled>← Prev</button>
-                <button class="pg-btn" id="pn2" onclick="tNext()">Next →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      <div class="footer-inner">
-        <div><div class="footer-logo">agraX Precision Ledger</div><div class="footer-copy">© 2024 agraX · Data sourced from USDA Market News</div></div>
-        <div class="footer-links">
-          <span class="footer-link">API Access</span>
-          <span class="footer-link">Methodology</span>
-          <span class="footer-link">Terms</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── COMMODITY DETAIL ───────────── -->
-  <div id="pg-commodity" class="hidden">
-    <div class="cnt">
-      <div class="cd-wrap">
-        <div class="bc" style="padding-top:18px">
-          <button style="background:none;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);padding:0;" onclick="showPage('home')">Markets</button>
-          <span class="bc-sep">›</span>
-          <span id="cd-bc-cat" class="bc-curr" style="color:var(--text-3)"></span>
-          <span class="bc-sep">›</span>
-          <span id="cd-bc-name" class="bc-curr"></span>
-        </div>
-
-        <div class="cd-hero">
-          <h1>
-            <span id="cd-h1"></span>
-            <span class="cd-cat-pill" id="cd-pill"></span>
-          </h1>
-          <p class="cd-sub" id="cd-sub"></p>
-        </div>
-
-        <!-- 3 price blocks -->
-        <div class="cd-prices">
-          <div class="cd-pb">
-            <div class="cd-pb-label">Current FOB Avg</div>
-            <div class="cd-pb-price" id="cd-fob">—</div>
-            <div class="cd-pb-chg" id="cd-fob-chg"></div>
-          </div>
-          <div class="cd-pb">
-            <div class="cd-pb-label" id="cd-term-lbl">Terminal Avg</div>
-            <div class="cd-pb-price" id="cd-term">—</div>
-            <div class="cd-pb-chg" id="cd-term-chg"></div>
-          </div>
-          <div class="cd-pb">
-            <div class="cd-pb-label">Spread / Margin</div>
-            <div class="cd-pb-price" style="color:var(--blue)" id="cd-spr">—</div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:8px" id="cd-spr-sub"></div>
-          </div>
-        </div>
-
-        <!-- Origins + Terminals -->
-        <div class="cd-cols">
-          <div>
-            <div class="cd-sec-title">Origins <span class="cd-sec-sub">(FOB)</span></div>
-            <div class="origins-tbl">
-              <div class="ot-hd">
-                <div class="ot-h">Source Point</div>
-                <div class="ot-h r">Price Range</div>
-                <div class="ot-h r">Change</div>
-              </div>
-              <div id="cd-origins"></div>
-            </div>
-            <div class="mkt-cond" id="cd-mkt-cond">
-              <div class="mkt-cond-lbl">Market Condition</div>
-              <div class="mkt-cond-list" id="cd-cond-items"></div>
-              <div class="spark" id="cd-spark"></div>
-              <div class="spark-lbl">7-Day Price Trend Index</div>
-            </div>
-          </div>
-          <div>
-            <div class="cd-sec-title">Terminal Markets <span class="cd-sec-sub">(Wholesale)</span></div>
-            <div class="term-grid" id="cd-term-grid"></div>
-            <div class="arb-box hidden" id="cd-arb">
-              <div style="display:flex;align-items:center;gap:12px">
-                <div class="arb-icon">⇄</div>
-                <div>
-                  <div class="arb-title" id="arb-t"></div>
-                  <div class="arb-sub" id="arb-s"></div>
+    <!-- Header -->
+    <header class="bg-white border-b border-earth-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="h-16 flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" onclick="navigate('home')" class="flex items-center">
+                    <img src="agrax-logo.png" alt="agraX" class="h-12 md:h-14" />
+                </a>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Home</a>
+                    <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Markets</a>
+                    <a href="#" onclick="navigate('commodities')" data-nav="commodities" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Commodities</a>
+                    <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Compare</a>
+                </nav>
+                
+                <!-- Search + Actions -->
+                <div class="flex items-center gap-3">
+                    <button onclick="navigate('search')" class="flex items-center gap-2 px-4 py-2 bg-earth-100 hover:bg-earth-200 rounded-lg text-sm text-earth-600 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span class="hidden sm:inline">Search</span>
+                    </button>
+                    <span id="headerDate" class="hidden lg:block text-xs text-earth-400"></span>
                 </div>
-              </div>
-              <button class="arb-btn" onclick="showPage('compare')">Compare Markets</button>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SHIPPING ───────────────────── -->
-  <div id="pg-shipping" class="hidden">
-    <div class="cnt">
-      <div class="page-body">
-        <h1 class="page-h1" style="margin-bottom:4px">Shipping Points</h1>
-        <p class="page-sub" style="margin-bottom:24px">FOB origin prices — what shippers charge at the source</p>
-        <div id="sp-loading" class="empty-state">Loading…</div>
-        <div id="sp-view" class="hidden">
-          <div class="toolbar" style="margin-bottom:12px">
-            <input id="sp-q" class="tb-search" placeholder="Search…" oninput="renderSP()">
-            <select id="sp-og" class="tb-sel" onchange="renderSP()"><option value="">All Origins</option></select>
-            <select id="sp-s" class="tb-sel" onchange="renderSP()">
-              <option value="comm">A → Z</option><option value="pl">Price ↑</option>
-              <option value="ph">Price ↓</option><option value="mov">Movement</option>
-            </select>
-          </div>
-          <div class="result-row" style="margin-bottom:10px">
-            <span class="result-lbl" id="sp-stats"></span>
-          </div>
-          <div class="data-tbl">
-            <div class="tbl-hd desk-only" style="grid-template-columns:1fr 140px 110px 120px 110px">
-              <div class="tbl-hd-c">Commodity · Origin</div>
-              <div class="tbl-hd-c r">FOB Price</div>
-              <div class="tbl-hd-c r">Mostly</div>
-              <div class="tbl-hd-c r">Condition</div>
-              <div class="tbl-hd-c r">Trading</div>
+            
+            <!-- Mobile Nav -->
+            <div class="md:hidden flex gap-1 pb-2 overflow-x-auto">
+                <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Home</a>
+                <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Markets</a>
+                <a href="#" onclick="navigate('commodities')" data-nav="commodities" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Commodities</a>
+                <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Compare</a>
             </div>
-            <div id="sp-body"></div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ── COMPARE ───────────────────── -->
-  <div id="pg-compare" class="hidden">
-    <div class="cnt">
-      <div class="page-body">
-        <h1 class="page-h1" style="margin-bottom:4px">Compare</h1>
-        <p class="page-sub" style="margin-bottom:24px">FOB source vs terminal destination — measure the spread</p>
-        <select id="cmp-sel" onchange="doCompare()" style="display:block;max-width:360px;background:var(--surf);border:1px solid var(--border-2);border-radius:8px;color:var(--text);font-size:14px;padding:10px 12px;outline:none;margin-bottom:24px;cursor:pointer;">
-          <option value="">Select a commodity…</option>
-        </select>
-        <div id="cmp-res" class="hidden">
-          <div class="data-tbl" style="margin-bottom:20px" id="cmp-flow"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <div>
-              <div class="result-lbl" style="margin-bottom:8px;display:block">FOB Sources</div>
-              <div class="data-tbl" id="cmp-ship"></div>
+    <!-- ==================== HOME PAGE ==================== -->
+    <div id="page-home" class="page active">
+        <!-- Hero -->
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-12 md:py-16">
+                <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
+                    Wholesale Produce <span class="text-leaf-600">Prices</span>
+                </h1>
+                <p class="text-earth-500 mb-8 max-w-xl">Real-time USDA terminal market data. Find prices, compare markets, make informed decisions.</p>
+                
+                <!-- Search Bar -->
+                <div class="flex gap-3 max-w-xl">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl text-base focus:border-leaf-500 focus:ring-2 focus:ring-leaf-100 bg-white" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+                    </div>
+                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium transition-colors">
+                        Search
+                    </button>
+                </div>
             </div>
-            <div>
-              <div class="result-lbl" style="margin-bottom:8px;display:block">Terminal Markets</div>
-              <div class="data-tbl" id="cmp-term"></div>
+        </section>
+
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-commodities">--</div>
+                    <div class="text-xs text-earth-500">Commodities</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-markets">--</div>
+                    <div class="text-xs text-earth-500">Markets</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-records">--</div>
+                    <div class="text-xs text-earth-500">Price Records</div>
+                </div>
+                <div class="bg-white rounded-xl border border-earth-200 p-4">
+                    <div class="text-2xl font-bold text-leaf-600" id="stat-avgprice">--</div>
+                    <div class="text-xs text-earth-500">Avg Price</div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
+
+            <!-- Categories Section -->
+            <section class="mb-10">
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by Category</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="categoriesGrid">
+                    <!-- Filled by JS -->
+                </div>
+            </section>
+
+            <!-- Markets Section -->
+            <section class="mb-10">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-earth-800">Terminal Markets</h2>
+                    <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium">View all →</a>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="marketsPreview">
+                    <!-- Filled by JS -->
+                </div>
+            </section>
+
+            <!-- Price Movers -->
+            <section class="mb-10">
+                <h2 class="text-xl font-bold text-earth-800 mb-4">Today's Price Movers</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <h3 class="text-sm font-semibold text-leaf-700 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            Prices Up
+                        </h3>
+                        <div id="home-pricesUp" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-earth-200 p-5">
+                        <h3 class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/></svg>
+                            Prices Down
+                        </h3>
+                        <div id="home-pricesDown" class="space-y-2"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-  </div>
 
-  <!-- ── SEARCH ────────────────────── -->
-  <div id="pg-search" class="hidden">
-    <div class="cnt">
-      <div class="page-body">
-        <h1 class="page-h1" style="margin-bottom:20px">Search</h1>
-        <div style="max-width:560px;margin-bottom:6px;position:relative;border-bottom:2px solid var(--border-2);padding-bottom:12px;">
-          <input id="sp-in" type="text" placeholder="Search by name, region or variety…" autocomplete="off"
-            style="width:100%;background:transparent;border:none;outline:none;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;color:var(--text);padding-left:0;"
-            oninput="doSearch()"
-            onfocus="this.parentElement.style.borderBottomColor='var(--blue)'"
-            onblur="this.parentElement.style.borderBottomColor='var(--border-2)'">
-        </div>
-        <div id="sp-info" style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px"></div>
-        <div class="data-tbl hidden" id="sp-res">
-          <div class="tbl-hd desk-only">
-            <div class="tbl-hd-c">Commodity</div>
-            <div class="tbl-hd-c r">FOB Avg</div>
-            <div class="tbl-hd-c r">WoW Change</div>
-            <div class="tbl-hd-c r">Terminal Avg</div>
-            <div class="tbl-hd-c r">Status</div>
-          </div>
-          <div id="sr-body"></div>
-        </div>
-      </div>
+    <!-- ==================== MARKETS PAGE ==================== -->
+    <div id="page-markets" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Terminal Markets</h1>
+                <p class="text-earth-500">Browse wholesale produce prices by USDA terminal market location.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketsFullGrid">
+                <!-- Filled by JS -->
+            </div>
+        </main>
     </div>
-  </div>
 
-</div><!-- end page-wrap -->
-
-<!-- BOTTOM NAV mobile -->
-<nav class="bot-nav">
-  <button class="bn on" data-pg="home" onclick="showPage('home')"><div class="bn-ico">⌂</div>Markets</button>
-  <button class="bn" data-pg="shipping" onclick="showPage('shipping')"><div class="bn-ico">◈</div>FOB</button>
-  <button class="bn" data-pg="compare" onclick="showPage('compare')"><div class="bn-ico">⇄</div>Compare</button>
-  <button class="bn" data-pg="search" onclick="showPage('search')"><div class="bn-ico">⌕</div>Search</button>
-</nav>
-
-<script>
-const API='https://produce-iq-production.up.railway.app';
-const G=id=>document.getElementById(id);
-const esc=s=>(s||'').replace(/'/g,"\\'");
-const fd=d=>{if(!d)return'';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});};
-const mon=r=>{const lo=parseFloat(r.price_low),hi=r.price_high?parseFloat(r.price_high):null;return hi&&Math.abs(hi-lo)>.01?`$${lo.toFixed(2)}–$${hi.toFixed(2)}`:`$${lo.toFixed(2)}`;};
-const mostly=r=>(r.price_mostly_low&&r.price_mostly_high)?`$${parseFloat(r.price_mostly_low).toFixed(2)}–$${parseFloat(r.price_mostly_high).toFixed(2)}`:'';
-const mvDir=m=>{if(!m)return'fl';if(m.includes('Higher'))return'up';if(m.includes('Lower'))return'dn';return'fl';};
-const arr=m=>{if(!m)return'—';if(m.includes('Higher'))return'↑';if(m.includes('Lower'))return'↓';return'—';};
-const condChip=m=>{if(!m)return`<span class="chip chip-fl">Steady</span>`;const d=mvDir(m);return`<span class="chip ${d==='up'?'chip-up':d==='dn'?'chip-dn':'chip-fl'}">${arr(m)} ${m}</span>`;};
-
-let tD=[],sD=[],dates=[],cache={};
-let movers={rising:[],falling:[]};
-let activeCT='vegetables',activeMkt='';
-let filt=[],pg=1;
-const PG=40;
-const MOVORD={'Much Higher':0,'Higher':1,'Slightly Higher':2,'Unchanged':3,'Slightly Lower':4,'Lower':5,'Much Lower':6};
-const CT_LBL={vegetables:'Vegetables',fruits:'Fruits',onions_potatoes:'Onions & Potatoes',nuts:'Nuts'};
-
-// Page nav
-const PAGES=['home','commodity','shipping','compare','search'];
-function showPage(p){
-  PAGES.forEach(id=>{const el=G('pg-'+id);if(el)el.className=p===id?'':'hidden';});
-  document.querySelectorAll('[data-pg]').forEach(b=>b.classList.toggle('on',b.dataset.pg===p));
-  window.scrollTo(0,0);
-  if(p==='shipping')loadSP();
-  if(p==='search')setTimeout(()=>G('sp-in')?.focus(),80);
-}
-function goComm(n){showPage('commodity');buildDetail(n);}
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')G('ndd')?.classList.remove('open');
-  if(e.key==='/'&&!['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();showPage('search');}
-});
-
-// Init
-async function init(){
-  try{
-    dates=await(await fetch(`${API}/dates?commodity_type=vegetables`)).json();
-    if(!dates.length)return;
-    const lat=await(await fetch(`${API}/commodities/by-date/${dates[0].date}?commodity_type=vegetables`)).json();
-    cache[dates[0].date]=lat;
-    tD=lat.filter(d=>d.market_type==='terminal');
-    for(let i=1;i<=6&&i<dates.length;i++){const d=await(await fetch(`${API}/commodities/by-date/${dates[i].date}?commodity_type=vegetables`)).json();cache[dates[i].date]=d;}
-    const mv=await(await fetch(`${API}/movers?market_type=terminal&commodity_type=vegetables`)).json();
-    movers=mv;
-    fetchFOB('vegetables');
-    buildSB();filterHome();buildCmp();
-  }catch(e){console.error(e);}
-}
-
-async function fetchFOB(ct){
-  try{
-    const sd=await(await fetch(`${API}/dates?market_type=shipping_point&commodity_type=${ct}`)).json();
-    if(sd.length)sD=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point&commodity_type=${ct}`)).json();
-  }catch(e){}
-}
-
-async function setCT(ct){
-  activeCT=ct;activeMkt='';
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
-  G('cb-'+ct)?.classList.add('on');
-  G('cb-'+ct)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  try{
-    const[dr,mr]=await Promise.all([
-      fetch(`${API}/dates?market_type=terminal&commodity_type=${ct}`).then(r=>r.json()),
-      fetch(`${API}/movers?market_type=terminal&commodity_type=${ct}`).then(r=>r.json()),
-    ]);
-    if(dr.length){const l=await(await fetch(`${API}/commodities/by-date/${dr[0].date}?commodity_type=${ct}`)).json();tD=l.filter(d=>d.market_type==='terminal');}
-    else tD=[];
-    movers=mr;fetchFOB(ct);buildSB();filterHome();buildCmp();
-  }catch(e){}
-}
-
-function buildSB(){
-  const mkts=['All','New York','Los Angeles','Chicago','Miami','Philadelphia','Baltimore','Boston','Atlanta','Detroit','San Francisco'];
-  G('sb-items').innerHTML=mkts.map(m=>`
-    <button class="sb-item ${(m==='All'&&activeMkt==='')||(m===activeMkt)?'on':''}" onclick="sbPick('${esc(m)}')">
-      <span>${m}</span>
-      <span class="sb-count">${m==='All'?tD.length:tD.filter(d=>d.market===m).length||''}</span>
-    </button>`).join('');
-}
-
-function sbPick(m){activeMkt=m==='All'?'':m;buildSB();G('tf-q').value='';filterHome();}
-
-// Nav search
-function navSearch(q){
-  const dd=G('ndd');
-  if(!q.trim()){dd.classList.remove('open');return;}
-  const comms=[...new Set(tD.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q.toLowerCase())).slice(0,7);
-  if(!comms.length){dd.innerHTML='<div style="padding:14px 16px;color:var(--text-3)">No results</div>';dd.classList.add('open');return;}
-  dd.innerHTML=comms.map(c=>{
-    const rows=tD.filter(d=>d.commodity===c);
-    const avg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/(rows.length||1);
-    const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===c);
-    return`<div class="ndd-row" onclick="G('ni').value='';G('ndd').classList.remove('open');goComm('${esc(c)}')">
-      <div><div class="ndd-name">${c}</div><div class="ndd-meta">${rows.length} listings · ${[...new Set(rows.map(r=>r.market))].length} markets</div></div>
-      <div><div class="ndd-price">$${avg.toFixed(2)}</div>${mv?`<div class="ndd-chg ${mv.pct_change>0?'c-up':'c-dn'}">${mv.pct_change>0?'+':''}${mv.pct_change.toFixed(1)}%</div>`:''}</div>
-    </div>`;
-  }).join('')+`<div class="ndd-more" onclick="showPage('search');G('sp-in').value='${esc(q)}';doSearch();G('ndd').classList.remove('open')">See all results →</div>`;
-  dd.classList.add('open');
-}
-function navKey(e){
-  if(e.key==='Enter'){const q=G('ni').value.trim();if(q){showPage('search');G('sp-in').value=q;doSearch();G('ndd').classList.remove('open');}}
-  if(e.key==='Escape')G('ndd').classList.remove('open');
-}
-document.addEventListener('click',e=>{if(!e.target.closest('.nav-search'))G('ndd')?.classList.remove('open');});
-
-// Week change
-function wkChg(c){
-  const t=tD.filter(d=>d.commodity===c),w=(cache[dates[6]?.date]||[]).filter(d=>d.commodity===c);
-  if(!t.length||!w.length)return 0;
-  const ta=t.reduce((s,d)=>s+parseFloat(d.price_low),0)/t.length;
-  const wa=w.reduce((s,d)=>s+parseFloat(d.price_low),0)/w.length;
-  return((ta-wa)/wa)*100;
-}
-
-// Row renderer
-function mkRow(r){
-  const chg=wkChg(r.commodity);const iU=chg>1,iD=chg<-1;
-  const fob=sD.filter(d=>d.commodity===r.commodity&&d.price_low!=null).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low))[0];
-  const termRows=tD.filter(d=>d.commodity===r.commodity);
-  const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
-  const status=iU?'VOLATILE':iD?'BEARISH':chg>.5?'BULLISH':'STABLE';
-  const sc=iU?'c-up':iD?'c-dn':'c-fl';
-  return`<div class="tbl-row desk-only" onclick="goComm('${esc(r.commodity)}')">
-    <div>
-      <div class="tbl-comm">${r.organic?`<span class="chip chip-dn" style="margin-right:4px;font-size:9px">ORG</span>`:''}${r.commodity}</div>
-      <div class="tbl-sub">${[r.variety,r.origin,fd(r.report_date)].filter(Boolean).join(' · ')}</div>
+    <!-- ==================== MARKET DETAIL PAGE ==================== -->
+    <div id="page-market-detail" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Markets</a>
+                <h1 id="marketDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
+                <p id="marketDetailStats" class="text-earth-500"></p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                            <th class="text-right px-4 py-3 font-medium hidden sm:table-cell">7D Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketDetailTable"></tbody>
+                </table>
+            </div>
+        </main>
     </div>
-    <div class="tbl-fob">${fob?`$${parseFloat(fob.price_low).toFixed(2)}`:'—'}</div>
-    <div class="tbl-chg"><span class="chip ${iU?'chip-up':iD?'chip-dn':'chip-fl'}">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span><div style="font-size:10px;color:var(--text-3);margin-top:2px">WoW Change</div></div>
-    <div class="tbl-term">${termAvg?`$${termAvg.toFixed(2)}`:'—'}</div>
-    <div class="tbl-status"><span class="status-dot ${sc}"><span class="dot" style="background:currentColor"></span>${status}</span></div>
-  </div>
-  <div class="mob-row mob-only" onclick="goComm('${esc(r.commodity)}')">
-    <div><div class="mob-comm">${r.commodity}</div><div class="mob-sub">${[fd(r.report_date),r.market,r.origin].filter(Boolean).join(' · ')}</div></div>
-    <div><div class="mob-price">$${parseFloat(r.price_low).toFixed(2)}</div><div class="mob-chg ${sc}">${iU?'+':''}${chg.toFixed(1)}%</div></div>
-  </div>`;
-}
 
-function filterHome(){
-  const q=G('tf-q').value.toLowerCase().trim(),s=G('tf-s').value;
-  filt=tD.filter(d=>{
-    if(activeMkt&&d.market!==activeMkt)return false;
-    if(q&&!`${d.commodity} ${d.variety||''} ${d.origin||''} ${d.market}`.toLowerCase().includes(q))return false;
-    return true;
-  });
-  if(s==='comm')filt.sort((a,b)=>a.commodity.localeCompare(b.commodity));
-  else if(s==='pl')filt.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  else if(s==='ph')filt.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low));
-  else if(s==='chg')filt.sort((a,b)=>Math.abs(wkChg(b.commodity))-Math.abs(wkChg(a.commodity)));
-  pg=1;renderHome();
-}
+    <!-- ==================== COMMODITIES PAGE ==================== -->
+    <div id="page-commodities" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Commodities</h1>
+                <p class="text-earth-500">Browse wholesale produce by category.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap gap-2 mb-6" id="commodityCategoryTabs"></div>
+            
+            <!-- Commodities Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="commoditiesGrid"></div>
+        </main>
+    </div>
 
-function renderHome(){
-  const st=(pg-1)*PG,items=filt.slice(st,st+PG),tot=Math.ceil(filt.length/PG)||1;
-  G('rl-home').textContent=`SHOWING ${st+1}–${Math.min(st+items.length,filt.length)} OF ${filt.length} COMMODITIES`;
-  G('pi-home').textContent=`${filt.length} results · page ${pg}/${tot}`;
-  ['pp1','pp2'].forEach(id=>{const b=G(id);if(b)b.disabled=pg<=1;});
-  ['pn1','pn2'].forEach(id=>{const b=G(id);if(b)b.disabled=pg>=tot;});
-  G('home-rows').innerHTML=items.map(mkRow).join('');
-  G('home-mob').innerHTML=''; // mob handled inside mkRow
-}
-function tPrev(){if(pg>1){pg--;renderHome();window.scrollTo(0,300);}}
-function tNext(){pg++;renderHome();window.scrollTo(0,300);}
+    <!-- ==================== COMMODITY DETAIL PAGE ==================== -->
+    <div id="page-commodity-detail" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <a href="#" onclick="navigate('commodities')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Commodities</a>
+                <h1 id="commodityDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
+                <p id="commodityDetailStats" class="text-earth-500"></p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Price Chart -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-earth-200 p-5">
+                    <h3 class="font-semibold text-earth-800 mb-4">7-Day Price Trend</h3>
+                    <div class="h-64"><canvas id="commodityChart"></canvas></div>
+                </div>
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl border border-earth-200 p-5">
+                    <h3 class="font-semibold text-earth-800 mb-4">Price Summary</h3>
+                    <div id="commodityQuickStats" class="space-y-3"></div>
+                </div>
+            </div>
+            
+            <!-- Markets Table -->
+            <div class="mt-6 bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <div class="px-5 py-4 border-b border-earth-200">
+                    <h3 class="font-semibold text-earth-800">Prices by Market</h3>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Market</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Origin</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Variety</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commodityMarketsTable"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
 
-// ════════════════════════════════
-// COMMODITY DETAIL
-// ════════════════════════════════
-function buildDetail(name){
-  const tr=tD.filter(d=>d.commodity===name);
-  const fr=sD.filter(d=>d.commodity===name&&d.price_low!=null);
-  const mv=[...(movers.rising||[]),...(movers.falling||[])].find(m=>m.commodity===name);
-  const sTR=[...tr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  const sFR=[...fr].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  const avgT=tr.length?tr.reduce((s,d)=>s+parseFloat(d.price_low),0)/tr.length:null;
-  const loF=sFR.length?parseFloat(sFR[0].price_low):null;
-  const spr=(loF&&avgT)?avgT-loF:null;
-  const sprP=(spr&&loF)?((spr/loF)*100):null;
-  const mkts=[...new Set(tr.map(r=>r.market))];
-  const dt=tr[0]?.report_date;
+    <!-- ==================== COMPARE PAGE ==================== -->
+    <div id="page-compare" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Compare Prices</h1>
+                <p class="text-earth-500">Compare the same commodity across different markets to find the best deal.</p>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Commodity Selector -->
+            <div class="bg-white rounded-xl border border-earth-200 p-5 mb-6">
+                <label class="block text-sm font-medium text-earth-700 mb-2">Select a commodity to compare:</label>
+                <select id="compareSelect" onchange="runCompare()" class="w-full max-w-md px-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500">
+                    <option value="">Choose commodity...</option>
+                </select>
+            </div>
+            
+            <!-- Comparison Results -->
+            <div id="compareResults" class="hidden">
+                <h3 class="text-lg font-semibold text-earth-800 mb-4" id="compareTitle"></h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="compareGrid"></div>
+            </div>
+        </main>
+    </div>
 
-  G('cd-h1').textContent=name;
-  G('cd-pill').textContent=CT_LBL[activeCT]||'';
-  G('cd-bc-name').textContent=name;
-  G('cd-bc-cat').textContent=CT_LBL[activeCT]||'';
-  G('cd-sub').textContent=['Market Overview',tr[0]?.variety?tr[0].variety+' Variety':'',dt?fmtDateLong(dt):''].filter(Boolean).join(' · ');
-  G('cd-term-lbl').textContent=`Terminal Avg (${mkts.length} Markets)`;
+    <!-- ==================== SEARCH PAGE ==================== -->
+    <div id="page-search" class="page">
+        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-4">Search</h1>
+                <div class="flex gap-3 max-w-2xl">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="searchInput" type="text" placeholder="Search commodities, markets, origins..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500" onkeydown="if(event.key==='Enter')runSearch()"/>
+                    </div>
+                    <select id="searchMarketFilter" class="px-4 py-3 border border-earth-300 rounded-xl bg-white">
+                        <option value="">All Markets</option>
+                    </select>
+                    <button onclick="runSearch()" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium">Search</button>
+                </div>
+            </div>
+        </section>
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <p id="searchResultsInfo" class="text-sm text-earth-500 mb-4"></p>
+            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium">Commodity</th>
+                            <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
+                            <th class="text-left px-4 py-3 font-medium hidden lg:table-cell">Origin</th>
+                            <th class="text-left px-4 py-3 font-medium">Market</th>
+                            <th class="text-right px-4 py-3 font-medium">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchResultsTable">
+                        <tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">Enter a search term above</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-4">
+                <span id="searchPageInfo" class="text-sm text-earth-500"></span>
+                <div class="flex gap-2">
+                    <button id="searchPrevBtn" onclick="searchPrev()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40" disabled>← Prev</button>
+                    <button id="searchNextBtn" onclick="searchNext()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40">Next →</button>
+                </div>
+            </div>
+        </main>
+    </div>
 
-  // FOB block
-  if(loF){G('cd-fob').textContent=`$${sFR[0].price_low}${sFR.length>1&&sFR[sFR.length-1].price_low!==sFR[0].price_low?`–$${sFR[sFR.length-1].price_low}`:''}`;
-    if(mv){const u=mv.pct_change>0;G('cd-fob-chg').innerHTML=`<span style="color:${u?'var(--red)':'var(--green)'}">${u?'↑':'↓'} ${u?'+':''}${mv.pct_change.toFixed(1)}% WoW</span>`;}}
-  else{G('cd-fob').textContent='—';G('cd-fob-chg').innerHTML='';}
+    <!-- Footer -->
+    <footer class="border-t border-earth-200 bg-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-earth-500">
+            <div class="flex items-center gap-3">
+                <img src="agrax-logo.png" alt="agraX" class="h-8" />
+                <span class="text-earth-400">Wholesale Produce Market Data</span>
+            </div>
+            <div>Data from USDA Agricultural Marketing Service</div>
+        </div>
+    </footer>
 
-  // Terminal block
-  const wc=wkChg(name);const wu=wc>1,wd=wc<-1;
-  G('cd-term').textContent=avgT?`$${avgT.toFixed(2)}`:'—';
-  G('cd-term-chg').innerHTML=avgT?`<span style="color:${wu?'var(--red)':wd?'var(--green)':'var(--text-3)'}">${wu?'↑':wd?'↓':'—'} ${wu?'+':''}${wc.toFixed(1)}% WoW</span>`:'';
-
-  // Spread block
-  G('cd-spr').textContent=spr?`$${spr.toFixed(2)}`:'—';
-  G('cd-spr-sub').textContent=sprP?`${sprP.toFixed(0)}% – ${(sprP*1.2).toFixed(0)}% gross margin`:'';
-
-  // Origins
-  G('cd-origins').innerHTML=sFR.length?sFR.slice(0,5).map(r=>`
-    <div class="ot-row">
-      <div><div class="ot-name">${r.origin||r.market||'—'}</div><div class="ot-pack">${r.size||''}</div></div>
-      <div class="ot-price">$${parseFloat(r.price_low).toFixed(2)}${r.price_high?`–$${parseFloat(r.price_high).toFixed(2)}`:''}</div>
-      <div class="ot-chg ${mvDir(r.movement)==='up'?'c-up':mvDir(r.movement)==='dn'?'c-dn':'c-fl'}">${r.movement?arr(r.movement)+' '+r.movement:'—'}</div>
-    </div>`).join(''):'<div class="empty-state" style="padding:20px">No FOB data</div>';
-
-  // Market condition
-  const rN=fr.filter(r=>(r.movement||'').includes('Higher')).length;
-  const dN=fr.filter(r=>(r.movement||'').includes('Lower')).length;
-  const items=[];
-  if(rN>dN&&rN>0)items.push(`${rN} of ${fr.length} shipping regions reporting Higher — supply tightening`);
-  else if(dN>rN&&dN>0)items.push(`${dN} of ${fr.length} regions reporting Lower — supply building`);
-  else if(fr.length)items.push('Supply levels stable across major shipping regions');
-  if(mv&&Math.abs(mv.pct_change)>15)items.push(`Terminal price ${mv.pct_change>0?'up':'down'} ${Math.abs(mv.pct_change).toFixed(0)}% vs last week`);
-  if(sFR[0])items.push(`Lowest FOB: ${sFR[0].origin||sFR[0].market} at $${parseFloat(sFR[0].price_low).toFixed(2)}`);
-  G('cd-cond-items').innerHTML=(items.length?items:['Stable market conditions']).map(t=>`<div class="mkt-cond-item"><div class="mkt-cond-bullet"></div>${t}</div>`).join('');
-
-  // Sparkline
-  const spData=[];
-  for(let i=6;i>=0;i--){const w=(cache[dates[i]?.date]||[]).filter(d=>d.commodity===name&&d.market_type==='terminal');const a=w.length?w.reduce((s,d)=>s+parseFloat(d.price_low),0)/w.length:null;spData.push(a);}
-  const valid=spData.filter(v=>v!=null);
-  const mn=Math.min(...valid)||0,mx=Math.max(...valid)||1;
-  G('cd-spark').innerHTML=spData.map((v,i)=>{
-    const h=v?Math.max(8,Math.round(((v-mn)/(mx-mn||1))*100)):15;
-    return`<div class="spark-b ${i===spData.length-1?'hi':''}" style="height:${h}%" title="${v?'$'+v.toFixed(2):''}"></div>`;
-  }).join('');
-
-  // Terminal grid
-  const byM={};tr.forEach(r=>{if(!byM[r.market]||parseFloat(r.price_low)<parseFloat(byM[r.market].price_low))byM[r.market]=r;});
-  const mR=Object.values(byM).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  G('cd-term-grid').innerHTML=mR.map((r,i)=>{
-    const tp=parseFloat(r.price_low),c=wkChg(r.commodity);const u=c>1,dn=c<-1;
-    return`<div class="tc" onclick="sbPick('${esc(r.market)}');showPage('home')">
-      <div><div class="tc-mkt">${r.market}</div><div class="tc-date">${fd(r.report_date)}</div></div>
-      <div><div class="tc-price" style="color:${i===0?'var(--green)':'var(--text)'}">$${tp.toFixed(2)}</div>
-        <div class="tc-chg ${u?'c-up':dn?'c-dn':'c-fl'}">${u?'↑':dn?'↓':'—'} ${Math.abs(c).toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('')||'<div class="empty-state" style="padding:20px">No terminal data</div>';
-
-  // Arb
-  if(mR.length>=2){
-    const lo=mR[0],hi=mR[mR.length-1];
-    const diff=parseFloat(hi.price_low)-parseFloat(lo.price_low);
-    const pct=((diff/parseFloat(lo.price_low))*100).toFixed(0);
-    if(diff>2){
-      G('arb-t').textContent=`${lo.market}–${hi.market} Arbitrage Opportunity`;
-      G('arb-s').textContent=`Price differential of $${diff.toFixed(2)}/unit (+${pct}%)`;
-      G('cd-arb').classList.remove('hidden');
-    }else G('cd-arb').classList.add('hidden');
-  }else G('cd-arb').classList.add('hidden');
-}
-
-function fmtDateLong(d){const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
-
-// Shipping
-async function loadSP(){
-  G('sp-loading').classList.remove('hidden');G('sp-view').classList.add('hidden');
-  try{
-    const sd=await(await fetch(`${API}/dates?market_type=shipping_point`)).json();
-    if(!sd.length){G('sp-loading').textContent='No data.';return;}
-    sD=await(await fetch(`${API}/commodities/by-date/${sd[0].date}?market_type=shipping_point`)).json();
-    const origs=[...new Set(sD.map(r=>r.origin||r.market).filter(Boolean))].sort();
-    G('sp-og').innerHTML='<option value="">All Origins</option>'+origs.map(o=>`<option>${o}</option>`).join('');
-    G('sp-loading').classList.add('hidden');G('sp-view').classList.remove('hidden');renderSP();
-  }catch(e){G('sp-loading').textContent='Error.';}
-}
-function renderSP(){
-  const q=(G('sp-q')?.value||'').toLowerCase(),og=G('sp-og')?.value||'',s=G('sp-s')?.value||'comm';
-  let rows=sD.filter(r=>{
-    if(r.price_low==null)return false;
-    if(og&&(r.origin||r.market)!==og)return false;
-    if(q&&!`${r.commodity} ${r.origin||''} ${r.market||''}`.toLowerCase().includes(q))return false;
-    return true;
-  });
-  if(s==='comm')rows.sort((a,b)=>a.commodity.localeCompare(b.commodity)||(a.origin||'').localeCompare(b.origin||''));
-  else if(s==='pl')rows.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  else if(s==='ph')rows.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low));
-  else if(s==='mov')rows.sort((a,b)=>(MOVORD[a.movement]??3)-(MOVORD[b.movement]??3)||a.commodity.localeCompare(b.commodity));
-  const rN=rows.filter(r=>(r.movement||'').includes('Higher')).length;
-  const dN=rows.filter(r=>(r.movement||'').includes('Lower')).length;
-  G('sp-stats').textContent=`SHOWING ${rows.length} RESULTS · ↑ ${rN} RISING · ↓ ${dN} FALLING`;
-  let last=null;
-  G('sp-body').innerHTML=rows.map((r,i)=>{
-    const isN=r.commodity!==last;last=r.commodity;
-    return`<div class="tbl-row" style="grid-template-columns:1fr 140px 110px 120px 110px;${isN&&i>0?'border-top:2px solid rgba(190,201,194,.3)':''}" onclick="goComm('${esc(r.commodity)}')">
-      <div><div class="tbl-comm">${r.commodity}</div><div class="tbl-sub">${r.origin||r.market||'—'}${r.size?' · '+r.size:''}</div></div>
-      <div class="tbl-fob">$${parseFloat(r.price_low).toFixed(2)}</div>
-      <div style="font-size:13px;color:var(--text-3);text-align:right">${mostly(r)||'—'}</div>
-      <div class="tbl-status">${condChip(r.movement)}</div>
-      <div style="font-size:11px;color:var(--text-3);text-align:right">${r.trading_activity||'—'}</div>
-    </div>`;
-  }).join('')||'<div class="empty-state">No results</div>';
-}
-
-// Compare
-function buildCmp(){
-  const comms=[...new Set(tD.map(d=>d.commodity))].sort();
-  G('cmp-sel').innerHTML='<option value="">Select a commodity…</option>'+comms.map(c=>`<option>${c}</option>`).join('');
-}
-function doCompare(){
-  const c=G('cmp-sel').value;
-  if(!c){G('cmp-res').classList.add('hidden');return;}
-  G('cmp-res').classList.remove('hidden');
-  const term=tD.filter(t=>t.commodity===c&&t.market_type==='terminal');
-  const ship=sD.filter(t=>t.commodity===c&&t.price_low!=null);
-  if(ship.length&&term.length){
-    const lo=ship.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low))[0];
-    const hi=term.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low))[0];
-    const mg=parseFloat(hi.price_low)-parseFloat(lo.price_low);
-    G('cmp-flow').innerHTML=
-      `<div class="cmp-row"><span class="cmp-lbl">Lowest FOB Origin</span><span class="cmp-val" style="font-family:'Space Grotesk',sans-serif">$${parseFloat(lo.price_low).toFixed(2)} <span style="font-size:12px;color:var(--text-3);font-family:'Inter',sans-serif">${lo.origin||lo.market}</span></span></div>`+
-      `<div class="cmp-row"><span class="cmp-lbl">Highest Terminal</span><span class="cmp-val" style="font-family:'Space Grotesk',sans-serif;color:var(--green)">$${parseFloat(hi.price_low).toFixed(2)} <span style="font-size:12px;color:var(--text-3);font-family:'Inter',sans-serif">${hi.market}</span></span></div>`+
-      `<div class="cmp-row" style="background:var(--surf-lo)"><span class="cmp-lbl" style="color:var(--green);font-weight:700">Spread / Margin</span><span class="cmp-val" style="font-family:'Space Grotesk',sans-serif;color:var(--green)">+$${mg.toFixed(2)}</span></div>`;
-  }else G('cmp-flow').innerHTML='<div class="empty-state">Not enough data</div>';
-  G('cmp-ship').innerHTML=ship.length?ship.slice(0,8).map(r=>`<div class="cmp-row"><span class="cmp-lbl">${r.origin||r.market}</span><span class="cmp-val" style="font-family:'Space Grotesk',sans-serif">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty-state">No FOB data</div>';
-  G('cmp-term').innerHTML=term.length?term.slice(0,8).map(r=>`<div class="cmp-row"><span class="cmp-lbl">${r.market}</span><span class="cmp-val" style="font-family:'Space Grotesk',sans-serif;color:var(--green)">$${parseFloat(r.price_low).toFixed(2)}</span></div>`).join(''):'<div class="empty-state">No data</div>';
-}
-
-// Search
-function doSearch(){
-  const q=(G('sp-in')?.value||'').toLowerCase().trim();
-  const res=G('sp-res');
-  if(!q){G('sp-info').textContent='';res.classList.add('hidden');return;}
-  const comms=[...new Set(tD.map(d=>d.commodity))].filter(c=>c.toLowerCase().includes(q));
-  G('sp-info').textContent=`SHOWING ${comms.length} RESULT${comms.length!==1?'S':''} FOR "${q.toUpperCase()}"`;
-  if(!comms.length){res.classList.add('hidden');return;}
-  res.classList.remove('hidden');
-  G('sr-body').innerHTML=comms.map(c=>{
-    const rows=tD.filter(t=>t.commodity===c&&t.market_type==='terminal');
-    const avg=rows.reduce((s,i)=>s+parseFloat(i.price_low),0)/(rows.length||1);
-    const fob=sD.filter(d=>d.commodity===c&&d.price_low!=null).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low))[0];
-    const chg=wkChg(c);const u=chg>1,dn=chg<-1;
-    const status=u?'VOLATILE':dn?'BEARISH':chg>.5?'BULLISH':'STABLE';
-    return`<div class="tbl-row" onclick="goComm('${esc(c)}')">
-      <div><div class="tbl-comm">${c}</div><div class="tbl-sub">${rows.length} listings · ${[...new Set(rows.map(i=>i.market))].length} markets</div></div>
-      <div class="tbl-fob">${fob?`$${parseFloat(fob.price_low).toFixed(2)}`:'—'}</div>
-      <div class="tbl-chg"><span class="chip ${u?'chip-up':dn?'chip-dn':'chip-fl'}">${u?'↑':dn?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span></div>
-      <div class="tbl-term">$${avg.toFixed(2)}</div>
-      <div class="tbl-status"><span class="status-dot ${u?'c-up':dn?'c-dn':'c-fl'}"><span class="dot" style="background:currentColor"></span>${status}</span></div>
-    </div>`;
-  }).join('');
-}
-
-init();
-</script>
+    <script>
+        const API = 'https://produce-iq-production.up.railway.app';
+        
+        let allData = [], datesData = {}, dates = [];
+        let searchPage = 1, searchResults = [];
+        const PAGE_SIZE = 25;
+        
+        const CATEGORIES = {
+            'Fruits': { emoji: '🍎', items: ['apple','pear','grape','peach','plum','cherry','nectarine','kiwi','melon','watermelon','mango','papaya','pineapple','banana'] },
+            'Vegetables': { emoji: '🥬', items: ['lettuce','tomato','pepper','onion','potato','carrot','celery','broccoli','cauliflower','cabbage','spinach','kale','cucumber','squash','zucchini','eggplant','corn','bean','pea','asparagus'] },
+            'Citrus': { emoji: '🍊', items: ['orange','lemon','lime','grapefruit','tangerine','mandarin','clementine'] },
+            'Berries': { emoji: '🍓', items: ['strawberr','blueberr','raspberr','blackberr','cranberr'] },
+            'Tropical': { emoji: '🥭', items: ['avocado','mango','papaya','pineapple','banana','coconut','kiwi'] },
+            'Organics': { emoji: '🌱', items: ['organic'] }
+        };
+        
+        function getCat(name) {
+            const l = name.toLowerCase();
+            for (const [cat, {items}] of Object.entries(CATEGORIES)) {
+                if (items.some(i => l.includes(i))) return cat;
+            }
+            return 'Other';
+        }
+        
+        function getTrend(commodity) {
+            if (dates.length < 2) return 0;
+            const today = datesData[dates[0].date]?.filter(x => x.commodity === commodity) || [];
+            const week = datesData[dates[Math.min(6, dates.length-1)].date]?.filter(x => x.commodity === commodity) || [];
+            if (!today.length || !week.length) return 0;
+            const avgToday = today.reduce((s,x) => s + parseFloat(x.price_low), 0) / today.length;
+            const avgWeek = week.reduce((s,x) => s + parseFloat(x.price_low), 0) / week.length;
+            return ((avgToday - avgWeek) / avgWeek) * 100;
+        }
+        
+        // ==================== NAVIGATION ====================
+        function navigate(page, param) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll(`[data-nav="${page}"]`).forEach(n => n.classList.add('active'));
+            window.scrollTo(0, 0);
+            
+            if (page === 'market-detail' && param) loadMarketDetail(param);
+            if (page === 'commodity-detail' && param) loadCommodityDetail(param);
+        }
+        
+        // ==================== INIT ====================
+        async function init() {
+            try {
+                dates = await (await fetch(`${API}/dates`)).json();
+                if (!dates.length) return;
+                
+                document.getElementById('headerDate').textContent = new Date(dates[0].date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+                
+                // Load current day
+                datesData[dates[0].date] = await (await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
+                allData = datesData[dates[0].date];
+                
+                // Load history for trends
+                for (let i = 1; i <= 6 && i < dates.length; i++) {
+                    try { datesData[dates[i].date] = await (await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json(); } catch {}
+                }
+                
+                populateHome();
+                populateMarketsPage();
+                populateCommoditiesPage();
+                populateComparePage();
+                populateSearchFilters();
+                
+            } catch(e) { console.error(e); }
+        }
+        
+        // ==================== HOME PAGE ====================
+        function populateHome() {
+            const commodities = [...new Set(allData.map(i => i.commodity))];
+            const markets = [...new Set(allData.map(i => i.market))];
+            const prices = allData.map(i => parseFloat(i.price_low)).filter(p => !isNaN(p));
+            
+            document.getElementById('stat-commodities').textContent = commodities.length;
+            document.getElementById('stat-markets').textContent = markets.length;
+            document.getElementById('stat-records').textContent = allData.length.toLocaleString();
+            document.getElementById('stat-avgprice').textContent = '$' + (prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2);
+            
+            // Categories
+            document.getElementById('categoriesGrid').innerHTML = Object.entries(CATEGORIES).map(([name, {emoji}]) => {
+                const count = allData.filter(i => getCat(i.commodity) === name).length;
+                return `
+                <div onclick="navigate('commodities');filterCommoditiesByCategory('${name}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer text-center">
+                    <div class="text-3xl mb-2">${emoji}</div>
+                    <div class="font-semibold text-earth-800">${name}</div>
+                    <div class="text-xs text-earth-500">${count} items</div>
+                </div>`;
+            }).join('');
+            
+            // Markets Preview (top 6)
+            const byMarket = {};
+            allData.forEach(i => {
+                if (!byMarket[i.market]) byMarket[i.market] = [];
+                byMarket[i.market].push(i);
+            });
+            const topMarkets = Object.entries(byMarket).sort((a,b) => b[1].length - a[1].length).slice(0, 6);
+            
+            document.getElementById('marketsPreview').innerHTML = topMarkets.map(([market, items]) => {
+                const topItems = [...new Set(items.map(i => i.commodity))].slice(0, 3);
+                return `
+                <div onclick="navigate('market-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-leaf-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-leaf-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-earth-800">${market}</div>
+                            <div class="text-xs text-earth-500">${items.length} listings</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-earth-500">Top: ${topItems.join(', ')}</div>
+                </div>`;
+            }).join('');
+            
+            // Price Movers
+            const changes = commodities.map(c => ({ commodity: c, change: getTrend(c) })).filter(c => Math.abs(c.change) > 1);
+            const up = changes.filter(c => c.change > 0).sort((a,b) => b.change - a.change).slice(0, 5);
+            const down = changes.filter(c => c.change < 0).sort((a,b) => a.change - b.change).slice(0, 5);
+            
+            document.getElementById('home-pricesUp').innerHTML = up.map(c => `
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
+                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-leaf-600">+${c.change.toFixed(1)}%</span>
+                </div>
+            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+            
+            document.getElementById('home-pricesDown').innerHTML = down.map(c => `
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
+                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-red-600">${c.change.toFixed(1)}%</span>
+                </div>
+            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+        }
+        
+        // ==================== MARKETS PAGE ====================
+        function populateMarketsPage() {
+            const byMarket = {};
+            allData.forEach(i => {
+                if (!byMarket[i.market]) byMarket[i.market] = { items: [], total: 0 };
+                byMarket[i.market].items.push(i);
+                byMarket[i.market].total += parseFloat(i.price_low) || 0;
+            });
+            
+            document.getElementById('marketsFullGrid').innerHTML = Object.entries(byMarket)
+                .sort((a,b) => b[1].items.length - a[1].items.length)
+                .map(([market, data]) => {
+                    const avg = data.total / data.items.length;
+                    const commodities = [...new Set(data.items.map(i => i.commodity))];
+                    return `
+                    <div onclick="navigate('market-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-leaf-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-leaf-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-earth-800">${market}</div>
+                                <div class="text-sm text-earth-500">${data.items.length} listings · ${commodities.length} commodities</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-earth-500">Avg price</span>
+                            <span class="font-semibold text-leaf-600">$${avg.toFixed(2)}</span>
+                        </div>
+                    </div>`;
+                }).join('');
+        }
+        
+        function loadMarketDetail(market) {
+            const items = allData.filter(i => i.market === market);
+            document.getElementById('marketDetailTitle').textContent = market;
+            document.getElementById('marketDetailStats').textContent = `${items.length} listings · ${[...new Set(items.map(i=>i.commodity))].length} commodities`;
+            
+            document.getElementById('marketDetailTable').innerHTML = items
+                .sort((a,b) => a.commodity.localeCompare(b.commodity))
+                .map(item => {
+                    const price = parseFloat(item.price_low);
+                    const change = getTrend(item.commodity);
+                    const isUp = change > 0.5, isDown = change < -0.5;
+                    return `
+                    <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                        <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                        <td class="px-4 py-3 text-right font-mono font-semibold">$${price.toFixed(2)}</td>
+                        <td class="px-4 py-3 text-right hidden sm:table-cell">
+                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                                ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
+                            </span>
+                        </td>
+                    </tr>`;
+                }).join('');
+        }
+        
+        // ==================== COMMODITIES PAGE ====================
+        let currentCatFilter = 'All';
+        
+        function populateCommoditiesPage() {
+            // Category tabs
+            document.getElementById('commodityCategoryTabs').innerHTML = 
+                `<button onclick="filterCommoditiesByCategory('All')" data-cat="All" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-leaf-600 text-white">All</button>` +
+                Object.entries(CATEGORIES).map(([name, {emoji}]) => 
+                    `<button onclick="filterCommoditiesByCategory('${name}')" data-cat="${name}" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-white border border-earth-200 text-earth-700 hover:border-leaf-500">${emoji} ${name}</button>`
+                ).join('');
+            
+            renderCommoditiesGrid();
+        }
+        
+        function filterCommoditiesByCategory(cat) {
+            currentCatFilter = cat;
+            document.querySelectorAll('.cat-tab').forEach(t => {
+                const isActive = t.dataset.cat === cat;
+                t.classList.toggle('bg-leaf-600', isActive);
+                t.classList.toggle('text-white', isActive);
+                t.classList.toggle('bg-white', !isActive);
+                t.classList.toggle('text-earth-700', !isActive);
+            });
+            renderCommoditiesGrid();
+        }
+        
+        function renderCommoditiesGrid() {
+            let items = allData;
+            if (currentCatFilter !== 'All') {
+                items = items.filter(i => getCat(i.commodity) === currentCatFilter);
+            }
+            
+            const byCommodity = {};
+            items.forEach(i => {
+                if (!byCommodity[i.commodity]) byCommodity[i.commodity] = { items: [], total: 0 };
+                byCommodity[i.commodity].items.push(i);
+                byCommodity[i.commodity].total += parseFloat(i.price_low) || 0;
+            });
+            
+            document.getElementById('commoditiesGrid').innerHTML = Object.entries(byCommodity)
+                .sort((a,b) => a[0].localeCompare(b[0]))
+                .map(([commodity, data]) => {
+                    const avg = data.total / data.items.length;
+                    const change = getTrend(commodity);
+                    const isUp = change > 0.5, isDown = change < -0.5;
+                    return `
+                    <div onclick="navigate('commodity-detail','${commodity}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer">
+                        <div class="font-semibold text-earth-800 mb-1">${commodity}</div>
+                        <div class="text-xs text-earth-500 mb-3">${data.items.length} listings</div>
+                        <div class="flex justify-between items-end">
+                            <span class="text-lg font-bold text-leaf-600">$${avg.toFixed(2)}</span>
+                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                                ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
+                            </span>
+                        </div>
+                    </div>`;
+                }).join('') || '<p class="col-span-4 text-center text-earth-400 py-8">No commodities found</p>';
+        }
+        
+        function loadCommodityDetail(commodity) {
+            const items = allData.filter(i => i.commodity === commodity);
+            const prices = items.map(i => parseFloat(i.price_low));
+            const markets = [...new Set(items.map(i => i.market))];
+            
+            document.getElementById('commodityDetailTitle').textContent = commodity;
+            document.getElementById('commodityDetailStats').textContent = `Available in ${markets.length} markets · ${items.length} listings`;
+            
+            // Quick stats
+            document.getElementById('commodityQuickStats').innerHTML = `
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">Low</span>
+                    <span class="font-semibold">$${Math.min(...prices).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">High</span>
+                    <span class="font-semibold">$${Math.max(...prices).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-earth-100">
+                    <span class="text-earth-500">Average</span>
+                    <span class="font-semibold text-leaf-600">$${(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2)}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-earth-500">7D Change</span>
+                    <span class="font-semibold ${getTrend(commodity) >= 0 ? 'text-leaf-600' : 'text-red-500'}">${getTrend(commodity) >= 0 ? '+' : ''}${getTrend(commodity).toFixed(1)}%</span>
+                </div>
+            `;
+            
+            // Markets table sorted by price
+            document.getElementById('commodityMarketsTable').innerHTML = items
+                .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
+                .map((item, i) => `
+                    <tr class="border-b border-earth-100 ${i === 0 ? 'bg-leaf-50' : 'hover:bg-earth-50'}">
+                        <td class="px-4 py-3 font-medium text-earth-800">${item.market} ${i === 0 ? '<span class="text-xs text-leaf-600 ml-2">Best price</span>' : ''}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.origin || '-'}</td>
+                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-right font-mono font-semibold ${i === 0 ? 'text-leaf-600' : ''}">$${parseFloat(item.price_low).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+            
+            // Chart
+            const history = [];
+            for (let i = Math.min(6, dates.length-1); i >= 0; i--) {
+                const d = dates[i].date;
+                const dayItems = datesData[d]?.filter(x => x.commodity === commodity) || [];
+                if (dayItems.length) history.push({ date: d, price: dayItems.reduce((s,x) => s + parseFloat(x.price_low), 0) / dayItems.length });
+            }
+            
+            setTimeout(() => {
+                const canvas = document.getElementById('commodityChart');
+                if (canvas && history.length) {
+                    if (canvas.chart) canvas.chart.destroy();
+                    canvas.chart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: history.map(h => new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
+                            datasets: [{
+                                data: history.map(h => h.price),
+                                borderColor: '#16a34a',
+                                backgroundColor: '#16a34a20',
+                                fill: true, tension: 0.4, pointRadius: 4,
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => '$' + v.toFixed(0) } } } }
+                    });
+                }
+            }, 100);
+        }
+        
+        // ==================== COMPARE PAGE ====================
+        function populateComparePage() {
+            const commodities = [...new Set(allData.map(i => i.commodity))].sort();
+            document.getElementById('compareSelect').innerHTML = '<option value="">Choose commodity...</option>' +
+                commodities.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        
+        function runCompare() {
+            const commodity = document.getElementById('compareSelect').value;
+            if (!commodity) {
+                document.getElementById('compareResults').classList.add('hidden');
+                return;
+            }
+            
+            const items = allData.filter(i => i.commodity === commodity);
+            document.getElementById('compareResults').classList.remove('hidden');
+            document.getElementById('compareTitle').textContent = `${commodity} prices across ${items.length} listings`;
+            
+            document.getElementById('compareGrid').innerHTML = items
+                .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
+                .map((item, i) => `
+                    <div class="bg-white rounded-xl border ${i === 0 ? 'border-leaf-400 ring-2 ring-leaf-100' : 'border-earth-200'} p-4">
+                        ${i === 0 ? '<div class="text-xs font-semibold text-leaf-600 mb-2">🏆 Best Price</div>' : ''}
+                        <div class="font-semibold text-earth-800">${item.market}</div>
+                        <div class="text-xs text-earth-500 mb-3">${item.origin || 'Domestic'} · ${item.variety || 'Standard'}</div>
+                        <div class="text-2xl font-bold ${i === 0 ? 'text-leaf-600' : 'text-earth-800'}">$${parseFloat(item.price_low).toFixed(2)}</div>
+                    </div>
+                `).join('');
+        }
+        
+        // ==================== SEARCH PAGE ====================
+        function populateSearchFilters() {
+            const markets = [...new Set(allData.map(i => i.market))].sort();
+            document.getElementById('searchMarketFilter').innerHTML = '<option value="">All Markets</option>' +
+                markets.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+        
+        function runSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const market = document.getElementById('searchMarketFilter').value;
+            
+            searchResults = allData.filter(item => {
+                if (market && item.market !== market) return false;
+                if (query && !`${item.commodity} ${item.variety || ''} ${item.origin || ''}`.toLowerCase().includes(query)) return false;
+                return true;
+            });
+            
+            searchPage = 1;
+            renderSearchResults();
+        }
+        
+        function renderSearchResults() {
+            const start = (searchPage - 1) * PAGE_SIZE;
+            const pageItems = searchResults.slice(start, start + PAGE_SIZE);
+            const totalPages = Math.ceil(searchResults.length / PAGE_SIZE) || 1;
+            
+            document.getElementById('searchResultsInfo').textContent = `${searchResults.length} results found`;
+            document.getElementById('searchPageInfo').textContent = `Page ${searchPage} of ${totalPages}`;
+            document.getElementById('searchPrevBtn').disabled = searchPage <= 1;
+            document.getElementById('searchNextBtn').disabled = searchPage >= totalPages;
+            
+            document.getElementById('searchResultsTable').innerHTML = pageItems.length ? pageItems.map(item => `
+                <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                    <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
+                    <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
+                    <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                    <td class="px-4 py-3 text-earth-600">${item.market}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold">$${parseFloat(item.price_low).toFixed(2)}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+        }
+        
+        function searchPrev() { if (searchPage > 1) { searchPage--; renderSearchResults(); } }
+        function searchNext() { searchPage++; renderSearchResults(); }
+        
+        // Init
+        init();
+    </script>
 </body>
 </html>
