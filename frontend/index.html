@@ -73,16 +73,45 @@
     <div id="page-home" class="page active">
         <!-- Hero -->
         <section class="relative border-b border-earth-200 overflow-hidden" style="min-height:280px;">
-            <!-- Background video -->
+            <!-- Background video — multiple sources for reliability -->
             <video
                 id="hero-video"
                 class="absolute inset-0 w-full h-full object-cover"
                 autoplay muted loop playsinline
                 style="pointer-events:none;"
+                onerror="this.style.display='none'"
             >
-                <!-- Pexels free stock — aerial agriculture / freight / produce -->
-                <source src="https://videos.pexels.com/video-files/4111930/4111930-uhd_2560_1440_25fps.mp4" type="video/mp4">
+                <!-- Mazwai free stock — wheat field aerial -->
+                <source src="https://mazwai.com/videvo_files/video/free/2019-02/small_watermarked/190128_04_MangoExport_preview.webm" type="video/webm">
+                <!-- Coverr free stock — agriculture field -->
+                <source src="https://coverr.co/videos/download/agriculture-1" type="video/mp4">
             </video>
+            <!-- Fallback: static gradient if video fails -->
+            <div id="hero-fallback" class="absolute inset-0" style="background:linear-gradient(135deg,#14532d 0%,#166534 40%,#15803d 100%);display:none;"></div>
+            <script>
+            (function(){
+                var v=document.getElementById('hero-video');
+                // Try multiple working free MP4 sources
+                var sources=[
+                    'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-corn-field-4596-large.mp4',
+                    'https://assets.mixkit.co/videos/preview/mixkit-truck-driving-on-a-road-4376-large.mp4',
+                    'https://assets.mixkit.co/videos/preview/mixkit-workers-picking-vegetables-4565-large.mp4'
+                ];
+                var idx=0;
+                function tryNext(){
+                    if(idx>=sources.length){
+                        v.style.display='none';
+                        document.getElementById('hero-fallback').style.display='block';
+                        return;
+                    }
+                    v.src=sources[idx++];
+                    v.load();
+                    v.play().catch(tryNext);
+                }
+                v.addEventListener('error',tryNext);
+                tryNext();
+            })();
+            </script>
             <!-- Dark overlay so text stays legible -->
             <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.58) 100%);"></div>
             <!-- Content -->
