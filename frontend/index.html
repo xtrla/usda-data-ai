@@ -27,7 +27,8 @@
         .nav-link.active { color: #16a34a; border-bottom: 2px solid #16a34a; }
         .card-hover { transition: all 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
-    </style>
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        </style>
 </head>
 <body class="font-sans text-earth-800">
 
@@ -71,24 +72,45 @@
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
         <!-- Hero -->
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
-            <div class="max-w-7xl mx-auto px-4 py-12 md:py-16">
-                <h1 class="text-3xl md:text-4xl font-bold text-earth-900 mb-3">
-                    Wholesale Produce <span class="text-leaf-600">Prices</span>
+        <section class="relative border-b border-earth-200 overflow-hidden" style="min-height:280px;">
+            <!-- Background video -->
+            <video
+                id="hero-video"
+                class="absolute inset-0 w-full h-full object-cover"
+                autoplay muted loop playsinline
+                style="pointer-events:none;"
+            >
+                <!-- Pexels free stock — aerial agriculture / freight / produce -->
+                <source src="https://videos.pexels.com/video-files/4111930/4111930-uhd_2560_1440_25fps.mp4" type="video/mp4">
+            </video>
+            <!-- Dark overlay so text stays legible -->
+            <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.58) 100%);"></div>
+            <!-- Content -->
+            <div class="relative z-10 max-w-7xl mx-auto px-4 py-14 md:py-20">
+                <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest" style="background:rgba(255,255,255,.12);color:#86efac;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 2s infinite;"></span>
+                    Live USDA Data
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-3" style="text-shadow:0 1px 4px rgba(0,0,0,.4);">
+                    Wholesale Produce <span style="color:#86efac;">Prices</span>
                 </h1>
-                <p class="text-earth-500 mb-8 max-w-xl">Real-time USDA terminal market data. Find prices, compare markets, make informed decisions.</p>
-                
+                <p class="mb-8 max-w-xl" style="color:rgba(255,255,255,.75);text-shadow:0 1px 3px rgba(0,0,0,.3);">Real-time USDA terminal market data. Find prices, compare markets, make informed decisions.</p>
                 <!-- Search Bar -->
                 <div class="flex gap-3 max-w-xl">
                     <div class="flex-1 relative">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl text-base focus:border-leaf-500 focus:ring-2 focus:ring-leaf-100 bg-white" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style="color:#9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 rounded-xl text-base bg-white" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.2);" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
                     </div>
-                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium transition-colors">
+                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 rounded-xl font-medium transition-colors text-white" style="background:#16a34a;box-shadow:0 2px 8px rgba(0,0,0,.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                         Search
                     </button>
                 </div>
             </div>
+            <!-- Mute/unmute toggle -->
+            <button onclick="var v=document.getElementById('hero-video');v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊';"
+                style="position:absolute;bottom:12px;right:14px;z-index:20;background:rgba(0,0,0,.4);border:none;color:#fff;font-size:14px;padding:4px 8px;border-radius:6px;cursor:pointer;backdrop-filter:blur(4px);">
+                🔇
+            </button>
         </section>
 
         <main class="max-w-7xl mx-auto px-4 py-8">
