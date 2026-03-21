@@ -6,63 +6,172 @@
     <title>agraX | Wholesale Produce Prices</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        leaf: { 50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',800:'#166534',900:'#14532d' },
-                        earth: { 50:'#fafaf9',100:'#f5f5f4',200:'#e7e5e4',300:'#d6d3d1',400:'#a8a29e',500:'#78716c',600:'#57534e',700:'#44403c',800:'#292524',900:'#1c1917' }
+                        // Enterprise slate — primary surface palette
+                        slate: {
+                            950: '#020817', 900: '#0f172a', 850: '#131f35',
+                            800: '#1e293b', 750: '#243044', 700: '#334155',
+                            600: '#475569', 500: '#64748b', 400: '#94a3b8',
+                            300: '#cbd5e1', 200: '#e2e8f0', 100: '#f1f5f9', 50: '#f8fafc'
+                        },
+                        // Accent — enterprise green (restrained, not leafy)
+                        brand: {
+                            900: '#052e16', 800: '#064e3b', 700: '#065f46',
+                            600: '#047857', 500: '#059669', 400: '#10b981',
+                            300: '#34d399', 200: '#a7f3d0', 100: '#d1fae5', 50: '#ecfdf5'
+                        },
+                        // Signal colors
+                        up:   { DEFAULT: '#10b981', light: '#d1fae5', dark: '#065f46' },
+                        down: { DEFAULT: '#f43f5e', light: '#ffe4e6', dark: '#9f1239' },
+                        warn: { DEFAULT: '#f59e0b', light: '#fef3c7', dark: '#92400e' },
                     },
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                    fontFamily: {
+                        sans:  ['Inter', 'system-ui', 'sans-serif'],
+                        mono:  ['DM Mono', 'ui-monospace', 'monospace'],
+                    }
                 }
             }
         }
     </script>
     <style>
-        body { background: #fafaf9; }
+        /* ── Enterprise base ──────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; }
+        body { background: #0f172a; color: #e2e8f0; }
         .page { display: none; }
         .page.active { display: block; }
-        .nav-link.active { color: #16a34a; border-bottom: 2px solid #16a34a; }
-        .card-hover { transition: all 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-        </style>
+
+        /* ── Nav active state ─────────────────────────────── */
+        .nav-link { color: #94a3b8; border-bottom: 2px solid transparent; transition: color .15s; }
+        .nav-link:hover { color: #e2e8f0; }
+        .nav-link.active { color: #10b981; border-bottom: 2px solid #10b981; }
+
+        /* ── Monospaced numbers ───────────────────────────── */
+        .num { font-family: 'DM Mono', monospace; font-size: .85em; letter-spacing: -.01em; }
+        .price { font-family: 'DM Mono', monospace; font-weight: 500; }
+
+        /* ── Cards ────────────────────────────────────────── */
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+        }
+        .card-hover { transition: border-color .15s, background .15s; cursor: pointer; }
+        .card-hover:hover { border-color: #475569; background: #243044; }
+
+        /* ── Data table ───────────────────────────────────── */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead tr { background: #131f35; border-bottom: 1px solid #334155; }
+        .data-table thead th { padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #64748b; white-space: nowrap; }
+        .data-table thead th.r { text-align: right; }
+        .data-table tbody tr { border-bottom: 1px solid #1e293b; transition: background .08s; }
+        .data-table tbody tr:hover { background: #1e293b; }
+        .data-table tbody td { padding: 11px 14px; font-size: 13px; color: #cbd5e1; }
+        .data-table tbody td.r { text-align: right; }
+        .data-table tbody td.price { color: #e2e8f0; font-family: 'DM Mono', monospace; }
+
+        /* ── Badges ───────────────────────────────────────── */
+        .badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 600; font-family: 'DM Mono', monospace; letter-spacing: .01em; }
+        .badge-up   { background: rgba(16,185,129,.12); color: #10b981; }
+        .badge-down { background: rgba(244,63,94,.12);  color: #f43f5e; }
+        .badge-flat { background: rgba(100,116,139,.12); color: #64748b; }
+        .badge-warn { background: rgba(245,158,11,.12);  color: #f59e0b; }
+
+        /* ── Section labels ───────────────────────────────── */
+        .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #475569; margin-bottom: 12px; }
+
+        /* ── Inputs / selects ─────────────────────────────── */
+        .inp {
+            background: #131f35; border: 1px solid #334155; border-radius: 5px;
+            color: #e2e8f0; font-size: 13px; padding: 8px 12px; outline: none;
+            transition: border-color .15s;
+        }
+        .inp:focus { border-color: #10b981; }
+        .inp::placeholder { color: #475569; }
+
+        /* ── Buttons ──────────────────────────────────────── */
+        .btn-primary {
+            background: #059669; color: #fff; border: none; border-radius: 5px;
+            padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: background .15s;
+        }
+        .btn-primary:hover { background: #047857; }
+        .btn-ghost {
+            background: transparent; color: #94a3b8; border: 1px solid #334155;
+            border-radius: 5px; padding: 7px 14px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: border-color .15s, color .15s;
+        }
+        .btn-ghost:hover { border-color: #475569; color: #e2e8f0; }
+        .btn-ghost:disabled { opacity: .3; cursor: default; }
+
+        /* ── Sidebar ──────────────────────────────────────── */
+        .sidebar-link { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer; transition: background .1s, color .1s; }
+        .sidebar-link:hover { background: #1e293b; color: #cbd5e1; }
+        .sidebar-link.active { background: rgba(16,185,129,.08); color: #10b981; border-left: 2px solid #10b981; }
+
+        /* ── Tab pills ────────────────────────────────────── */
+        .tab { padding: 5px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #334155; background: transparent; color: #64748b; transition: all .12s; }
+        .tab:hover { border-color: #475569; color: #94a3b8; }
+        .tab.active { background: rgba(16,185,129,.1); border-color: #10b981; color: #10b981; }
+
+        /* ── Stat tiles ───────────────────────────────────── */
+        .stat-tile { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 16px 18px; }
+        .stat-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: #e2e8f0; line-height: 1; }
+        .stat-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #475569; margin-top: 6px; }
+
+        /* ── Section divider ──────────────────────────────── */
+        .divider { border: none; border-top: 1px solid #1e293b; margin: 0; }
+
+        /* ── Page header ──────────────────────────────────── */
+        .page-header { background: #131f35; border-bottom: 1px solid #1e293b; padding: 20px 0; }
+        .page-header h1 { font-size: 20px; font-weight: 700; color: #f1f5f9; letter-spacing: -.02em; }
+        .page-header p { font-size: 13px; color: #64748b; margin-top: 3px; }
+
+        /* ── Scrollbar ────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    </style>
 </head>
-<body class="font-sans text-earth-800">
+<body class="font-sans">
 
     <!-- Header -->
-    <header class="bg-white border-b border-earth-200 sticky top-0 z-50">
+    <header style="background:#0f172a;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:50;">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="h-16 flex items-center justify-between">
+            <div style="height:52px;" class="flex items-center gap-8">
                 <!-- Logo -->
-                <a href="#" onclick="navigate('home')" class="flex items-center">
-                    <img src="agrax-logo.png" alt="agraX" class="h-12 md:h-14" />
+                <a href="#" onclick="navigate('home')" class="flex items-center flex-shrink-0">
+                    <img src="agrax-logo.png" alt="agraX" class="h-8" />
                 </a>
-                
-                <!-- Navigation -->
-                <nav class="hidden md:flex items-center gap-1">
-                    <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Home</a>
-                    <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Markets</a>
-                    <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-4 py-5 text-sm font-medium text-earth-600 hover:text-leaf-700 border-b-2 border-transparent">Compare</a>
+                <!-- Nav links -->
+                <nav class="hidden md:flex items-center gap-0 h-full">
+                    <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-4 h-full flex items-center text-sm font-medium">Overview</a>
+                    <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-4 h-full flex items-center text-sm font-medium">Markets</a>
+                    <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-4 h-full flex items-center text-sm font-medium">Compare</a>
                 </nav>
-                
-                <!-- Search + Actions -->
-                <div class="flex items-center gap-3">
-                    <button onclick="navigate('search')" class="flex items-center gap-2 px-4 py-2 bg-earth-100 hover:bg-earth-200 rounded-lg text-sm text-earth-600 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <!-- Right side -->
+                <div class="ml-auto flex items-center gap-3">
+                    <button onclick="navigate('search')" style="background:#131f35;border:1px solid #334155;border-radius:5px;color:#94a3b8;font-size:12px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.borderColor='#475569'" onmouseout="this.style.borderColor='#334155'">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span class="hidden sm:inline">Search</span>
+                        <span class="hidden lg:inline" style="color:#334155;font-size:10px;">/</span>
                     </button>
-                    <span id="headerDate" class="hidden lg:block text-xs text-earth-400"></span>
+                    <span id="headerDate" style="font-size:11px;color:#334155;font-family:'DM Mono',monospace;" class="hidden lg:block"></span>
+                    <div style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;" title="Live data"></div>
                 </div>
             </div>
-            
-            <!-- Mobile Nav -->
-            <div class="md:hidden flex gap-1 pb-2 overflow-x-auto">
-                <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Home</a>
-                <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Markets</a>
-                <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link px-3 py-1.5 text-xs font-medium text-earth-600 rounded-full bg-earth-100">Compare</a>
+            <!-- Mobile nav -->
+            <div class="md:hidden flex gap-1 pb-2 overflow-x-auto" style="border-top:1px solid #1e293b;padding-top:8px;">
+                <a href="#" onclick="navigate('home')" data-nav="home" class="nav-link flex-shrink-0 px-3 py-1 text-xs font-medium rounded" style="background:#131f35;border:1px solid #334155;">Overview</a>
+                <a href="#" onclick="navigate('markets')" data-nav="markets" class="nav-link flex-shrink-0 px-3 py-1 text-xs font-medium rounded" style="background:#131f35;border:1px solid #334155;">Markets</a>
+                <a href="#" onclick="navigate('compare')" data-nav="compare" class="nav-link flex-shrink-0 px-3 py-1 text-xs font-medium rounded" style="background:#131f35;border:1px solid #334155;">Compare</a>
             </div>
         </div>
     </header>
@@ -70,14 +179,14 @@
     <!-- ==================== HOME PAGE ==================== -->
     <div id="page-home" class="page active">
         <!-- Hero -->
-        <section class="relative border-b border-earth-200 overflow-hidden" style="min-height:280px;">
+        <section class="relative border-b border-slate-700 overflow-hidden" style="min-height:280px;">
             <!-- Animated canvas background — aerial field simulation -->
             <canvas id="hero-canvas" class="absolute inset-0 w-full h-full" style="pointer-events:none;"></canvas>
             <!-- Dark overlay -->
             <div class="absolute inset-0" style="background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.55) 100%);pointer-events:none;"></div>
             <!-- Content -->
             <div class="relative z-10 max-w-7xl mx-auto px-4 py-14 md:py-20">
-                <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest" style="background:rgba(255,255,255,.12);color:#86efac;">
+                <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded text-xs font-semibold uppercase tracking-widest" style="background:rgba(255,255,255,.12);color:#86efac;">
                     <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 2s infinite;"></span>
                     Live USDA Data
                 </div>
@@ -89,9 +198,9 @@
                 <div class="flex gap-3 max-w-xl">
                     <div class="flex-1 relative">
                         <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style="color:#9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 rounded-xl text-base bg-white" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.2);" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+                        <input id="homeSearch" type="text" placeholder="Search for a commodity..." class="w-full pl-12 pr-4 py-3 rounded text-base bg-slate-800" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.2);" onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
                     </div>
-                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 rounded-xl font-medium transition-colors text-white" style="background:#16a34a;box-shadow:0 2px 8px rgba(0,0,0,.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                    <button onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();" class="px-6 py-3 rounded font-medium transition-colors text-white" style="background:#16a34a;box-shadow:0 2px 8px rgba(0,0,0,.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                         Search
                     </button>
                 </div>
@@ -205,30 +314,30 @@
         })();
         </script>
 
-        <main class="max-w-7xl mx-auto px-4 py-8">
+        <main class="max-w-7xl mx-auto px-4 py-6">
             <!-- Quick Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <div class="bg-white rounded-xl border border-earth-200 p-4">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-commodities">--</div>
-                    <div class="text-xs text-earth-500">Commodities</div>
+                <div class="bg-slate-800 rounded border border-slate-700 p-4">
+                    <div class="stat-value" id="stat-commodities">--</div>
+                    <div class="text-xs text-slate-500">Commodities</div>
                 </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-markets">--</div>
-                    <div class="text-xs text-earth-500">Markets</div>
+                <div class="bg-slate-800 rounded border border-slate-700 p-4">
+                    <div class="stat-value" id="stat-markets">--</div>
+                    <div class="text-xs text-slate-500">Markets</div>
                 </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-records">--</div>
-                    <div class="text-xs text-earth-500">Price Records</div>
+                <div class="bg-slate-800 rounded border border-slate-700 p-4">
+                    <div class="stat-value" id="stat-records">--</div>
+                    <div class="text-xs text-slate-500">Price Records</div>
                 </div>
-                <div class="bg-white rounded-xl border border-earth-200 p-4">
-                    <div class="text-2xl font-bold text-leaf-600" id="stat-avgprice">--</div>
-                    <div class="text-xs text-earth-500">Avg Price</div>
+                <div class="bg-slate-800 rounded border border-slate-700 p-4">
+                    <div class="stat-value" id="stat-avgprice">--</div>
+                    <div class="text-xs text-slate-500">Avg Price</div>
                 </div>
             </div>
 
             <!-- Categories Section -->
             <section class="mb-10">
-                <h2 class="text-xl font-bold text-earth-800 mb-4">Browse by Category</h2>
+                <div class="section-label">Browse by Category</div>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="categoriesGrid">
                     <!-- Filled by JS -->
                 </div>
@@ -237,8 +346,8 @@
             <!-- Markets Section -->
             <section class="mb-10">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-earth-800">Terminal Markets</h2>
-                    <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium">View all →</a>
+                    <div class="section-label">Terminal Markets</div>
+                    <a href="#" onclick="navigate('markets')" class="text-sm text-brand-400 hover:text-brand-300 font-medium">View all →</a>
                 </div>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="marketsPreview">
                     <!-- Filled by JS -->
@@ -247,17 +356,17 @@
 
             <!-- Price Movers -->
             <section class="mb-10">
-                <h2 class="text-xl font-bold text-earth-800 mb-4">Today's Price Movers</h2>
+                <div class="section-label mb-4">Price Movers</div>
                 <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-xl border border-earth-200 p-5">
-                        <h3 class="text-sm font-semibold text-leaf-700 mb-3 flex items-center gap-2">
+                    <div class="bg-slate-800 rounded border border-slate-700 p-5">
+                        <h3 class="text-sm font-semibold text-brand-300 mb-3 flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                             Prices Up
                         </h3>
                         <div id="home-pricesUp" class="space-y-2"></div>
                     </div>
-                    <div class="bg-white rounded-xl border border-earth-200 p-5">
-                        <h3 class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
+                    <div class="bg-slate-800 rounded border border-slate-700 p-5">
+                        <h3 class="text-xs font-semibold text-down mb-3 section-label flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/></svg>
                             Prices Down
                         </h3>
@@ -275,7 +384,7 @@
             <!-- Left sidebar: terminal market list -->
             <aside class="hidden md:block w-52 flex-shrink-0">
                 <div class="sticky top-24">
-                    <div class="text-xs font-bold uppercase tracking-widest text-earth-400 mb-3 px-1">Terminal Markets</div>
+                    <div class="section-label px-1 mb-3">Terminal Markets</div>
                     <nav id="mkt-sidebar" class="flex flex-col gap-0.5"></nav>
                 </div>
             </aside>
@@ -288,35 +397,35 @@
                 <!-- Search + count row -->
                 <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center mb-4">
                     <div class="relative flex-1 max-w-sm">
-                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input id="mkt-search" type="text" placeholder="Search commodities…"
-                            class="w-full pl-9 pr-4 py-2 text-sm border border-earth-200 rounded-lg bg-white focus:border-leaf-500 focus:ring-1 focus:ring-leaf-100 outline-none"
+                            class="inp w-full pl-9 pr-4 py-2"
                             oninput="renderMarketsTable()">
                     </div>
-                    <span id="mkt-count" class="text-xs text-earth-400 font-medium whitespace-nowrap"></span>
+                    <span id="mkt-count" style="font-size:11px;color:#475569;font-family:'DM Mono',monospace;white-space:nowrap;"></span>
                 </div>
 
                 <!-- Data table -->
-                <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
-                    <table class="w-full text-sm">
-                        <thead class="bg-earth-50 border-b border-earth-200">
+                <div class="bg-slate-800 rounded border border-slate-700 overflow-hidden">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Commodity</th>
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide hidden sm:table-cell">Origin</th>
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide hidden lg:table-cell">Market</th>
-                                <th class="text-right px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Price</th>
-                                <th class="text-right px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide hidden sm:table-cell">7D Change</th>
-                                <th class="text-right px-4 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide hidden md:table-cell">Movement</th>
+                                <th>Commodity</th>
+                                <th>Origin</th>
+                                <th>Market</th>
+                                <th class="r">Price</th>
+                                <th class="r">7D Change</th>
+                                <th class="r">Movement</th>
                             </tr>
                         </thead>
                         <tbody id="mkt-table-body"></tbody>
                     </table>
                     <!-- Pagination -->
-                    <div class="flex items-center justify-between px-4 py-3 border-t border-earth-100 bg-earth-50">
-                        <span class="text-xs text-earth-400" id="mkt-page-info"></span>
+                    <div class="flex items-center justify-between px-4 py-3 border-t border-slate-700 bg-slate-900">
+                        <span class="text-xs text-slate-500" id="mkt-page-info"></span>
                         <div class="flex gap-2">
-                            <button id="mkt-prev" onclick="mktPrevPage()" class="px-3 py-1.5 text-xs font-medium border border-earth-200 rounded-lg bg-white text-earth-600 hover:border-leaf-400 disabled:opacity-30 disabled:cursor-default" disabled>← Prev</button>
-                            <button id="mkt-next" onclick="mktNextPage()" class="px-3 py-1.5 text-xs font-medium border border-earth-200 rounded-lg bg-white text-earth-600 hover:border-leaf-400 disabled:opacity-30 disabled:cursor-default">Next →</button>
+                            <button id="mkt-prev" onclick="mktPrevPage()" class="btn-ghost text-xs py-1.5 px-3" disabled>← Prev</button>
+                            <button id="mkt-next" onclick="mktNextPage()" class="btn-ghost text-xs py-1.5 px-3">Next →</button>
                         </div>
                     </div>
                 </div>
@@ -326,17 +435,17 @@
 
     <!-- ==================== MARKET DETAIL PAGE ==================== -->
     <div id="page-market-detail" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+        <section class="page-header">
             <div class="max-w-7xl mx-auto px-4 py-10">
-                <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Markets</a>
-                <h1 id="marketDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
-                <p id="marketDetailStats" class="text-earth-500"></p>
+                <a href="#" onclick="navigate('markets')" style="font-size:12px;color:#475569;text-decoration:none;display:inline-block;margin-bottom:12px;">← Back to Markets</a>
+                <h1 id="marketDetailTitle" class="text-2xl md:text-3xl font-bold text-slate-100 mb-2"></h1>
+                <p id="marketDetailStats" class="text-slate-500"></p>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+        <main class="max-w-7xl mx-auto px-4 py-6">
+            <div class="bg-slate-800 rounded border border-slate-700 overflow-hidden">
                 <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                    <thead>
                         <tr>
                             <th class="text-left px-4 py-3 font-medium">Commodity</th>
                             <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
@@ -353,13 +462,13 @@
 
     <!-- ==================== COMMODITIES PAGE ==================== -->
     <div id="page-commodities" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+        <section class="page-header">
             <div class="max-w-7xl mx-auto px-4 py-10">
-                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Commodities</h1>
-                <p class="text-earth-500">Browse wholesale produce by category.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-100 mb-2">Commodities</h1>
+                <p class="text-slate-500">Browse wholesale produce by category.</p>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
+        <main class="max-w-7xl mx-auto px-4 py-6">
             <!-- Category Tabs -->
             <div class="flex flex-wrap gap-2 mb-6" id="commodityCategoryTabs"></div>
             
@@ -370,34 +479,34 @@
 
     <!-- ==================== COMMODITY DETAIL PAGE ==================== -->
     <div id="page-commodity-detail" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+        <section class="page-header">
             <div class="max-w-7xl mx-auto px-4 py-10">
-                <a href="#" onclick="navigate('markets')" class="text-sm text-leaf-600 hover:text-leaf-700 mb-2 inline-block">← Back to Markets</a>
-                <h1 id="commodityDetailTitle" class="text-2xl md:text-3xl font-bold text-earth-900 mb-2"></h1>
-                <p id="commodityDetailStats" class="text-earth-500"></p>
+                <a href="#" onclick="navigate('markets')" style="font-size:12px;color:#475569;text-decoration:none;display:inline-block;margin-bottom:12px;">← Back to Markets</a>
+                <h1 id="commodityDetailTitle" class="text-2xl md:text-3xl font-bold text-slate-100 mb-2"></h1>
+                <p id="commodityDetailStats" class="text-slate-500"></p>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
+        <main class="max-w-7xl mx-auto px-4 py-6">
             <div class="grid lg:grid-cols-3 gap-6">
                 <!-- Price Chart -->
-                <div class="lg:col-span-2 bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-earth-800 mb-4">7-Day Price Trend</h3>
+                <div class="lg:col-span-2 bg-slate-800 rounded border border-slate-700 p-5">
+                    <h3 class="font-semibold text-slate-200 mb-4">7-Day Price Trend</h3>
                     <div class="h-64"><canvas id="commodityChart"></canvas></div>
                 </div>
                 <!-- Quick Stats -->
-                <div class="bg-white rounded-xl border border-earth-200 p-5">
-                    <h3 class="font-semibold text-earth-800 mb-4">Price Summary</h3>
+                <div class="bg-slate-800 rounded border border-slate-700 p-5">
+                    <h3 class="font-semibold text-slate-200 mb-4">Price Summary</h3>
                     <div id="commodityQuickStats" class="space-y-3"></div>
                 </div>
             </div>
             
             <!-- Markets Table -->
-            <div class="mt-6 bg-white rounded-xl border border-earth-200 overflow-hidden">
-                <div class="px-5 py-4 border-b border-earth-200">
-                    <h3 class="font-semibold text-earth-800">Prices by Market</h3>
+            <div class="mt-6 bg-slate-800 rounded border border-slate-700 overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-700">
+                    <h3 class="font-semibold text-slate-200">Prices by Market</h3>
                 </div>
                 <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                    <thead>
                         <tr>
                             <th class="text-left px-4 py-3 font-medium">Market</th>
                             <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Origin</th>
@@ -413,24 +522,24 @@
 
     <!-- ==================== COMPARE PAGE ==================== -->
     <div id="page-compare" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+        <section class="page-header">
             <div class="max-w-7xl mx-auto px-4 py-10">
-                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-2">Compare Prices</h1>
-                <p class="text-earth-500">Compare the same commodity across different markets to find the best deal.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-100 mb-2">Compare Prices</h1>
+                <p class="text-slate-500">Compare the same commodity across different markets to find the best deal.</p>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
+        <main class="max-w-7xl mx-auto px-4 py-6">
             <!-- Commodity Selector -->
-            <div class="bg-white rounded-xl border border-earth-200 p-5 mb-6">
-                <label class="block text-sm font-medium text-earth-700 mb-2">Select a commodity to compare:</label>
-                <select id="compareSelect" onchange="runCompare()" class="w-full max-w-md px-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500">
+            <div class="bg-slate-800 rounded border border-slate-700 p-5 mb-6">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Select a commodity to compare:</label>
+                <select id="compareSelect" onchange="runCompare()" class="w-full max-w-md px-4 py-3 border border-slate-600 rounded bg-slate-800 focus:border-brand-500">
                     <option value="">Choose commodity...</option>
                 </select>
             </div>
             
             <!-- Comparison Results -->
             <div id="compareResults" class="hidden">
-                <h3 class="text-lg font-semibold text-earth-800 mb-4" id="compareTitle"></h3>
+                <h3 class="text-lg font-semibold text-slate-200 mb-4" id="compareTitle"></h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="compareGrid"></div>
             </div>
         </main>
@@ -438,26 +547,26 @@
 
     <!-- ==================== SEARCH PAGE ==================== -->
     <div id="page-search" class="page">
-        <section class="bg-gradient-to-b from-leaf-50 to-earth-50 border-b border-earth-200">
+        <section class="page-header">
             <div class="max-w-7xl mx-auto px-4 py-10">
-                <h1 class="text-2xl md:text-3xl font-bold text-earth-900 mb-4">Search</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-100 mb-4">Search</h1>
                 <div class="flex gap-3 max-w-2xl">
                     <div class="flex-1 relative">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input id="searchInput" type="text" placeholder="Search commodities, markets, origins..." class="w-full pl-12 pr-4 py-3 border border-earth-300 rounded-xl bg-white focus:border-leaf-500" onkeydown="if(event.key==='Enter')runSearch()"/>
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="searchInput" type="text" placeholder="Search commodities, markets, origins..." class="inp w-full pl-12 pr-4 py-3" onkeydown="if(event.key==='Enter')runSearch()"/>
                     </div>
-                    <select id="searchMarketFilter" class="px-4 py-3 border border-earth-300 rounded-xl bg-white">
+                    <select id="searchMarketFilter" class="inp">
                         <option value="">All Markets</option>
                     </select>
-                    <button onclick="runSearch()" class="px-6 py-3 bg-leaf-600 hover:bg-leaf-700 text-white rounded-xl font-medium">Search</button>
+                    <button onclick="runSearch()" class="btn-primary">Search</button>
                 </div>
             </div>
         </section>
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <p id="searchResultsInfo" class="text-sm text-earth-500 mb-4"></p>
-            <div class="bg-white rounded-xl border border-earth-200 overflow-hidden">
+        <main class="max-w-7xl mx-auto px-4 py-6">
+            <p id="searchResultsInfo" class="text-sm text-slate-500 mb-4"></p>
+            <div class="bg-slate-800 rounded border border-slate-700 overflow-hidden">
                 <table class="w-full">
-                    <thead class="bg-earth-50 border-b border-earth-200 text-xs text-earth-500 uppercase">
+                    <thead>
                         <tr>
                             <th class="text-left px-4 py-3 font-medium">Commodity</th>
                             <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Variety</th>
@@ -467,29 +576,29 @@
                         </tr>
                     </thead>
                     <tbody id="searchResultsTable">
-                        <tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">Enter a search term above</td></tr>
+                        <tr><td colspan="5" class="px-4 py-12 text-center text-slate-500">Enter a search term above</td></tr>
                     </tbody>
                 </table>
             </div>
             <!-- Pagination -->
             <div class="flex items-center justify-between mt-4">
-                <span id="searchPageInfo" class="text-sm text-earth-500"></span>
+                <span id="searchPageInfo" class="text-sm text-slate-500"></span>
                 <div class="flex gap-2">
-                    <button id="searchPrevBtn" onclick="searchPrev()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40" disabled>← Prev</button>
-                    <button id="searchNextBtn" onclick="searchNext()" class="px-4 py-2 border border-earth-200 rounded-lg bg-white text-sm disabled:opacity-40">Next →</button>
+                    <button id="searchPrevBtn" onclick="searchPrev()" class="px-4 py-2 border border-slate-700 rounded bg-slate-800 text-sm disabled:opacity-40" disabled>← Prev</button>
+                    <button id="searchNextBtn" onclick="searchNext()" class="px-4 py-2 border border-slate-700 rounded bg-slate-800 text-sm disabled:opacity-40">Next →</button>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-earth-200 bg-white mt-12">
-        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-earth-500">
+    <footer style="background:#080f1d;border-top:1px solid #1e293b;margin-top:40px;">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <img src="agrax-logo.png" alt="agraX" class="h-8" />
-                <span class="text-earth-400">Wholesale Produce Market Data</span>
+                <img src="agrax-logo.png" alt="agraX" class="h-7" style="opacity:.6;" />
+                <span style="font-size:11px;color:#1e293b;color:#334155;">Wholesale Produce Intelligence</span>
             </div>
-            <div>Data from USDA Agricultural Marketing Service</div>
+            <div style="font-size:11px;color:#334155;font-family:'DM Mono',monospace;">USDA Agricultural Marketing Service · Refreshed 3× daily</div>
         </div>
     </footer>
 
@@ -579,10 +688,10 @@
             document.getElementById('categoriesGrid').innerHTML = Object.entries(CATEGORIES).map(([name, {emoji}]) => {
                 const count = allData.filter(i => getCat(i.commodity) === name).length;
                 return `
-                <div onclick="navigate('markets');mktSetCat('${name}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer text-center">
+                <div onclick="navigate('markets');mktSetCat('${name}')" class="card-hover bg-slate-800 rounded border border-slate-700 p-4 cursor-pointer text-center">
                     <div class="text-3xl mb-2">${emoji}</div>
-                    <div class="font-semibold text-earth-800">${name}</div>
-                    <div class="text-xs text-earth-500">${count} items</div>
+                    <div class="font-semibold text-slate-200">${name}</div>
+                    <div class="text-xs text-slate-500">${count} items</div>
                 </div>`;
             }).join('');
             
@@ -597,17 +706,17 @@
             document.getElementById('marketsPreview').innerHTML = topMarkets.map(([market, items]) => {
                 const topItems = [...new Set(items.map(i => i.commodity))].slice(0, 3);
                 return `
-                <div onclick="navigate('market-detail','${market}')" class="card-hover bg-white rounded-xl border border-earth-200 p-5 cursor-pointer">
+                <div onclick="navigate('market-detail','${market}')" class="card-hover bg-slate-800 rounded border border-slate-700 p-5 cursor-pointer">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-lg bg-leaf-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-leaf-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <div class="w-10 h-10 rounded bg-brand-900 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                         </div>
                         <div>
-                            <div class="font-semibold text-earth-800">${market}</div>
-                            <div class="text-xs text-earth-500">${items.length} listings</div>
+                            <div class="font-semibold text-slate-200">${market}</div>
+                            <div class="text-xs text-slate-500">${items.length} listings</div>
                         </div>
                     </div>
-                    <div class="text-xs text-earth-500">Top: ${topItems.join(', ')}</div>
+                    <div class="text-xs text-slate-500">Top: ${topItems.join(', ')}</div>
                 </div>`;
             }).join('');
             
@@ -617,18 +726,18 @@
             const down = changes.filter(c => c.change < 0).sort((a,b) => a.change - b.change).slice(0, 5);
             
             document.getElementById('home-pricesUp').innerHTML = up.map(c => `
-                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-leaf-50 rounded-lg cursor-pointer hover:bg-leaf-100">
-                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
-                    <span class="text-sm font-semibold text-leaf-600">+${c.change.toFixed(1)}%</span>
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-brand-900 rounded cursor-pointer hover:bg-brand-900">
+                    <span class="text-sm font-medium text-slate-300">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-brand-400">+${c.change.toFixed(1)}%</span>
                 </div>
-            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+            `).join('') || '<p class="text-sm text-slate-500">No significant changes</p>';
             
             document.getElementById('home-pricesDown').innerHTML = down.map(c => `
-                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100">
-                    <span class="text-sm font-medium text-earth-700">${c.commodity}</span>
-                    <span class="text-sm font-semibold text-red-600">${c.change.toFixed(1)}%</span>
+                <div onclick="navigate('commodity-detail','${c.commodity}')" class="flex justify-between items-center py-2 px-3 bg-down-light rounded cursor-pointer hover:bg-red-100">
+                    <span class="text-sm font-medium text-slate-300">${c.commodity}</span>
+                    <span class="text-sm font-semibold text-down">${c.change.toFixed(1)}%</span>
                 </div>
-            `).join('') || '<p class="text-sm text-earth-400">No significant changes</p>';
+            `).join('') || '<p class="text-sm text-slate-500">No significant changes</p>';
         }
         
         // ==================== MARKETS PAGE ====================
@@ -645,8 +754,8 @@
             if (sidebar) {
                 sidebar.innerHTML = markets.map(m => `
                     <button data-mkt="${m}" onclick="mktSetMkt('${m.replace(/'/g,"\'")}')"
-                        class="mkt-sb-btn text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full
-                               ${m===mktActiveMkt ? 'bg-leaf-600 text-white' : 'text-earth-600 hover:bg-earth-100'}">
+                        class="mkt-sb-btn text-left px-3 py-2 rounded text-sm font-medium transition-colors w-full
+                               ${m===mktActiveMkt ? 'bg-brand-600 text-white' : 'text-slate-400 hover:bg-slate-800'}">
                         ${m}
                     </button>`).join('');
             }
@@ -656,8 +765,8 @@
                 const cats = ['All','Fruits','Vegetables','Onions & Potatoes','Nuts'];
                 tabs.innerHTML = cats.map(cat => `
                     <button data-cat="${cat}" onclick="mktSetCat('${cat}')"
-                        class="mkt-cat-btn px-4 py-1.5 rounded-full text-sm font-medium border transition-colors
-                               ${cat===mktActiveCat ? 'bg-leaf-600 text-white border-leaf-600' : 'bg-white text-earth-700 border-earth-200 hover:border-leaf-400'}">
+                        class="mkt-cat-btn px-4 py-1.5 rounded text-sm font-medium border transition-colors
+                               ${cat===mktActiveCat ? 'bg-brand-600 text-white border-brand-500' : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-brand-400'}">
                         ${cat==='All'?'All Categories':cat}
                     </button>`).join('');
             }
@@ -668,7 +777,7 @@
             mktActiveMkt = m; mktPage = 1;
             document.querySelectorAll('.mkt-sb-btn').forEach(b => {
                 const on = b.dataset.mkt === m;
-                b.className = `mkt-sb-btn text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${on?'bg-leaf-600 text-white':'text-earth-600 hover:bg-earth-100'}`;
+                b.className = `mkt-sb-btn text-left px-3 py-2 rounded text-sm font-medium transition-colors w-full ${on?'bg-brand-600 text-white':'text-slate-400 hover:bg-slate-800'}`;
             });
             renderMarketsTable();
         }
@@ -680,7 +789,7 @@
             mktPage = 1;
             document.querySelectorAll('.mkt-cat-btn').forEach(b => {
                 const on = b.dataset.cat === mktActiveCat;
-                b.className = `mkt-cat-btn px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${on?'bg-leaf-600 text-white border-leaf-600':'bg-white text-earth-700 border-earth-200 hover:border-leaf-400'}`;
+                b.className = `mkt-cat-btn px-4 py-1.5 rounded text-sm font-medium border transition-colors ${on?'bg-brand-600 text-white border-brand-500':'bg-slate-800 text-slate-300 border-slate-700 hover:border-brand-400'}`;
             });
             renderMarketsTable();
         }
@@ -734,15 +843,15 @@
                 const change = getTrend(item.commodity);
                 const isUp = change > 0.5, isDown = change < -0.5;
                 const mov = item.movement || '';
-                const movColor = mov.toLowerCase().includes('higher') ? 'text-leaf-600' : mov.toLowerCase().includes('lower') ? 'text-red-500' : 'text-earth-400';
-                return `<tr class="border-b border-earth-100 hover:bg-leaf-50 cursor-pointer transition-colors"
+                const movColor = mov.toLowerCase().includes('higher') ? 'text-brand-400' : mov.toLowerCase().includes('lower') ? 'text-red-500' : 'text-slate-500';
+                return `<tr class="border-b border-slate-700 hover:bg-brand-900 cursor-pointer transition-colors"
                              onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\'")}')" >
-                    <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
-                    <td class="px-4 py-3 text-earth-500 hidden sm:table-cell">${item.origin || '—'}</td>
-                    <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.market || '—'}</td>
-                    <td class="px-4 py-3 text-right font-mono font-semibold text-earth-800">$${isNaN(price)?'—':price.toFixed(2)}</td>
+                    <td class="px-4 py-3 font-medium text-slate-200">${item.commodity}</td>
+                    <td class="px-4 py-3 text-slate-500 hidden sm:table-cell">${item.origin || '—'}</td>
+                    <td class="px-4 py-3 text-slate-500 hidden lg:table-cell">${item.market || '—'}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold text-slate-200">$${isNaN(price)?'—':price.toFixed(2)}</td>
                     <td class="px-4 py-3 text-right hidden sm:table-cell">
-                        <span class="text-xs font-semibold ${isUp?'text-leaf-600':isDown?'text-red-500':'text-earth-300'}">
+                        <span class="text-xs font-semibold ${isUp?'text-brand-400':isDown?'text-red-500':'text-slate-600'}">
                             ${isUp?'↑':isDown?'↓':''} ${Math.abs(change).toFixed(1)}%
                         </span>
                     </td>
@@ -750,7 +859,7 @@
                         <span class="text-xs ${movColor}">${mov||'—'}</span>
                     </td>
                 </tr>`;
-            }).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-earth-400">No results found</td></tr>';
+            }).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">No results found</td></tr>';
         }
 
         function mktPrevPage() { if (mktPage > 1) { mktPage--; renderMarketsTable(); } }
@@ -768,13 +877,13 @@
                     const change = getTrend(item.commodity);
                     const isUp = change > 0.5, isDown = change < -0.5;
                     return `
-                    <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
-                        <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                    <tr class="border-b border-slate-700 hover:bg-slate-900 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                        <td class="px-4 py-3 font-medium text-slate-200">${item.commodity}</td>
+                        <td class="px-4 py-3 text-slate-500 hidden md:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-slate-500 hidden lg:table-cell">${item.origin || '-'}</td>
                         <td class="px-4 py-3 text-right font-mono font-semibold">$${price.toFixed(2)}</td>
                         <td class="px-4 py-3 text-right hidden sm:table-cell">
-                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                            <span class="text-xs font-medium ${isUp ? 'text-brand-400' : isDown ? 'text-red-500' : 'text-slate-500'}">
                                 ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
                             </span>
                         </td>
@@ -788,9 +897,9 @@
         function populateCommoditiesPage() {
             // Category tabs
             document.getElementById('commodityCategoryTabs').innerHTML = 
-                `<button onclick="filterCommoditiesByCategory('All')" data-cat="All" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-leaf-600 text-white">All</button>` +
+                `<button onclick="filterCommoditiesByCategory('All')" data-cat="All" class="cat-tab px-4 py-2 rounded text-sm font-medium bg-brand-600 text-white">All</button>` +
                 Object.entries(CATEGORIES).map(([name, {emoji}]) => 
-                    `<button onclick="filterCommoditiesByCategory('${name}')" data-cat="${name}" class="cat-tab px-4 py-2 rounded-full text-sm font-medium bg-white border border-earth-200 text-earth-700 hover:border-leaf-500">${emoji} ${name}</button>`
+                    `<button onclick="filterCommoditiesByCategory('${name}')" data-cat="${name}" class="cat-tab px-4 py-2 rounded text-sm font-medium bg-slate-800 border border-slate-700 text-slate-300 hover:border-brand-500">${emoji} ${name}</button>`
                 ).join('');
             
             renderCommoditiesGrid();
@@ -800,10 +909,10 @@
             currentCatFilter = cat;
             document.querySelectorAll('.cat-tab').forEach(t => {
                 const isActive = t.dataset.cat === cat;
-                t.classList.toggle('bg-leaf-600', isActive);
+                t.classList.toggle('bg-brand-600', isActive);
                 t.classList.toggle('text-white', isActive);
-                t.classList.toggle('bg-white', !isActive);
-                t.classList.toggle('text-earth-700', !isActive);
+                t.classList.toggle('bg-slate-800', !isActive);
+                t.classList.toggle('text-slate-300', !isActive);
             });
             renderCommoditiesGrid();
         }
@@ -828,17 +937,17 @@
                     const change = getTrend(commodity);
                     const isUp = change > 0.5, isDown = change < -0.5;
                     return `
-                    <div onclick="navigate('commodity-detail','${commodity}')" class="card-hover bg-white rounded-xl border border-earth-200 p-4 cursor-pointer">
-                        <div class="font-semibold text-earth-800 mb-1">${commodity}</div>
-                        <div class="text-xs text-earth-500 mb-3">${data.items.length} listings</div>
+                    <div onclick="navigate('commodity-detail','${commodity}')" class="card-hover bg-slate-800 rounded border border-slate-700 p-4 cursor-pointer">
+                        <div class="font-semibold text-slate-200 mb-1">${commodity}</div>
+                        <div class="text-xs text-slate-500 mb-3">${data.items.length} listings</div>
                         <div class="flex justify-between items-end">
-                            <span class="text-lg font-bold text-leaf-600">$${avg.toFixed(2)}</span>
-                            <span class="text-xs font-medium ${isUp ? 'text-leaf-600' : isDown ? 'text-red-500' : 'text-earth-400'}">
+                            <span class="text-lg font-bold text-brand-400">$${avg.toFixed(2)}</span>
+                            <span class="text-xs font-medium ${isUp ? 'text-brand-400' : isDown ? 'text-red-500' : 'text-slate-500'}">
                                 ${isUp ? '↑' : isDown ? '↓' : ''} ${Math.abs(change).toFixed(1)}%
                             </span>
                         </div>
                     </div>`;
-                }).join('') || '<p class="col-span-4 text-center text-earth-400 py-8">No commodities found</p>';
+                }).join('') || '<p class="col-span-4 text-center text-slate-500 py-8">No commodities found</p>';
         }
         
         function loadCommodityDetail(commodity) {
@@ -851,21 +960,21 @@
             
             // Quick stats
             document.getElementById('commodityQuickStats').innerHTML = `
-                <div class="flex justify-between py-2 border-b border-earth-100">
-                    <span class="text-earth-500">Low</span>
+                <div class="flex justify-between py-2 border-b border-slate-700">
+                    <span class="text-slate-500">Low</span>
                     <span class="font-semibold">$${Math.min(...prices).toFixed(2)}</span>
                 </div>
-                <div class="flex justify-between py-2 border-b border-earth-100">
-                    <span class="text-earth-500">High</span>
+                <div class="flex justify-between py-2 border-b border-slate-700">
+                    <span class="text-slate-500">High</span>
                     <span class="font-semibold">$${Math.max(...prices).toFixed(2)}</span>
                 </div>
-                <div class="flex justify-between py-2 border-b border-earth-100">
-                    <span class="text-earth-500">Average</span>
-                    <span class="font-semibold text-leaf-600">$${(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2)}</span>
+                <div class="flex justify-between py-2 border-b border-slate-700">
+                    <span class="text-slate-500">Average</span>
+                    <span class="font-semibold text-brand-400">$${(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2)}</span>
                 </div>
                 <div class="flex justify-between py-2">
-                    <span class="text-earth-500">7D Change</span>
-                    <span class="font-semibold ${getTrend(commodity) >= 0 ? 'text-leaf-600' : 'text-red-500'}">${getTrend(commodity) >= 0 ? '+' : ''}${getTrend(commodity).toFixed(1)}%</span>
+                    <span class="text-slate-500">7D Change</span>
+                    <span class="font-semibold ${getTrend(commodity) >= 0 ? 'text-brand-400' : 'text-red-500'}">${getTrend(commodity) >= 0 ? '+' : ''}${getTrend(commodity).toFixed(1)}%</span>
                 </div>
             `;
             
@@ -873,11 +982,11 @@
             document.getElementById('commodityMarketsTable').innerHTML = items
                 .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
                 .map((item, i) => `
-                    <tr class="border-b border-earth-100 ${i === 0 ? 'bg-leaf-50' : 'hover:bg-earth-50'}">
-                        <td class="px-4 py-3 font-medium text-earth-800">${item.market} ${i === 0 ? '<span class="text-xs text-leaf-600 ml-2">Best price</span>' : ''}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.origin || '-'}</td>
-                        <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.variety || '-'}</td>
-                        <td class="px-4 py-3 text-right font-mono font-semibold ${i === 0 ? 'text-leaf-600' : ''}">$${parseFloat(item.price_low).toFixed(2)}</td>
+                    <tr class="border-b border-slate-700 ${i === 0 ? 'bg-brand-900' : 'hover:bg-slate-900'}">
+                        <td class="px-4 py-3 font-medium text-slate-200">${item.market} ${i === 0 ? '<span class="text-xs text-brand-400 ml-2">Best price</span>' : ''}</td>
+                        <td class="px-4 py-3 text-slate-500 hidden md:table-cell">${item.origin || '-'}</td>
+                        <td class="px-4 py-3 text-slate-500 hidden lg:table-cell">${item.variety || '-'}</td>
+                        <td class="px-4 py-3 text-right font-mono font-semibold ${i === 0 ? 'text-brand-400' : ''}">$${parseFloat(item.price_low).toFixed(2)}</td>
                     </tr>
                 `).join('');
             
@@ -931,11 +1040,11 @@
             document.getElementById('compareGrid').innerHTML = items
                 .sort((a,b) => parseFloat(a.price_low) - parseFloat(b.price_low))
                 .map((item, i) => `
-                    <div class="bg-white rounded-xl border ${i === 0 ? 'border-leaf-400 ring-2 ring-leaf-100' : 'border-earth-200'} p-4">
-                        ${i === 0 ? '<div class="text-xs font-semibold text-leaf-600 mb-2">🏆 Best Price</div>' : ''}
-                        <div class="font-semibold text-earth-800">${item.market}</div>
-                        <div class="text-xs text-earth-500 mb-3">${item.origin || 'Domestic'} · ${item.variety || 'Standard'}</div>
-                        <div class="text-2xl font-bold ${i === 0 ? 'text-leaf-600' : 'text-earth-800'}">$${parseFloat(item.price_low).toFixed(2)}</div>
+                    <div class="bg-slate-800 rounded border ${i === 0 ? 'border-brand-400 ring-2 ring-brand-900' : 'border-slate-700'} p-4">
+                        ${i === 0 ? '<div class="text-xs font-semibold text-brand-400 mb-2">🏆 Best Price</div>' : ''}
+                        <div class="font-semibold text-slate-200">${item.market}</div>
+                        <div class="text-xs text-slate-500 mb-3">${item.origin || 'Domestic'} · ${item.variety || 'Standard'}</div>
+                        <div class="text-2xl font-bold ${i === 0 ? 'text-brand-400' : 'text-slate-200'}">$${parseFloat(item.price_low).toFixed(2)}</div>
                     </div>
                 `).join('');
         }
@@ -972,14 +1081,14 @@
             document.getElementById('searchNextBtn').disabled = searchPage >= totalPages;
             
             document.getElementById('searchResultsTable').innerHTML = pageItems.length ? pageItems.map(item => `
-                <tr class="border-b border-earth-100 hover:bg-earth-50 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
-                    <td class="px-4 py-3 font-medium text-earth-800">${item.commodity}</td>
-                    <td class="px-4 py-3 text-earth-500 hidden md:table-cell">${item.variety || '-'}</td>
-                    <td class="px-4 py-3 text-earth-500 hidden lg:table-cell">${item.origin || '-'}</td>
-                    <td class="px-4 py-3 text-earth-600">${item.market}</td>
+                <tr class="border-b border-slate-700 hover:bg-slate-900 cursor-pointer" onclick="navigate('commodity-detail','${item.commodity}')">
+                    <td class="px-4 py-3 font-medium text-slate-200">${item.commodity}</td>
+                    <td class="px-4 py-3 text-slate-500 hidden md:table-cell">${item.variety || '-'}</td>
+                    <td class="px-4 py-3 text-slate-500 hidden lg:table-cell">${item.origin || '-'}</td>
+                    <td class="px-4 py-3 text-slate-400">${item.market}</td>
                     <td class="px-4 py-3 text-right font-mono font-semibold">$${parseFloat(item.price_low).toFixed(2)}</td>
                 </tr>
-            `).join('') : '<tr><td colspan="5" class="px-4 py-12 text-center text-earth-400">No results found</td></tr>';
+            `).join('') : '<tr><td colspan="5" class="px-4 py-12 text-center text-slate-500">No results found</td></tr>';
         }
         
         function searchPrev() { if (searchPage > 1) { searchPage--; renderSearchResults(); } }
