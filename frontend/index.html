@@ -73,47 +73,10 @@
     <div id="page-home" class="page active">
         <!-- Hero -->
         <section class="relative border-b border-earth-200 overflow-hidden" style="min-height:280px;">
-            <!-- Background video — multiple sources for reliability -->
-            <video
-                id="hero-video"
-                class="absolute inset-0 w-full h-full object-cover"
-                autoplay muted loop playsinline
-                style="pointer-events:none;"
-                onerror="this.style.display='none'"
-            >
-                <!-- Mazwai free stock — wheat field aerial -->
-                <source src="https://mazwai.com/videvo_files/video/free/2019-02/small_watermarked/190128_04_MangoExport_preview.webm" type="video/webm">
-                <!-- Coverr free stock — agriculture field -->
-                <source src="https://coverr.co/videos/download/agriculture-1" type="video/mp4">
-            </video>
-            <!-- Fallback: static gradient if video fails -->
-            <div id="hero-fallback" class="absolute inset-0" style="background:linear-gradient(135deg,#14532d 0%,#166534 40%,#15803d 100%);display:none;"></div>
-            <script>
-            (function(){
-                var v=document.getElementById('hero-video');
-                // Try multiple working free MP4 sources
-                var sources=[
-                    'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-corn-field-4596-large.mp4',
-                    'https://assets.mixkit.co/videos/preview/mixkit-truck-driving-on-a-road-4376-large.mp4',
-                    'https://assets.mixkit.co/videos/preview/mixkit-workers-picking-vegetables-4565-large.mp4'
-                ];
-                var idx=0;
-                function tryNext(){
-                    if(idx>=sources.length){
-                        v.style.display='none';
-                        document.getElementById('hero-fallback').style.display='block';
-                        return;
-                    }
-                    v.src=sources[idx++];
-                    v.load();
-                    v.play().catch(tryNext);
-                }
-                v.addEventListener('error',tryNext);
-                tryNext();
-            })();
-            </script>
-            <!-- Dark overlay so text stays legible -->
-            <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.58) 100%);"></div>
+            <!-- Animated canvas background — aerial field simulation -->
+            <canvas id="hero-canvas" class="absolute inset-0 w-full h-full" style="pointer-events:none;"></canvas>
+            <!-- Dark overlay -->
+            <div class="absolute inset-0" style="background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.55) 100%);pointer-events:none;"></div>
             <!-- Content -->
             <div class="relative z-10 max-w-7xl mx-auto px-4 py-14 md:py-20">
                 <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest" style="background:rgba(255,255,255,.12);color:#86efac;">
@@ -135,12 +98,114 @@
                     </button>
                 </div>
             </div>
-            <!-- Mute/unmute toggle -->
-            <button onclick="var v=document.getElementById('hero-video');v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊';"
-                style="position:absolute;bottom:12px;right:14px;z-index:20;background:rgba(0,0,0,.4);border:none;color:#fff;font-size:14px;padding:4px 8px;border-radius:6px;cursor:pointer;backdrop-filter:blur(4px);">
-                🔇
-            </button>
         </section>
+        <script>
+        (function(){
+            var canvas=document.getElementById('hero-canvas');
+            var ctx=canvas.getContext('2d');
+            var W,H,raf;
+            var t=0;
+
+            // Field rows — simulate aerial view of crop rows scrolling
+            var ROWS=32;
+            var colors=['#1a3d0f','#22521a','#1e4712','#2a6120','#163a0d','#1f4a14','#265718','#1b4310'];
+            var rowData=[];
+            for(var i=0;i<ROWS;i++){
+                rowData.push({
+                    color:colors[Math.floor(Math.random()*colors.length)],
+                    speed:0.18+Math.random()*0.12,
+                    offset:Math.random()*100,
+                    width:0.7+Math.random()*0.6  // relative width multiplier
+                });
+            }
+
+            // Moving particles — simulate dust/vehicles
+            var particles=[];
+            for(var p=0;p<18;p++){
+                particles.push({
+                    x:Math.random(),y:Math.random(),
+                    size:1+Math.random()*2.5,
+                    speed:0.0003+Math.random()*0.0005,
+                    alpha:0.15+Math.random()*0.3,
+                    color:Math.random()>0.5?'#ffffff':'#c8e6c9'
+                });
+            }
+
+            function resize(){
+                W=canvas.offsetWidth; H=canvas.offsetHeight;
+                canvas.width=W; canvas.height=H;
+            }
+
+            function drawFrame(){
+                t+=0.004;
+                ctx.clearRect(0,0,W,H);
+
+                // Sky gradient at top (slight)
+                var sky=ctx.createLinearGradient(0,0,0,H*0.3);
+                sky.addColorStop(0,'#0a2010');
+                sky.addColorStop(1,'#0d2b14');
+                ctx.fillStyle=sky; ctx.fillRect(0,0,W,H*0.3);
+
+                // Field base
+                var field=ctx.createLinearGradient(0,H*0.3,0,H);
+                field.addColorStop(0,'#1a3d10');
+                field.addColorStop(0.5,'#163a0d');
+                field.addColorStop(1,'#0f2a09');
+                ctx.fillStyle=field; ctx.fillRect(0,H*0.3,W,H*0.7);
+
+                // Perspective crop rows scrolling downward
+                var rowH=(H*0.7)/ROWS;
+                for(var i=0;i<ROWS;i++){
+                    var rd=rowData[i];
+                    var y=H*0.3 + ((i*rowH + t*rd.speed*H*0.7)%(H*0.7));
+                    var progress=(y-H*0.3)/(H*0.7); // 0=top 1=bottom
+                    // perspective: rows get wider toward bottom
+                    var rowWidth=W*rd.width*(0.4+progress*0.8);
+                    var x=(W-rowWidth)/2;
+                    // Row stripe
+                    ctx.fillStyle=rd.color;
+                    ctx.fillRect(x, y, rowWidth, rowH*0.55);
+                    // Lighter row highlight
+                    ctx.fillStyle='rgba(255,255,255,0.03)';
+                    ctx.fillRect(x, y, rowWidth, rowH*0.12);
+                }
+
+                // Horizon divider
+                ctx.fillStyle='rgba(100,180,80,0.08)';
+                ctx.fillRect(0,H*0.28,W,H*0.06);
+
+                // Particles (dust/vehicles)
+                for(var p=0;p<particles.length;p++){
+                    var pt=particles[p];
+                    pt.x+=pt.speed; if(pt.x>1.05)pt.x=-0.05;
+                    ctx.beginPath();
+                    ctx.arc(pt.x*W, pt.y*H, pt.size, 0, Math.PI*2);
+                    ctx.fillStyle='rgba(255,255,255,'+pt.alpha+')';
+                    ctx.fill();
+                }
+
+                // Subtle vignette
+                var vig=ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.9);
+                vig.addColorStop(0,'rgba(0,0,0,0)');
+                vig.addColorStop(1,'rgba(0,0,0,0.45)');
+                ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+
+                raf=requestAnimationFrame(drawFrame);
+            }
+
+            function init(){
+                resize();
+                if(raf)cancelAnimationFrame(raf);
+                drawFrame();
+            }
+
+            window.addEventListener('resize',init);
+            // Start when section is visible
+            if(document.readyState==='loading'){
+                document.addEventListener('DOMContentLoaded',init);
+            } else { init(); }
+        })();
+        </script>
 
         <main class="max-w-7xl mx-auto px-4 py-8">
             <!-- Quick Stats -->
