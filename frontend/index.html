@@ -2,891 +2,1220 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agraX — Wholesale Produce Intelligence</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS — The Precision Ledger
+   Sourced exactly from stitch DESIGN.md
+══════════════════════════════════════════ */
 :root {
-  --surface:           #f3faff;
-  --surface-low:       #e6f6ff;
-  --surface-lowest:    #ffffff;
-  --surface-highest:   #cfe6f2;
-  --primary:           #0d631b;
-  --primary-cont:      #2e7d32;
-  --primary-fixed:     #a3f69c;
-  --primary-fixed-dim: #72c97a;
-  --secondary:         #77574d;
-  --secondary-cont:    #fed3c7;
-  --on-secondary-cont: #795950;
-  --tertiary:          #774c00;
-  --on-surface:        #071e27;
-  --on-surface-var:    #40493d;
-  --ghost:             rgba(64,73,61,0.20);
-  --ghost-focus:       #0d631b;
-  --shadow:            rgba(7,30,39,0.06);
-  --f-display:         'Manrope', sans-serif;
-  --f-body:            'Work Sans', sans-serif;
-  --sp-4: 1rem; --sp-6: 1.5rem; --sp-8: 2rem; --sp-12: 3rem; --sp-16: 4rem;
-  --r-md: 0.375rem; --r-lg: 0.5rem; --r-xl: 0.75rem; --r-2xl: 1.25rem; --r-3xl: 2rem;
-  --dock-h: 76px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;scroll-behavior:smooth;}
-body{font-family:var(--f-body);background:var(--surface);color:var(--on-surface);min-height:100vh;-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--dock-h) + env(safe-area-inset-bottom,0px) + 24px);}
-button,select,input{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-.view{display:none;}.view.active{display:block;}
+  --bg:           #f8f9ff;
+  --s-lowest:     #ffffff;
+  --s-low:        #eff4ff;
+  --s-mid:        #e5eeff;
+  --s-high:       #dce9ff;
+  --s-highest:    #d3e4fe;
 
-/* ── GLASS HEADER ── */
-.header{
-  position:sticky;top:0;z-index:200;
-  background:rgba(243,250,255,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;
-}
-@media(max-width:640px){.header{padding:12px 16px;}}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
-.logo-sq{
-  width:32px;height:32px;border-radius:8px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-cont));
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--f-display);font-size:11px;font-weight:800;color:#fff;letter-spacing:-0.02em;
-}
-.logo-name{font-family:var(--f-display);font-size:16px;font-weight:800;letter-spacing:-0.04em;color:var(--on-surface);}
-.logo-name em{color:var(--primary);font-style:normal;}
-.header-search{
-  flex:1;max-width:420px;
-  display:flex;align-items:center;gap:10px;
-  background:var(--surface-highest);border-radius:100px;
-  padding:9px 16px;
-  outline:2px solid transparent;transition:outline-color 0.15s;
-}
-.header-search:focus-within{outline-color:var(--ghost-focus);}
-.header-search input{flex:1;font-size:0.875rem;color:var(--on-surface);outline:none;background:transparent;}
-.header-search input::placeholder{color:var(--on-surface-var);}
-.search-ico{font-size:15px;color:var(--on-surface-var);flex-shrink:0;}
-.freshness-tag{
-  display:flex;align-items:center;gap:7px;flex-shrink:0;
-  background:var(--primary-fixed);border-radius:100px;padding:6px 13px;
-  font-family:var(--f-display);font-size:0.75rem;font-weight:700;color:var(--primary);letter-spacing:0.04em;
-}
-.fdot{width:6px;height:6px;border-radius:50%;background:var(--primary);animation:breath 2s ease-in-out infinite;}
-@keyframes breath{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+  --primary:      #004532;
+  --primary-cont: #065f46;
+  --primary-fix:  #a6f2d1;
 
-/* ── BOTTOM DOCK ── */
-.dock{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:1000;
-  display:flex;align-items:center;gap:2px;
-  background:rgba(255,255,255,0.92);border-radius:100px;padding:5px;
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  box-shadow:0 8px 24px 0 var(--shadow),0 2px 8px 0 rgba(7,30,39,0.09);
-}
-.d-btn{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:8px 20px;border-radius:100px;
-  font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
-  color:var(--on-surface-var);transition:all 0.18s;
-}
-.d-btn .di{font-size:18px;line-height:1;}
-.d-btn.on{background:linear-gradient(135deg,var(--primary),var(--primary-cont));color:#fff;}
-.d-btn:not(.on):hover{background:var(--surface-low);}
+  --secondary:    #4059aa;
 
-/* ── SHARED LAYOUT ── */
-.pg{padding:0 28px;}
-@media(max-width:640px){.pg{padding:0 16px;}}
-.section-gap{height:var(--sp-12);}
-.section-gap-lg{height:var(--sp-16);}
+  --on-surf:      #0b1c30;
+  --on-surf-var:  #3f4944;
+  --outline:      #6f7973;
+  --outline-var:  #bec9c2;
 
-/* ── SECTION HEAD ── */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--sp-6);flex-wrap:wrap;gap:8px;}
-.sec-title{font-family:var(--f-display);font-size:1.75rem;font-weight:800;letter-spacing:-0.035em;color:var(--on-surface);}
-.sec-sub{font-size:0.8125rem;color:var(--on-surface-var);font-weight:500;}
+  --err:          #ba1a1a;
+  --err-cont:     #ffdad6;
+  --on-err-cont:  #93000a;
 
-/* ── BUTTONS ── */
-.btn-primary{
-  background:linear-gradient(135deg,var(--primary),var(--primary-cont));color:#fff;
-  border-radius:var(--r-md);padding:10px 20px;
-  font-family:var(--f-display);font-size:0.875rem;font-weight:700;
-  box-shadow:0 4px 14px 0 rgba(13,99,27,0.22);transition:opacity 0.15s,transform 0.15s;
-}
-.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
-.btn-secondary{
-  background:var(--secondary-cont);color:var(--on-secondary-cont);
-  border-radius:var(--r-md);padding:10px 20px;
-  font-family:var(--f-display);font-size:0.875rem;font-weight:700;transition:opacity 0.15s;
-}
-.btn-secondary:hover{opacity:0.82;}
+  --f-data:       'Space Grotesk', sans-serif;
+  --f-ui:         'Inter', sans-serif;
 
-/* ══════════════════════════════════════
-   PAGE 1 — DASHBOARD
-══════════════════════════════════════ */
+  --container:    1200px;
+  --px:           clamp(1.5rem, 5vw, 3rem);
+  --radius:       0.375rem;
+  --radius-lg:    0.5rem;
+  --radius-xl:    0.75rem;
+}
 
-/* Hero — just the headline + data age, no stats */
-.dash-hero{
-  padding:48px 28px 0;
-}
-@media(max-width:640px){.dash-hero{padding:32px 16px 0;}}
-.dash-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  background:var(--primary-fixed);border-radius:100px;padding:5px 13px;
-  font-family:var(--f-display);font-size:0.75rem;font-weight:700;color:var(--primary);
-  letter-spacing:0.06em;margin-bottom:18px;
-}
-.dash-h1{
-  font-family:var(--f-display);
-  font-size:clamp(2.2rem,5vw,3.5rem);
-  font-weight:800;letter-spacing:-0.04em;color:var(--on-surface);
-  line-height:1.05;margin-bottom:10px;
-}
-.dash-h1 em{color:var(--primary);font-style:normal;}
-.dash-updated{
-  font-size:0.875rem;color:var(--on-surface-var);
-  display:flex;align-items:center;gap:8px;margin-bottom:36px;
-}
-.dash-updated strong{color:var(--on-surface);font-weight:600;}
+/* ══════════════════════════════════════════ RESET */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { font-family: var(--f-ui); background: var(--bg); color: var(--on-surf); -webkit-font-smoothing: antialiased; }
+button, input, select { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+a { text-decoration: none; color: inherit; }
+.view { display: none; }
+.view.active { display: block; }
 
-/* Anomaly alerts — surface-low background section */
-.anomaly-section{
-  background:var(--surface-low);
-  padding:var(--sp-8) 28px;
+/* ══════════════════════════════════════════
+   TOP GLASS HEADER — fixed, blurred
+══════════════════════════════════════════ */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 64px;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(190,201,194,0.18);
+  display: flex; align-items: center;
 }
-@media(max-width:640px){.anomaly-section{padding:var(--sp-8) 16px;}}
-.anomaly-scroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;}
-.anomaly-scroll::-webkit-scrollbar{display:none;}
-.anomaly-card{
-  flex-shrink:0;min-width:240px;
-  background:var(--surface-lowest);border-radius:var(--r-2xl);padding:var(--sp-6);
-  box-shadow:0 4px 0 0 var(--shadow);
-  position:relative;overflow:hidden;cursor:pointer;
-  transition:box-shadow 0.2s,transform 0.2s;
+.header-inner {
+  max-width: var(--container);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--px);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
 }
-.anomaly-card:hover{transform:translateY(-2px);box-shadow:0 24px 0 0 var(--shadow);}
-.anomaly-card.spike::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--tertiary),#c8860a);
+.brand {
+  font-family: var(--f-data);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
 }
-.anomaly-card.surge::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--primary),var(--primary-fixed-dim));
-}
-.anomaly-card.drop::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,#c0392b,#e57373);
-}
-.ac-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--f-display);font-size:0.7rem;font-weight:700;
-  letter-spacing:0.08em;text-transform:uppercase;
-  padding:3px 9px;border-radius:var(--r-md);margin-bottom:10px;
-}
-.ac-tag.spike{background:#fff3e0;color:var(--tertiary);}
-.ac-tag.surge{background:var(--primary-fixed);color:var(--primary);}
-.ac-tag.drop{background:#fde8e8;color:#c0392b;}
-.ac-commodity{
-  display:flex;align-items:center;gap:10px;margin-bottom:12px;
-}
-.ac-emoji{font-size:1.75rem;}
-.ac-name{font-family:var(--f-display);font-size:1rem;font-weight:700;color:var(--on-surface);}
-.ac-market{font-size:0.75rem;color:var(--on-surface-var);margin-top:2px;}
-.ac-delta{
-  font-family:var(--f-display);font-size:1.75rem;font-weight:800;
-  letter-spacing:-0.04em;
-}
-.ac-delta.up{color:var(--primary);}
-.ac-delta.dn{color:#c0392b;}
-.ac-delta.warn{color:var(--tertiary);}
-.ac-context{font-size:0.8rem;color:var(--on-surface-var);margin-top:4px;line-height:1.5;}
+.brand em { color: var(--on-surf); font-style: normal; }
 
-/* Movers — two columns: gainers + losers */
-.movers-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+/* Nav links */
+.nav-links { display: flex; align-items: center; gap: 24px; margin-left: 32px; }
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--on-surf-var);
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
 }
-@media(max-width:640px){.movers-grid{grid-template-columns:1fr;}}
-.mover-col{background:var(--surface-lowest);border-radius:var(--r-2xl);padding:var(--sp-6);box-shadow:0 4px 0 0 var(--shadow);}
-.mover-col-title{
-  font-family:var(--f-display);font-size:0.75rem;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--sp-4);
-}
-.mover-col-title.up{color:var(--primary);}
-.mover-col-title.dn{color:#c0392b;}
-.mover-row{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:10px 0;cursor:pointer;transition:padding 0.15s;
-  border-radius:var(--r-lg);
-}
-.mover-row:hover{background:var(--surface-low);padding-left:8px;padding-right:8px;margin:0 -8px;}
-/* spacing between rows — no dividers, use gap */
-.mover-list{display:flex;flex-direction:column;gap:2px;}
-.mr-left{display:flex;align-items:center;gap:10px;}
-.mr-emoji{font-size:1.25rem;flex-shrink:0;}
-.mr-name{font-family:var(--f-display);font-size:0.875rem;font-weight:600;color:var(--on-surface);}
-.mr-price{font-size:0.75rem;color:var(--on-surface-var);margin-top:1px;font-family:var(--f-display);}
-.mr-pct{font-family:var(--f-display);font-size:0.875rem;font-weight:700;flex-shrink:0;}
-.mr-pct.up{color:var(--primary);}
-.mr-pct.dn{color:#c0392b;}
+.nav-link.active { color: var(--primary); border-bottom-color: var(--primary); }
+.nav-link:hover { color: var(--primary); }
 
-/* Spread spotlight — widest FOB→Terminal gap */
-.spread-card{
-  background:var(--surface-lowest);border-radius:var(--r-2xl);
-  padding:var(--sp-6);box-shadow:0 4px 0 0 var(--shadow);
-  position:relative;overflow:hidden;
+/* Header search */
+.header-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--s-low);
+  border: 1px solid rgba(190,201,194,0.22);
+  border-radius: var(--radius-lg);
+  padding: 6px 14px;
+  flex: 1; max-width: 240px;
 }
-.spread-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--primary),var(--primary-fixed));
-}
-.spread-row{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:12px 0;border-radius:var(--r-lg);cursor:pointer;transition:padding 0.15s;
-}
-.spread-row:hover{background:var(--surface-low);padding-left:8px;padding-right:8px;margin:0 -8px;}
-.sr-commodity{display:flex;align-items:center;gap:10px;}
-.sr-emoji{font-size:1.25rem;}
-.sr-name{font-family:var(--f-display);font-size:0.875rem;font-weight:600;color:var(--on-surface);}
-.sr-market{font-size:0.75rem;color:var(--on-surface-var);margin-top:1px;}
-.sr-right{text-align:right;flex-shrink:0;}
-.sr-price{font-family:var(--f-display);font-size:0.9375rem;font-weight:700;color:var(--on-surface);}
-.sr-context{font-size:0.75rem;color:var(--on-surface-var);margin-top:1px;}
+.header-search:focus-within { border-color: rgba(64,89,170,0.4); }
+.header-search input { flex: 1; font-size: 0.8125rem; color: var(--on-surf); outline: none; background: transparent; }
+.header-search input::placeholder { color: var(--outline); }
+.h-ico { font-size: 14px; color: var(--outline); flex-shrink: 0; }
 
-/* ══════════════════════════════════════
-   PAGE 2 — TERMINAL MARKETS
-══════════════════════════════════════ */
+/* Header right */
+.header-right { display: flex; align-items: center; gap: 6px; }
+.h-tag {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--primary-fix);
+  border-radius: 100px; padding: 4px 11px;
+  font-family: var(--f-data);
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--primary); letter-spacing: 0.06em;
+}
+.ldot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-/* Hub selector */
-.hub-grid{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
-  margin-bottom:var(--sp-8);
-}
-@media(min-width:600px){.hub-grid{grid-template-columns:repeat(3,1fr);}}
-@media(min-width:900px){.hub-grid{grid-template-columns:repeat(4,1fr);}}
-.hub-card{
-  background:var(--surface-lowest);border-radius:var(--r-2xl);padding:18px 20px;
-  cursor:pointer;box-shadow:0 4px 0 0 var(--shadow);transition:all 0.18s;
-}
-.hub-card.on{background:linear-gradient(135deg,var(--primary),var(--primary-cont));box-shadow:0 8px 0 0 rgba(13,99,27,0.18);}
-.hub-card:not(.on):hover{transform:translateY(-2px);box-shadow:0 24px 0 0 var(--shadow);}
-.hub-name{font-family:var(--f-display);font-size:0.9375rem;font-weight:700;color:var(--on-surface);margin-bottom:3px;}
-.hub-card.on .hub-name{color:#fff;}
-.hub-n{font-size:0.75rem;color:var(--on-surface-var);}
-.hub-card.on .hub-n{color:rgba(255,255,255,0.75);}
-.hub-prog{height:3px;background:var(--surface-highest);border-radius:100px;margin-top:13px;overflow:hidden;}
-.hub-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-fixed-dim));border-radius:100px;}
-.hub-card.on .hub-prog{background:rgba(255,255,255,0.25);}
-.hub-card.on .hub-fill{background:var(--primary-fixed);}
+/* ══════════════════════════════════════════
+   PAGE SHELL
+══════════════════════════════════════════ */
+main { padding-top: 96px; padding-bottom: 80px; }
+.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--px); }
 
-/* Category pills */
-.cat-strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:var(--sp-6);}
-.cat-strip::-webkit-scrollbar{display:none;}
-.cat-pill{
-  flex-shrink:0;padding:7px 18px;border-radius:100px;
-  font-family:var(--f-display);font-size:0.8125rem;font-weight:600;
-  background:var(--surface-lowest);color:var(--on-surface-var);
-  box-shadow:0 2px 0 0 var(--shadow);transition:all 0.15s;
+/* ══════════════════════════════════════════
+   BREADCRUMB
+══════════════════════════════════════════ */
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--on-surf-var); margin-bottom: 16px;
 }
-.cat-pill:hover{color:var(--on-surface);}
-.cat-pill.on{background:linear-gradient(135deg,var(--primary),var(--primary-cont));color:#fff;box-shadow:0 4px 12px 0 rgba(13,99,27,0.22);}
+.breadcrumb a:hover { color: var(--primary); }
+.breadcrumb-sep { font-size: 10px; opacity: 0.5; }
+.breadcrumb-current { color: var(--on-surf); }
 
-/* Pricing table — no grid lines */
-.price-tbl{width:100%;border-collapse:collapse;}
-.price-tbl thead tr{background:var(--surface-highest);}
-.price-tbl thead th{
-  font-family:var(--f-display);font-size:0.7rem;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;color:var(--on-surface-var);
-  padding:10px 14px;text-align:left;
+/* ══════════════════════════════════════════
+   PAGE HEADER ROW
+══════════════════════════════════════════ */
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; margin-bottom: 32px; flex-wrap: wrap;
 }
-.price-tbl thead th:first-child{border-radius:var(--r-lg) 0 0 var(--r-lg);}
-.price-tbl thead th:last-child{border-radius:0 var(--r-lg) var(--r-lg) 0;text-align:right;}
-.price-tbl thead th.r{text-align:right;}
-.price-tbl tbody tr{cursor:pointer;transition:background 0.08s;}
-.price-tbl tbody tr:nth-child(even){background:var(--surface-low);}
-.price-tbl tbody tr:hover{background:var(--surface-highest) !important;}
-.price-tbl tbody td{padding:12px 14px;vertical-align:middle;}
-.price-tbl tbody td.r{text-align:right;}
-.td-name{font-family:var(--f-display);font-size:0.875rem;font-weight:600;color:var(--on-surface);}
-.td-spec{font-size:0.75rem;color:var(--on-surface-var);margin-top:2px;}
-.td-price{font-family:var(--f-display);font-size:0.9375rem;font-weight:700;color:var(--on-surface);}
-.td-range{font-family:var(--f-display);font-size:0.8125rem;font-weight:500;color:var(--on-surface-var);}
-.badge{
-  display:inline-block;font-family:var(--f-display);font-size:0.75rem;font-weight:700;
-  padding:3px 8px;border-radius:var(--r-md);
+.page-head-left {}
+.page-title {
+  font-family: var(--f-data);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700; letter-spacing: -0.04em;
+  color: var(--on-surf); line-height: 1.1;
 }
-.badge.up{background:var(--primary-fixed);color:var(--primary);}
-.badge.dn{background:#fde8e8;color:#c0392b;}
-.badge.flat{background:#fff3e0;color:var(--tertiary);}
+.page-desc {
+  font-size: 0.9375rem; color: var(--on-surf-var);
+  margin-top: 8px; max-width: 520px; line-height: 1.6;
+}
+.page-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.btn-filter {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.35);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem; font-weight: 500; color: var(--on-surf);
+  transition: background 0.15s;
+}
+.btn-filter:hover { background: var(--s-low); }
+.btn-export {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem; font-weight: 600; color: #fff;
+  transition: background 0.15s;
+}
+.btn-export:hover { background: var(--primary-cont); }
 
-/* ══════════════════════════════════════
-   PAGE 3 — SHIPPING POINTS (FOB)
-══════════════════════════════════════ */
-/* Same table pattern, different market_type filter */
+/* ══════════════════════════════════════════
+   SEARCH TERMINAL — large, bottom-border focus
+══════════════════════════════════════════ */
+.search-terminal {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.12);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  margin-bottom: 32px;
+}
+.search-terminal-inner {
+  display: flex; align-items: center; gap: 12px;
+}
+.search-terminal-inner input {
+  flex: 1;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(190,201,194,0.4);
+  outline: none;
+  font-family: var(--f-data);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--on-surf);
+  letter-spacing: -0.02em;
+  transition: border-color 0.15s;
+}
+.search-terminal-inner input:focus { border-bottom-color: var(--secondary); }
+.search-terminal-inner input::placeholder { color: rgba(111,121,115,0.5); }
+.search-big-ico { font-size: 24px; color: var(--on-surf-var); flex-shrink: 0; }
 
-/* ══════════════════════════════════════
-   COMPARE PANEL (tool inside detail sheet)
-══════════════════════════════════════ */
-.compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:var(--sp-4);}
-.cmp-card{
-  background:var(--surface-low);border-radius:var(--r-xl);padding:16px;
-  transition:all 0.18s;
+/* ══════════════════════════════════════════
+   LEDGER TABLE
+══════════════════════════════════════════ */
+.ledger-wrap {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.12);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
 }
-.cmp-card.best{background:var(--primary-fixed);}
-.cmp-best{font-family:var(--f-display);font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary);margin-bottom:7px;}
-.cmp-mkt{font-family:var(--f-display);font-size:0.875rem;font-weight:700;color:var(--on-surface);}
-.cmp-orig{font-size:0.75rem;color:var(--on-surface-var);margin:3px 0 12px;}
-.cmp-price{font-family:var(--f-display);font-size:1.5rem;font-weight:800;letter-spacing:-0.04em;color:var(--on-surface);}
-.cmp-card.best .cmp-price{color:var(--primary);}
+.ledger-table { width: 100%; border-collapse: collapse; }
 
-/* ══════════════════════════════════════
-   DETAIL SHEET
-══════════════════════════════════════ */
-.sheet-ov{
-  position:fixed;inset:0;z-index:800;
-  background:rgba(7,30,39,0.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  display:none;opacity:0;transition:opacity 0.25s;
+.ledger-table thead tr { background: rgba(239,244,255,0.5); }
+.ledger-table thead th {
+  padding: 14px 20px;
+  font-family: var(--f-ui);
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--on-surf-var); text-align: left;
+  border-bottom: 1px solid rgba(190,201,194,0.18);
+  white-space: nowrap;
 }
-.sheet-ov.on{display:block;opacity:1;}
-.sheet{
-  position:fixed;left:0;right:0;bottom:0;z-index:900;
-  background:var(--surface-lowest);border-radius:var(--r-3xl) var(--r-3xl) 0 0;
-  max-height:92vh;overflow-y:auto;
-  transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);
-  padding-bottom:calc(var(--dock-h) + 28px);
-}
-.sheet.on{transform:translateY(0);}
-.sh-handle{width:36px;height:4px;border-radius:2px;background:var(--surface-highest);margin:14px auto 0;}
-.sh-top{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 28px 0;}
-@media(max-width:640px){.sh-top{padding:20px 16px 0;}}
-.sh-title{font-family:var(--f-display);font-size:1.75rem;font-weight:800;letter-spacing:-0.04em;color:var(--on-surface);}
-.sh-meta{font-size:0.75rem;color:var(--on-surface-var);margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;}
-.sh-close{
-  width:34px;height:34px;border-radius:50%;background:var(--surface-highest);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:var(--on-surface-var);cursor:pointer;flex-shrink:0;transition:background 0.15s;
-}
-.sh-close:hover{background:var(--surface-low);}
+.ledger-table thead th.r { text-align: right; }
+.ledger-table thead th.c { text-align: center; }
 
-/* Summary strip in sheet */
-.sh-summary{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:8px;padding:20px 28px;
+.ledger-table tbody tr {
+  border-bottom: 1px solid rgba(190,201,194,0.10);
+  transition: background 0.1s;
+  cursor: pointer;
 }
-@media(max-width:640px){.sh-summary{padding:20px 16px;}}
-.sh-stat{background:var(--surface-low);border-radius:var(--r-xl);padding:14px 16px;}
-.sh-stat-lbl{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-surface-var);margin-bottom:5px;}
-.sh-stat-val{font-family:var(--f-display);font-size:1.25rem;font-weight:800;letter-spacing:-0.03em;color:var(--on-surface);}
-.sh-stat-val.up{color:var(--primary);}
-.sh-stat-val.dn{color:#c0392b;}
+.ledger-table tbody tr:last-child { border-bottom: none; }
+.ledger-table tbody tr:hover { background: rgba(220,233,255,0.35); }
+.ledger-table tbody tr:hover .row-action { opacity: 1; }
+.ledger-table tbody td { padding: 16px 20px; vertical-align: middle; }
+.ledger-table tbody td.r { text-align: right; }
+.ledger-table tbody td.c { text-align: center; }
 
-/* Chart */
-.sh-chart{
-  margin:0 28px 20px;background:var(--surface-low);border-radius:var(--r-2xl);padding:18px;
+/* Commodity cell */
+.com-cell { display: flex; align-items: center; gap: 12px; }
+.com-icon {
+  width: 34px; height: 34px; border-radius: var(--radius-lg);
+  background: var(--s-low);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.125rem; flex-shrink: 0;
 }
-@media(max-width:640px){.sh-chart{margin:0 16px 20px;}}
-.sh-chart-lbl{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-surface-var);margin-bottom:14px;}
-.ch-h{height:170px;}
+.com-name { font-size: 0.9375rem; font-weight: 600; color: var(--on-surf); }
+.com-sub {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--on-surf-var); margin-top: 2px;
+}
 
-/* Compare toggle inside sheet */
-.sh-tabs{
-  display:flex;gap:6px;padding:0 28px 16px;
+/* Price cells */
+.fob-price {
+  font-family: var(--f-data);
+  font-size: 1.125rem; font-weight: 700;
+  color: var(--on-surf);
 }
-@media(max-width:640px){.sh-tabs{padding:0 16px 16px;}}
-.sh-tab{
-  padding:7px 18px;border-radius:100px;
-  font-family:var(--f-display);font-size:0.8125rem;font-weight:600;
-  background:var(--surface-low);color:var(--on-surface-var);transition:all 0.15s;
+.term-price {
+  font-family: var(--f-data);
+  font-size: 0.9375rem; font-weight: 600;
+  color: var(--on-surf-var);
 }
-.sh-tab.on{background:linear-gradient(135deg,var(--primary),var(--primary-cont));color:#fff;}
 
-/* Market breakdown table */
-.sh-pad{padding:0 28px;}
-@media(max-width:640px){.sh-pad{padding:0 16px;}}
+/* WoW chip */
+.wow-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 100px;
+  font-family: var(--f-data);
+  font-size: 0.7rem; font-weight: 700;
+  white-space: nowrap;
+}
+.wow-chip.up   { background: #d1fae5; color: var(--primary-cont); }
+.wow-chip.dn   { background: var(--err-cont); color: var(--on-err-cont); }
+.wow-chip.flat { background: var(--s-low); color: var(--on-surf-var); }
+
+/* Status cell */
+.status-cell { display: flex; align-items: center; justify-content: center; gap: 7px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.stable   { background: var(--primary); animation: blink 2s ease-in-out infinite; }
+.status-dot.bullish  { background: var(--primary); animation: blink 2s ease-in-out infinite; }
+.status-dot.volatile { background: var(--err); }
+.status-dot.bearish  { background: var(--err); }
+.status-dot.neutral  { background: var(--outline-var); }
+.status-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.status-label.stable   { color: var(--primary); }
+.status-label.bullish  { color: var(--primary); }
+.status-label.volatile { color: var(--err); }
+.status-label.bearish  { color: var(--err); }
+.status-label.neutral  { color: var(--on-surf-var); }
+
+/* Action cell */
+.row-action { opacity: 0; font-size: 1rem; color: var(--secondary); transition: opacity 0.15s; }
+
+/* Table footer */
+.ledger-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(239,244,255,0.3);
+  border-top: 1px solid rgba(190,201,194,0.12);
+  flex-wrap: wrap; gap: 10px;
+}
+.ledger-count {
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--on-surf-var);
+}
+.pg-controls { display: flex; align-items: center; gap: 4px; }
+.pg-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(190,201,194,0.35);
+  border-radius: var(--radius);
+  font-family: var(--f-data);
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--on-surf-var);
+  transition: background 0.12s, color 0.12s;
+}
+.pg-btn:hover:not(:disabled) { background: var(--s-lowest); }
+.pg-btn.active { background: var(--s-lowest); color: var(--primary); }
+.pg-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* ══════════════════════════════════════════
+   INSIGHT CARDS (3-col grid, bottom of page)
+══════════════════════════════════════════ */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+@media(max-width: 768px) { .insight-grid { grid-template-columns: 1fr; } }
+
+.insight-card {
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  position: relative; overflow: hidden;
+}
+.insight-card.dark {
+  background: var(--primary);
+  color: #fff;
+}
+.insight-card.tinted {
+  background: var(--s-highest);
+  border: 1px solid rgba(190,201,194,0.22);
+}
+.insight-card.light {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.22);
+}
+.ic-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  opacity: 0.7; margin-bottom: 8px;
+}
+.insight-card.dark .ic-label { color: rgba(255,255,255,0.7); }
+.insight-card:not(.dark) .ic-label { color: var(--on-surf-var); }
+.ic-headline {
+  font-family: var(--f-data);
+  font-size: 1.375rem; font-weight: 700;
+  letter-spacing: -0.03em; margin-bottom: 14px;
+  line-height: 1.2;
+}
+.insight-card.dark .ic-headline { color: #fff; }
+.insight-card:not(.dark) .ic-headline { color: var(--on-surf); }
+.ic-body { font-size: 0.875rem; line-height: 1.6; }
+.insight-card.dark .ic-body { color: rgba(255,255,255,0.8); }
+.insight-card:not(.dark) .ic-body { color: var(--on-surf-var); }
+.ic-bg-icon {
+  position: absolute; right: -16px; bottom: -16px;
+  font-size: 6rem; opacity: 0.08; line-height: 1;
+  pointer-events: none;
+}
+.ic-metric {
+  font-family: var(--f-data);
+  font-size: 1.75rem; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--on-surf);
+}
+.ic-prog-track {
+  width: 100%; height: 6px;
+  background: rgba(190,201,194,0.25);
+  border-radius: 100px; overflow: hidden; margin: 12px 0;
+}
+.ic-prog-fill { height: 100%; border-radius: 100px; background: var(--err); }
+.ic-cta {
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--primary); cursor: pointer;
+}
+.ic-cta:hover { text-decoration: underline; }
+.ic-delta-up { color: var(--primary-cont); font-family: var(--f-data); font-weight: 700; }
+.ic-delta-dn { color: var(--err); font-family: var(--f-data); font-weight: 700; }
+
+/* ══════════════════════════════════════════
+   DASHBOARD — alert cards + movers
+══════════════════════════════════════════ */
+.alert-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; margin-bottom: 40px; padding-bottom: 4px; }
+.alert-row::-webkit-scrollbar { display: none; }
+.alert-chip {
+  flex-shrink: 0; min-width: 220px;
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.18);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: background 0.15s;
+}
+.alert-chip::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.alert-chip.spike::before { background: linear-gradient(90deg, #774c00, #c8860a); }
+.alert-chip.surge::before { background: linear-gradient(90deg, var(--primary), #68dba9); }
+.alert-chip.drop::before  { background: linear-gradient(90deg, var(--err), #e57373); }
+.alert-chip:hover { background: var(--s-low); }
+.alert-tag {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 100px; margin-bottom: 10px; display: inline-block;
+}
+.alert-tag.spike { background: #fff3e0; color: #774c00; }
+.alert-tag.surge { background: var(--primary-fix); color: var(--primary); }
+.alert-tag.drop  { background: var(--err-cont); color: var(--on-err-cont); }
+.alert-name { font-size: 0.9375rem; font-weight: 700; color: var(--on-surf); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.alert-sub  { font-size: 0.7rem; color: var(--on-surf-var); margin-bottom: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+.alert-delta { font-family: var(--f-data); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.03em; }
+.alert-delta.up  { color: var(--primary); }
+.alert-delta.dn  { color: var(--err); }
+.alert-context { font-size: 0.8rem; color: var(--on-surf-var); margin-top: 4px; }
+
+/* Movers two-column */
+.movers-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+@media(max-width:640px) { .movers-cols { grid-template-columns: 1fr; } }
+.mover-panel {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.14);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.mover-panel-head {
+  padding: 14px 18px;
+  background: rgba(239,244,255,0.5);
+  border-bottom: 1px solid rgba(190,201,194,0.14);
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.mover-panel-head.up { color: var(--primary); }
+.mover-panel-head.dn { color: var(--err); }
+.mover-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; cursor: pointer; transition: background 0.1s;
+  gap: 12px;
+}
+.mover-row:hover { background: rgba(220,233,255,0.3); }
+.mover-left { display: flex; align-items: center; gap: 10px; }
+.mover-emoji { font-size: 1.25rem; flex-shrink: 0; }
+.mover-name { font-size: 0.875rem; font-weight: 600; color: var(--on-surf); }
+.mover-price { font-size: 0.7rem; color: var(--on-surf-var); margin-top: 1px; font-family: var(--f-data); }
+.mover-pct { font-family: var(--f-data); font-size: 0.875rem; font-weight: 700; flex-shrink: 0; }
+.mover-pct.up { color: var(--primary); }
+.mover-pct.dn { color: var(--err); }
+
+/* ══════════════════════════════════════════
+   COMMODITY DETAIL SHEET
+══════════════════════════════════════════ */
+.sh-ov {
+  position: fixed; inset: 0; z-index: 800;
+  background: rgba(11,28,48,0.28);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; opacity: 0; transition: opacity 0.22s;
+}
+.sh-ov.on { display: block; opacity: 1; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+  background: var(--s-lowest);
+  border-radius: 20px 20px 0 0;
+  border: 1px solid rgba(190,201,194,0.2); border-bottom: none;
+  max-height: 88vh; overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  padding-bottom: 40px;
+}
+.sheet.on { transform: translateY(0); }
+.sh-grip { width: 36px; height: 4px; background: var(--outline-var); border-radius: 2px; margin: 14px auto 0; }
+.sh-top { display: flex; align-items: flex-start; justify-content: space-between; padding: 20px 28px 0; }
+.sh-title { font-family: var(--f-data); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.04em; color: var(--on-surf); }
+.sh-meta { font-size: 0.75rem; color: var(--on-surf-var); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+.sh-x {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--s-low); display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--on-surf-var); cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+}
+.sh-x:hover { background: var(--s-mid); }
+
+/* Sheet stat row */
+.sh-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--s-low); margin: 20px 28px; border-radius: var(--radius-xl); overflow: hidden; }
+.sh-stat { background: var(--s-lowest); padding: 14px 16px; }
+.sh-stat-lbl { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-surf-var); margin-bottom: 5px; }
+.sh-stat-val { font-family: var(--f-data); font-size: 1.25rem; font-weight: 700; color: var(--on-surf); }
+.sh-stat-val.up { color: var(--primary); }
+.sh-stat-val.dn { color: var(--err); }
+
+/* Sheet chart */
+.sh-chart { margin: 0 28px 20px; background: var(--s-low); border-radius: var(--radius-xl); padding: 18px; }
+.sh-chart-lbl { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-surf-var); margin-bottom: 14px; }
+.ch-h { height: 170px; }
+
+/* Sheet tabs */
+.sh-tabs { display: flex; gap: 6px; padding: 0 28px 14px; }
+.sh-tab {
+  padding: 6px 16px; border-radius: 100px;
+  font-size: 0.8125rem; font-weight: 600;
+  background: var(--s-low); color: var(--on-surf-var); transition: all 0.15s;
+}
+.sh-tab.on { background: var(--primary); color: #fff; }
+
+/* Sheet market table (same ledger style) */
+.sh-pad { padding: 0 28px; }
+.sh-section-lbl { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-surf-var); margin-bottom: 12px; }
+
+/* ══════════════════════════════════════════
+   HUB SELECTOR
+══════════════════════════════════════════ */
+.hub-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 28px; }
+@media(min-width:600px) { .hub-grid { grid-template-columns: repeat(3,1fr); } }
+@media(min-width:900px) { .hub-grid { grid-template-columns: repeat(4,1fr); } }
+.hub-card {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.18);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px; cursor: pointer;
+  transition: all 0.15s;
+}
+.hub-card.on { background: var(--primary); border-color: var(--primary); }
+.hub-card:not(.on):hover { background: var(--s-low); }
+.hub-card-name { font-family: var(--f-data); font-size: 0.9375rem; font-weight: 700; color: var(--on-surf); margin-bottom: 3px; }
+.hub-card.on .hub-card-name { color: #fff; }
+.hub-card-n { font-size: 0.75rem; color: var(--on-surf-var); }
+.hub-card.on .hub-card-n { color: rgba(255,255,255,0.72); }
+.hub-prog { height: 3px; background: var(--s-low); border-radius: 100px; margin-top: 12px; overflow: hidden; }
+.hub-fill { height: 100%; background: linear-gradient(90deg,var(--primary),#68dba9); border-radius: 100px; }
+.hub-card.on .hub-prog { background: rgba(255,255,255,0.2); }
+.hub-card.on .hub-fill { background: var(--primary-fix); }
+
+/* ══════════════════════════════════════════
+   CATEGORY PILLS
+══════════════════════════════════════════ */
+.cat-strip { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+.cat-strip::-webkit-scrollbar { display: none; }
+.cat-pill {
+  flex-shrink: 0; padding: 6px 16px; border-radius: 100px;
+  font-size: 0.8125rem; font-weight: 600;
+  background: var(--s-lowest); color: var(--on-surf-var);
+  border: 1px solid rgba(190,201,194,0.25);
+  transition: all 0.15s;
+}
+.cat-pill.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.cat-pill:not(.on):hover { border-color: var(--primary); color: var(--primary); }
+
+/* ══════════════════════════════════════════
+   COMPARE GRID
+══════════════════════════════════════════ */
+.cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-top: 12px; }
+.cmp-card {
+  background: var(--s-lowest);
+  border: 1px solid rgba(190,201,194,0.18);
+  border-radius: var(--radius-xl); padding: 18px;
+  transition: background 0.15s;
+}
+.cmp-card.best { background: var(--primary-fix); border-color: var(--primary); }
+.cmp-card:not(.best):hover { background: var(--s-low); }
+.cmp-best { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary); margin-bottom: 6px; }
+.cmp-mkt { font-family: var(--f-data); font-size: 0.9375rem; font-weight: 700; color: var(--on-surf); }
+.cmp-orig { font-size: 0.75rem; color: var(--on-surf-var); margin: 3px 0 12px; }
+.cmp-price { font-family: var(--f-data); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.04em; color: var(--on-surf); }
+.cmp-card.best .cmp-price { color: var(--primary); }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  background: #f1f5fb;
+  border-top: 1px solid rgba(190,201,194,0.2);
+  padding: 28px 0;
+  margin-top: 60px;
+}
+.footer-inner {
+  max-width: var(--container); margin: 0 auto; padding: 0 var(--px);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-brand { font-family: var(--f-data); font-size: 0.875rem; font-weight: 700; letter-spacing: -0.03em; color: var(--on-surf); }
+.footer-copy { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--outline); margin-top: 3px; }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--outline-var); text-decoration: underline; transition: color 0.15s; }
+.footer-link:hover { color: var(--primary); }
+
+/* ══════════════════════════════════════════
+   SECTION SPACING
+══════════════════════════════════════════ */
+.gap-section { height: 48px; }
+.section-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--on-surf-var); margin-bottom: 16px;
+}
 </style>
 </head>
 <body>
 
-<!-- ═══ DOCK ═══ -->
-<nav class="dock">
-  <button class="d-btn on" data-v="home" onclick="gv('home')">
-    <span class="di">◈</span><span>Dashboard</span>
-  </button>
-  <button class="d-btn" data-v="terminal" onclick="gv('terminal')">
-    <span class="di">⊛</span><span>Terminal</span>
-  </button>
-  <button class="d-btn" data-v="fob" onclick="gv('fob')">
-    <span class="di">⊡</span><span>FOB</span>
-  </button>
-</nav>
+<!-- ══════ GLASS HEADER ══════ -->
+<header class="header">
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;">
+      <div class="brand" style="cursor:pointer;" onclick="gv('home')">agra<em>X</em></div>
+      <nav class="nav-links">
+        <a class="nav-link active" data-nav="home" onclick="gv('home')">Dashboard</a>
+        <a class="nav-link" data-nav="terminal" onclick="gv('terminal')">Terminal</a>
+        <a class="nav-link" data-nav="fob" onclick="gv('fob')">FOB Origins</a>
+      </nav>
+    </div>
+    <div class="header-search">
+      <span class="h-ico">⌕</span>
+      <input id="hdrSearch" placeholder="Lookup commodity…"
+        onkeydown="if(event.key==='Enter')hdrQuickSearch(this.value)"/>
+    </div>
+    <div class="header-right">
+      <div class="h-tag"><div class="ldot"></div><span id="freshTag">LIVE</span></div>
+    </div>
+  </div>
+</header>
 
 <!-- ══════════════════════════════════════
      PAGE 1 — DASHBOARD
 ══════════════════════════════════════ -->
 <div id="view-home" class="view active">
-  <header class="header">
-    <div class="logo"><div class="logo-sq">aX</div><div class="logo-name">agra<em>X</em></div></div>
-    <div class="header-search">
-      <span class="search-ico">⌕</span>
-      <input id="hdrSearch" placeholder="Search any commodity…"
-        onkeydown="if(event.key==='Enter')quickSearch(this.value)"/>
-    </div>
-    <div class="freshness-tag"><div class="fdot"></div><span id="freshDate">Loading…</span></div>
-  </header>
+  <main>
+    <div class="container">
 
-  <!-- Hero -->
-  <div class="dash-hero">
-    <div class="dash-eyebrow"><div class="fdot"></div>Live market intelligence</div>
-    <h1 class="dash-h1">What moved<br><em>today.</em></h1>
-    <div class="dash-updated">
-      Data as of <strong id="dataAge">—</strong> &mdash; USDA Agricultural Marketing Service
-    </div>
-  </div>
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a>Markets</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Dashboard</span>
+      </nav>
 
-  <!-- Anomaly / Alert section -->
-  <div class="anomaly-section">
-    <div class="sec-head">
-      <h2 class="sec-title">Price Alerts</h2>
-      <span class="sec-sub" id="alertCount">Significant moves this week</span>
-    </div>
-    <div class="anomaly-scroll" id="alertScroll">
-      <!-- JS filled -->
-    </div>
-  </div>
-
-  <!-- Gainers + Losers -->
-  <div class="section-gap"></div>
-  <div class="pg">
-    <div class="sec-head">
-      <h2 class="sec-title">This Week's Movers</h2>
-      <span class="sec-sub">vs. 7 days ago</span>
-    </div>
-    <div class="movers-grid">
-      <div class="mover-col">
-        <div class="mover-col-title up">↑ Rising</div>
-        <div class="mover-list" id="gainers"></div>
+      <!-- Page header -->
+      <div class="page-head">
+        <div class="page-head-left">
+          <h1 class="page-title" id="dashTitle">Today's Market</h1>
+          <p class="page-desc">Wholesale produce intelligence from USDA Market News. Prices updated daily at 06:00 AM EST.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-export">↓ Export CSV</button>
+        </div>
       </div>
-      <div class="mover-col">
-        <div class="mover-col-title dn">↓ Falling</div>
-        <div class="mover-list" id="losers"></div>
+
+      <!-- Search terminal -->
+      <div class="search-terminal">
+        <div class="search-terminal-inner">
+          <span class="search-big-ico">⌕</span>
+          <input id="dashSearch" placeholder="Search by commodity, region or variety…"
+            onkeydown="if(event.key==='Enter')hdrQuickSearch(this.value)"/>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Highest avg prices today — useful context for a broker -->
-  <div class="section-gap"></div>
-  <div style="background:var(--surface-low);padding:var(--sp-8) 28px;">
-    <div class="sec-head">
-      <h2 class="sec-title">Highest Priced Right Now</h2>
-      <span class="sec-sub">By average price today</span>
-    </div>
-    <div class="spread-card">
-      <div class="mover-list" id="highestPriced"></div>
-    </div>
-  </div>
+      <!-- Price alerts -->
+      <div class="section-label" id="alertLabel">Price Alerts</div>
+      <div class="alert-row" id="alertRow"></div>
 
-  <div class="section-gap-lg"></div>
+      <!-- Movers -->
+      <div class="section-label">This Week's Movers</div>
+      <div class="movers-cols">
+        <div class="mover-panel">
+          <div class="mover-panel-head up">↑ Rising</div>
+          <div id="gainers"></div>
+        </div>
+        <div class="mover-panel">
+          <div class="mover-panel-head dn">↓ Falling</div>
+          <div id="losers"></div>
+        </div>
+      </div>
+
+      <!-- Insight cards -->
+      <div class="insight-grid" id="insightGrid">
+        <div class="insight-card dark">
+          <div class="ic-label">Market Sentiment</div>
+          <div class="ic-headline" id="ig-sentiment">Loading…</div>
+          <p class="ic-body" id="ig-sentiment-body">Analyzing this week's price movements across all terminal markets.</p>
+          <div class="ic-bg-icon">↑</div>
+        </div>
+        <div class="insight-card tinted">
+          <div class="ic-label">Highest Volatility</div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px;">
+            <div class="ic-headline" id="ig-volatile">—</div>
+            <div class="ic-delta-dn" id="ig-volatile-pct" style="font-size:1rem;font-weight:700;font-family:var(--f-data);">—</div>
+          </div>
+          <div class="ic-prog-track"><div class="ic-prog-fill" id="ig-volatile-bar" style="width:0%"></div></div>
+          <p class="ic-body" id="ig-volatile-body">Tracking weekly price range vs. market average.</p>
+        </div>
+        <div class="insight-card light">
+          <div class="ic-label">Data Freshness</div>
+          <div class="ic-metric" id="ig-date">—</div>
+          <div style="font-size:0.75rem;color:var(--on-surf-var);margin-top:6px;" id="ig-records">—</div>
+          <div style="margin-top:20px;display:flex;align-items:center;justify-content:flex-end;">
+            <span class="ic-cta" onclick="gv('terminal')">View Terminal Markets →</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
 </div>
 
 <!-- ══════════════════════════════════════
      PAGE 2 — TERMINAL MARKETS
 ══════════════════════════════════════ -->
 <div id="view-terminal" class="view">
-  <header class="header">
-    <div class="logo"><div class="logo-sq">aX</div><div class="logo-name">agra<em>X</em></div></div>
-    <div class="header-search">
-      <span class="search-ico">⌕</span>
-      <input id="termSearch" placeholder="Filter commodities…" oninput="filterTermTable()"/>
-    </div>
-    <div class="freshness-tag"><div class="fdot"></div><span id="freshDate2">Live</span></div>
-  </header>
-
-  <div class="section-gap" style="height:var(--sp-8);"></div>
-  <div class="pg">
-    <div class="sec-head">
-      <h2 class="sec-title">Terminal Markets</h2>
-      <span class="sec-sub">Destination — what buyers pay</span>
-    </div>
-
-    <!-- Hub grid -->
-    <div class="hub-grid" id="termHubs"></div>
-
-    <!-- Category pills + table -->
-    <div id="termContent" style="display:none;">
-      <div class="cat-strip" id="termCats">
-        <button class="cat-pill on" data-c="All" onclick="termCat(this,'All')">All</button>
-        <button class="cat-pill" data-c="Fruits" onclick="termCat(this,'Fruits')">🍎 Fruits</button>
-        <button class="cat-pill" data-c="Vegetables" onclick="termCat(this,'Vegetables')">🥬 Vegetables</button>
-        <button class="cat-pill" data-c="Onions & Potatoes" onclick="termCat(this,'Onions & Potatoes')">🧅 Onions &amp; Potatoes</button>
-        <button class="cat-pill" data-c="Nuts" onclick="termCat(this,'Nuts')">🥜 Nuts</button>
+  <main>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Terminal Prices</span>
+      </nav>
+      <div class="page-head">
+        <div class="page-head-left">
+          <h1 class="page-title">Terminal Market Prices</h1>
+          <p class="page-desc">National terminal market prices — what buyers pay at destination hubs. Based on USDA Market News. Updated daily.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-filter">⊟ Filter</button>
+          <button class="btn-export">↓ Export CSV</button>
+        </div>
       </div>
-      <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-size:0.75rem;color:var(--on-surface-var);font-weight:600;" id="termCountLabel"></span>
+
+      <div class="search-terminal">
+        <div class="search-terminal-inner">
+          <span class="search-big-ico">⌕</span>
+          <input id="termSearch" placeholder="Search by name, region or variety…" oninput="onTermSearch()"/>
+        </div>
       </div>
-      <table class="price-tbl" id="termTable">
-        <thead>
-          <tr>
-            <th>Commodity</th>
-            <th class="r">Price range</th>
-            <th class="r">Avg price</th>
-            <th class="r">Wk change</th>
-          </tr>
-        </thead>
-        <tbody id="termTbody"></tbody>
-      </table>
-      <!-- pagination -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;" id="termPgBar">
-        <span style="font-size:0.75rem;color:var(--on-surface-var);" id="termPgInfo"></span>
-        <div style="display:flex;gap:8px;">
-          <button style="background:var(--surface-lowest);border-radius:100px;padding:6px 18px;font-size:.8125rem;font-weight:600;color:var(--on-surface-var);box-shadow:0 2px 0 0 var(--shadow);transition:all .15s;" id="termPrev" onclick="termPg(-1)" disabled>← Prev</button>
-          <button style="background:var(--surface-lowest);border-radius:100px;padding:6px 18px;font-size:.8125rem;font-weight:600;color:var(--on-surface-var);box-shadow:0 2px 0 0 var(--shadow);transition:all .15s;" id="termNext" onclick="termPg(1)">Next →</button>
+
+      <!-- Hub selector -->
+      <div class="section-label">Select Terminal Market</div>
+      <div class="hub-grid" id="termHubs"></div>
+
+      <!-- Content (shown after hub selected) -->
+      <div id="termContent" style="display:none;">
+        <div class="cat-strip" id="termCats">
+          <button class="cat-pill on" data-c="All" onclick="termCat(this,'All')">All</button>
+          <button class="cat-pill" data-c="Fruits" onclick="termCat(this,'Fruits')">🍎 Fruits</button>
+          <button class="cat-pill" data-c="Vegetables" onclick="termCat(this,'Vegetables')">🥬 Vegetables</button>
+          <button class="cat-pill" data-c="Onions & Potatoes" onclick="termCat(this,'Onions & Potatoes')">🧅 Onions &amp; Potatoes</button>
+          <button class="cat-pill" data-c="Nuts" onclick="termCat(this,'Nuts')">🥜 Nuts</button>
+        </div>
+
+        <div class="ledger-wrap">
+          <div style="overflow-x:auto;">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th style="min-width:220px;">Commodity</th>
+                  <th class="r">FOB Avg</th>
+                  <th class="r">WoW Change</th>
+                  <th class="r">Terminal Avg</th>
+                  <th class="c">Status</th>
+                  <th class="r">Action</th>
+                </tr>
+              </thead>
+              <tbody id="termTbody"></tbody>
+            </table>
+          </div>
+          <div class="ledger-footer">
+            <span class="ledger-count" id="termCount"></span>
+            <div class="pg-controls">
+              <button class="pg-btn" id="termPrev" onclick="termPg(-1)" disabled>‹</button>
+              <button class="pg-btn" id="termPg1">1</button>
+              <button class="pg-btn" id="termPg2" style="display:none;">2</button>
+              <button class="pg-btn" id="termPg3" style="display:none;">3</button>
+              <button class="pg-btn" id="termNext" onclick="termPg(1)">›</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="section-gap-lg"></div>
+  </main>
 </div>
 
 <!-- ══════════════════════════════════════
-     PAGE 3 — SHIPPING POINTS (FOB)
+     PAGE 3 — FOB ORIGINS
 ══════════════════════════════════════ -->
 <div id="view-fob" class="view">
-  <header class="header">
-    <div class="logo"><div class="logo-sq">aX</div><div class="logo-name">agra<em>X</em></div></div>
-    <div class="header-search">
-      <span class="search-ico">⌕</span>
-      <input id="fobSearch" placeholder="Filter commodities…" oninput="filterFobTable()"/>
-    </div>
-    <div class="freshness-tag"><div class="fdot"></div><span id="freshDate3">Live</span></div>
-  </header>
-
-  <div class="section-gap" style="height:var(--sp-8);"></div>
-  <div class="pg">
-    <div class="sec-head">
-      <h2 class="sec-title">Shipping Points</h2>
-      <span class="sec-sub">Origin (FOB) — what shippers charge at the source</span>
-    </div>
-
-    <div class="hub-grid" id="fobHubs"></div>
-
-    <div id="fobContent" style="display:none;">
-      <div class="cat-strip" id="fobCats">
-        <button class="cat-pill on" data-c="All" onclick="fobCat(this,'All')">All</button>
-        <button class="cat-pill" data-c="Fruits" onclick="fobCat(this,'Fruits')">🍎 Fruits</button>
-        <button class="cat-pill" data-c="Vegetables" onclick="fobCat(this,'Vegetables')">🥬 Vegetables</button>
-        <button class="cat-pill" data-c="Onions & Potatoes" onclick="fobCat(this,'Onions & Potatoes')">🧅 Onions &amp; Potatoes</button>
-        <button class="cat-pill" data-c="Nuts" onclick="fobCat(this,'Nuts')">🥜 Nuts</button>
+  <main>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">FOB Shipping Points</span>
+      </nav>
+      <div class="page-head">
+        <div class="page-head-left">
+          <h1 class="page-title">FOB Shipping Points</h1>
+          <p class="page-desc">Origin (FOB) prices — what shippers charge at the source. Nogales, Salinas, Fresno, and other key growing regions.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-filter">⊟ Filter</button>
+          <button class="btn-export">↓ Export CSV</button>
+        </div>
       </div>
-      <div style="margin-bottom:12px;">
-        <span style="font-size:0.75rem;color:var(--on-surface-var);font-weight:600;" id="fobCountLabel"></span>
+
+      <div class="search-terminal">
+        <div class="search-terminal-inner">
+          <span class="search-big-ico">⌕</span>
+          <input id="fobSearch" placeholder="Search by name, region or variety…" oninput="onFobSearch()"/>
+        </div>
       </div>
-      <table class="price-tbl" id="fobTable">
-        <thead>
-          <tr>
-            <th>Commodity</th>
-            <th class="r">Price range</th>
-            <th class="r">Avg price</th>
-            <th class="r">Wk change</th>
-          </tr>
-        </thead>
-        <tbody id="fobTbody"></tbody>
-      </table>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;" id="fobPgBar">
-        <span style="font-size:0.75rem;color:var(--on-surface-var);" id="fobPgInfo"></span>
-        <div style="display:flex;gap:8px;">
-          <button style="background:var(--surface-lowest);border-radius:100px;padding:6px 18px;font-size:.8125rem;font-weight:600;color:var(--on-surface-var);box-shadow:0 2px 0 0 var(--shadow);transition:all .15s;" id="fobPrev" onclick="fobPg(-1)" disabled>← Prev</button>
-          <button style="background:var(--surface-lowest);border-radius:100px;padding:6px 18px;font-size:.8125rem;font-weight:600;color:var(--on-surface-var);box-shadow:0 2px 0 0 var(--shadow);transition:all .15s;" id="fobNext" onclick="fobPg(1)">Next →</button>
+
+      <div class="section-label">Select Origin</div>
+      <div class="hub-grid" id="fobHubs"></div>
+
+      <div id="fobContent" style="display:none;">
+        <div class="cat-strip" id="fobCats">
+          <button class="cat-pill on" data-c="All" onclick="fobCat(this,'All')">All</button>
+          <button class="cat-pill" data-c="Fruits" onclick="fobCat(this,'Fruits')">🍎 Fruits</button>
+          <button class="cat-pill" data-c="Vegetables" onclick="fobCat(this,'Vegetables')">🥬 Vegetables</button>
+          <button class="cat-pill" data-c="Onions & Potatoes" onclick="fobCat(this,'Onions & Potatoes')">🧅 O&amp;P</button>
+          <button class="cat-pill" data-c="Nuts" onclick="fobCat(this,'Nuts')">🥜 Nuts</button>
+        </div>
+
+        <div class="ledger-wrap">
+          <div style="overflow-x:auto;">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th style="min-width:220px;">Commodity</th>
+                  <th class="r">FOB Avg</th>
+                  <th class="r">WoW Change</th>
+                  <th class="r">Price Range</th>
+                  <th class="c">Status</th>
+                  <th class="r">Action</th>
+                </tr>
+              </thead>
+              <tbody id="fobTbody"></tbody>
+            </table>
+          </div>
+          <div class="ledger-footer">
+            <span class="ledger-count" id="fobCount"></span>
+            <div class="pg-controls">
+              <button class="pg-btn" id="fobPrev" onclick="fobPg(-1)" disabled>‹</button>
+              <button class="pg-btn" id="fobPg1">1</button>
+              <button class="pg-btn" id="fobPg2" style="display:none;">2</button>
+              <button class="pg-btn" id="fobPg3" style="display:none;">3</button>
+              <button class="pg-btn" id="fobNext" onclick="fobPg(1)">›</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="section-gap-lg"></div>
+  </main>
 </div>
 
 <!-- ══════════════════════════════════════
-     DETAIL SHEET — commodity deep dive
-     with Compare built in as a tab
+     DETAIL SHEET — slide up
 ══════════════════════════════════════ -->
-<div class="sheet-ov" id="shOv" onclick="closeSheet()"></div>
+<div class="sh-ov" id="shOv" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
-  <div class="sh-handle"></div>
+  <div class="sh-grip"></div>
   <div class="sh-top">
     <div>
       <div class="sh-title" id="shTitle">—</div>
       <div class="sh-meta" id="shMeta">—</div>
     </div>
-    <button class="sh-close" onclick="closeSheet()">✕</button>
+    <button class="sh-x" onclick="closeSheet()">✕</button>
   </div>
-
-  <!-- Summary stats -->
-  <div class="sh-summary" id="shStats"></div>
-
-  <!-- Tabs: Trend | Compare -->
+  <div class="sh-stats" id="shStats"></div>
   <div class="sh-tabs">
     <button class="sh-tab on" id="tabTrend" onclick="shTab('trend')">7-day trend</button>
-    <button class="sh-tab" id="tabCompare" onclick="shTab('compare')">Compare markets</button>
+    <button class="sh-tab" id="tabCmp" onclick="shTab('cmp')">Compare markets</button>
   </div>
 
   <!-- Trend panel -->
   <div id="panelTrend">
     <div class="sh-chart">
-      <div class="sh-chart-lbl">Price over the last 7 days</div>
+      <div class="sh-chart-lbl">Price over 7 days</div>
       <div class="ch-h"><canvas id="shChart"></canvas></div>
     </div>
     <div class="sh-pad">
-      <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--on-surface-var);margin-bottom:12px;">Price by market</div>
-      <table class="price-tbl" id="shMktTable">
-        <thead>
-          <tr>
-            <th>Market</th>
-            <th>Origin · grade</th>
-            <th class="r">Avg price</th>
-            <th class="r">Wk change</th>
-          </tr>
-        </thead>
-        <tbody id="shMktBody"></tbody>
-      </table>
+      <div class="sh-section-lbl">Price by market</div>
+      <div style="overflow-x:auto;">
+        <table class="ledger-table" id="shMktTable">
+          <thead>
+            <tr>
+              <th>Market</th>
+              <th>Origin · Grade</th>
+              <th class="r">Avg Price</th>
+              <th class="r">WoW Change</th>
+            </tr>
+          </thead>
+          <tbody id="shMktBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <!-- Compare panel -->
-  <div id="panelCompare" style="display:none;">
+  <div id="panelCmp" style="display:none;">
     <div class="sh-pad">
-      <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--on-surface-var);margin-bottom:6px;">All markets — lowest to highest</div>
-      <div style="font-size:0.8125rem;color:var(--on-surface-var);margin-bottom:16px;" id="cmpSubtitle"></div>
-      <div class="compare-grid" id="cmpGrid"></div>
+      <div class="sh-section-lbl">All markets — lowest to highest</div>
+      <div style="font-size:.8125rem;color:var(--on-surf-var);margin-bottom:14px;" id="cmpSub"></div>
+      <div class="cmp-grid" id="cmpGrid"></div>
     </div>
   </div>
-
-  <div style="height:20px;"></div>
 </div>
 
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">agraX</div>
+      <div class="footer-copy">© 2025 agraX. Data sourced from USDA Agricultural Marketing Service.</div>
+    </div>
+    <div class="footer-links">
+      <a class="footer-link">API Access</a>
+      <a class="footer-link">Methodology</a>
+      <a class="footer-link">Terms</a>
+      <a class="footer-link">Status</a>
+    </div>
+  </div>
+</footer>
+
 <script>
-/* ════════════════════════════════
-   DATA + HELPERS
-════════════════════════════════ */
+/* ══════════════════════════════════
+   CORE DATA
+══════════════════════════════════ */
 const API = 'https://produce-iq-production.up.railway.app';
 let ALL=[], DATED={}, DATES=[];
-let termHub=null, termCatAct='All', termPgN=1, termRowsAll=[];
-let fobHub=null,  fobCatAct='All',  fobPgN=1,  fobRowsAll=[];
+let termHub=null, termCatAct='All', termPgN=1, termRows=[];
+let fobHub=null, fobCatAct='All', fobPgN=1, fobRows=[], fobMode='market';
 let shChartInst=null;
-const PER_PAGE = 40;
+const PER = 25;
 
+/* ── Emoji ── */
 const EM={avocado:'🥑',tomato:'🍅',strawberr:'🍓',blueberr:'🫐',raspberr:'🍓',blackberr:'🍇',lettuce:'🥬',pepper:'🌶',corn:'🌽',carrot:'🥕',apple:'🍎',pear:'🍐',grape:'🍇',lemon:'🍋',orange:'🍊',mango:'🥭',pineapple:'🍍',banana:'🍌',watermelon:'🍉',melon:'🍈',coconut:'🥥',kiwi:'🥝',broccoli:'🥦',cauliflower:'🥦',cabbage:'🥬',spinach:'🥬',kale:'🥬',cucumber:'🥒',squash:'🥒',zucchini:'🥒',eggplant:'🍆',bean:'🫘',garlic:'🧄',onion:'🧅',potato:'🥔',mushroom:'🍄',celery:'🥬',cilantro:'🌿',herb:'🌿',basil:'🌿',parsley:'🌿',mint:'🌿',almond:'🥜',walnut:'🥜',pecan:'🥜',pistachio:'🥜',cashew:'🥜',nut:'🥜',cherry:'🍒',peach:'🍑',plum:'🍑',lime:'🍋',grapefruit:'🍊',tangerine:'🍊',papaya:'🥭',yam:'🥔',asparagus:'🌱',beet:'🫚',fennel:'🌿',okra:'🌱',leek:'🥬',shallot:'🧅',pea:'🫛',artichoke:'🥦',nectarine:'🍑',sprout:'🌱',alfalfa:'🌱',chard:'🥬',arugula:'🥬',cranberr:'🍓'};
 function ej(n){const l=n.toLowerCase();for(const[k,v]of Object.entries(EM))if(l.includes(k))return v;return'🌱';}
 
+/* ── Categories ── */
 const CATS={'Fruits':['apple','pear','grape','peach','plum','cherry','nectarine','kiwi','melon','watermelon','mango','papaya','pineapple','banana','avocado','orange','lemon','lime','grapefruit','tangerine','mandarin','clementine','strawberr','blueberr','raspberr','blackberr','cranberr','coconut'],'Vegetables':['lettuce','tomato','pepper','carrot','celery','broccoli','cauliflower','cabbage','spinach','kale','cucumber','squash','zucchini','eggplant','corn','bean','pea','asparagus','garlic','leek','artichoke','beet','radish','turnip','parsnip','fennel','okra','mushroom','cilantro','herb','basil','mint','chive','dill','parsley','sprout','alfalfa','chard','arugula'],'Onions & Potatoes':['onion','potato','yam','sweet potato','shallot'],'Nuts':['almond','walnut','pecan','pistachio','cashew','hazelnut','macadamia','peanut','nut']};
 function gc(n){const l=n.toLowerCase();for(const[c,ks]of Object.entries(CATS))if(ks.some(k=>l.includes(k)))return c;return'Other';}
 
+/* ── Math ── */
 function avgP(items){const p=items.map(i=>parseFloat(i.price_low||0)).filter(v=>v>0);return p.length?p.reduce((a,b)=>a+b,0)/p.length:null;}
 function fP(v){return(v==null||isNaN(v))?'—':'$'+Number(v).toFixed(2);}
 function fR(lo,hi){return(lo&&hi&&hi>lo)?`${fP(lo)} – ${fP(hi)}`:fP(lo||null);}
-
-function trendPct(commodity){
+function trendPct(c){
   if(DATES.length<2)return 0;
-  const t=DATED[DATES[0].date]?.filter(x=>x.commodity===commodity)||[];
-  const w=DATED[DATES[Math.min(6,DATES.length-1)].date]?.filter(x=>x.commodity===commodity)||[];
+  const t=DATED[DATES[0].date]?.filter(x=>x.commodity===c)||[];
+  const w=DATED[DATES[Math.min(6,DATES.length-1)].date]?.filter(x=>x.commodity===c)||[];
   if(!t.length||!w.length)return 0;
   const at=t.reduce((s,x)=>s+parseFloat(x.price_low||0),0)/t.length;
   const aw=w.reduce((s,x)=>s+parseFloat(x.price_low||0),0)/w.length;
   return aw?((at-aw)/aw)*100:0;
 }
-
-function spkHistory(commodity){
-  const bars=[];
-  for(let i=Math.min(6,DATES.length-1);i>=0;i--){const d=DATES[i]?.date;if(!d)continue;const a=avgP(DATED[d]?.filter(x=>x.commodity===commodity)||[]);if(a)bars.push({date:d,price:a});}
-  return bars;
+function history7(c){
+  const r=[];
+  for(let i=Math.min(6,DATES.length-1);i>=0;i--){const d=DATES[i]?.date;if(!d)continue;const a=avgP(DATED[d]?.filter(x=>x.commodity===c)||[]);if(a)r.push({date:d,price:a});}
+  return r;
+}
+function getStatus(ch){
+  if(ch>8)  return {key:'bullish',  label:'Bullish'};
+  if(ch>1)  return {key:'stable',   label:'Stable'};
+  if(ch<-5) return {key:'volatile', label:'Volatile'};
+  if(ch<-1) return {key:'bearish',  label:'Bearish'};
+  return        {key:'neutral',  label:'Neutral'};
 }
 
-/* ════════════════════════════════
-   NAVIGATION
-════════════════════════════════ */
+/* ── Navigation ── */
 function gv(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
   document.getElementById(`view-${v}`).classList.add('active');
-  document.querySelectorAll('.d-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('.nav-link').forEach(b=>b.classList.toggle('active',b.dataset.nav===v));
   window.scrollTo(0,0);
 }
-
-function quickSearch(q){
+function hdrQuickSearch(q){
   if(!q.trim())return;
-  // open sheet for first matching commodity
-  const match=ALL.find(i=>i.commodity.toLowerCase().includes(q.toLowerCase()));
-  if(match)openSheet(match.commodity);
+  const m=ALL.find(i=>i.commodity.toLowerCase().includes(q.toLowerCase()));
+  if(m)openSheet(m.commodity);
 }
 
-/* ════════════════════════════════
-   SHEET — commodity detail
-════════════════════════════════ */
+/* ── Ledger row builder ── */
+function buildRow(item, ch, showTerminal){
+  const avg=avgP([item]);
+  const lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
+  const variety=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
+  const st=getStatus(ch);
+  const wowCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
+  const wowArrow=ch>0.5?'↑':ch<-0.5?'↓':'—';
+  const wowStr=ch>0.5?`${wowArrow} +${ch.toFixed(1)}%`:ch<-0.5?`${wowArrow} ${ch.toFixed(1)}%`:`— 0.0%`;
+
+  // "terminal avg" — use avg of terminal data for same commodity if available
+  const termItems=ALL.filter(i=>i.commodity===item.commodity&&(i.market_type==='terminal'||!i.market_type));
+  const termAvg=termItems.length?avgP(termItems):null;
+  const termCell=showTerminal
+    ?`<td class="r"><span class="term-price">${fP(termAvg)}</span></td>`
+    :`<td class="r"><span class="term-price">${fR(lo,hi)}</span></td>`;
+
+  return`<tr onclick="openSheet('${item.commodity.replace(/'/g,"\\'")}')">
+    <td>
+      <div class="com-cell">
+        <div class="com-icon">${ej(item.commodity)}</div>
+        <div>
+          <div class="com-name">${item.commodity}</div>
+          <div class="com-sub">${item.origin||item.market||'—'} · ${variety||item.package||'—'}</div>
+        </div>
+      </div>
+    </td>
+    <td class="r"><span class="fob-price">${fP(avg)}</span></td>
+    <td class="r"><span class="wow-chip ${wowCls}">${wowStr}</span></td>
+    ${termCell}
+    <td class="c">
+      <div class="status-cell">
+        <div class="status-dot ${st.key}"></div>
+        <span class="status-label ${st.key}">${st.label}</span>
+      </div>
+    </td>
+    <td class="r"><span class="row-action">▦</span></td>
+  </tr>`;
+}
+
+/* ══════════════════════════════════
+   SHEET
+══════════════════════════════════ */
 function openSheet(commodity){
   const items=ALL.filter(i=>i.commodity===commodity);
-  const markets=[...new Set(items.map(i=>i.market))];
+  const prices=items.map(i=>parseFloat(i.price_low||0)).filter(p=>p>0);
+  const mkts=[...new Set(items.map(i=>i.market))];
   const ch=trendPct(commodity);
-  const allPrices=items.map(i=>parseFloat(i.price_low||0)).filter(p=>p>0);
-  const avg=allPrices.length?allPrices.reduce((a,b)=>a+b,0)/allPrices.length:0;
+  const avg=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:0;
   const abs=avg?Math.abs(avg*ch/100):0;
+  const st=getStatus(ch);
 
   document.getElementById('shTitle').textContent=commodity;
-  document.getElementById('shMeta').textContent=`${markets.length} markets · ${items.length} listings`;
+  document.getElementById('shMeta').textContent=`${mkts.length} markets · ${items.length} listings · USDA Market News`;
 
   const dCls=ch>0.5?'up':ch<-0.5?'dn':'';
   const dStr=ch>0.5?`+${fP(abs)}`:ch<-0.5?`−${fP(abs)}`:'No change';
-  const pctStr=ch>0.5?`+${ch.toFixed(1)}%`:ch<-0.5?`${ch.toFixed(1)}%`:'Steady';
-
   document.getElementById('shStats').innerHTML=`
     <div class="sh-stat"><div class="sh-stat-lbl">Avg price</div><div class="sh-stat-val">${fP(avg)}</div></div>
-    <div class="sh-stat"><div class="sh-stat-lbl">Wk change</div><div class="sh-stat-val ${dCls}">${dStr} (${pctStr})</div></div>
-    <div class="sh-stat"><div class="sh-stat-lbl">Markets</div><div class="sh-stat-val">${markets.length}</div></div>`;
+    <div class="sh-stat"><div class="sh-stat-lbl">Wk change</div><div class="sh-stat-val ${dCls}">${dStr} (${ch>0.5?'+':''}${ch.toFixed(1)}%)</div></div>
+    <div class="sh-stat"><div class="sh-stat-lbl">Status</div><div class="sh-stat-val" style="color:${ch>1?'var(--primary)':ch<-1?'var(--err)':'var(--on-surf-var)'};">${st.label}</div></div>`;
 
-  // market breakdown table
+  // Market breakdown
   const sorted=items.sort((a,b)=>parseFloat(a.price_low||0)-parseFloat(b.price_low||0));
   document.getElementById('shMktBody').innerHTML=sorted.map((item,i)=>{
     const p=avgP([item]),best=i===0;
-    const variety=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
-    const chCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-    const pStr=ch>0.5?`+${ch.toFixed(1)}%`:ch<-0.5?`${ch.toFixed(1)}%`:'—';
-    return`<tr${best?' style="background:var(--primary-fixed)!important;"':''}>
+    const v=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
+    const wCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
+    const wStr=ch>0.5?`+${ch.toFixed(1)}%`:ch<-0.5?`${ch.toFixed(1)}%`:'—';
+    return`<tr${best?' style="background:rgba(166,242,209,0.3)!important;"':''}>
       <td>
-        <div class="td-name">${item.market||'—'}</div>
-        ${best?'<div class="td-spec" style="color:var(--primary);font-weight:700;">Best price</div>':''}
+        <div class="com-name">${item.market||'—'}</div>
+        ${best?'<div class="com-sub" style="color:var(--primary);">Best price</div>':''}
       </td>
-      <td><div class="td-spec">${item.origin||'—'}${variety?' · '+variety:''}</div></td>
-      <td class="r"><div class="td-price">${fP(p)}</div></td>
-      <td class="r"><span class="badge ${chCls}">${pStr}</span></td>
+      <td><div class="com-sub">${item.origin||'—'}${v?' · '+v:''}</div></td>
+      <td class="r"><span class="fob-price" style="font-size:0.9375rem;">${fP(p)}</span></td>
+      <td class="r"><span class="wow-chip ${wCls}">${wStr}</span></td>
     </tr>`;
   }).join('');
 
-  // compare grid
-  document.getElementById('cmpSubtitle').textContent=`${sorted.length} listings across ${markets.length} markets — tap any for detail`;
+  // Compare
+  document.getElementById('cmpSub').textContent=`${sorted.length} listings across ${mkts.length} markets`;
   document.getElementById('cmpGrid').innerHTML=sorted.map((item,i)=>{
     const p=avgP([item]),best=i===0;
-    const variety=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
+    const v=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
     return`<div class="cmp-card${best?' best':''}">
       ${best?'<div class="cmp-best">Best price</div>':''}
       <div class="cmp-mkt">${item.market||'—'}</div>
-      <div class="cmp-orig">${item.origin||'—'}${variety?' · '+variety:''}</div>
+      <div class="cmp-orig">${item.origin||'—'}${v?' · '+v:''}</div>
       <div class="cmp-price">${fP(p)}</div>
     </div>`;
   }).join('');
 
-  // chart
-  const history=spkHistory(commodity);
+  // Chart
+  const hist=history7(commodity);
   setTimeout(()=>{
     const canvas=document.getElementById('shChart');
     if(shChartInst)shChartInst.destroy();
-    if(canvas&&history.length){
-      const rising=history.length>1&&history[history.length-1].price>history[0].price;
+    if(canvas&&hist.length){
+      const rising=ch>0;
       shChartInst=new Chart(canvas,{type:'line',data:{
-        labels:history.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
-        datasets:[{data:history.map(h=>h.price),
-          borderColor:ch<-0.5?'#c0392b':'#0d631b',
-          backgroundColor:ch<-0.5?'rgba(192,57,43,0.07)':'rgba(13,99,27,0.07)',
+        labels:hist.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
+        datasets:[{data:hist.map(h=>h.price),
+          borderColor:rising?'#004532':'#ba1a1a',
+          backgroundColor:rising?'rgba(0,69,50,0.06)':'rgba(186,26,26,0.06)',
           fill:true,tension:0.4,pointRadius:4,
-          pointBackgroundColor:ch<-0.5?'#c0392b':'#0d631b',
+          pointBackgroundColor:rising?'#004532':'#ba1a1a',
           pointBorderColor:'#fff',pointBorderWidth:2}]
       },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
-        x:{grid:{display:false},ticks:{color:'#40493d',font:{family:"'Work Sans'",size:11}}},
-        y:{grid:{color:'#e6f6ff'},ticks:{color:'#40493d',font:{family:"'Work Sans'",size:11},callback:v=>'$'+v.toFixed(0)}}
+        x:{grid:{display:false},ticks:{color:'#3f4944',font:{family:"'Inter'",size:11}}},
+        y:{grid:{color:'#eff4ff'},ticks:{color:'#3f4944',font:{family:"'Inter'",size:11},callback:v=>'$'+v.toFixed(0)}}
       }}});
     }
   },80);
 
-  // reset tabs
   shTab('trend');
   document.getElementById('shOv').classList.add('on');
   document.getElementById('sheet').classList.add('on');
   document.body.style.overflow='hidden';
 }
-
 function closeSheet(){
   document.getElementById('shOv').classList.remove('on');
   document.getElementById('sheet').classList.remove('on');
   document.body.style.overflow='';
 }
-
 function shTab(t){
   document.getElementById('tabTrend').classList.toggle('on',t==='trend');
-  document.getElementById('tabCompare').classList.toggle('on',t==='compare');
+  document.getElementById('tabCmp').classList.toggle('on',t==='cmp');
   document.getElementById('panelTrend').style.display=t==='trend'?'block':'none';
-  document.getElementById('panelCompare').style.display=t==='compare'?'block':'none';
+  document.getElementById('panelCmp').style.display=t==='cmp'?'block':'none';
 }
 
-/* ════════════════════════════════
+/* ══════════════════════════════════
    DASHBOARD
-════════════════════════════════ */
+══════════════════════════════════ */
 function buildDashboard(){
   const comms=[...new Set(ALL.map(i=>i.commodity))];
   const changes=comms.map(c=>({c,ch:trendPct(c),avg:avgP(ALL.filter(i=>i.commodity===c))}));
+  const rising=changes.filter(x=>x.ch>1).length;
+  const falling=changes.filter(x=>x.ch<-1).length;
+  const d=new Date(DATES[0].date+'T12:00:00');
+  const ds=d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
 
-  // Alerts — anomalies (>5% move) and high-priced items
-  const anomalies=changes.filter(x=>Math.abs(x.ch)>5).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch)).slice(0,8);
-  document.getElementById('alertCount').textContent=`${anomalies.length} significant moves this week`;
-  document.getElementById('alertScroll').innerHTML=anomalies.map(x=>{
+  // Dashboard title
+  document.getElementById('dashTitle').textContent=rising>falling?'Mostly Rising Today':'Mostly Falling Today';
+
+  // Alerts — largest movers
+  const anomalies=changes.filter(x=>Math.abs(x.ch)>4).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch)).slice(0,7);
+  document.getElementById('alertLabel').textContent=`Price Alerts — ${anomalies.length} significant moves this week`;
+  document.getElementById('alertRow').innerHTML=anomalies.map(x=>{
     const isSpike=Math.abs(x.ch)>10;
     const type=isSpike?'spike':x.ch>0?'surge':'drop';
-    const deltaCls=x.ch>0?'up':'dn';
-    const tagText=isSpike?'⚠ Price Spike':x.ch>0?'↑ Surging':'↓ Dropping';
-    const tagType=isSpike?'spike':x.ch>0?'surge':'drop';
-    const pctStr=x.ch>0?`+${x.ch.toFixed(1)}%`:`${x.ch.toFixed(1)}%`;
-    const topMarket=ALL.filter(i=>i.commodity===x.c).sort((a,b)=>parseFloat(a.price_low||0)-parseFloat(b.price_low||0))[0];
-    return`<div class="anomaly-card ${type}" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
-      <div class="ac-tag ${tagType}">${tagText}</div>
-      <div class="ac-commodity">
-        <div class="ac-emoji">${ej(x.c)}</div>
-        <div>
-          <div class="ac-name">${x.c}</div>
-          <div class="ac-market">${topMarket?.market||'Multiple markets'}</div>
-        </div>
-      </div>
-      <div class="ac-delta ${deltaCls}">${pctStr}</div>
-      <div class="ac-context">${fP(x.avg)} avg today · vs. last week</div>
+    const tag=isSpike?'⚠ Price Spike':x.ch>0?'↑ Surging':'↓ Dropping';
+    const cls=x.ch>0?'up':'dn';
+    const pct=x.ch>0?`+${x.ch.toFixed(1)}%`:`${x.ch.toFixed(1)}%`;
+    const topM=ALL.filter(i=>i.commodity===x.c).sort((a,b)=>parseFloat(a.price_low||0)-parseFloat(b.price_low||0))[0];
+    return`<div class="alert-chip ${type}" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
+      <div class="alert-tag ${type}">${tag}</div>
+      <div class="alert-name">${ej(x.c)} ${x.c}</div>
+      <div class="alert-sub">${topM?.origin||topM?.market||'Multiple markets'}</div>
+      <div class="alert-delta ${cls}">${pct}</div>
+      <div class="alert-context">${fP(x.avg)} avg · vs. last week</div>
     </div>`;
   }).join('');
 
-  // Gainers & Losers
-  const gainers=changes.filter(x=>x.ch>0.5).sort((a,b)=>b.ch-a.ch).slice(0,7);
-  const losers=changes.filter(x=>x.ch<-0.5).sort((a,b)=>a.ch-b.ch).slice(0,7);
-
-  const moverRow=(x,cls)=>`<div class="mover-row" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
-    <div class="mr-left">
-      <div class="mr-emoji">${ej(x.c)}</div>
+  // Movers
+  const sorted=changes.filter(x=>x.avg).sort((a,b)=>b.ch-a.ch);
+  const gainers=sorted.filter(x=>x.ch>0.5).slice(0,7);
+  const losers=sorted.filter(x=>x.ch<-0.5).reverse().slice(0,7);
+  const mRow=(x,cls)=>`<div class="mover-row" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
+    <div class="mover-left">
+      <div class="mover-emoji">${ej(x.c)}</div>
       <div>
-        <div class="mr-name">${x.c}</div>
-        <div class="mr-price">${fP(x.avg)} avg</div>
+        <div class="mover-name">${x.c}</div>
+        <div class="mover-price">${fP(x.avg)} avg</div>
       </div>
     </div>
-    <div class="mr-pct ${cls}">${x.ch>0?'+':''}${x.ch.toFixed(1)}%</div>
+    <div class="mover-pct ${cls}">${x.ch>0?'+':''}${x.ch.toFixed(1)}%</div>
   </div>`;
+  document.getElementById('gainers').innerHTML=gainers.map(x=>mRow(x,'up')).join('')||'<div style="padding:16px 18px;font-size:.875rem;color:var(--on-surf-var);">No significant gainers</div>';
+  document.getElementById('losers').innerHTML=losers.map(x=>mRow(x,'dn')).join('')||'<div style="padding:16px 18px;font-size:.875rem;color:var(--on-surf-var);">No significant losers</div>';
 
-  document.getElementById('gainers').innerHTML=gainers.map(x=>moverRow(x,'up')).join('')||'<div style="padding:16px 0;font-size:.875rem;color:var(--on-surface-var);">No significant gainers</div>';
-  document.getElementById('losers').innerHTML=losers.map(x=>moverRow(x,'dn')).join('')||'<div style="padding:16px 0;font-size:.875rem;color:var(--on-surface-var);">No significant losers</div>';
+  // Insight cards
+  const sentText=rising>falling
+    ?`Strong Supply Cycle — ${rising} commodities rising`
+    :`Correction Underway — ${falling} commodities falling`;
+  const sentBody=rising>falling
+    ?`${rising} of ${comms.length} tracked commodities are trending higher vs. last week. Buyers may see continued upward pressure on terminal asks.`
+    :`${falling} of ${comms.length} commodities are trending lower. FOB shipping point prices show downward pressure across multiple categories.`;
+  document.getElementById('ig-sentiment').textContent=sentText;
+  document.getElementById('ig-sentiment-body').textContent=sentBody;
 
-  // Highest priced — actionable for margin conversations
-  const highest=changes.filter(x=>x.avg).sort((a,b)=>b.avg-a.avg).slice(0,8);
-  document.getElementById('highestPriced').innerHTML=highest.map(x=>{
-    const chCls=x.ch>0.5?'up':x.ch<-0.5?'dn':'flat';
-    const pStr=x.ch>0.5?`+${x.ch.toFixed(1)}%`:x.ch<-0.5?`${x.ch.toFixed(1)}%`:'Steady';
-    return`<div class="mover-row" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
-      <div class="mr-left">
-        <div class="mr-emoji">${ej(x.c)}</div>
-        <div>
-          <div class="mr-name">${x.c}</div>
-          <div class="mr-price">${ALL.filter(i=>i.commodity===x.c).map(i=>i.market).filter((v,i,a)=>a.indexOf(v)===i).join(', ')}</div>
-        </div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-family:var(--f-display);font-size:1rem;font-weight:700;color:var(--on-surface);">${fP(x.avg)}</div>
-        <div class="mr-pct ${chCls}" style="font-size:.75rem;">${pStr}</div>
-      </div>
-    </div>`;
-  }).join('');
+  const mostVolatile=changes.filter(x=>x.avg).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))[0];
+  if(mostVolatile){
+    document.getElementById('ig-volatile').textContent=mostVolatile.c;
+    const p=Math.abs(mostVolatile.ch);
+    document.getElementById('ig-volatile-pct').textContent=(mostVolatile.ch>0?'+':'')+mostVolatile.ch.toFixed(1)+'%';
+    document.getElementById('ig-volatile-pct').className=mostVolatile.ch>0?'ic-delta-up':'ic-delta-dn';
+    document.getElementById('ig-volatile-bar').style.width=Math.min(100,p*4)+'%';
+    document.getElementById('ig-volatile-body').textContent=`${fP(mostVolatile.avg)} average today. Supply or demand shift detected this week.`;
+  }
+  document.getElementById('ig-date').textContent=ds;
+  document.getElementById('ig-records').textContent=`${ALL.length.toLocaleString()} price records · ${comms.length} commodities · ${[...new Set(ALL.map(i=>i.market))].length} markets`;
 }
 
-/* ════════════════════════════════
-   TERMINAL MARKETS
-════════════════════════════════ */
+/* ══════════════════════════════════
+   TERMINAL
+══════════════════════════════════ */
 function buildTermHubs(){
   const mkts=[...new Set(ALL.filter(i=>i.market_type==='terminal'||!i.market_type).map(i=>i.market).filter(Boolean))];
   const max=Math.max(...mkts.map(m=>ALL.filter(i=>i.market===m).length));
   document.getElementById('termHubs').innerHTML=mkts.map(m=>{
     const n=ALL.filter(i=>i.market===m).length;
     return`<div class="hub-card${termHub===m?' on':''}" onclick="pickTermHub('${m.replace(/'/g,"\\'")}')">
-      <div class="hub-name">${m}</div>
-      <div class="hub-n">${n} listings today</div>
+      <div class="hub-card-name">${m}</div>
+      <div class="hub-card-n">${n} listings today</div>
       <div class="hub-prog"><div class="hub-fill" style="width:${Math.round((n/max)*100)}%"></div></div>
     </div>`;
   }).join('');
@@ -894,172 +1223,111 @@ function buildTermHubs(){
 
 function pickTermHub(m){
   termHub=m;termCatAct='All';termPgN=1;
-  document.querySelectorAll('#termHubs .hub-card').forEach(c=>c.classList.toggle('on',c.querySelector('.hub-name')?.textContent===m));
+  document.querySelectorAll('#termHubs .hub-card').forEach(c=>c.classList.toggle('on',c.querySelector('.hub-card-name')?.textContent===m));
   document.getElementById('termContent').style.display='block';
   document.querySelectorAll('#termCats .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c==='All'));
-  buildTermRows();renderTermTable();
+  buildTermRows();renderTerm();
 }
-
 function termCat(el,c){
   termCatAct=c;termPgN=1;
   document.querySelectorAll('#termCats .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c===c));
-  buildTermRows();renderTermTable();
+  buildTermRows();renderTerm();
 }
-
-function filterTermTable(){
-  termPgN=1;buildTermRows();renderTermTable();
-}
-
+function onTermSearch(){termPgN=1;buildTermRows();renderTerm();}
 function buildTermRows(){
   if(!termHub)return;
   const q=(document.getElementById('termSearch')?.value||'').toLowerCase().trim();
   let items=ALL.filter(i=>i.market===termHub&&(i.market_type==='terminal'||!i.market_type));
   if(termCatAct!=='All')items=items.filter(i=>gc(i.commodity)===termCatAct);
   if(q)items=items.filter(i=>i.commodity.toLowerCase().includes(q)||(i.origin||'').toLowerCase().includes(q));
-  const seen=new Set();termRowsAll=[];
-  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{if(!seen.has(r.commodity)){seen.add(r.commodity);termRowsAll.push(r);}});
+  const seen=new Set();termRows=[];
+  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{if(!seen.has(r.commodity)){seen.add(r.commodity);termRows.push(r);}});
 }
-
-function renderTermTable(){
-  const total=termRowsAll.length,pages=Math.max(1,Math.ceil(total/PER_PAGE));
+function renderTerm(){
+  const total=termRows.length,pages=Math.max(1,Math.ceil(total/PER));
   termPgN=Math.min(termPgN,pages);
-  const start=(termPgN-1)*PER_PAGE,pg=termRowsAll.slice(start,start+PER_PAGE);
-  document.getElementById('termCountLabel').textContent=`${total} commodities${termHub?' in '+termHub:''}`;
-  document.getElementById('termPgInfo').textContent=`${start+1}–${Math.min(start+pg.length,total)} of ${total}`;
+  const start=(termPgN-1)*PER,pg=termRows.slice(start,start+PER);
+  document.getElementById('termCount').textContent=`Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total} commodities`;
   document.getElementById('termPrev').disabled=termPgN<=1;
   document.getElementById('termNext').disabled=termPgN>=pages;
-  document.getElementById('termTbody').innerHTML=pg.map(item=>{
-    const ch=trendPct(item.commodity);
-    const avg=avgP([item]);
-    const lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
-    const chCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-    const pStr=ch>0.5?`+${ch.toFixed(1)}%`:ch<-0.5?`${ch.toFixed(1)}%`:'—';
-    return`<tr onclick="openSheet('${item.commodity.replace(/'/g,"\\'")}')">
-      <td>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:1.25rem;">${ej(item.commodity)}</span>
-          <div>
-            <div class="td-name">${item.commodity}</div>
-            <div class="td-spec">${[item.variety,item.size,item.grade].filter(Boolean).join(', ')||item.package||item.origin||'—'}</div>
-          </div>
-        </div>
-      </td>
-      <td class="r"><div class="td-range">${fR(lo,hi)}</div></td>
-      <td class="r"><div class="td-price">${fP(avg)}</div></td>
-      <td class="r"><span class="badge ${chCls}">${pStr}</span></td>
-    </tr>`;
-  }).join('');
-}
-function termPg(d){termPgN+=d;renderTermTable();window.scrollTo(0,200);}
-
-/* ════════════════════════════════
-   FOB / SHIPPING POINTS
-════════════════════════════════ */
-function buildFobHubs(){
-  const mkts=[...new Set(ALL.filter(i=>i.market_type==='shipping_point').map(i=>i.market).filter(Boolean))];
-  if(!mkts.length){
-    // fallback: if no shipping_point tagged, show origins as hubs
-    const origins=[...new Set(ALL.map(i=>i.origin).filter(Boolean))].slice(0,12);
-    const max=Math.max(...origins.map(o=>ALL.filter(i=>i.origin===o).length));
-    document.getElementById('fobHubs').innerHTML=origins.map(o=>{
-      const n=ALL.filter(i=>i.origin===o).length;
-      return`<div class="hub-card${fobHub===o?' on':''}" onclick="pickFobHub('${o.replace(/'/g,"\\'")}','origin')">
-        <div class="hub-name">${o}</div>
-        <div class="hub-n">${n} listings</div>
-        <div class="hub-prog"><div class="hub-fill" style="width:${Math.round((n/max)*100)}%"></div></div>
-      </div>`;
-    }).join('');
-    return;
+  // Update page buttons
+  for(let i=1;i<=3;i++){
+    const btn=document.getElementById(`termPg${i}`);
+    if(btn){btn.style.display=i<=pages?'flex':'none';btn.textContent=i;btn.classList.toggle('active',i===termPgN);btn.onclick=()=>{termPgN=i;renderTerm();};}
   }
-  const max=Math.max(...mkts.map(m=>ALL.filter(i=>i.market===m).length));
-  document.getElementById('fobHubs').innerHTML=mkts.map(m=>{
-    const n=ALL.filter(i=>i.market===m).length;
-    return`<div class="hub-card${fobHub===m?' on':''}" onclick="pickFobHub('${m.replace(/'/g,"\\'")}','market')">
-      <div class="hub-name">${m}</div>
-      <div class="hub-n">${n} listings</div>
+  document.getElementById('termTbody').innerHTML=pg.map(item=>buildRow(item,trendPct(item.commodity),true)).join('');
+}
+function termPg(d){termPgN=Math.max(1,termPgN+d);renderTerm();window.scrollTo(0,180);}
+
+/* ══════════════════════════════════
+   FOB
+══════════════════════════════════ */
+function buildFobHubs(){
+  const spItems=ALL.filter(i=>i.market_type==='shipping_point');
+  const useOrigin=spItems.length<5;
+  const keys=useOrigin
+    ?[...new Set(ALL.map(i=>i.origin).filter(Boolean))].slice(0,12)
+    :[...new Set(spItems.map(i=>i.market).filter(Boolean))];
+  fobMode=useOrigin?'origin':'market';
+  const max=Math.max(...keys.map(k=>(useOrigin?ALL.filter(i=>i.origin===k):ALL.filter(i=>i.market===k)).length));
+  document.getElementById('fobHubs').innerHTML=keys.map(k=>{
+    const n=(useOrigin?ALL.filter(i=>i.origin===k):ALL.filter(i=>i.market===k)).length;
+    return`<div class="hub-card${fobHub===k?' on':''}" onclick="pickFobHub('${k.replace(/'/g,"\\'")}')">
+      <div class="hub-card-name">${k}</div>
+      <div class="hub-card-n">${n} listings</div>
       <div class="hub-prog"><div class="hub-fill" style="width:${Math.round((n/max)*100)}%"></div></div>
     </div>`;
   }).join('');
 }
-
-let fobHubMode='market';
-function pickFobHub(val,mode){
-  fobHub=val;fobHubMode=mode;fobCatAct='All';fobPgN=1;
-  document.querySelectorAll('#fobHubs .hub-card').forEach(c=>{
-    const name=c.querySelector('.hub-name')?.textContent;
-    c.classList.toggle('on',name===val);
-  });
+function pickFobHub(k){
+  fobHub=k;fobCatAct='All';fobPgN=1;
+  document.querySelectorAll('#fobHubs .hub-card').forEach(c=>c.classList.toggle('on',c.querySelector('.hub-card-name')?.textContent===k));
   document.getElementById('fobContent').style.display='block';
   document.querySelectorAll('#fobCats .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c==='All'));
-  buildFobRows();renderFobTable();
+  buildFobRows();renderFob();
 }
-
 function fobCat(el,c){
   fobCatAct=c;fobPgN=1;
   document.querySelectorAll('#fobCats .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c===c));
-  buildFobRows();renderFobTable();
+  buildFobRows();renderFob();
 }
-
-function filterFobTable(){fobPgN=1;buildFobRows();renderFobTable();}
-
+function onFobSearch(){fobPgN=1;buildFobRows();renderFob();}
 function buildFobRows(){
   if(!fobHub)return;
   const q=(document.getElementById('fobSearch')?.value||'').toLowerCase().trim();
-  let items=fobHubMode==='market'
-    ?ALL.filter(i=>i.market===fobHub&&i.market_type==='shipping_point')
-    :ALL.filter(i=>i.origin===fobHub);
+  let items=fobMode==='origin'?ALL.filter(i=>i.origin===fobHub):ALL.filter(i=>i.market===fobHub&&i.market_type==='shipping_point');
   if(fobCatAct!=='All')items=items.filter(i=>gc(i.commodity)===fobCatAct);
   if(q)items=items.filter(i=>i.commodity.toLowerCase().includes(q)||(i.origin||'').toLowerCase().includes(q));
-  const seen=new Set();fobRowsAll=[];
-  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{if(!seen.has(r.commodity)){seen.add(r.commodity);fobRowsAll.push(r);}});
+  const seen=new Set();fobRows=[];
+  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{if(!seen.has(r.commodity)){seen.add(r.commodity);fobRows.push(r);}});
 }
-
-function renderFobTable(){
-  const total=fobRowsAll.length,pages=Math.max(1,Math.ceil(total/PER_PAGE));
+function renderFob(){
+  const total=fobRows.length,pages=Math.max(1,Math.ceil(total/PER));
   fobPgN=Math.min(fobPgN,pages);
-  const start=(fobPgN-1)*PER_PAGE,pg=fobRowsAll.slice(start,start+PER_PAGE);
-  document.getElementById('fobCountLabel').textContent=`${total} commodities from ${fobHub}`;
-  document.getElementById('fobPgInfo').textContent=`${start+1}–${Math.min(start+pg.length,total)} of ${total}`;
+  const start=(fobPgN-1)*PER,pg=fobRows.slice(start,start+PER);
+  document.getElementById('fobCount').textContent=`Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total} commodities`;
   document.getElementById('fobPrev').disabled=fobPgN<=1;
   document.getElementById('fobNext').disabled=fobPgN>=pages;
-  document.getElementById('fobTbody').innerHTML=pg.length?pg.map(item=>{
-    const ch=trendPct(item.commodity);
-    const avg=avgP([item]);
-    const lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
-    const chCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-    const pStr=ch>0.5?`+${ch.toFixed(1)}%`:ch<-0.5?`${ch.toFixed(1)}%`:'—';
-    return`<tr onclick="openSheet('${item.commodity.replace(/'/g,"\\'")}')">
-      <td>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:1.25rem;">${ej(item.commodity)}</span>
-          <div>
-            <div class="td-name">${item.commodity}</div>
-            <div class="td-spec">${[item.variety,item.size,item.grade].filter(Boolean).join(', ')||item.package||'—'}</div>
-          </div>
-        </div>
-      </td>
-      <td class="r"><div class="td-range">${fR(lo,hi)}</div></td>
-      <td class="r"><div class="td-price">${fP(avg)}</div></td>
-      <td class="r"><span class="badge ${chCls}">${pStr}</span></td>
-    </tr>`;
-  }).join(''):`<tr><td colspan="4" style="padding:40px;text-align:center;color:var(--on-surface-var);font-size:.875rem;">No FOB data for this origin. Try selecting a different source.</td></tr>`;
+  for(let i=1;i<=3;i++){
+    const btn=document.getElementById(`fobPg${i}`);
+    if(btn){btn.style.display=i<=pages?'flex':'none';btn.textContent=i;btn.classList.toggle('active',i===fobPgN);btn.onclick=()=>{fobPgN=i;renderFob();};}
+  }
+  document.getElementById('fobTbody').innerHTML=pg.length
+    ?pg.map(item=>buildRow(item,trendPct(item.commodity),false)).join('')
+    :`<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--on-surf-var);font-size:.875rem;">No FOB data available for this origin. All data may be tagged as terminal market prices.</td></tr>`;
 }
-function fobPg(d){fobPgN+=d;renderFobTable();window.scrollTo(0,200);}
+function fobPg(d){fobPgN=Math.max(1,fobPgN+d);renderFob();window.scrollTo(0,180);}
 
-/* ════════════════════════════════
+/* ══════════════════════════════════
    INIT
-════════════════════════════════ */
+══════════════════════════════════ */
 async function init(){
   try{
     DATES=await(await fetch(`${API}/dates`)).json();
     if(!DATES.length)return;
     const d=new Date(DATES[0].date+'T12:00:00');
-    const ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    const ts='06:00 AM EST';
-    document.getElementById('freshDate').textContent='Updated '+ds;
-    document.getElementById('freshDate2').textContent='Updated '+ds;
-    document.getElementById('freshDate3').textContent='Updated '+ds;
-    document.getElementById('dataAge').textContent=`${ds} at ${ts}`;
+    const ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    document.getElementById('freshTag').textContent='Updated '+ds;
 
     DATED[DATES[0].date]=await(await fetch(`${API}/commodities/by-date/${DATES[0].date}`)).json();
     ALL=DATED[DATES[0].date];
