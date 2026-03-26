@@ -57,7 +57,7 @@ a { text-decoration: none; color: inherit; }
    TOP GLASS HEADER — fixed, blurred
 ══════════════════════════════════════════ */
 .header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  position: sticky; top: 0; left: 0; right: 0; z-index: 200;
   height: 64px;
   background: rgba(255,255,255,0.82);
   backdrop-filter: blur(12px);
@@ -125,8 +125,22 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════════
    PAGE SHELL
 ══════════════════════════════════════════ */
-main { padding-top: 96px; padding-bottom: 80px; }
-.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--px); }
+/* Page centering shell */
+body { display: flex; flex-direction: column; align-items: center; }
+.page-shell {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  background: var(--bg);
+  position: relative;
+}
+/* Subtle side borders to define the page on wide screens */
+@media(min-width: calc(1200px + 2px)) {
+  body { background: #e8eef5; }
+  .page-shell { box-shadow: 0 0 0 1px rgba(190,201,194,0.35); }
+}
+main { padding-top: 48px; padding-bottom: 80px; }
+.container { max-width: 100%; margin: 0 auto; padding: 0 var(--px); }
 
 /* ══════════════════════════════════════════
    BREADCRUMB
@@ -621,6 +635,7 @@ footer {
 </head>
 <body>
 
+<div class="page-shell">
 <!-- ══════ GLASS HEADER ══════ -->
 <header class="header">
   <div class="header-inner">
@@ -941,6 +956,7 @@ footer {
     </div>
   </div>
 </footer>
+</div><!-- end page-shell -->
 
 <script>
 /* ══════════════════════════════════
