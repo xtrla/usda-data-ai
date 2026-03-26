@@ -10,307 +10,610 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{font-size:14px;}
 :root{
-  --bg:#F4F5F7;--surface:#FFFFFF;--surface2:#F9FAFB;
-  --border:#E2E5EC;--border2:#CDD1DC;
-  --text1:#0C0E13;--text2:#5A5F72;--text3:#9298AB;
-  --green:#0A7A4B;--green-bg:#EAF5EF;--green-bd:#A3D4B8;
-  --red:#B91C1C;--red-bg:#FEF1F1;--red-bd:#F0AAAA;
-  --amber:#92690A;--purple:#6B21A8;
-  --nav-h:52px;
+  --bg:       #EDF2EE;
+  --surface:  #FFFFFF;
+  --surface2: #F4F8F5;
+  --border:   #D6E4DA;
+  --border2:  #BDD0C3;
+  --text1:    #0C1E12;
+  --text2:    #446054;
+  --text3:    #8AA396;
+  --green:    #1B5E35;
+  --green-mid:#2D7A50;
+  --green-bg: #E3F0E9;
+  --green-bd: #9DC4AD;
+  --red:      #B91C1C;
+  --red-bg:   #FEF1F1;
+  --red-bd:   #F0AAAA;
+  --amber:    #92690A;
+  --amber-bg: #FDF5E6;
+  --nav-h:    56px;
 }
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text1);line-height:1.5;}
 .mono{font-family:'IBM Plex Mono',monospace;}
 .page{display:none;}.page.active{display:block;}
 
-/* NAV */
-#nav{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav-h);}
-.nav-brand{display:flex;align-items:center;padding:0 20px;border-right:1px solid var(--border);text-decoration:none;flex-shrink:0;}
-.nav-wordmark{font-family:'IBM Plex Sans',sans-serif;font-size:17px;font-weight:600;letter-spacing:-0.03em;color:var(--text1);}
+/* ── NAV ── */
+#nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  height:var(--nav-h);display:flex;align-items:center;
+  padding:0 28px;gap:0;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  text-decoration:none;margin-right:36px;flex-shrink:0;
+}
+.nav-logo{
+  width:30px;height:30px;background:var(--green);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff;font-weight:700;font-family:'IBM Plex Mono',monospace;
+  letter-spacing:-0.04em;flex-shrink:0;
+}
+.nav-wordmark{font-size:16px;font-weight:600;letter-spacing:-0.03em;color:var(--text1);}
 .nav-wordmark span{color:var(--green);}
-.nav-links{display:flex;align-items:stretch;flex:1;overflow-x:auto;}
-.nav-link{display:flex;align-items:center;padding:0 16px;font-size:12px;font-weight:400;color:var(--text2);text-decoration:none;cursor:pointer;position:relative;white-space:nowrap;border:none;background:none;transition:color 0.1s;font-family:'IBM Plex Sans',sans-serif;}
+.nav-links{display:flex;align-items:stretch;height:100%;gap:0;}
+.nav-link{
+  display:flex;align-items:center;padding:0 16px;
+  font-size:13px;color:var(--text2);cursor:pointer;
+  position:relative;white-space:nowrap;
+  border:none;background:none;font-family:'IBM Plex Sans',sans-serif;
+  transition:color 0.1s;text-decoration:none;
+}
 .nav-link:hover{color:var(--text1);}
-.nav-link.active{color:var(--text1);font-weight:500;}
+.nav-link.active{color:var(--green);font-weight:500;}
 .nav-link.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);}
-.nav-right{display:flex;align-items:center;gap:12px;padding:0 20px;margin-left:auto;flex-shrink:0;}
-.nav-pulse{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.06em;}
-.nav-pulse::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);display:block;animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.nav-live{
+  display:flex;align-items:center;gap:7px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--text3);letter-spacing:0.1em;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--green);
+  animation:pulse 2s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.8)}}
+.nav-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--green);color:#fff;
+  font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
 
-/* MOBILE NAV */
-.mobile-nav{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;gap:4px;overflow-x:auto;}
-.mobile-nav-link{flex-shrink:0;font-size:11px;padding:5px 10px;border:1px solid var(--border);color:var(--text2);background:none;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
-.mobile-nav-link.active{background:var(--text1);color:#fff;border-color:var(--text1);}
+/* ── MOBILE NAV ── */
+.mobile-nav{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px 10px;overflow-x:auto;gap:6px;}
+.mobile-nav-link{flex-shrink:0;font-size:12px;padding:6px 12px;border:1px solid var(--border);color:var(--text2);background:none;cursor:pointer;border-radius:20px;font-family:'IBM Plex Sans',sans-serif;}
+.mobile-nav-link.active{background:var(--green);color:#fff;border-color:var(--green);}
 
-/* SEARCH BAR */
-.search-wrap{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);}
-.search-wrap:focus-within{border-color:var(--green);}
-.search-icon{padding:0 12px;color:var(--text3);font-size:15px;flex-shrink:0;line-height:1;}
-.search-inp{flex:1;padding:10px 0;font-family:'IBM Plex Sans',sans-serif;font-size:13px;border:none;outline:none;background:transparent;color:var(--text1);}
-.search-inp::placeholder{color:var(--text3);}
-.search-tag{margin-right:10px;font-family:'IBM Plex Mono',monospace;font-size:9px;background:var(--bg);border:1px solid var(--border);color:var(--text3);padding:2px 6px;letter-spacing:0.06em;flex-shrink:0;}
+/* ── HERO ── */
+.hero{
+  position:relative;min-height:270px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1600&q=70&auto=format&fit=crop');
+  background-size:cover;background-position:center 55%;
+  filter:saturate(0.65) brightness(0.88);
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,
+    rgba(237,242,238,0.45) 0%,
+    rgba(237,242,238,0.88) 55%,
+    rgba(237,242,238,1.0) 100%
+  );
+}
+.hero-top-border{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--green) 0%,#52c989 50%,var(--green) 100%);
+  background-size:200%;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.hero-content{
+  position:relative;z-index:1;
+  padding:40px 32px 32px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;
+}
+.hero-left{flex:1;min-width:280px;}
+.hero-eyebrow{
+  display:flex;align-items:center;gap:8px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:0.16em;text-transform:uppercase;color:var(--green);
+  margin-bottom:12px;
+}
+.hero-h1{
+  font-size:clamp(24px,3.5vw,36px);font-weight:600;
+  letter-spacing:-0.03em;color:var(--text1);line-height:1.1;
+  margin-bottom:8px;
+}
+.hero-sub{
+  font-size:13px;color:var(--text2);line-height:1.6;
+  max-width:460px;margin-bottom:22px;
+}
+.hero-search{
+  display:flex;align-items:center;
+  background:var(--surface);
+  border:1.5px solid var(--border2);
+  max-width:500px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.1);
+  border-radius:8px;overflow:hidden;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+.hero-search:focus-within{
+  border-color:var(--green);
+  box-shadow:0 4px 20px rgba(27,94,53,0.18);
+}
+.hero-search-icon{padding:0 14px;color:var(--text3);font-size:17px;flex-shrink:0;}
+.hero-search-inp{
+  flex:1;padding:13px 0;
+  font-family:'IBM Plex Sans',sans-serif;font-size:14px;
+  border:none;outline:none;background:transparent;color:var(--text1);
+}
+.hero-search-inp::placeholder{color:var(--text3);}
+.hero-search-btn{
+  background:var(--green);color:#fff;border:none;
+  padding:0 20px;height:100%;font-size:12px;font-weight:500;
+  cursor:pointer;font-family:'IBM Plex Sans',sans-serif;
+  white-space:nowrap;transition:background 0.15s;
+  min-height:48px;
+}
+.hero-search-btn:hover{background:var(--green-mid);}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.hero-chip{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.88);
+  border:1px solid var(--border);border-radius:8px;
+  padding:10px 16px;backdrop-filter:blur(4px);
+}
+.hero-chip-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);}
+.hero-chip-val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--text1);}
+.hero-chip-val.up{color:var(--green);}
+.hero-chip-val.dn{color:var(--red);}
 
-/* PAGE HEADER */
-.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.page-header-left h1{font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--text1);}
-.page-header-left p{font-size:11px;color:var(--text3);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+/* ── FILTER BAR ── */
+.filter-bar{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  border-top:1px solid var(--border);
+  padding:10px 20px;overflow-x:auto;
+}
+.f-pill{
+  font-size:12px;color:var(--text2);
+  padding:5px 14px;border:1px solid var(--border);
+  cursor:pointer;transition:all 0.12s;white-space:nowrap;
+  background:var(--surface);font-family:'IBM Plex Sans',sans-serif;
+  border-radius:20px;
+}
+.f-pill:hover{border-color:var(--green);color:var(--green);}
+.f-pill.active{background:var(--green);color:#fff;border-color:var(--green);}
+.f-sep{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0;}
+.f-select{
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--text2);
+  border:1px solid var(--border);background:var(--surface);
+  padding:5px 10px;outline:none;cursor:pointer;border-radius:6px;
+}
+.f-select:focus{border-color:var(--green);}
+.f-right{margin-left:auto;display:flex;gap:6px;flex-shrink:0;}
+.export-btn{
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;
+  background:var(--green);color:#fff;border:none;
+  padding:6px 16px;cursor:pointer;border-radius:6px;
+  transition:background 0.12s;white-space:nowrap;
+}
+.export-btn:hover{background:var(--green-mid);}
 
-/* STATS STRIP */
-.stats-strip{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
-.stat-item{flex:1;min-width:100px;padding:10px 20px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:2px;}
-.stat-item:last-child{border-right:none;}
-.stat-val{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:var(--text1);}
-.stat-val.up{color:var(--green);}.stat-val.dn{color:var(--red);}
-.stat-lbl{font-size:10px;color:var(--text3);letter-spacing:0.02em;}
+/* ── TABLE HEADER STRIP ── */
+.tbl-header-strip{
+  background:var(--surface2);border-bottom:1px solid var(--border);
+  padding:0 20px;
+}
+.tbl-col-heads{
+  display:grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 1.1fr 60px;
+  gap:0;align-items:center;
+  padding:10px 8px;
+}
+.col-head{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);
+}
+.col-head.r{text-align:right;}
 
-/* FILTER BAR */
-.filter-bar{display:flex;align-items:center;gap:4px;background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;overflow-x:auto;}
-.f-pill{font-size:11px;font-weight:400;color:var(--text2);padding:4px 10px;border:1px solid transparent;cursor:pointer;transition:all 0.1s;white-space:nowrap;background:none;font-family:'IBM Plex Sans',sans-serif;}
-.f-pill:hover{border-color:var(--border);color:var(--text1);}
-.f-pill.active{background:var(--text1);color:#fff;border-color:var(--text1);}
-.f-sep{width:1px;height:16px;background:var(--border);margin:0 6px;flex-shrink:0;}
-.f-select{font-family:'IBM Plex Sans',sans-serif;font-size:11px;color:var(--text2);border:1px solid var(--border);background:transparent;padding:4px 8px;outline:none;cursor:pointer;margin-left:auto;}
-.f-select+.f-select{margin-left:4px;}
+/* ── CARD TABLE ── */
+.card-table-wrap{padding:12px 20px 20px;}
+.card-row{
+  display:grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 1.1fr 60px;
+  gap:0;align-items:center;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:6px;
+  cursor:pointer;
+  transition:box-shadow 0.15s,transform 0.12s,border-color 0.15s;
+  text-decoration:none;
+}
+.card-row:hover{
+  box-shadow:0 4px 16px rgba(0,0,0,0.09);
+  transform:translateY(-1px);
+  border-color:var(--border2);
+}
+.card-row:last-child{margin-bottom:0;}
 
-/* TABLE */
-.tbl-wrap{background:var(--surface);overflow:hidden;}
-.tbl-wrap table{width:100%;border-collapse:collapse;}
-.tbl-wrap thead{background:var(--surface2);}
-.tbl-wrap thead th{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:9px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
-.tbl-wrap thead th.r{text-align:right;}
-.tbl-wrap tbody tr{border-bottom:1px solid var(--border);transition:background 0.08s;cursor:pointer;}
-.tbl-wrap tbody tr:last-child{border-bottom:none;}
-.tbl-wrap tbody tr:hover{background:#F0F2F6;}
-.tbl-wrap tbody td{padding:10px 14px;vertical-align:middle;}
-.tbl-wrap tbody td.r{text-align:right;}
-.c-name{font-size:13px;font-weight:500;color:var(--text1);}
-.c-spec{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;}
-.c-dim{font-size:12px;color:var(--text2);}
-.c-pkg{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);}
-.price-main{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--text1);}
-.price-range{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+/* ── PRODUCE THUMB ── */
+.produce-thumb{
+  width:48px;height:48px;border-radius:10px;
+  background:#132B1E;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;overflow:hidden;
+}
+.produce-thumb img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+.cell-commodity{display:flex;align-items:center;gap:14px;}
+.c-name{font-size:14px;font-weight:500;color:var(--text1);}
+.c-spec{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px;}
+.org-tag{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;
+  font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+  background:var(--green-bg);color:var(--green);
+  border:1px solid var(--green-bd);padding:1px 5px;border-radius:3px;
+  margin-left:5px;vertical-align:middle;
+}
+.market-cell{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);}
+.mkt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.mkt-dot.up{background:var(--green);}
+.mkt-dot.dn{background:var(--red);}
+.mkt-dot.flat{background:var(--amber);}
+
+/* ── RANGE CELLS ── */
+.range-val{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--text1);}
+.mostly-badge{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;
+  background:var(--green-bg);color:var(--green);
+  border:1px solid var(--green-bd);
+  padding:4px 10px;border-radius:6px;white-space:nowrap;
+}
+
+/* ── CHANGE CELL ── */
+.change-cell{text-align:right;}
+.change-amt{
+  font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+  display:flex;align-items:center;gap:5px;justify-content:flex-end;
+}
+.change-amt.up{color:var(--green);}
+.change-amt.dn{color:var(--red);}
+.change-amt.flat{color:var(--text3);}
+.change-pct{font-size:10px;color:var(--text3);text-align:right;margin-top:2px;}
+
+/* ── SPARK ── */
+.spark{display:flex;align-items:flex-end;gap:2px;height:22px;justify-content:flex-end;}
+.spark-bar{width:4px;background:var(--border2);border-radius:2px;min-height:2px;}
+
+/* ── TABLE FOOTER ── */
+.tbl-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px 16px;
+}
+.tbl-footer-info{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);}
+.tbl-pages{display:flex;gap:4px;}
+.tbl-page-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);
+  padding:4px 12px;border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;transition:all 0.1s;border-radius:4px;
+}
+.tbl-page-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
+.tbl-page-btn:disabled{opacity:0.35;cursor:default;}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  padding:60px 20px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);
+}
+
+/* ── SIDEBAR LAYOUT ── */
+.layout-sidebar{display:flex;align-items:stretch;min-height:60vh;}
+.sidebar{
+  width:200px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);padding:16px 8px;
+}
+.sidebar-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);
+  padding:4px 10px;margin-bottom:6px;
+}
+.sidebar-btn{
+  display:block;width:100%;text-align:left;
+  padding:8px 10px;font-size:12px;color:var(--text2);
+  background:none;border:none;cursor:pointer;
+  transition:all 0.1s;font-family:'IBM Plex Sans',sans-serif;
+  border-radius:6px;
+}
+.sidebar-btn:hover{background:var(--bg);color:var(--text1);}
+.sidebar-btn.active{background:var(--green);color:#fff;}
+.sidebar-content{flex:1;min-width:0;}
+
+/* ── DETAIL PAGE ── */
+.detail-hero{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:22px 28px;
+}
+.breadcrumb{
+  font-size:12px;color:var(--text3);cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;margin-bottom:10px;
+  background:none;border:none;font-family:'IBM Plex Sans',sans-serif;
+}
+.breadcrumb:hover{color:var(--text2);}
+.detail-title{font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--text1);}
+.detail-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:0.06em;}
+
+/* ── SUMMARY CARDS ── */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--border);}
+.summary-card{background:var(--surface);padding:16px 18px;}
+.summary-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;}
+.summary-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--text1);margin-top:4px;}
+
+/* ── CLASSIC TABLE (detail pages) ── */
+.classic-tbl-wrap{background:var(--surface);overflow:hidden;}
+.classic-tbl-wrap table{width:100%;border-collapse:collapse;}
+.classic-tbl-wrap thead th{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);
+  padding:10px 16px;text-align:left;
+  background:var(--surface2);border-bottom:1px solid var(--border);
+}
+.classic-tbl-wrap thead th.r{text-align:right;}
+.classic-tbl-wrap tbody tr{border-bottom:1px solid var(--border);transition:background 0.08s;cursor:pointer;}
+.classic-tbl-wrap tbody tr:last-child{border-bottom:none;}
+.classic-tbl-wrap tbody tr:hover{background:var(--surface2);}
+.classic-tbl-wrap tbody td{padding:11px 16px;vertical-align:middle;}
+.classic-tbl-wrap tbody td.r{text-align:right;}
+
+/* ── COMPARE ── */
+.inner-content{padding:24px 28px;}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);}
+.compare-card{background:var(--surface);padding:18px;}
+.compare-card.best{border-left:3px solid var(--green);}
+.best-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;}
+
+/* ── SEARCH PAGE ── */
+.search-header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:18px 28px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+}
+.search-header h1{font-size:16px;font-weight:600;letter-spacing:-0.01em;}
+.search-header p{font-size:11px;color:var(--text3);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+.inp{
+  font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--text1);
+  border:1px solid var(--border);background:var(--surface);
+  padding:8px 12px;outline:none;border-radius:6px;transition:border-color 0.1s;
+}
+.inp:focus{border-color:var(--green);}
+.inp::placeholder{color:var(--text3);}
+.btn-green{
+  font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;
+  background:var(--green);color:#fff;border:none;
+  padding:8px 18px;cursor:pointer;transition:background 0.1s;border-radius:6px;
+}
+.btn-green:hover{background:var(--green-mid);}
+
+/* ── DELTA HELPERS ── */
 .delta-up{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--green);}
 .delta-dn{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--red);}
 .delta-flat{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--text3);}
-.status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;}
-.status::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;}
-.s-up::before{background:var(--green);}.s-up{color:var(--green);}
-.s-dn::before{background:var(--red);}.s-dn{color:var(--red);}
-.s-flat::before{background:var(--amber);}.s-flat{color:var(--amber);}
-.org-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);padding:1px 5px;display:inline-block;vertical-align:middle;margin-left:4px;}
+.price-main{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--text1);}
+.c-dim{font-size:12px;color:var(--text2);}
+.c-pkg{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);}
 
-/* SPARK */
-.spark{display:flex;align-items:flex-end;gap:2px;height:18px;}
-.spark-bar{width:3px;background:var(--border2);border-radius:1px;min-height:2px;}
-
-/* TABLE FOOTER */
-.tbl-footer{background:var(--surface);border-top:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;}
-.tbl-footer-info{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);}
-.tbl-pages{display:flex;gap:2px;}
-.tbl-page-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);padding:3px 10px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.1s;}
-.tbl-page-btn:hover:not(:disabled){border-color:var(--text1);color:var(--text1);}
-.tbl-page-btn:disabled{opacity:0.35;cursor:default;}
-
-/* SIDEBAR LAYOUT */
-.layout-sidebar{display:flex;align-items:stretch;}
-.sidebar{width:200px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:12px 8px;}
-.sidebar-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:4px 8px;margin-bottom:4px;}
-.sidebar-btn{display:block;width:100%;text-align:left;padding:7px 10px;font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;transition:all 0.1s;font-family:'IBM Plex Sans',sans-serif;}
-.sidebar-btn:hover{background:var(--bg);color:var(--text1);}
-.sidebar-btn.active{background:var(--text1);color:#fff;}
-.sidebar-content{flex:1;min-width:0;}
-
-/* DETAIL */
-.detail-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 24px;}
-.breadcrumb{font-size:11px;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:8px;background:none;border:none;font-family:'IBM Plex Sans',sans-serif;}
-.breadcrumb:hover{color:var(--text2);}
-.detail-title{font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--text1);}
-.detail-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:0.04em;}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--border);}
-.summary-card{background:var(--surface);padding:14px 16px;}
-.summary-card-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
-.summary-card-val{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--text1);margin-top:4px;}
-
-/* COMPARE */
-.inner-content{padding:20px 24px;}
-.compare-card{background:var(--surface);border:1px solid var(--border);padding:16px;}
-.compare-card.best{border-color:var(--green);border-left:3px solid var(--green);}
-.compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1px;background:var(--border);}
-.best-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
-
-/* INPUTS */
-.inp{font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--text1);border:1px solid var(--border);background:var(--surface);padding:8px 12px;outline:none;transition:border-color 0.1s;}
-.inp:focus{border-color:var(--green);}
-.inp::placeholder{color:var(--text3);}
-.btn-primary{font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;background:var(--green);color:#fff;border:none;padding:8px 16px;cursor:pointer;transition:background 0.1s;}
-.btn-primary:hover{background:#08633d;}
-
-/* CHART */
-.chart-wrap{background:var(--surface);border:1px solid var(--border);padding:16px;}
-.chart-title{font-size:9px;font-weight:500;color:var(--text3);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;}
-
-/* FOOTER */
-#footer{background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:24px;}
-.footer-brand{font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:-0.03em;color:var(--text1);}
+/* ── FOOTER ── */
+#footer{
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-top:32px;
+}
+.footer-brand{font-size:14px;font-weight:600;letter-spacing:-0.03em;color:var(--text1);}
 .footer-brand span{color:var(--green);}
 .footer-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);}
 
-/* RESPONSIVE */
-@media(max-width:768px){
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .tbl-col-heads,.card-row{grid-template-columns:2fr 1fr 1fr 80px;}
+  .col-head.hide-m,.card-col.hide-m{display:none;}
+}
+@media(max-width:700px){
   .nav-links{display:none;}
-  .mobile-nav{display:flex;}
+  .mobile-nav{display:flex;padding-top:10px;}
   .sidebar{display:none;}
   .layout-sidebar{flex-direction:column;}
-  .f-select{margin-left:0;}
-  .hide-mobile{display:none!important;}
-  .page-header{padding:12px 16px;}
-  .filter-bar{padding:8px 12px;}
-  .tbl-wrap thead th,.tbl-wrap tbody td{padding:8px 10px;}
-  .inner-content{padding:14px 16px;}
-  .detail-hero{padding:14px 16px;}
-  .stats-strip .stat-item{min-width:90px;padding:8px 12px;}
+  .hero-content{padding:24px 20px 20px;}
+  .hero-chips{display:none;}
+  .tbl-col-heads,.card-row{grid-template-columns:2fr 1fr 100px;}
+  .filter-bar{padding:8px 14px;}
+  .card-table-wrap{padding:8px 14px 14px;}
+  .inner-content{padding:16px;}
+  .search-header{padding:14px 16px;}
+  .detail-hero{padding:16px;}
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav id="nav">
   <a class="nav-brand" href="#" onclick="navigate('home')">
+    <div class="nav-logo">aX</div>
     <span class="nav-wordmark">agra<span>X</span></span>
   </a>
   <div class="nav-links">
     <button class="nav-link active" data-nav="home"    onclick="navigate('home')">Overview</button>
-    <button class="nav-link"        data-nav="markets" onclick="navigate('markets')">Markets</button>
+    <button class="nav-link"        data-nav="markets" onclick="navigate('markets')">Terminal</button>
     <button class="nav-link"        data-nav="compare" onclick="navigate('compare')">Compare</button>
     <button class="nav-link"        data-nav="search"  onclick="navigate('search')">Search</button>
   </div>
   <div class="nav-right">
-    <div class="nav-pulse" id="headerDate">LIVE</div>
+    <div class="nav-live">
+      <div class="live-dot"></div>
+      <span id="headerDate">LIVE</span>
+    </div>
+    <div class="nav-avatar">JD</div>
   </div>
 </nav>
 
 <div class="mobile-nav">
   <button class="mobile-nav-link active" data-mnav="home"    onclick="navigate('home')">Overview</button>
-  <button class="mobile-nav-link"        data-mnav="markets" onclick="navigate('markets')">Markets</button>
+  <button class="mobile-nav-link"        data-mnav="markets" onclick="navigate('markets')">Terminal</button>
   <button class="mobile-nav-link"        data-mnav="compare" onclick="navigate('compare')">Compare</button>
   <button class="mobile-nav-link"        data-mnav="search"  onclick="navigate('search')">Search</button>
 </div>
 
-<!-- HOME -->
+<!-- ════════════ HOME ════════════ -->
 <div id="page-home" class="page active">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h1>Produce market prices</h1>
-      <p id="home-meta">Loading USDA data…</p>
-    </div>
-    <div class="search-wrap" style="flex:1;max-width:460px;">
-      <span class="search-icon">⌕</span>
-      <input class="search-inp" id="homeSearch" placeholder="Search — avocados, tomatoes, cilantro…"
-        onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
-      <span class="search-tag">⌘K</span>
-    </div>
-  </div>
-  <div class="stats-strip">
-    <div class="stat-item"><div class="stat-val" id="stat-commodities">—</div><div class="stat-lbl">Commodities</div></div>
-    <div class="stat-item"><div class="stat-val" id="stat-markets">—</div><div class="stat-lbl">Terminal markets</div></div>
-    <div class="stat-item"><div class="stat-val" id="stat-records">—</div><div class="stat-lbl">Price records</div></div>
-    <div class="stat-item"><div class="stat-val up" id="stat-rising">—</div><div class="stat-lbl">Rising this week</div></div>
-    <div class="stat-item"><div class="stat-val dn" id="stat-falling">—</div><div class="stat-lbl">Falling this week</div></div>
-    <div class="stat-item"><div class="stat-val" id="stat-date">—</div><div class="stat-lbl">Latest report</div></div>
-  </div>
-  <div class="filter-bar" id="home-filter-bar">
-    <button class="f-pill active" data-cat="All"               onclick="homeSetCat(this,'All')">All</button>
-    <button class="f-pill"        data-cat="Fruits"            onclick="homeSetCat(this,'Fruits')">Fruits</button>
-    <button class="f-pill"        data-cat="Vegetables"        onclick="homeSetCat(this,'Vegetables')">Vegetables</button>
-    <button class="f-pill"        data-cat="Onions &amp; Potatoes" onclick="homeSetCat(this,'Onions & Potatoes')">Onions &amp; Potatoes</button>
-    <button class="f-pill"        data-cat="Nuts"              onclick="homeSetCat(this,'Nuts')">Nuts</button>
-    <div class="f-sep"></div>
-    <select class="f-select" id="home-market-filter" onchange="renderHomeTable()"><option value="">All markets</option></select>
-    <select class="f-select" id="home-cond-filter" onchange="renderHomeTable()">
-      <option value="">All conditions</option>
-      <option value="up">↑ Rising</option>
-      <option value="dn">↓ Falling</option>
-      <option value="flat">Steady</option>
-    </select>
-  </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th style="min-width:160px;">Commodity</th>
-        <th class="hide-mobile">Origin</th>
-        <th class="hide-mobile">Market</th>
-        <th class="hide-mobile">Package</th>
-        <th class="r hide-mobile">Price range</th>
-        <th class="r">Avg price</th>
-        <th class="r">Δ week</th>
-        <th class="r hide-mobile">Δ %</th>
-        <th>Condition</th>
-        <th class="hide-mobile">7d</th>
-      </tr></thead>
-      <tbody id="home-table-body">
-        <tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;">Loading market data…</td></tr>
-      </tbody>
-    </table>
-    <div class="tbl-footer">
-      <span class="tbl-footer-info" id="home-count"></span>
-      <div class="tbl-pages">
-        <button class="tbl-page-btn" id="home-prev" onclick="homePrev()" disabled>← prev</button>
-        <button class="tbl-page-btn" id="home-next" onclick="homeNext()">next →</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- MARKETS -->
-<div id="page-markets" class="page">
-  <div class="layout-sidebar">
-    <aside class="sidebar">
-      <div class="sidebar-label">Terminal markets</div>
-      <nav id="mkt-sidebar"></nav>
-    </aside>
-    <div class="sidebar-content">
-      <div class="filter-bar" id="mkt-cat-tabs"></div>
-      <div class="page-header" style="padding:10px 16px;">
-        <div class="search-wrap" style="flex:1;max-width:360px;">
-          <span class="search-icon" style="font-size:13px;">⌕</span>
-          <input class="search-inp" id="mkt-search" placeholder="Filter commodities…" oninput="renderMarketsTable()" style="padding:7px 0;font-size:12px;"/>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-top-border"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <div class="live-dot"></div>
+          Live market data
         </div>
-        <span id="mkt-count" style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;"></span>
+        <h1 class="hero-h1">Terminal Market Prices</h1>
+        <p class="hero-sub" id="home-meta">Daily index of wholesale produce prices across key domestic distribution hubs. Updated as of today, 06:00 AM.</p>
+        <div class="hero-search">
+          <span class="hero-search-icon">⌕</span>
+          <input class="hero-search-inp" id="homeSearch"
+            placeholder="Search commodity or market…"
+            onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}"/>
+          <button class="hero-search-btn" onclick="navigate('search')">Search</button>
+        </div>
       </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr>
-            <th style="min-width:160px;">Commodity</th>
-            <th class="hide-mobile">Origin</th>
-            <th class="hide-mobile">Package</th>
-            <th class="r hide-mobile">Price range</th>
-            <th class="r">Avg price</th>
-            <th class="r">Δ week</th>
-            <th>Condition</th>
-            <th class="hide-mobile">7d</th>
-          </tr></thead>
-          <tbody id="mkt-table-body"></tbody>
-        </table>
-        <div class="tbl-footer">
-          <span class="tbl-footer-info" id="mkt-page-info"></span>
-          <div class="tbl-pages">
-            <button class="tbl-page-btn" id="mkt-prev" onclick="mktPrevPage()" disabled>← prev</button>
-            <button class="tbl-page-btn" id="mkt-next" onclick="mktNextPage()">next →</button>
+      <div class="hero-chips">
+        <div class="hero-chip">
+          <div>
+            <div class="hero-chip-label">Market date</div>
+            <div class="hero-chip-val" id="chip-date">—</div>
+          </div>
+        </div>
+        <div class="hero-chip">
+          <div>
+            <div class="hero-chip-label">Market sentiment</div>
+            <div class="hero-chip-val up" id="chip-sentiment">—</div>
+          </div>
+        </div>
+        <div class="hero-chip">
+          <div>
+            <div class="hero-chip-label">Commodities tracked</div>
+            <div class="hero-chip-val" id="chip-commodities">—</div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar" id="home-filter-bar">
+    <button class="f-pill active" data-cat="All"               onclick="homeSetCat(this,'All')">All Markets</button>
+    <button class="f-pill"        data-cat="Fruits"            onclick="homeSetCat(this,'Fruits')">Fruits</button>
+    <button class="f-pill"        data-cat="Vegetables"        onclick="homeSetCat(this,'Vegetables')">Vegetables</button>
+    <button class="f-pill"        data-cat="Onions &amp; Potatoes" onclick="homeSetCat(this,'Onions & Potatoes')">Onions &amp; Potatoes</button>
+    <button class="f-pill"        data-cat="Nuts"              onclick="homeSetCat(this,'Nuts')">Nuts</button>
+    <div class="f-sep"></div>
+    <select class="f-select" id="home-market-filter" onchange="renderHomeTable()"><option value="">All Hubs</option></select>
+    <select class="f-select" id="home-cond-filter" onchange="renderHomeTable()">
+      <option value="">All Conditions</option>
+      <option value="up">↑ Rising</option>
+      <option value="dn">↓ Falling</option>
+      <option value="flat">Steady</option>
+    </select>
+    <div class="f-right">
+      <button class="export-btn">Export Data</button>
+    </div>
+  </div>
+
+  <!-- Column headers -->
+  <div class="tbl-header-strip">
+    <div class="tbl-col-heads">
+      <div class="col-head">Commodity / Variety</div>
+      <div class="col-head">Market Hub</div>
+      <div class="col-head r">Daily Range (L–H)</div>
+      <div class="col-head hide-m">Mostly Range</div>
+      <div class="col-head r">Daily Change</div>
+      <div class="col-head r hide-m">7d</div>
+    </div>
+  </div>
+
+  <!-- Card rows -->
+  <div class="card-table-wrap" id="home-card-wrap">
+    <div class="empty-state">Loading market data…</div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="tbl-footer">
+    <span class="tbl-footer-info" id="home-count"></span>
+    <div class="tbl-pages">
+      <button class="tbl-page-btn" id="home-prev" onclick="homePrev()" disabled>← prev</button>
+      <button class="tbl-page-btn" id="home-next" onclick="homeNext()">next →</button>
+    </div>
+  </div>
 </div>
 
-<!-- MARKET DETAIL -->
+<!-- ════════════ MARKETS ════════════ -->
+<div id="page-markets" class="page">
+  <div class="layout-sidebar">
+    <aside class="sidebar">
+      <div class="sidebar-label">Markets</div>
+      <nav id="mkt-sidebar"></nav>
+    </aside>
+    <div class="sidebar-content">
+      <div class="filter-bar" id="mkt-cat-tabs" style="border-top:none;"></div>
+      <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;flex:1;max-width:320px;">
+          <span style="padding:0 12px;color:var(--text3);font-size:14px;">⌕</span>
+          <input class="inp" id="mkt-search" placeholder="Filter commodities…" oninput="renderMarketsTable()" style="border:none;border-radius:0;flex:1;padding:8px 0;font-size:12px;"/>
+        </div>
+        <span id="mkt-count" style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-left:auto;"></span>
+      </div>
+      <!-- Col headers -->
+      <div class="tbl-header-strip">
+        <div class="tbl-col-heads">
+          <div class="col-head">Commodity / Variety</div>
+          <div class="col-head">Origin</div>
+          <div class="col-head r">Daily Range</div>
+          <div class="col-head hide-m">Mostly Range</div>
+          <div class="col-head r">Daily Change</div>
+          <div class="col-head r hide-m">7d</div>
+        </div>
+      </div>
+      <div class="card-table-wrap" id="mkt-card-wrap">
+        <div class="empty-state">Select a market</div>
+      </div>
+      <div class="tbl-footer">
+        <span class="tbl-footer-info" id="mkt-page-info"></span>
+        <div class="tbl-pages">
+          <button class="tbl-page-btn" id="mkt-prev" onclick="mktPrevPage()" disabled>← prev</button>
+          <button class="tbl-page-btn" id="mkt-next" onclick="mktNextPage()">next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ MARKET DETAIL ════════════ -->
 <div id="page-market-detail" class="page">
   <div class="detail-hero">
     <button class="breadcrumb" onclick="navigate('markets')">← Markets</button>
     <div class="detail-title" id="marketDetailTitle"></div>
     <div class="detail-meta" id="marketDetailStats"></div>
   </div>
-  <div class="tbl-wrap">
+  <div class="classic-tbl-wrap">
     <table>
       <thead><tr>
         <th style="min-width:160px;">Commodity</th>
@@ -325,7 +628,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   </div>
 </div>
 
-<!-- COMMODITY DETAIL -->
+<!-- ════════════ COMMODITY DETAIL ════════════ -->
 <div id="page-commodity-detail" class="page">
   <div class="detail-hero">
     <button class="breadcrumb" onclick="navigate('markets')">← Markets</button>
@@ -333,23 +636,23 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <div class="detail-meta" id="commodityDetailStats"></div>
   </div>
   <div class="summary-grid" id="commodity-summary-cards"></div>
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1px;background:var(--border);margin-top:1px;" class="hide-mobile">
-    <div style="background:var(--surface);padding:16px;">
-      <div class="chart-title">7-day price trend</div>
-      <div style="height:180px;"><canvas id="commodityChart"></canvas></div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1px;background:var(--border);margin-top:1px;">
+    <div style="background:var(--surface);padding:18px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;">7-day price trend</div>
+      <div style="height:190px;"><canvas id="commodityChart"></canvas></div>
     </div>
-    <div style="background:var(--surface);padding:16px;">
-      <div class="chart-title">By market</div>
+    <div style="background:var(--surface);padding:18px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;">By market</div>
       <div id="commodityQuickStats"></div>
     </div>
   </div>
-  <div class="tbl-wrap" style="margin-top:1px;">
+  <div class="classic-tbl-wrap" style="margin-top:1px;">
     <table>
       <thead><tr>
         <th>Market</th>
-        <th class="hide-mobile">Origin</th>
-        <th class="hide-mobile">Variety / grade</th>
-        <th class="hide-mobile">Package</th>
+        <th>Origin</th>
+        <th>Variety / grade</th>
+        <th>Package</th>
         <th class="r">Avg price</th>
         <th class="r">Δ week</th>
       </tr></thead>
@@ -358,55 +661,56 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   </div>
 </div>
 
-<!-- COMPARE -->
+<!-- ════════════ COMPARE ════════════ -->
 <div id="page-compare" class="page">
-  <div class="page-header">
-    <div class="page-header-left"><h1>Compare prices</h1><p>Same commodity · all markets · side by side</p></div>
+  <div class="search-header">
+    <div><h1>Compare Prices</h1><p>Same commodity · all markets · side by side</p></div>
   </div>
   <div class="inner-content">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
-      <select id="compareSelect" onchange="runCompare()" class="inp" style="min-width:240px;"><option value="">Select commodity…</option></select>
+    <div style="margin-bottom:20px;">
+      <select id="compareSelect" onchange="runCompare()" class="inp" style="min-width:260px;font-size:13px;">
+        <option value="">Select commodity…</option>
+      </select>
     </div>
     <div id="compareResults" style="display:none;">
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;" id="compareTitle"></div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;" id="compareTitle"></div>
       <div class="compare-grid" id="compareGrid"></div>
     </div>
   </div>
 </div>
 
-<!-- SEARCH -->
+<!-- ════════════ SEARCH ════════════ -->
 <div id="page-search" class="page">
-  <div class="page-header">
-    <div class="page-header-left"><h1>Search</h1><p>Full-text across all commodities</p></div>
+  <div class="search-header">
+    <div><h1>Search</h1><p>Full-text across all commodities and markets</p></div>
     <div style="display:flex;gap:6px;flex:1;max-width:560px;flex-wrap:wrap;">
-      <div class="search-wrap" style="flex:1;min-width:200px;">
-        <span class="search-icon">⌕</span>
-        <input class="search-inp" id="searchInput" placeholder="Commodity, market, origin…" onkeydown="if(event.key==='Enter')runSearch()"/>
+      <div style="flex:1;min-width:180px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+        <span style="padding:0 12px;color:var(--text3);font-size:14px;flex-shrink:0;">⌕</span>
+        <input class="inp" id="searchInput" placeholder="Commodity, market, origin…"
+          onkeydown="if(event.key==='Enter')runSearch()"
+          style="border:none;border-radius:0;flex:1;padding:9px 0;"/>
       </div>
-      <select id="searchMarketFilter" class="inp" style="font-size:12px;"><option value="">All markets</option></select>
-      <button class="btn-primary" onclick="runSearch()">Search</button>
+      <select id="searchMarketFilter" class="inp"><option value="">All markets</option></select>
+      <button class="btn-green" onclick="runSearch()">Search</button>
     </div>
   </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th style="min-width:160px;">Commodity</th>
-        <th class="hide-mobile">Variety</th>
-        <th class="hide-mobile">Origin</th>
-        <th>Market</th>
-        <th class="r">Avg price</th>
-        <th class="r">Δ week</th>
-      </tr></thead>
-      <tbody id="searchResultsTable">
-        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;">Enter a search term above</td></tr>
-      </tbody>
-    </table>
-    <div class="tbl-footer">
-      <span class="tbl-footer-info" id="searchResultsInfo"></span>
-      <div class="tbl-pages">
-        <button class="tbl-page-btn" id="searchPrevBtn" onclick="searchPrev()" disabled>← prev</button>
-        <button class="tbl-page-btn" id="searchNextBtn" onclick="searchNext()">next →</button>
-      </div>
+  <div class="tbl-header-strip" style="border-top:1px solid var(--border);">
+    <div class="tbl-col-heads" style="grid-template-columns:2fr 1fr 1fr 1fr 100px;">
+      <div class="col-head">Commodity</div>
+      <div class="col-head">Origin</div>
+      <div class="col-head">Market</div>
+      <div class="col-head r">Avg price</div>
+      <div class="col-head r">Δ week</div>
+    </div>
+  </div>
+  <div class="card-table-wrap" id="search-card-wrap">
+    <div class="empty-state">Enter a search term above</div>
+  </div>
+  <div class="tbl-footer">
+    <span class="tbl-footer-info" id="searchResultsInfo"></span>
+    <div class="tbl-pages">
+      <button class="tbl-page-btn" id="searchPrevBtn" onclick="searchPrev()" disabled>← prev</button>
+      <button class="tbl-page-btn" id="searchNextBtn" onclick="searchNext()">next →</button>
     </div>
   </div>
 </div>
@@ -429,7 +733,30 @@ const CATEGORIES={
   'Nuts':['almond','walnut','pecan','pistachio','cashew','hazelnut','macadamia','peanut','nut']
 };
 
-function getCat(name){const l=name.toLowerCase();for(const[cat,items]of Object.entries(CATEGORIES))if(items.some(i=>l.includes(i)))return cat;return 'Other';}
+const PRODUCE_EMOJI={
+  avocado:'🥑',tomato:'🍅',strawberr:'🍓',blueberr:'🫐',raspberr:'🍓',blackberr:'🍓',cranberr:'🍓',
+  lettuce:'🥬',pepper:'🌶️',corn:'🌽',carrot:'🥕',apple:'🍎',pear:'🍐',grape:'🍇',lemon:'🍋',
+  orange:'🍊',mango:'🥭',pineapple:'🍍',banana:'🍌',watermelon:'🍉',melon:'🍈',coconut:'🥥',kiwi:'🥝',
+  broccoli:'🥦',cauliflower:'🥦',cabbage:'🥬',spinach:'🥬',kale:'🥬',cucumber:'🥒',squash:'🥒',
+  zucchini:'🥒',eggplant:'🍆',bean:'🫘',garlic:'🧄',onion:'🧅',potato:'🥔',mushroom:'🍄',
+  celery:'🥬',cilantro:'🌿',herb:'🌿',basil:'🌿',parsley:'🌿',mint:'🌿',chive:'🌿',dill:'🌿',
+  almond:'🥜',walnut:'🥜',pecan:'🥜',pistachio:'🥜',cashew:'🥜',nut:'🥜',
+  cherry:'🍒',peach:'🍑',plum:'🍑',lime:'🍋',grapefruit:'🍊',tangerine:'🍊',mandarin:'🍊',
+  papaya:'🥭',yam:'🥔',asparagus:'🌿',beet:'🫚',fennel:'🌿',okra:'🌿',leek:'🥬',shallot:'🧅',
+  pea:'🫛',artichoke:'🥦',nectarine:'🍑',
+};
+
+function getEmoji(name){
+  const l=name.toLowerCase();
+  for(const[k,e]of Object.entries(PRODUCE_EMOJI))if(l.includes(k))return e;
+  return'🌱';
+}
+
+function getCat(name){
+  const l=name.toLowerCase();
+  for(const[cat,items]of Object.entries(CATEGORIES))if(items.some(i=>l.includes(i)))return cat;
+  return'Other';
+}
 
 function getTrend(commodity){
   if(dates.length<2)return 0;
@@ -447,23 +774,7 @@ function avgPrice(items){
   return p.length?p.reduce((a,b)=>a+b,0)/p.length:null;
 }
 
-function fmtPrice(v){return(v===null||isNaN(v))?'—':'$'+v.toFixed(2);}
-
-function condClass(ch){return ch>1?'s-up':ch<-1?'s-dn':'s-flat';}
-function condLabel(ch){return ch>1?'Rising':ch<-1?'Falling':'Steady';}
-
-function fmtDelta(ch,avg){
-  const abs=avg?Math.abs(avg*ch/100):0;
-  if(ch>0.5)return`<span class="delta-up">▲ +${fmtPrice(abs)}</span>`;
-  if(ch<-0.5)return`<span class="delta-dn">▼ −${fmtPrice(abs)}</span>`;
-  return`<span class="delta-flat">—</span>`;
-}
-
-function fmtPct(ch){
-  if(ch>0.5)return`<span class="delta-up">▲ +${ch.toFixed(1)}%</span>`;
-  if(ch<-0.5)return`<span class="delta-dn">▼ ${ch.toFixed(1)}%</span>`;
-  return`<span class="delta-flat">●</span>`;
-}
+function fmtP(v){return(v===null||v===undefined||isNaN(v))?'—':'$'+Number(v).toFixed(2);}
 
 function sparkBars(commodity){
   const bars=[];
@@ -473,14 +784,55 @@ function sparkBars(commodity){
     bars.push(a||0);
   }
   if(!bars.length)return'<div class="spark"></div>';
-  const max=Math.max(...bars)||1,min=Math.min(...bars);
-  const range=max-min||1;
+  const max=Math.max(...bars)||1,min=Math.min(...bars),range=max-min||1;
   const trend=bars[bars.length-1]>bars[0]?'up':bars[bars.length-1]<bars[0]?'dn':'flat';
   const ac=trend==='up'?'var(--green)':trend==='dn'?'var(--red)':'var(--text3)';
   return'<div class="spark">'+bars.map((v,i)=>{
-    const h=Math.max(2,Math.round(((v-min)/range)*16))||2;
+    const h=Math.max(2,Math.round(((v-min)/range)*18));
     return`<div class="spark-bar" style="height:${h}px;${i===bars.length-1?'background:'+ac:''}"></div>`;
   }).join('')+'</div>';
+}
+
+// Build a card row HTML
+function buildCardRow(item, ch, extraCols) {
+  const avg = avgPrice([item]);
+  const lo  = parseFloat(item.price_low||0);
+  const hi  = parseFloat(item.price_high||item.price_low||0);
+  const mostly_lo = parseFloat(item.price_mostly_low||0);
+  const mostly_hi = parseFloat(item.price_mostly_high||0);
+  const mostlyStr = (mostly_lo&&mostly_hi) ? `${fmtP(mostly_lo)} - ${fmtP(mostly_hi)}` :
+                    (lo&&hi&&hi!==lo)       ? `${fmtP((lo+hi)/2*.98)} - ${fmtP((lo+hi)/2*1.02)}` : '—';
+  const rangeStr = (lo&&hi&&hi!==lo) ? `${fmtP(lo)} — ${fmtP(hi)}` : fmtP(avg);
+  const variety  = [item.variety,item.size,item.grade].filter(Boolean).join(', ');
+  const organic  = (item.organic||item.commodity?.toLowerCase().includes('organic')) ? '<span class="org-tag">ORG</span>' : '';
+  const abs      = avg ? Math.abs(avg*ch/100) : 0;
+  const dotCls   = ch>1?'up':ch<-1?'dn':'flat';
+  const chAmt    = ch>0.5?`+${fmtP(abs)}`:ch<-0.5?`-${fmtP(abs)}`:'—';
+  const chCls    = ch>0.5?'up':ch<-0.5?'dn':'flat';
+  const arrow    = ch>0.5?'↑':ch<-0.5?'↓':'–';
+  const pctStr   = ch>0.5?`+${ch.toFixed(1)}% from prev.`:ch<-0.5?`${ch.toFixed(1)}% from prev.`:'No change';
+
+  const secondCol = extraCols === 'market'
+    ? `<div class="market-cell"><div class="mkt-dot ${dotCls}"></div><span>${item.market||'—'}</span></div>`
+    : `<div class="market-cell"><div class="mkt-dot ${dotCls}"></div><span>${item.origin||'—'}</span></div>`;
+
+  return `<div class="card-row" onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
+    <div class="cell-commodity">
+      <div class="produce-thumb">${getEmoji(item.commodity)}</div>
+      <div>
+        <div class="c-name">${item.commodity}${organic}</div>
+        <div class="c-spec">${variety||item.package_desc||item.package||'—'}</div>
+      </div>
+    </div>
+    ${secondCol}
+    <div style="text-align:right;"><div class="range-val">${rangeStr}</div></div>
+    <div class="card-col hide-m"><span class="mostly-badge">${mostlyStr}</span></div>
+    <div class="change-cell">
+      <div class="change-amt ${chCls}">${arrow} ${chAmt}</div>
+      <div class="change-pct">${pctStr}</div>
+    </div>
+    <div class="card-col hide-m">${sparkBars(item.commodity)}</div>
+  </div>`;
 }
 
 function navigate(page,param){
@@ -498,7 +850,10 @@ async function init(){
     dates=await(await fetch(`${API}/dates`)).json();
     if(!dates.length)return;
     const d=new Date(dates[0].date+'T12:00:00');
+    const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
     document.getElementById('headerDate').textContent='LIVE · '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'}).toUpperCase();
+    document.getElementById('chip-date').textContent=dateStr;
+
     datesData[dates[0].date]=await(await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
     allData=datesData[dates[0].date];
     for(let i=1;i<=6&&i<dates.length;i++){
@@ -516,20 +871,20 @@ function populateHomeStats(){
   const commodities=[...new Set(allData.map(i=>i.commodity))];
   const markets=[...new Set(allData.filter(i=>i.market_type==='terminal'||!i.market_type).map(i=>i.market))];
   const changes=commodities.map(c=>getTrend(c));
+  const rising=changes.filter(c=>c>1).length;
+  const falling=changes.filter(c=>c<-1).length;
   const d=new Date(dates[0].date+'T12:00:00');
-  document.getElementById('stat-commodities').textContent=commodities.length;
-  document.getElementById('stat-markets').textContent=markets.length;
-  document.getElementById('stat-records').textContent=allData.length.toLocaleString();
-  document.getElementById('stat-rising').textContent=changes.filter(c=>c>1).length;
-  document.getElementById('stat-falling').textContent=changes.filter(c=>c<-1).length;
-  document.getElementById('stat-date').textContent=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('home-meta').textContent=`${allData.length.toLocaleString()} records · ${markets.length} markets · USDA Market News`;
+  const sentiment=rising>falling?`Bullish +${((rising/commodities.length)*10).toFixed(1)}%`:`Bearish ${((falling/commodities.length)*10).toFixed(1)}%`;
+  document.getElementById('chip-commodities').textContent=commodities.length;
+  document.getElementById('chip-sentiment').textContent=sentiment;
+  document.getElementById('chip-sentiment').className='hero-chip-val '+(rising>falling?'up':'dn');
+  document.getElementById('home-meta').textContent=`Daily index of wholesale produce prices across ${markets.length} domestic distribution hubs. Updated as of today, 06:00 AM.`;
 }
 
 function populateHomeFilters(){
   const markets=[...new Set(allData.filter(i=>i.market_type==='terminal'||!i.market_type).map(i=>i.market))].sort();
   const sel=document.getElementById('home-market-filter');
-  sel.innerHTML='<option value="">All markets</option>'+markets.map(m=>`<option value="${m}">${m}</option>`).join('');
+  sel.innerHTML='<option value="">All Hubs</option>'+markets.map(m=>`<option value="${m}">${m}</option>`).join('');
 }
 
 function homeSetCat(el,cat){
@@ -556,25 +911,10 @@ function renderHomeTable(){
   document.getElementById('home-count').textContent=`${start+1}–${Math.min(start+page.length,total)} of ${total.toLocaleString()} listings`;
   document.getElementById('home-prev').disabled=homePage<=1;
   document.getElementById('home-next').disabled=homePage>=totalPages;
-  document.getElementById('home-table-body').innerHTML=page.map(item=>{
-    const ch=getTrend(item.commodity),avg=avgPrice([item]);
-    const lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
-    const variety=[item.variety,item.size,item.grade].filter(Boolean).join(' · ');
-    const organic=(item.organic||item.commodity?.toLowerCase().includes('organic'))?'<span class="org-tag">ORG</span>':'';
-    const rangeStr=(lo&&hi&&hi!==lo)?`${fmtPrice(lo)} – ${fmtPrice(hi)}`:fmtPrice(lo||avg);
-    return`<tr onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
-      <td><div class="c-name">${item.commodity}${organic}</div>${variety?`<div class="c-spec">${variety}</div>`:''}</td>
-      <td class="hide-mobile"><div class="c-dim">${item.origin||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-dim">${item.market||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-pkg">${item.package_desc||item.package||'—'}</div></td>
-      <td class="r hide-mobile"><div class="price-range">${rangeStr}</div></td>
-      <td class="r"><div class="price-main">${fmtPrice(avg)}</div></td>
-      <td class="r">${fmtDelta(ch,avg)}</td>
-      <td class="r hide-mobile">${fmtPct(ch)}</td>
-      <td><span class="status ${condClass(ch)}">${condLabel(ch)}</span></td>
-      <td class="hide-mobile">${sparkBars(item.commodity)}</td>
-    </tr>`;
-  }).join('')||`<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;">No results</td></tr>`;
+  const wrap=document.getElementById('home-card-wrap');
+  wrap.innerHTML=page.length
+    ?page.map(item=>buildCardRow(item,getTrend(item.commodity),'market')).join('')
+    :'<div class="empty-state">No results found</div>';
 }
 
 function homePrev(){if(homePage>1){homePage--;renderHomeTable();window.scrollTo(0,0);}}
@@ -611,22 +951,10 @@ function renderMarketsTable(){
   document.getElementById('mkt-page-info').textContent=`${start+1}–${Math.min(start+page.length,total)} of ${total}`;
   document.getElementById('mkt-prev').disabled=mktPage<=1;
   document.getElementById('mkt-next').disabled=mktPage>=totalPages;
-  document.getElementById('mkt-table-body').innerHTML=page.map(item=>{
-    const ch=getTrend(item.commodity),avg=avgPrice([item]);
-    const lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
-    const variety=[item.variety,item.size,item.grade].filter(Boolean).join(' · ');
-    const rangeStr=(lo&&hi&&hi!==lo)?`${fmtPrice(lo)} – ${fmtPrice(hi)}`:fmtPrice(lo||avg);
-    return`<tr onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
-      <td><div class="c-name">${item.commodity}</div>${variety?`<div class="c-spec">${variety}</div>`:''}</td>
-      <td class="hide-mobile"><div class="c-dim">${item.origin||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-pkg">${item.package_desc||item.package||'—'}</div></td>
-      <td class="r hide-mobile"><div class="price-range">${rangeStr}</div></td>
-      <td class="r"><div class="price-main">${fmtPrice(avg)}</div></td>
-      <td class="r">${fmtDelta(ch,avg)}</td>
-      <td><span class="status ${condClass(ch)}">${condLabel(ch)}</span></td>
-      <td class="hide-mobile">${sparkBars(item.commodity)}</td>
-    </tr>`;
-  }).join('')||`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;">No results</td></tr>`;
+  const wrap=document.getElementById('mkt-card-wrap');
+  wrap.innerHTML=page.length
+    ?page.map(item=>buildCardRow(item,getTrend(item.commodity),'origin')).join('')
+    :'<div class="empty-state">No results</div>';
 }
 
 function mktPrevPage(){if(mktPage>1){mktPage--;renderMarketsTable();}}
@@ -640,13 +968,16 @@ function loadMarketDetail(market){
   document.getElementById('marketDetailTable').innerHTML=items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).map(item=>{
     const ch=getTrend(item.commodity),avg=avgPrice([item]);
     const variety=[item.variety,item.size,item.grade].filter(Boolean).join(' · ');
+    const abs=avg?Math.abs(avg*ch/100):0;
+    const deltaAmt=ch>0.5?`<span class="delta-up">▲ +${fmtP(abs)}</span>`:ch<-0.5?`<span class="delta-dn">▼ −${fmtP(abs)}</span>`:`<span class="delta-flat">—</span>`;
+    const cCls=ch>1?'s-up':ch<-1?'s-dn':'s-flat',cLbl=ch>1?'Rising':ch<-1?'Falling':'Steady';
     return`<tr onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
-      <td><div class="c-name">${item.commodity}</div></td>
-      <td class="hide-mobile"><div class="c-spec">${variety||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-dim">${item.origin||'—'}</div></td>
-      <td class="r"><div class="price-main">${fmtPrice(avg)}</div></td>
-      <td class="r">${fmtDelta(ch,avg)}</td>
-      <td><span class="status ${condClass(ch)}">${condLabel(ch)}</span></td>
+      <td><div style="font-size:13px;font-weight:500;">${item.commodity}</div></td>
+      <td><div class="c-spec">${variety||'—'}</div></td>
+      <td><div class="c-dim">${item.origin||'—'}</div></td>
+      <td class="r"><div class="price-main">${fmtP(avg)}</div></td>
+      <td class="r">${deltaAmt}</td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:${ch>1?'var(--green)':ch<-1?'var(--red)':'var(--amber)'}"><span style="width:6px;height:6px;border-radius:50%;background:${ch>1?'var(--green)':ch<-1?'var(--red)':'var(--amber)'};display:inline-block;"></span>${cLbl}</span></td>
     </tr>`;
   }).join('');
 }
@@ -660,29 +991,31 @@ function loadCommodityDetail(commodity){
   document.getElementById('commodityDetailTitle').textContent=commodity;
   document.getElementById('commodityDetailStats').textContent=`${markets.length} MARKETS · ${items.length} LISTINGS · USDA MARKET NEWS`;
   const abs=avg?Math.abs(avg*ch/100):0;
-  const dStr=ch>0.5?`+${fmtPrice(abs)}`:ch<-0.5?`−${fmtPrice(abs)}`:'—';
+  const dStr=ch>0.5?`+${fmtP(abs)}`:ch<-0.5?`−${fmtP(abs)}`:'—';
   const dCol=ch>0.5?'var(--green)':ch<-0.5?'var(--red)':'var(--text1)';
   document.getElementById('commodity-summary-cards').innerHTML=`
-    <div class="summary-card"><div class="summary-card-lbl">Avg price</div><div class="summary-card-val">${fmtPrice(avg)}</div></div>
-    <div class="summary-card"><div class="summary-card-lbl">Low</div><div class="summary-card-val">${prices.length?fmtPrice(Math.min(...prices)):'—'}</div></div>
-    <div class="summary-card"><div class="summary-card-lbl">High</div><div class="summary-card-val">${prices.length?fmtPrice(Math.max(...prices)):'—'}</div></div>
-    <div class="summary-card"><div class="summary-card-lbl">Wk change</div><div class="summary-card-val" style="color:${dCol}">${dStr}</div></div>
-    <div class="summary-card"><div class="summary-card-lbl">Wk change %</div><div class="summary-card-val" style="color:${dCol}">${ch>0.5?'+':''}${ch.toFixed(1)}%</div></div>
-    <div class="summary-card"><div class="summary-card-lbl">Markets</div><div class="summary-card-val">${markets.length}</div></div>`;
-  document.getElementById('commodityQuickStats').innerHTML=`<div style="display:flex;flex-direction:column;gap:8px;">`+markets.map(m=>{
+    <div class="summary-card"><div class="summary-lbl">Avg price</div><div class="summary-val">${fmtP(avg)}</div></div>
+    <div class="summary-card"><div class="summary-lbl">Low</div><div class="summary-val">${prices.length?fmtP(Math.min(...prices)):'—'}</div></div>
+    <div class="summary-card"><div class="summary-lbl">High</div><div class="summary-val">${prices.length?fmtP(Math.max(...prices)):'—'}</div></div>
+    <div class="summary-card"><div class="summary-lbl">Wk change</div><div class="summary-val" style="color:${dCol}">${dStr}</div></div>
+    <div class="summary-card"><div class="summary-lbl">Wk change %</div><div class="summary-val" style="color:${dCol}">${ch>0.5?'+':''}${ch.toFixed(1)}%</div></div>
+    <div class="summary-card"><div class="summary-lbl">Markets</div><div class="summary-val">${markets.length}</div></div>`;
+  document.getElementById('commodityQuickStats').innerHTML='<div style="display:flex;flex-direction:column;gap:8px;">'+markets.map(m=>{
     const ma=avgPrice(items.filter(i=>i.market===m));
-    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);"><span style="font-size:12px;color:var(--text2);">${m}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">${fmtPrice(ma)}</span></div>`;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);"><span style="font-size:12px;color:var(--text2);">${m}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;">${fmtP(ma)}</span></div>`;
   }).join('')+'</div>';
   document.getElementById('commodityMarketsTable').innerHTML=items.sort((a,b)=>parseFloat(a.price_low||0)-parseFloat(b.price_low||0)).map((item,i)=>{
     const p=avgPrice([item]),variety=[item.variety,item.size,item.grade].filter(Boolean).join(' · ');
+    const abs2=p?Math.abs(p*ch/100):0;
+    const d=ch>0.5?`<span class="delta-up">▲ +${fmtP(abs2)}</span>`:ch<-0.5?`<span class="delta-dn">▼ −${fmtP(abs2)}</span>`:`<span class="delta-flat">—</span>`;
     const isBest=i===0;
     return`<tr style="${isBest?'background:var(--green-bg);':''}">
-      <td><div class="c-name">${item.market||'—'}</div>${isBest?'<div class="c-spec" style="color:var(--green);">Best price</div>':''}</td>
-      <td class="hide-mobile"><div class="c-dim">${item.origin||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-spec">${variety||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-pkg">${item.package_desc||item.package||'—'}</div></td>
-      <td class="r"><div class="price-main" style="${isBest?'color:var(--green);':''}">${fmtPrice(p)}</div></td>
-      <td class="r">${fmtDelta(ch,p)}</td>
+      <td><div style="font-size:13px;font-weight:500;">${item.market||'—'}</div>${isBest?'<div style="font-size:10px;color:var(--green);font-family:\'IBM Plex Mono\',monospace;">Best price</div>':''}</td>
+      <td><div class="c-dim">${item.origin||'—'}</div></td>
+      <td><div class="c-spec">${variety||'—'}</div></td>
+      <td><div class="c-pkg">${item.package_desc||item.package||'—'}</div></td>
+      <td class="r"><div class="price-main" style="${isBest?'color:var(--green);':''}">${fmtP(p)}</div></td>
+      <td class="r">${d}</td>
     </tr>`;
   }).join('');
   const history=[];
@@ -691,7 +1024,7 @@ function loadCommodityDetail(commodity){
     const canvas=document.getElementById('commodityChart');
     if(canvas&&history.length){
       if(canvas._chart)canvas._chart.destroy();
-      canvas._chart=new Chart(canvas,{type:'line',data:{labels:history.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),datasets:[{data:history.map(h=>h.price),borderColor:'#0A7A4B',backgroundColor:'rgba(10,122,75,0.08)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#0A7A4B'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:"'IBM Plex Mono'",size:10},color:'#9298AB'}},y:{ticks:{callback:v=>'$'+v.toFixed(0),font:{family:"'IBM Plex Mono'",size:10},color:'#9298AB'},grid:{color:'#E2E5EC'}}}}});
+      canvas._chart=new Chart(canvas,{type:'line',data:{labels:history.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),datasets:[{data:history.map(h=>h.price),borderColor:'#1B5E35',backgroundColor:'rgba(27,94,53,0.08)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#1B5E35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:"'IBM Plex Mono'",size:10},color:'#8AA396'}},y:{ticks:{callback:v=>'$'+v.toFixed(0),font:{family:"'IBM Plex Mono'",size:10},color:'#8AA396'},grid:{color:'#D6E4DA'}}}}});
     }
   },100);
 }
@@ -714,7 +1047,7 @@ function runCompare(){
       ${isBest?'<div class="best-label">Best price</div>':''}
       <div style="font-size:13px;font-weight:500;color:var(--text1);">${item.market||'—'}</div>
       <div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:'IBM Plex Mono',monospace;">${item.origin||'Domestic'} · ${variety||'Standard'}</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;margin-top:10px;color:${isBest?'var(--green)':'var(--text1)'};">${fmtPrice(p)}</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;margin-top:12px;color:${isBest?'var(--green)':'var(--text1)'};">${fmtP(p)}</div>
     </div>`;
   }).join('');
 }
@@ -740,18 +1073,25 @@ function renderSearchResults(){
   document.getElementById('searchResultsInfo').textContent=`${searchResults.length.toLocaleString()} results`;
   document.getElementById('searchPrevBtn').disabled=searchPage<=1;
   document.getElementById('searchNextBtn').disabled=searchPage>=totalPages;
-  document.getElementById('searchResultsTable').innerHTML=pageItems.length?pageItems.map(item=>{
-    const ch=getTrend(item.commodity),avg=avgPrice([item]);
-    const variety=[item.variety,item.size,item.grade].filter(Boolean).join(' · ');
-    return`<tr onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
-      <td><div class="c-name">${item.commodity}</div></td>
-      <td class="hide-mobile"><div class="c-spec">${variety||'—'}</div></td>
-      <td class="hide-mobile"><div class="c-dim">${item.origin||'—'}</div></td>
-      <td><div class="c-dim">${item.market||'—'}</div></td>
-      <td class="r"><div class="price-main">${fmtPrice(avg)}</div></td>
-      <td class="r">${fmtDelta(ch,avg)}</td>
-    </tr>`;
-  }).join(''):`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;">No results found</td></tr>`;
+  const wrap=document.getElementById('search-card-wrap');
+  wrap.innerHTML=pageItems.length
+    ?pageItems.map(item=>{
+      const ch=getTrend(item.commodity),avg=avgPrice([item]);
+      const variety=[item.variety,item.size,item.grade].filter(Boolean).join(', ');
+      const abs=avg?Math.abs(avg*ch/100):0;
+      const d=ch>0.5?`<span class="delta-up">▲ +${fmtP(abs)}</span>`:ch<-0.5?`<span class="delta-dn">▼ −${fmtP(abs)}</span>`:`<span class="delta-flat">—</span>`;
+      return`<div class="card-row" style="grid-template-columns:2fr 1fr 1fr 1fr 100px;" onclick="navigate('commodity-detail','${item.commodity.replace(/'/g,"\\'")}')">
+        <div class="cell-commodity">
+          <div class="produce-thumb">${getEmoji(item.commodity)}</div>
+          <div><div class="c-name">${item.commodity}</div><div class="c-spec">${variety||'—'}</div></div>
+        </div>
+        <div class="c-dim">${item.origin||'—'}</div>
+        <div class="c-dim">${item.market||'—'}</div>
+        <div style="text-align:right;"><div class="price-main">${fmtP(avg)}</div></div>
+        <div style="text-align:right;">${d}</div>
+      </div>`;
+    }).join('')
+    :'<div class="empty-state">No results found</div>';
 }
 function searchPrev(){if(searchPage>1){searchPage--;renderSearchResults();}}
 function searchNext(){searchPage++;renderSearchResults();}
