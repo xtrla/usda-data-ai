@@ -2100,24 +2100,19 @@ function buildDashboard(){
     : 'No major disruptions detected this week';
   var alertSecLbl2=document.getElementById('alertSecLbl2');
   if(alertSecLbl2) alertSecLbl2.textContent=anomalies.length+' significant moves';
-  document.getElementById('igSentHead').textContent = spikeCount > 0
-    ? `${spikeCount} commodit${spikeCount>1?'ies':'y'} with sharp moves`
-    : 'No major disruptions this week';
-  document.getElementById('igSentBody').textContent = spikeCount > 0
-    ? `${spikes.map(x=>x.c).slice(0,3).join(', ')}${spikes.length>3?' and others':''} showing abnormal price movement vs. last week. May indicate supply disruption or demand shifts affecting your markets.`
-    : 'Price movements across tracked commodities are within normal weekly ranges. No supply disruptions detected from USDA data.';
-
   const vol=changes.filter(x=>x.avg).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))[0];
+  // Guard all getElementById calls — elements may not exist in all layouts
+  const _el=id=>document.getElementById(id);
+  if(_el('igSentHead')) _el('igSentHead').textContent = spikeCount>0 ? spikeCount+' commodit'+(spikeCount>1?'ies':'y')+' with sharp moves' : 'No major disruptions this week';
+  if(_el('igSentBody')) _el('igSentBody').textContent = spikeCount>0 ? spikes.map(x=>x.c).slice(0,3).join(', ')+(spikes.length>3?' and others':'')+' showing abnormal price movement vs. last week.' : 'Price movements within normal weekly ranges.';
   if(vol){
-    document.getElementById('igVolHead').textContent=vol.c;
-    const pv=Math.abs(vol.ch);
-    document.getElementById('igVolPct').textContent=(vol.ch>0?'+':'')+vol.ch.toFixed(1)+'%';
-    document.getElementById('igVolPct').style.color=vol.ch>0?'var(--primary)':'var(--err)';
-    document.getElementById('igVolBar').style.width=Math.min(100,pv*4)+'%';
-    document.getElementById('igVolBody').textContent=`${fP(vol.avg)} average today. Largest weekly move across all tracked commodities.`;
+    if(_el('igVolHead')) _el('igVolHead').textContent=vol.c;
+    if(_el('igVolPct')){ _el('igVolPct').textContent=(vol.ch>0?'+':'')+vol.ch.toFixed(1)+'%'; _el('igVolPct').style.color=vol.ch>0?'var(--primary)':'var(--err)'; }
+    if(_el('igVolBar')) _el('igVolBar').style.width=Math.min(100,Math.abs(vol.ch)*4)+'%';
+    if(_el('igVolBody')) _el('igVolBody').textContent=fP(vol.avg)+' average today. Largest weekly move.';
   }
-  document.getElementById('igDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
-  document.getElementById('igRecords').textContent=`${ALL.length.toLocaleString()} records · ${comms.length} commodities · ${[...new Set(ALL.map(i=>i.market))].length} markets`;
+  if(_el('igDate')) _el('igDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
+  if(_el('igRecords')) _el('igRecords').textContent=ALL.length.toLocaleString()+' records · '+comms.length+' commodities · '+[...new Set(ALL.map(i=>i.market))].length+' markets';
 }
 
 /* ══════════════════════════════════
