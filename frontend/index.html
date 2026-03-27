@@ -726,7 +726,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
   justify-content: space-between;
   min-height: 360px;
 }
-.hero-card > * { position: relative; z-index: 2; }
+.hero-card > * { position: relative; z-index: 2; flex-shrink: 0; }
 .hero-card::after {
   content: '';
   position: absolute; z-index: 1;
@@ -1094,47 +1094,45 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
      DASHBOARD
 ══════════════════════════════════════ -->
 <div id="view-home" class="view active">
-  <!-- Alert banner -->
-  <div class="alert-banner" id="alertBanner">
+  <!-- Alert banner — shown only when real data available -->
+  <div class="alert-banner" id="alertBanner" style="display:none;">
     <div class="alert-banner-inner">
       <span class="ab-tag">Industry Alert</span>
-      <span class="ab-text" id="abText"><strong>USDA:</strong> This is a placeholder for live industry news. When connected, alerts will appear here automatically.</span>
+      <span class="ab-text" id="abText"></span>
       <a class="ab-link" href="#">Read more →</a>
       <button class="ab-dismiss" onclick="document.getElementById('alertBanner').style.display='none'">✕</button>
     </div>
   </div>
 
   <main>
-    <div class="ctr" style="padding-top:28px;">
+    <div class="ctr" style="padding-top:16px;">
 
       <!-- ══ ROW 2: Hero (left) + News & Reports (right) ══ -->
       <div class="home-row2">
 
         <!-- LEFT: Hero card -->
         <div class="hero-card">
-          <div>
-            <div class="hero-eyebrow"><div class="ldot" style="background:rgba(255,255,255,0.7);"></div>Live USDA Market Data</div>
-            <h1 class="hero-h1" id="dashTitle">Wholesale Produce<br>Prices, Today.</h1>
-            <p class="hero-sub">Real-time terminal market and FOB shipping point intelligence for growers, brokers, and distributors. Updated daily from USDA Market News.</p>
-            <!-- Suggested searches -->
-            <div class="hero-tags">
-              <span class="hero-tag" onclick="hdrSearch('Avocados')">Avocados</span>
-              <span class="hero-tag" onclick="hdrSearch('Tomatoes')">Tomatoes</span>
-              <span class="hero-tag" onclick="hdrSearch('Strawberries')">Strawberries</span>
-              <span class="hero-tag" onclick="hdrSearch('Lettuce')">Lettuce</span>
-              <span class="hero-tag" onclick="hdrSearch('Peppers')">Peppers</span>
-              <span class="hero-tag" onclick="hdrSearch('Lemons')">Lemons</span>
-            </div>
-            <!-- Search bar -->
-            <div class="hero-search">
-              <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
-              <button class="hero-search-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search →</button>
-            </div>
-            <!-- CTA pills -->
-            <div class="hero-ctas">
-              <button class="hero-cta-pill" onclick="gv('terminal')">Browse Terminal Markets</button>
-              <button class="hero-cta-pill" onclick="gv('fob')">View FOB Origins</button>
-            </div>
+          <div class="hero-eyebrow"><div class="ldot" style="background:rgba(255,255,255,0.7);"></div>Live USDA Market Data</div>
+          <h1 class="hero-h1">Wholesale Produce<br>Prices, Today.</h1>
+          <p class="hero-sub">Real-time terminal market and FOB shipping point intelligence for growers, brokers, and distributors. Updated daily from USDA Market News.</p>
+          <!-- Suggested searches -->
+          <div class="hero-tags">
+            <span class="hero-tag" onclick="hdrSearch('Avocados')">Avocados</span>
+            <span class="hero-tag" onclick="hdrSearch('Tomatoes')">Tomatoes</span>
+            <span class="hero-tag" onclick="hdrSearch('Strawberries')">Strawberries</span>
+            <span class="hero-tag" onclick="hdrSearch('Lettuce')">Lettuce</span>
+            <span class="hero-tag" onclick="hdrSearch('Peppers')">Peppers</span>
+            <span class="hero-tag" onclick="hdrSearch('Lemons')">Lemons</span>
+          </div>
+          <!-- Search bar -->
+          <div class="hero-search">
+            <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
+            <button class="hero-search-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search →</button>
+          </div>
+          <!-- CTA pills -->
+          <div class="hero-ctas">
+            <button class="hero-cta-pill" onclick="gv('terminal')">Browse Terminal Markets</button>
+            <button class="hero-cta-pill" onclick="gv('fob')">View FOB Origins</button>
           </div>
         </div>
 
@@ -1778,13 +1776,14 @@ function buildDashboard(){
   const falling=changes.filter(x=>x.ch<-1).length;
   const d=new Date(DATES[0].date+'T12:00:00');
 
-  // dashTitle is static in HTML now
+  // dashTitle is set in HTML
 
   // Alert banner content — driven by biggest anomaly
   const topAnomaly=changes.filter(x=>Math.abs(x.ch)>5).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))[0];
   if(topAnomaly){
     const dir = topAnomaly.ch>0 ? 'up' : 'down';
-    document.getElementById('abText').innerHTML = `<strong>Data alert:</strong> ${topAnomaly.c} prices ${dir} ${Math.abs(topAnomaly.ch).toFixed(1)}% this week — may signal supply disruption. Connect a news API to show live industry alerts here.`;
+    document.getElementById('abText').innerHTML = '<strong>Data alert:</strong> '+topAnomaly.c+' prices '+dir+' '+Math.abs(topAnomaly.ch).toFixed(1)+'% this week — may signal supply disruption.';
+    document.getElementById('alertBanner').style.display='block';
   }
 
   // Price alert cards
@@ -2144,7 +2143,7 @@ function renderHomeTable(){
   }
   var tbody=document.getElementById('homeTableBody');
   if(!tbody)return;
-  if(!pg.length){ tbody.innerHTML='<tr><td colspan="6" style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);">No results found.</td></tr>'; return; }
+  if(!pg.length){ tbody.innerHTML='<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--on-var);font-size:0.875rem;">No results found.</td></tr>'; return; }
   tbody.innerHTML=pg.map(function(item){
     var ch=trendPct(item.commodity),avg=avgP([item]);
     var lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
