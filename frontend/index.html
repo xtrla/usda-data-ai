@@ -570,6 +570,177 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
   .page-head{flex-direction:column;align-items:flex-start;}
   .com-picker-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
 }
+
+/* ══════════════════════════════════════
+   TERMINAL LAYOUT — sidebar + content
+══════════════════════════════════════ */
+.term-layout {
+  display: grid;
+  grid-template-columns: 224px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 200px);
+  align-items: start;
+}
+@media(max-width: 768px) {
+  .term-layout { grid-template-columns: 1fr; }
+  .term-sidebar { display: none; }
+}
+
+/* Left sidebar */
+.term-sidebar {
+  position: sticky;
+  top: 84px;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  border-right: 1px solid rgba(190,201,194,0.18);
+  padding: 0 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(190,201,194,0.4) transparent;
+}
+.term-sidebar::-webkit-scrollbar { width: 4px; }
+.term-sidebar::-webkit-scrollbar-thumb { background: rgba(190,201,194,0.4); border-radius: 2px; }
+
+/* Sidebar search */
+.sb-search {
+  padding: 16px 16px 12px;
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 10;
+  border-bottom: 1px solid rgba(190,201,194,0.14);
+  margin-bottom: 4px;
+}
+.sb-search-inner {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--s-low);
+  border-radius: 100px;
+  padding: 7px 12px;
+  outline: 2px solid transparent;
+  transition: outline-color 0.12s;
+}
+.sb-search-inner:focus-within { outline-color: var(--primary); }
+.sb-search-inner input {
+  flex: 1; font-size: 0.8rem; color: var(--on-surf);
+  outline: none; background: transparent;
+}
+.sb-search-inner input::placeholder { color: var(--outline); }
+
+/* Category group */
+.sb-cat {
+  margin-bottom: 2px;
+}
+.sb-cat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+  border-radius: 0;
+}
+.sb-cat-header:hover { background: var(--s-low); }
+.sb-cat-header.open { background: transparent; }
+.sb-cat-name {
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--on-var);
+  display: flex; align-items: center; gap: 8px;
+}
+.sb-cat-name.active-cat { color: var(--primary); }
+.sb-cat-count {
+  font-size: 0.68rem; font-weight: 600;
+  color: var(--outline-var); letter-spacing: 0.04em;
+}
+.sb-chevron {
+  font-size: 10px; color: var(--outline-var);
+  transition: transform 0.18s;
+  flex-shrink: 0;
+}
+.sb-cat-header.open .sb-chevron { transform: rotate(90deg); }
+
+/* Commodity list under each category */
+.sb-com-list {
+  display: none;
+  padding: 2px 8px 8px;
+}
+.sb-com-list.open { display: block; }
+.sb-com-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--r-xl);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.sb-com-item:hover { background: var(--s-low); }
+.sb-com-item.active {
+  background: rgba(0,69,50,0.08);
+}
+.sb-com-left { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+.sb-com-tick {
+  width: 26px; height: 26px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-data); font-size: 0.5rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.sb-com-name {
+  font-size: 0.8125rem; font-weight: 500; color: var(--on-surf);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sb-com-item.active .sb-com-name { font-weight: 700; color: var(--primary); }
+.sb-com-pct {
+  font-family: var(--f-data); font-size: 0.7rem; font-weight: 700;
+  flex-shrink: 0; white-space: nowrap;
+}
+.sb-com-pct.up { color: var(--primary); }
+.sb-com-pct.dn { color: var(--err); }
+.sb-com-pct.flat { color: var(--outline-var); }
+
+/* "All Markets" top item */
+.sb-all-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid rgba(190,201,194,0.14);
+  margin-bottom: 8px;
+}
+.sb-all-item:hover { background: var(--s-low); }
+.sb-all-item.active { background: rgba(0,69,50,0.07); }
+.sb-all-icon {
+  width: 28px; height: 28px; border-radius: var(--r-md);
+  background: var(--s-low);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700; color: var(--on-var);
+  font-family: var(--f-data);
+}
+.sb-all-item.active .sb-all-icon { background: rgba(0,69,50,0.15); color: var(--primary); }
+.sb-all-name {
+  font-size: 0.8125rem; font-weight: 600; color: var(--on-surf);
+}
+.sb-all-item.active .sb-all-name { color: var(--primary); }
+.sb-all-count { margin-left: auto; font-size: 0.68rem; color: var(--outline-var); font-family: var(--f-data); }
+
+/* Right content pane */
+.term-content {
+  padding: 0 0 0 28px;
+  min-width: 0;
+}
+
+/* State panel — shown when nothing selected */
+.term-empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 40px;
+  text-align: center;
+}
+.tes-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: var(--s-low);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-data); font-size: 1rem; font-weight: 700;
+  color: var(--on-var); margin-bottom: 16px;
+}
+.tes-title { font-family: var(--f-data); font-size: 1.125rem; font-weight: 700; color: var(--on-surf); margin-bottom: 6px; }
+.tes-body { font-size: 0.875rem; color: var(--on-var); line-height: 1.6; max-width: 300px; }
+
 </style>
 </head>
 <body>
@@ -731,140 +902,152 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 </div>
 
 <!-- ══════════════════════════════════════
-     TERMINAL MARKETS
+     TERMINAL MARKETS — sidebar layout
 ══════════════════════════════════════ -->
 <div id="view-terminal" class="view">
-  <main>
-    <div class="ctr">
-      <nav class="breadcrumb">
-        <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
-        <span class="bc-sep">›</span>
-        <span class="bc-cur" id="termBreadcrumb">Terminal Prices</span>
-      </nav>
-      <div class="page-head">
-        <div>
-          <h1 class="page-title">Terminal Market Prices</h1>
-          <p class="page-desc">What buyers pay at destination hubs. Pick a category, then a commodity — or search directly.</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn-export">↓ Export CSV</button>
-        </div>
+  <!-- Page header + search — full width above the split -->
+  <div style="padding-top:32px;padding-bottom:20px;" class="ctr">
+    <nav class="breadcrumb">
+      <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-cur">Terminal Prices</span>
+    </nav>
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">Terminal Market Prices</h1>
+        <p class="page-desc">What buyers pay at destination hubs. Select a commodity from the left, or search directly.</p>
       </div>
-
-      <!-- Search -->
-      <div class="search-terminal">
-        <div class="st-inner">
-          <span class="st-ico">⌕</span>
-          <input id="termQ" placeholder="Search directly — avocados, tomatoes, cilantro…" oninput="onTermSearch()"/>
-        </div>
+      <div class="page-actions">
+        <button class="btn-export">↓ Export CSV</button>
       </div>
-
-      <!-- News strip -->
-      <div class="news-strip-wrap">
-        <div class="news-strip-head">
-          <div class="news-strip-label">Terminal Market News <span class="news-live-tag">Live feed coming soon</span></div>
-        </div>
-        <div class="news-scroll">
-          <div class="news-card market">
-            <div class="nc-source"><span class="nc-src-tag market">Markets</span><span class="nc-time">4h ago</span></div>
-            <div class="nc-headline">New York Hunts Point: Heavy Volume on Peppers & Tomatoes This Week</div>
-            <div class="nc-body">Arrivals running 15% above prior week as Mexican imports ramp up ahead of Easter demand period.</div>
-            <a class="nc-read">Read more →</a>
-          </div>
-          <div class="news-card supply">
-            <div class="nc-source"><span class="nc-src-tag supply">Supply</span><span class="nc-time">6h ago</span></div>
-            <div class="nc-headline">Los Angeles: Avocado Supplies Tight, Prices Firm Into Late March</div>
-            <div class="nc-body">Hass avocado arrivals from Mexico remain below seasonal norms.</div>
-            <a class="nc-read">Read more →</a>
-          </div>
-          <div class="news-card usda">
-            <div class="nc-source"><span class="nc-src-tag usda">USDA</span><span class="nc-time">1 day ago</span></div>
-            <div class="nc-headline">Chicago Terminal Report: Lettuce & Leafy Greens Oversupplied</div>
-            <div class="nc-body">Salinas Valley harvest ahead of schedule, pushing Chicago prices to 8-week lows.</div>
-            <a class="nc-read">Read more →</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- LEVEL 1: Category pills -->
-      <div class="filter-bar" id="termCatBar">
-        <button class="cat-pill on" data-c="All"               onclick="termPickCat('All')">All</button>
-        <button class="cat-pill"    data-c="Fruits"            onclick="termPickCat('Fruits')">🍎 Fruits</button>
-        <button class="cat-pill"    data-c="Vegetables"        onclick="termPickCat('Vegetables')">🥬 Vegetables</button>
-        <button class="cat-pill"    data-c="Onions &amp; Potatoes" onclick="termPickCat('Onions & Potatoes')">🧅 Onions &amp; Potatoes</button>
-        <button class="cat-pill"    data-c="Nuts"              onclick="termPickCat('Nuts')">🥜 Nuts</button>
-      </div>
-
-      <!-- LEVEL 2: Commodity picker (shown when category selected) -->
-      <div class="com-picker" id="termComPicker" style="display:none;">
-        <div class="com-picker-head">
-          <span class="com-picker-label" id="termPickerLabel">Select a commodity</span>
-          <span style="font-size:0.78rem;color:var(--on-var);" id="termPickerCount"></span>
-        </div>
-        <div class="com-picker-grid" id="termPickerGrid"></div>
-      </div>
-
-      <!-- Breadcrumb trail (shown when commodity selected) -->
-      <div class="term-breadcrumb" id="termTrail" style="display:none;">
-        <span class="tbc-step" id="tbc-cat" style="cursor:pointer;" onclick="termClearCommodity()"></span>
-        <span class="tbc-sep">›</span>
-        <span class="tbc-step active" id="tbc-com"></span>
-        <span class="tbc-clear" onclick="termClearCommodity()">← Change commodity</span>
-      </div>
-
-      <!-- Market toggle + sort -->
-      <div class="mkt-toggle-wrap" id="termMktToggle" style="display:none;">
-        <div class="mkt-toggle-left">
-          <div class="mkt-mode-pills">
-            <button class="mkt-mode-btn on" id="mktModeAll" onclick="termSetMktMode('all')">All Markets</button>
-            <button class="mkt-mode-btn"    id="mktModeOne" onclick="termSetMktMode('one')">One Market</button>
-          </div>
-          <div class="hub-inline" id="termHubInline" style="display:none;"></div>
-        </div>
-        <div class="mkt-toggle-right">
-          <select class="f-sel" id="termSortFilter" onchange="buildTermRows();renderTerm();">
-            <option value="az">A–Z</option>
-            <option value="price-lo">Price ↑</option>
-            <option value="price-hi">Price ↓</option>
-            <option value="change">Biggest move</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Ledger table -->
-      <div class="ledger-wrap" id="termTableWrap" style="display:none;">
-        <div style="overflow-x:auto;">
-          <table class="ledger-tbl">
-            <thead>
-              <tr>
-                <th style="min-width:200px;">Commodity</th>
-                <th>Market</th>
-                <th class="r">Avg price</th>
-                <th class="r">Price range</th>
-                <th class="r">WoW change</th>
-                <th class="c">Status</th>
-                <th class="r">Action</th>
-              </tr>
-            </thead>
-            <tbody id="termTbody">
-              <tr><td colspan="7" style="padding:40px;text-align:center;color:var(--on-var);">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="ledger-foot">
-          <span class="ledger-count" id="termCount"></span>
-          <div class="pg-btns">
-            <button class="pg-btn" id="termPrev" onclick="termPg(-1)" disabled>‹</button>
-            <button class="pg-btn on" id="termPg1">1</button>
-            <button class="pg-btn" id="termPg2" style="display:none;">2</button>
-            <button class="pg-btn" id="termPg3" style="display:none;">3</button>
-            <button class="pg-btn" id="termNext" onclick="termPg(1)">›</button>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </main>
+
+    <!-- News strip full width -->
+    <div class="news-strip-wrap" style="margin-bottom:0;">
+      <div class="news-strip-head">
+        <div class="news-strip-label">Terminal Market News <span class="news-live-tag">Live feed coming soon</span></div>
+      </div>
+      <div class="news-scroll">
+        <div class="news-card market">
+          <div class="nc-source"><span class="nc-src-tag market">Markets</span><span class="nc-time">4h ago</span></div>
+          <div class="nc-headline">New York Hunts Point: Heavy Volume on Peppers & Tomatoes This Week</div>
+          <div class="nc-body">Arrivals running 15% above prior week as Mexican imports ramp up ahead of Easter demand period.</div>
+          <a class="nc-read">Read more →</a>
+        </div>
+        <div class="news-card supply">
+          <div class="nc-source"><span class="nc-src-tag supply">Supply</span><span class="nc-time">6h ago</span></div>
+          <div class="nc-headline">Los Angeles: Avocado Supplies Tight, Prices Firm Into Late March</div>
+          <div class="nc-body">Hass avocado arrivals from Mexico remain below seasonal norms.</div>
+          <a class="nc-read">Read more →</a>
+        </div>
+        <div class="news-card usda">
+          <div class="nc-source"><span class="nc-src-tag usda">USDA</span><span class="nc-time">1 day ago</span></div>
+          <div class="nc-headline">Chicago Terminal Report: Lettuce & Leafy Greens Oversupplied</div>
+          <div class="nc-body">Salinas Valley harvest ahead of schedule, pushing Chicago prices to 8-week lows.</div>
+          <a class="nc-read">Read more →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar + content split -->
+  <div style="max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:224px 1fr;gap:0;align-items:start;min-height:calc(100vh - 320px);">
+
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside class="term-sidebar">
+      <!-- Search within sidebar -->
+      <div class="sb-search">
+        <div class="sb-search-inner">
+          <span class="h-ico">⌕</span>
+          <input id="termQ" placeholder="Search commodities…" oninput="onTermSearch()"/>
+        </div>
+      </div>
+
+      <!-- All item -->
+      <div class="sb-all-item active" id="sbAllItem" onclick="termSbPickAll()">
+        <div class="sb-all-icon">ALL</div>
+        <span class="sb-all-name">All Markets</span>
+        <span class="sb-all-count" id="sbAllCount"></span>
+      </div>
+
+      <!-- Category groups -->
+      <div id="sbCatGroups"></div>
+    </aside>
+
+    <!-- ── RIGHT CONTENT ── -->
+    <div class="term-content">
+      <!-- Empty state (shown on load before selection) -->
+      <div class="term-empty-state" id="termEmptyState">
+        <div class="tes-icon">⊛</div>
+        <div class="tes-title">Select a commodity</div>
+        <p class="tes-body">Choose a category from the left sidebar, then select a commodity to view its prices across all terminal markets.</p>
+      </div>
+
+      <!-- Active content (shown after selection) -->
+      <div id="termActivePane" style="display:none;">
+
+        <!-- Selected commodity header -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--on-var);margin-bottom:6px;" id="termPaneLabel">—</div>
+            <div style="font-family:var(--f-data);font-size:1.5rem;font-weight:700;letter-spacing:-0.03em;color:var(--on-surf);" id="termPaneCom">—</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            <select class="f-sel" id="termSortFilter" onchange="buildTermRows();renderTerm();">
+              <option value="az">A–Z</option>
+              <option value="price-lo">Price ↑</option>
+              <option value="price-hi">Price ↓</option>
+              <option value="change">Biggest move</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Market toggle -->
+        <div class="mkt-toggle-wrap" style="margin-bottom:16px;">
+          <div class="mkt-toggle-left">
+            <div class="mkt-mode-pills">
+              <button class="mkt-mode-btn on" id="mktModeAll" onclick="termSetMktMode('all')">All Markets</button>
+              <button class="mkt-mode-btn"    id="mktModeOne" onclick="termSetMktMode('one')">One Market</button>
+            </div>
+            <div class="hub-inline" id="termHubInline" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Ledger table -->
+        <div class="ledger-wrap" id="termTableWrap">
+          <div style="overflow-x:auto;">
+            <table class="ledger-tbl">
+              <thead>
+                <tr>
+                  <th style="min-width:180px;">Commodity</th>
+                  <th>Market</th>
+                  <th class="r">Avg price</th>
+                  <th class="r">Price range</th>
+                  <th class="r">WoW change</th>
+                  <th class="c">Status</th>
+                  <th class="r">Action</th>
+                </tr>
+              </thead>
+              <tbody id="termTbody">
+                <tr><td colspan="7" style="padding:40px;text-align:center;color:var(--on-var);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ledger-foot">
+            <span class="ledger-count" id="termCount"></span>
+            <div class="pg-btns">
+              <button class="pg-btn" id="termPrev" onclick="termPg(-1)" disabled>‹</button>
+              <button class="pg-btn on" id="termPg1">1</button>
+              <button class="pg-btn" id="termPg2" style="display:none;">2</button>
+              <button class="pg-btn" id="termPg3" style="display:none;">3</button>
+              <button class="pg-btn" id="termNext" onclick="termPg(1)">›</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end termActivePane -->
+    </div><!-- end term-content -->
+  </div><!-- end grid -->
 </div>
 
 <!-- ══════════════════════════════════════
@@ -1300,90 +1483,124 @@ function buildDashboard(){
 }
 
 /* ══════════════════════════════════
-   TERMINAL — two-level nav + market toggle
+   TERMINAL — sidebar + market toggle
 ══════════════════════════════════ */
 let termActiveCat='All', termActiveCom=null, termMktMode='all', termActiveMkt=null;
 
-function termPickCat(cat){
-  termActiveCat=cat; termActiveCom=null; termPgN=1;
-  // Update category pills
-  document.querySelectorAll('#termCatBar .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c===cat));
-  // Clear search
-  document.getElementById('termQ').value='';
+const CAT_DEFS = [
+  { id:'Fruits',            label:'Fruits',             cls:'cat-fruit' },
+  { id:'Vegetables',        label:'Vegetables',          cls:'cat-veg'   },
+  { id:'Onions & Potatoes', label:'Onions & Potatoes',   cls:'cat-onion' },
+  { id:'Nuts',              label:'Nuts',                cls:'cat-nut'   },
+];
 
-  if(cat==='All'){
-    // Skip commodity picker — show table immediately with everything
-    document.getElementById('termComPicker').style.display='none';
-    document.getElementById('termTrail').style.display='none';
-    document.getElementById('termMktToggle').style.display='flex';
-    document.getElementById('termTableWrap').style.display='block';
-    buildTermRows(); renderTerm();
-  } else {
-    // Show commodity picker for this category
-    document.getElementById('termTableWrap').style.display='none';
-    document.getElementById('termTrail').style.display='none';
-    document.getElementById('termMktToggle').style.display='none';
-    buildComPicker(cat);
-    document.getElementById('termComPicker').style.display='block';
-  }
-}
+function buildSidebar(){
+  const termItems = ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
+  const totalComs = [...new Set(termItems.map(i=>i.commodity))].length;
+  document.getElementById('sbAllCount').textContent = totalComs;
 
-function buildComPicker(cat){
-  const label = cat==='Onions & Potatoes'?'Onions &amp; Potatoes':cat;
-  document.getElementById('termPickerLabel').innerHTML='Select a '+label+' commodity';
-  // Get unique commodities in this category from terminal data
-  const items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  const comms=[...new Set(items.filter(i=>gc(i.commodity)===cat).map(i=>i.commodity))].sort();
-  document.getElementById('termPickerCount').textContent=comms.length+' commodities';
-  document.getElementById('termPickerGrid').innerHTML=comms.map(c=>{
-    const ch=trendPct(c);
-    const mktCount=[...new Set(items.filter(i=>i.commodity===c).map(i=>i.market))].length;
-    const cls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-    const pct=ch>0.5?'+'+ch.toFixed(1)+'%':ch<-0.5?ch.toFixed(1)+'%':'—';
-    return`<button class="com-pick-card${termActiveCom===c?' on':''}" onclick="termPickCommodity('${c.replace(/'/g,"\\'")}')">
-      <div class="com-icon ${catClass(c)}" style="width:32px;height:32px;font-size:0.58rem;flex-shrink:0;">${ticker(c)}</div>
-      <div class="cpc-right">
-        <div class="cpc-name">${c}</div>
-        <div class="cpc-meta">${mktCount} market${mktCount!==1?'s':''}</div>
-        <div class="cpc-trend ${cls}">${pct}</div>
+  const q = (document.getElementById('termQ')?.value||'').toLowerCase().trim();
+
+  let groupsHtml = '';
+  CAT_DEFS.forEach(cat => {
+    const comms = [...new Set(termItems.filter(i=>gc(i.commodity)===cat.id).map(i=>i.commodity))]
+      .filter(c => !q || c.toLowerCase().includes(q))
+      .sort();
+    if(!comms.length) return;
+    const isOpen = termActiveCat===cat.id || q;
+    const hasActive = comms.includes(termActiveCom);
+
+    groupsHtml += `<div class="sb-cat">
+      <div class="sb-cat-header${isOpen?' open':''}" onclick="termSbToggleCat('${cat.id}')">
+        <span class="sb-cat-name${hasActive?' active-cat':''}">${cat.label}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="sb-cat-count">${comms.length}</span>
+          <span class="sb-chevron${isOpen?' ':''}" style="${isOpen?'transform:rotate(90deg)':''}">›</span>
+        </div>
       </div>
-    </button>`;
-  }).join('');
+      <div class="sb-com-list${isOpen?' open':''}">
+        ${comms.map(c => {
+          const ch = trendPct(c);
+          const pctCls = ch>0.5?'up':ch<-0.5?'dn':'flat';
+          const pctStr = ch>0.5?'+'+ch.toFixed(1)+'%':ch<-0.5?ch.toFixed(1)+'%':'—';
+          const isAct = c===termActiveCom;
+          return '<div class="sb-com-item' + (isAct?' active':'') + '" onclick="termSbPickCom('' + c.replace(/'/g,"\'") + '','' + cat.id + '')">' +
+            '<div class="sb-com-left">' +
+              '<div class="sb-com-tick ' + cat.cls + '">' + ticker(c) + '</div>' +
+              '<span class="sb-com-name">' + c + '</span>' +
+            '</div>' +
+            '<span class="sb-com-pct ' + pctCls + '">' + pctStr + '</span>' +
+          '</div>';
+        }).join('')}
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('sbCatGroups').innerHTML = groupsHtml;
 }
 
-function termPickCommodity(commodity){
-  termActiveCom=commodity; termPgN=1; termMktMode='all'; termActiveMkt=null;
-  // Hide picker, show trail + toggle + table
-  document.getElementById('termComPicker').style.display='none';
-  // Breadcrumb
-  document.getElementById('tbc-cat').textContent=termActiveCat;
-  document.getElementById('tbc-com').textContent=commodity;
-  document.getElementById('termTrail').style.display='flex';
-  // Market toggle
-  document.getElementById('termMktToggle').style.display='flex';
+function termSbToggleCat(cat){
+  // Toggle open/close — if clicking already open cat that isn't active, just toggle
+  // If clicking to set active, open it
+  const wasActive = termActiveCat === cat;
+  termActiveCat = wasActive ? 'All' : cat;
+  buildSidebar();
+}
+
+function termSbPickAll(){
+  termActiveCat='All'; termActiveCom=null; termMktMode='all'; termActiveMkt=null; termPgN=1;
+  // Update all item highlight
+  document.getElementById('sbAllItem').classList.add('active');
+  // Show table with everything
+  showTermPane('All Markets', null);
+  buildTermRows(); renderTerm();
+  buildSidebar();
+}
+
+function termSbPickCom(commodity, cat){
+  termActiveCat=cat; termActiveCom=commodity; termMktMode='all'; termActiveMkt=null; termPgN=1;
+  document.getElementById('sbAllItem').classList.remove('active');
+  showTermPane(cat, commodity);
+  buildHubInline();
+  buildTermRows(); renderTerm();
+  buildSidebar();
+}
+
+function showTermPane(cat, commodity){
+  document.getElementById('termEmptyState').style.display='none';
+  document.getElementById('termActivePane').style.display='block';
+  document.getElementById('termPaneLabel').textContent = cat.toUpperCase();
+  document.getElementById('termPaneCom').textContent = commodity || 'All Commodities';
+  // reset market toggle UI
   document.getElementById('mktModeAll').classList.add('on');
   document.getElementById('mktModeOne').classList.remove('on');
   document.getElementById('termHubInline').style.display='none';
-  // Build hub inline buttons
-  buildHubInline();
-  // Table
-  document.getElementById('termTableWrap').style.display='block';
-  buildTermRows(); renderTerm();
 }
 
-function termClearCommodity(){
-  termActiveCom=null; termPgN=1;
-  document.getElementById('termTrail').style.display='none';
-  document.getElementById('termMktToggle').style.display='none';
-  document.getElementById('termTableWrap').style.display='none';
-  buildComPicker(termActiveCat);
-  document.getElementById('termComPicker').style.display='block';
+function onTermSearch(){
+  const q = document.getElementById('termQ').value.trim();
+  if(q){
+    // Show all results matching search across all categories
+    termActiveCat='All'; termActiveCom=null;
+    document.getElementById('sbAllItem').classList.add('active');
+    showTermPane('Search results', null);
+    document.getElementById('termPaneCom').textContent = '"' + q + '"';
+  }
+  termPgN=1;
+  buildSidebar();
+  if(document.getElementById('termActivePane').style.display==='block'){
+    buildTermRows(); renderTerm();
+  }
 }
 
 function buildHubInline(){
-  const mkts=[...new Set(ALL.filter(i=>(i.market_type==='terminal'||!i.market_type)&&(!termActiveCom||i.commodity===termActiveCom)).map(i=>i.market).filter(Boolean))].sort();
+  const comFilter = termActiveCom;
+  const mkts=[...new Set(
+    ALL.filter(i=>(i.market_type==='terminal'||!i.market_type)&&(!comFilter||i.commodity===comFilter))
+      .map(i=>i.market).filter(Boolean)
+  )].sort();
   document.getElementById('termHubInline').innerHTML=mkts.map(m=>
-    `<button class="hub-inline-btn${termActiveMkt===m?' on':''}" onclick="termPickHub('${m.replace(/'/g,"\\'")}')"> ${m}</button>`
+    `<button class="hub-inline-btn${termActiveMkt===m?' on':''}" onclick="termPickHub('${m.replace(/'/g,"\'")}'">${m}</button>`
   ).join('');
 }
 
@@ -1407,42 +1624,22 @@ function termSetMktMode(mode){
   buildTermRows(); renderTerm();
 }
 
-function onTermSearch(){
-  // Search bypasses the two-level flow — show table directly
-  const q=document.getElementById('termQ').value.trim();
-  if(q){
-    termActiveCat='All'; termActiveCom=null;
-    document.querySelectorAll('#termCatBar .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c==='All'));
-    document.getElementById('termComPicker').style.display='none';
-    document.getElementById('termTrail').style.display='none';
-    document.getElementById('termMktToggle').style.display='flex';
-    document.getElementById('termTableWrap').style.display='block';
-  }
-  termPgN=1; buildTermRows(); renderTerm();
-}
-
 function buildTermRows(){
   const q=(document.getElementById('termQ')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('termSortFilter')?.value||'az';
   let items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  // Category filter
-  if(termActiveCat!=='All')items=items.filter(i=>gc(i.commodity)===termActiveCat);
-  // Commodity filter (when picked from Level 2)
-  if(termActiveCom)items=items.filter(i=>i.commodity===termActiveCom);
-  // Market filter (one-market mode)
-  if(termMktMode==='one'&&termActiveMkt)items=items.filter(i=>i.market===termActiveMkt);
-  // Text search
-  if(q)items=items.filter(i=>
+  if(termActiveCat!=='All'&&!q) items=items.filter(i=>gc(i.commodity)===termActiveCat);
+  if(termActiveCom&&!q)        items=items.filter(i=>i.commodity===termActiveCom);
+  if(termMktMode==='one'&&termActiveMkt) items=items.filter(i=>i.market===termActiveMkt);
+  if(q) items=items.filter(i=>
     i.commodity.toLowerCase().includes(q)||
     (i.origin||'').toLowerCase().includes(q)||
     (i.market||'').toLowerCase().includes(q)
   );
-  // Sort
   const sortFn=sort==='price-hi'?(a,b)=>(avgP([b])||0)-(avgP([a])||0)
     :sort==='price-lo'?(a,b)=>(avgP([a])||0)-(avgP([b])||0)
     :sort==='change'?(a,b)=>Math.abs(trendPct(b.commodity))-Math.abs(trendPct(a.commodity))
-    :(a,b)=>a.commodity.localeCompare(b.commodity)||a.market.localeCompare(b.market||'');
-  // Dedupe per commodity+market
+    :(a,b)=>a.commodity.localeCompare(b.commodity)||(a.market||'').localeCompare(b.market||'');
   const seen=new Set(); termRows=[];
   items.sort(sortFn).forEach(r=>{
     const k=r.commodity+'|'+r.market;
@@ -1454,25 +1651,15 @@ function renderTerm(){
   const total=termRows.length,pages=Math.max(1,Math.ceil(total/PER));
   termPgN=Math.min(termPgN,pages);
   const start=(termPgN-1)*PER,pg=termRows.slice(start,start+PER);
-  const mktLabel=termMktMode==='one'&&termActiveMkt?` in ${termActiveMkt}`:'';
-  const comLabel=termActiveCom?` · ${termActiveCom}`:'';
+  const mktLabel=termMktMode==='one'&&termActiveMkt?` · ${termActiveMkt}`:'';
   document.getElementById('termCount').textContent=
-    `Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total.toLocaleString()} listings${comLabel}${mktLabel}`;
+    `Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total.toLocaleString()} listings${mktLabel}`;
   document.getElementById('termPrev').disabled=termPgN<=1;
   document.getElementById('termNext').disabled=termPgN>=pages;
   for(let i=1;i<=3;i++){
     const b=document.getElementById(`termPg${i}`);
     if(!b)continue;
-    b.style.display=i<=pages?'flex':'none';
-    b.textContent=termPgN-1+i<=pages?termPgN-1+i:i;
-    b.classList.toggle('on',termPgN-1+i===termPgN||i===1&&termPgN===1);
-    b.onclick=(n=>()=>{termPgN=n;renderTerm();})(termPgN-1+i<=pages?termPgN-1+i:i);
-  }
-  // Fix page button display
-  for(let i=1;i<=3;i++){
-    const b=document.getElementById(`termPg${i}`);
-    if(!b)continue;
-    const pgNum=termPgN<=2?i:termPgN-1+(i-1);
+    const pgNum=termPgN<=2?i:(termPgN-1)+(i-1);
     b.style.display=pgNum<=pages?'flex':'none';
     b.textContent=pgNum;
     b.classList.toggle('on',pgNum===termPgN);
@@ -1483,7 +1670,6 @@ function renderTerm(){
     :`<tr><td colspan="7" style="padding:40px;text-align:center;color:var(--on-var);">No results found.</td></tr>`;
 }
 function termPg(d){termPgN=Math.max(1,termPgN+d);renderTerm();window.scrollTo(0,200);}
-
 /* ── FOB ── */
 function buildFobFilters(){
   const spItems=ALL.filter(i=>i.market_type==='shipping_point');
@@ -1550,8 +1736,8 @@ async function init(){
     for(let i=1;i<=6&&i<DATES.length;i++){try{DATED[DATES[i].date]=await(await fetch(`${API}/commodities/by-date/${DATES[i].date}`)).json();}catch{}}
 
     buildDashboard();
-    // Terminal: start in default state — table visible with All, all markets
-    termPickCat('All');
+    // Terminal: build sidebar (table stays hidden until user picks a commodity)
+    buildSidebar();
     buildFobFilters();buildFobRows();renderFob();
   }catch(e){console.error(e);}
 }
