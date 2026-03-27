@@ -1294,7 +1294,7 @@ function buildRow(item,ch,col2val){
   const st=getStatus(ch);
   const wCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
   const wStr=ch>0.5?`↑ +${ch.toFixed(1)}%`:ch<-0.5?`↓ ${ch.toFixed(1)}%`:`— 0.0%`;
-  return`<tr onclick="openSheet('${item.commodity.replace(/'/g,"\\'")}')">
+  return`<tr data-com="${item.commodity}" onclick="openSheet(this.dataset.com)">
     <td>
       <div class="com-cell">
         <div class="com-icon ${catClass(item.commodity)}">${ticker(item.commodity)}</div>
@@ -1441,7 +1441,7 @@ function buildDashboard(){
     const cls=x.ch>0?'up':'dn';
     const pct=x.ch>0?`+${x.ch.toFixed(1)}%`:`${x.ch.toFixed(1)}%`;
     const m=ALL.filter(i=>i.commodity===x.c).sort((a,b)=>parseFloat(a.price_low||0)-parseFloat(b.price_low||0))[0];
-    return`<div class="alert-chip ${type}" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
+    return`<div class="alert-chip ${type}" onclick="openSheet(this.dataset.com)" data-com="${x.c}">
       <div class="ac-tag ${type}">${tag}</div>
       <div class="ac-name" style="display:flex;align-items:center;gap:8px;"><div class="com-icon ${catClass(x.c)}" style="width:28px;height:28px;font-size:0.55rem;">${ticker(x.c)}</div>${x.c}</div>
       <div class="ac-sub">${m?.market||'Multiple markets'}</div>
@@ -1452,7 +1452,7 @@ function buildDashboard(){
 
   // Movers
   const sorted=changes.filter(x=>x.avg).sort((a,b)=>b.ch-a.ch);
-  const mRow=(x,cls)=>`<div class="mv-row" onclick="openSheet('${x.c.replace(/'/g,"\\'")}')">
+  const mRow=(x,cls)=>`<div class="mv-row" onclick="openSheet(this.dataset.com)" data-com="${x.c}">
     <div class="mv-left">
       <div class="com-icon ${catClass(x.c)}" style="width:28px;height:28px;font-size:0.55rem;flex-shrink:0;">${ticker(x.c)}</div>
       <div><div class="mv-name">${x.c}</div><div class="mv-price">${fP(x.avg)} avg</div></div>
@@ -1498,45 +1498,45 @@ function buildSidebar(){
   const termItems = ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
   const totalComs = [...new Set(termItems.map(i=>i.commodity))].length;
   document.getElementById('sbAllCount').textContent = totalComs;
-
   const q = (document.getElementById('termQ')?.value||'').toLowerCase().trim();
-
-  let groupsHtml = '';
-  CAT_DEFS.forEach(cat => {
+  let html = '';
+  CAT_DEFS.forEach(function(cat){
     const comms = [...new Set(termItems.filter(i=>gc(i.commodity)===cat.id).map(i=>i.commodity))]
-      .filter(c => !q || c.toLowerCase().includes(q))
+      .filter(function(c){ return !q || c.toLowerCase().includes(q); })
       .sort();
     if(!comms.length) return;
-    const isOpen = termActiveCat===cat.id || q;
+    const isOpen = termActiveCat===cat.id || !!q;
     const hasActive = comms.includes(termActiveCom);
-
-    groupsHtml += `<div class="sb-cat">
-      <div class="sb-cat-header${isOpen?' open':''}" onclick="termSbToggleCat('${cat.id}')">
-        <span class="sb-cat-name${hasActive?' active-cat':''}">${cat.label}</span>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span class="sb-cat-count">${comms.length}</span>
-          <span class="sb-chevron${isOpen?' ':''}" style="${isOpen?'transform:rotate(90deg)':''}">›</span>
-        </div>
-      </div>
-      <div class="sb-com-list${isOpen?' open':''}">
-        ${comms.map(c => {
-          const ch = trendPct(c);
-          const pctCls = ch>0.5?'up':ch<-0.5?'dn':'flat';
-          const pctStr = ch>0.5?'+'+ch.toFixed(1)+'%':ch<-0.5?ch.toFixed(1)+'%':'—';
-          const isAct = c===termActiveCom;
-          return '<div class="sb-com-item' + (isAct?' active':'') + '" onclick="termSbPickCom('' + c.replace(/'/g,"\'") + '','' + cat.id + '')">' +
-            '<div class="sb-com-left">' +
-              '<div class="sb-com-tick ' + cat.cls + '">' + ticker(c) + '</div>' +
-              '<span class="sb-com-name">' + c + '</span>' +
-            '</div>' +
-            '<span class="sb-com-pct ' + pctCls + '">' + pctStr + '</span>' +
-          '</div>';
-        }).join('')}
-      </div>
-    </div>`;
+    const headerCls = 'sb-cat-header' + (isOpen?' open':'');
+    const nameCls   = 'sb-cat-name'   + (hasActive?' active-cat':'');
+    const listCls   = 'sb-com-list'   + (isOpen?' open':'');
+    const chevRot   = isOpen?'transform:rotate(90deg)':'';
+    let rows = '';
+    comms.forEach(function(c){
+      const ch = trendPct(c);
+      const pctCls = ch>0.5?'up':ch<-0.5?'dn':'flat';
+      const pctStr = ch>0.5?'+'+ch.toFixed(1)+'%':ch<-0.5?ch.toFixed(1)+'%':'—';
+      const itemCls = 'sb-com-item' + (c===termActiveCom?' active':'');
+      rows += '<div class="' + itemCls + '" data-com="' + c.replace(/"/g,'&quot;') + '" data-cat="' + cat.id.replace(/"/g,'&quot;') + '" onclick="termSbPickCom(this.dataset.com,this.dataset.cat)">'
+        + '<div class="sb-com-left">'
+          + '<div class="sb-com-tick ' + cat.cls + '">' + ticker(c) + '</div>'
+          + '<span class="sb-com-name">' + c + '</span>'
+        + '</div>'
+        + '<span class="sb-com-pct ' + pctCls + '">' + pctStr + '</span>'
+        + '</div>';
+    });
+    html += '<div class="sb-cat">'
+      + '<div class="' + headerCls + '" data-cat="' + cat.id.replace(/"/g,'&quot;') + '" onclick="termSbToggleCat(this.dataset.cat)">'
+        + '<span class="' + nameCls + '">' + cat.label + '</span>'
+        + '<div style="display:flex;align-items:center;gap:6px;">'
+          + '<span class="sb-cat-count">' + comms.length + '</span>'
+          + '<span class="sb-chevron" style="' + chevRot + '">›</span>'
+        + '</div>'
+      + '</div>'
+      + '<div class="' + listCls + '">' + rows + '</div>'
+      + '</div>';
   });
-
-  document.getElementById('sbCatGroups').innerHTML = groupsHtml;
+  document.getElementById('sbCatGroups').innerHTML = html;
 }
 
 function termSbToggleCat(cat){
