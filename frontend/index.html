@@ -758,36 +758,29 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
       <div class="sec-lbl" id="alertSecLbl">Price Alerts</div>
       <div class="alert-cards" id="alertCards"></div>
 
-      <!-- Movers -->
-      <div class="sec-lbl">This Week's Movers</div>
-      <div class="movers-grid">
-        <div class="mv-panel"><div class="mv-head up">↑ Rising</div><div id="gainers"></div></div>
-        <div class="mv-panel"><div class="mv-head dn">↓ Falling</div><div id="losers"></div></div>
-      </div>
-
       <!-- Insight cards -->
       <div class="sec-lbl">Market Intelligence</div>
       <div class="insight-grid">
         <div class="ig-card dark">
-          <div class="ig-label">Market Sentiment</div>
+          <div class="ig-label">Supply Disruptions</div>
           <div class="ig-headline" id="igSentHead">Analyzing…</div>
           <p class="ig-body" id="igSentBody">Loading market data.</p>
-          <div class="ig-bg">↑</div>
+          <div class="ig-bg">⚠</div>
         </div>
         <div class="ig-card tinted">
-          <div class="ig-label">Highest Volatility</div>
+          <div class="ig-label">Biggest Price Swing</div>
           <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px;">
             <div class="ig-headline" id="igVolHead">—</div>
             <span id="igVolPct" style="font-family:var(--f-data);font-size:0.9375rem;font-weight:700;">—</span>
           </div>
           <div class="ig-prog-track"><div class="ig-prog-fill" id="igVolBar" style="width:0%"></div></div>
-          <p class="ig-body" id="igVolBody">Tracking weekly price range vs. market average.</p>
+          <p class="ig-body" id="igVolBody">Largest single-commodity move this week. May indicate supply disruption or demand shift.</p>
         </div>
         <div class="ig-card light">
-          <div class="ig-label">Data Freshness</div>
+          <div class="ig-label">Data last updated</div>
           <div class="ig-headline" id="igDate">—</div>
           <div style="font-size:0.78rem;color:var(--on-var);margin-top:4px;" id="igRecords">—</div>
-          <span class="ig-cta" onclick="gv('terminal')">View Terminal Markets →</span>
+          <span class="ig-cta" onclick="gv('terminal')" style="margin-top:16px;display:inline-block;">Check terminal prices →</span>
         </div>
       </div>
 
@@ -1302,12 +1295,13 @@ function buildDashboard(){
   const falling=changes.filter(x=>x.ch<-1).length;
   const d=new Date(DATES[0].date+'T12:00:00');
 
-  document.getElementById('dashTitle').textContent=rising>falling?'Mostly Rising Today':'Mostly Falling Today';
+  document.getElementById('dashTitle').textContent = 'Market Dashboard';
 
   // Alert banner content — driven by biggest anomaly
   const topAnomaly=changes.filter(x=>Math.abs(x.ch)>5).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))[0];
   if(topAnomaly){
-    document.getElementById('abText').innerHTML=`<strong>${topAnomaly.c} prices ${topAnomaly.ch>0?'up':'down'} ${Math.abs(topAnomaly.ch).toFixed(1)}% this week</strong> — This alert is generated from USDA data. Connect a news API to show real headlines here.`;
+    const dir = topAnomaly.ch>0 ? 'up' : 'down';
+    document.getElementById('abText').innerHTML = `<strong>Data alert:</strong> ${topAnomaly.c} prices ${dir} ${Math.abs(topAnomaly.ch).toFixed(1)}% this week — may signal supply disruption. Connect a news API to show live industry alerts here.`;
   }
 
   // Price alert cards
@@ -1329,24 +1323,18 @@ function buildDashboard(){
     </div>`;
   }).join('');
 
-  // Movers
-  const sorted=changes.filter(x=>x.avg).sort((a,b)=>b.ch-a.ch);
-  const mRow=(x,cls)=>`<div class="mv-row" onclick="openSheet(this.dataset.com)" data-com="${x.c}">
-    <div class="mv-left">
-      <div class="com-icon ${catClass(x.c)}" style="width:28px;height:28px;font-size:0.55rem;flex-shrink:0;">${ticker(x.c)}</div>
-      <div><div class="mv-name">${x.c}</div><div class="mv-price">${fP(x.avg)} avg</div></div>
-    </div>
-    <div class="mv-pct ${cls}">${x.ch>0?'+':''}${x.ch.toFixed(1)}%</div>
-  </div>`;
-  document.getElementById('gainers').innerHTML=sorted.filter(x=>x.ch>0.5).slice(0,7).map(x=>mRow(x,'up')).join('')||'<div style="padding:14px 18px;font-size:.875rem;color:var(--on-var);">No significant gainers</div>';
-  document.getElementById('losers').innerHTML=sorted.filter(x=>x.ch<-0.5).reverse().slice(0,7).map(x=>mRow(x,'dn')).join('')||'<div style="padding:14px 18px;font-size:.875rem;color:var(--on-var);">No significant losers</div>';
-
   // Insight cards
-  const bull=rising>falling;
-  document.getElementById('igSentHead').textContent=bull?`Strong Supply Cycle — ${rising} rising`:`Correction Underway — ${falling} falling`;
-  document.getElementById('igSentBody').textContent=bull
-    ?`${rising} of ${comms.length} commodities trending higher vs. last week. Buyers may see upward pressure on terminal asks across multiple categories.`
-    :`${falling} of ${comms.length} commodities tracking lower. FOB shipping point prices showing downward pressure. Favorable buying window.`;
+  const spikes = anomalies.filter(x=>Math.abs(x.ch)>8);
+  const spikeCount = spikes.length;
+  document.getElementById('dashTitle').textContent = spikeCount > 0
+    ? `${spikeCount} Price Alert${spikeCount>1?'s':''} Today`
+    : 'Market Stable Today';
+  document.getElementById('igSentHead').textContent = spikeCount > 0
+    ? `${spikeCount} commodit${spikeCount>1?'ies':'y'} with sharp moves`
+    : 'No major disruptions this week';
+  document.getElementById('igSentBody').textContent = spikeCount > 0
+    ? `${spikes.map(x=>x.c).slice(0,3).join(', ')}${spikes.length>3?' and others':''} showing abnormal price movement vs. last week. May indicate supply disruption or demand shifts affecting your markets.`
+    : 'Price movements across tracked commodities are within normal weekly ranges. No supply disruptions detected from USDA data.';
 
   const vol=changes.filter(x=>x.avg).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))[0];
   if(vol){
