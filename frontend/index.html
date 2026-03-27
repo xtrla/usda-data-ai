@@ -1067,6 +1067,282 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 .dark-pg-btn.on{ background:var(--primary); color:#fff; border-color:var(--primary); }
 .dark-pg-btn:disabled{ opacity:0.3; cursor:default; }
 
+
+/* ══════════════════════════════════════════
+   BENTO GRID — homepage
+══════════════════════════════════════════ */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: auto;
+  gap: 14px;
+}
+
+/* Cell base */
+.bento-cell {
+  background: var(--bg);
+  border: 1px solid rgba(190,201,194,0.18);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Cell 1: Hero — 8 cols wide ── */
+.bento-hero {
+  grid-column: span 8;
+  min-height: 380px;
+  background: linear-gradient(140deg, #004532 0%, #0a6644 55%, #065f46 100%);
+  border: none;
+  display: flex;
+  align-items: stretch;
+  overflow: visible;
+}
+.bento-hero-content {
+  flex: 1;
+  padding: 44px 44px 44px 44px;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.bento-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 100px; padding: 5px 14px;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 18px; width: fit-content;
+}
+.bento-h1 {
+  font-family: var(--f-data);
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 700; letter-spacing: -0.04em;
+  color: #fff; line-height: 1.08;
+  margin-bottom: 12px;
+}
+.bento-sub {
+  font-size: 0.9375rem; color: rgba(255,255,255,0.75);
+  line-height: 1.6; margin-bottom: 24px;
+  max-width: 400px;
+}
+.bento-tags {
+  display: flex; gap: 7px; flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.bento-tag {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 100px; padding: 4px 13px;
+  font-size: 0.78rem; color: rgba(255,255,255,0.85);
+  cursor: pointer; transition: background 0.14s; font-weight: 500;
+}
+.bento-tag:hover { background: rgba(255,255,255,0.22); }
+.bento-hero-search {
+  display: flex; max-width: 440px;
+  background: #fff; border-radius: 10px; overflow: hidden;
+}
+.bento-hero-search input {
+  flex: 1; padding: 12px 16px;
+  font-size: 0.9rem; color: var(--on-surf);
+  outline: none; background: transparent;
+}
+.bento-hero-search input::placeholder { color: #9ca3af; }
+.bento-hero-search button {
+  background: #004532; color: #fff;
+  padding: 12px 20px; font-size: 0.875rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap; transition: background 0.14s;
+}
+.bento-hero-search button:hover { background: #065f46; }
+
+/* Hero orb illustration */
+.bento-hero-orbs {
+  width: 260px; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.orb {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700;
+  position: absolute; z-index: 3;
+}
+.orb-1 {
+  background: rgba(255,255,255,0.9); color: #004532;
+  bottom: 90px; right: 100px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.orb-2 {
+  background: #004532; color: rgba(255,255,255,0.9);
+  bottom: 60px; right: 40px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+.orb-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.orb-ring-1 { width: 220px; height: 220px; bottom: -60px; right: -60px; }
+.orb-ring-2 { width: 320px; height: 320px; bottom: -110px; right: -110px; }
+
+/* ── Cell 2: News list — 4 cols ── */
+.bento-news {
+  grid-column: span 4;
+  padding: 24px;
+}
+.bento-cell-label {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--on-var);
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 16px;
+}
+.bento-news-list { display: flex; flex-direction: column; gap: 0; }
+.bni {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(190,201,194,0.12);
+}
+.bni:last-child { border-bottom: none; padding-bottom: 0; }
+.bni:first-child { padding-top: 0; }
+.bni-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.bni-dot.usda   { background: var(--primary); }
+.bni-dot.alert  { background: var(--err); }
+.bni-dot.supply { background: #c07800; }
+.bni-dot.market { background: var(--secondary, #4059aa); }
+.bni-head { font-size: 0.8rem; font-weight: 600; color: var(--on-surf); line-height: 1.35; margin-bottom: 2px; }
+.bni-meta { font-size: 0.7rem; color: var(--on-var); }
+
+/* ── Cells 3 & 4: Feature cards — 6 cols each ── */
+.bento-feature {
+  grid-column: span 6;
+  min-height: 200px;
+  display: flex; align-items: stretch;
+  overflow: hidden;
+}
+.bento-feature-terminal {
+  background: linear-gradient(135deg, #004532 0%, #0a6644 100%);
+  border: none;
+}
+.bento-feature-fob {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%);
+  border: none;
+}
+.bento-feature-content {
+  flex: 1; padding: 28px 28px 28px 28px;
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.bento-feature-title {
+  font-family: var(--f-data);
+  font-size: 1.375rem; font-weight: 700;
+  letter-spacing: -0.03em; color: #fff;
+  margin-bottom: 6px; margin-top: 6px;
+}
+.bento-feature-body {
+  font-size: 0.8125rem; color: rgba(255,255,255,0.72);
+  line-height: 1.55; flex: 1; margin-bottom: 14px;
+}
+.bento-feature-cta {
+  font-size: 0.8125rem; font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  transition: color 0.14s;
+}
+.bento-feature:hover .bento-feature-cta { color: #fff; }
+.bento-feature-graphic {
+  width: 140px; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.feat-orb {
+  position: absolute; z-index: 2;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; color: rgba(255,255,255,0.7);
+  bottom: 36px; left: 24px;
+}
+.feat-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.feat-ring-1 { width: 160px; height: 160px; bottom: -40px; left: -20px; }
+.feat-ring-2 { width: 240px; height: 240px; bottom: -80px; left: -60px; }
+
+/* ── Cell 5: Latest reports — 4 cols ── */
+.bento-reports {
+  grid-column: span 4;
+  padding: 24px;
+}
+.rc-mkt-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(190,201,194,0.12);
+  cursor: pointer;
+}
+.rc-mkt-item:last-child { border-bottom: none; }
+.rc-mkt-item:first-child { padding-top: 0; }
+.rc-mkt-name { font-size: 0.8125rem; font-weight: 600; color: var(--on-surf); flex: 1; }
+.rc-mkt-count { font-size: 0.72rem; color: var(--on-var); font-family: var(--f-data); }
+.rc-mkt-badge {
+  font-size: 0.68rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 100px; font-family: var(--f-data);
+}
+.rc-mkt-badge.up   { background: #d1fae5; color: #004532; }
+.rc-mkt-badge.dn   { background: #fde8e8; color: #ba1a1a; }
+.rc-mkt-badge.flat { background: var(--s-high); color: var(--on-var); }
+
+/* ── Cells 6 & 7: Stat cards — 4 cols each ── */
+.bento-stat {
+  grid-column: span 4;
+  padding: 24px;
+}
+.bento-stat-alert {
+  background: #004532; border: none;
+}
+.bento-stat-value {
+  font-family: var(--f-data);
+  font-size: 2rem; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--on-surf);
+  margin: 8px 0 4px;
+}
+.bento-stat-sub {
+  font-size: 0.8rem; color: var(--on-var); line-height: 1.4;
+}
+.bento-stat-cta {
+  font-size: 0.8rem; font-weight: 700;
+  color: var(--primary); margin-top: 14px;
+  cursor: pointer; display: inline-block;
+}
+.bento-stat-cta:hover { text-decoration: underline; }
+
+/* ── Cell 8: Full-width table — 12 cols ── */
+.bento-table-cell {
+  grid-column: span 12;
+}
+.bento-table-header {
+  padding: 18px 20px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(190,201,194,0.12);
+  flex-wrap: wrap; gap: 12px;
+}
+
+/* Responsive */
+@media(max-width: 1024px) {
+  .bento-hero { grid-column: span 12; }
+  .bento-news { grid-column: span 12; }
+  .bento-feature { grid-column: span 6; }
+  .bento-reports { grid-column: span 6; }
+  .bento-stat { grid-column: span 6; }
+}
+@media(max-width: 640px) {
+  .bento-feature { grid-column: span 12; }
+  .bento-stat { grid-column: span 12; }
+  .bento-reports { grid-column: span 12; }
+  .bento-hero-orbs { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -1094,160 +1370,170 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
      DASHBOARD
 ══════════════════════════════════════ -->
 <div id="view-home" class="view active">
-  <!-- Alert banner — shown only when real data available -->
+
+  <!-- Alert banner — only shown when real anomaly data available -->
   <div class="alert-banner" id="alertBanner" style="display:none;">
     <div class="alert-banner-inner">
-      <span class="ab-tag">Industry Alert</span>
+      <span class="ab-tag">Price Alert</span>
       <span class="ab-text" id="abText"></span>
-      <a class="ab-link" href="#">Read more →</a>
-      <button class="ab-dismiss" onclick="document.getElementById('alertBanner').style.display='none'">✕</button>
+      <button class="ab-dismiss" onclick="this.parentElement.parentElement.style.display='none'">✕</button>
     </div>
   </div>
 
   <main>
-    <div class="ctr" style="padding-top:16px;">
+    <div class="ctr" style="padding-top:20px;padding-bottom:48px;">
 
-      <!-- ══ ROW 2: Hero (left) + News & Reports (right) ══ -->
-      <div class="home-row2">
+      <!-- ══════════════════════════════
+           BENTO GRID — full homepage
+      ══════════════════════════════ -->
+      <div class="bento-grid">
 
-        <!-- LEFT: Hero card -->
-        <div class="hero-card">
-          <div class="hero-eyebrow"><div class="ldot" style="background:rgba(255,255,255,0.7);"></div>Live USDA Market Data</div>
-          <h1 class="hero-h1">Wholesale Produce<br>Prices, Today.</h1>
-          <p class="hero-sub">Real-time terminal market and FOB shipping point intelligence for growers, brokers, and distributors. Updated daily from USDA Market News.</p>
-          <!-- Suggested searches -->
-          <div class="hero-tags">
-            <span class="hero-tag" onclick="hdrSearch('Avocados')">Avocados</span>
-            <span class="hero-tag" onclick="hdrSearch('Tomatoes')">Tomatoes</span>
-            <span class="hero-tag" onclick="hdrSearch('Strawberries')">Strawberries</span>
-            <span class="hero-tag" onclick="hdrSearch('Lettuce')">Lettuce</span>
-            <span class="hero-tag" onclick="hdrSearch('Peppers')">Peppers</span>
-            <span class="hero-tag" onclick="hdrSearch('Lemons')">Lemons</span>
-          </div>
-          <!-- Search bar -->
-          <div class="hero-search">
-            <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
-            <button class="hero-search-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search →</button>
-          </div>
-          <!-- CTA pills -->
-          <div class="hero-ctas">
-            <button class="hero-cta-pill" onclick="gv('terminal')">Browse Terminal Markets</button>
-            <button class="hero-cta-pill" onclick="gv('fob')">View FOB Origins</button>
-          </div>
-        </div>
-
-        <!-- RIGHT: News + Reports stacked -->
-        <div class="home-right-col">
-
-          <!-- Top: Industry Pulse as list -->
-          <div class="news-list-card">
-            <div class="nlc-header">
-              <div class="nlc-label">
-                <div class="ldot"></div>
-                Industry Pulse
-                <span class="news-live-tag">Live feed coming soon</span>
-              </div>
-              <span class="nlc-see-all">See all →</span>
+        <!-- CELL 1: Hero — spans 2 cols, 1 row -->
+        <div class="bento-hero bento-cell">
+          <div class="bento-hero-content">
+            <div class="bento-eyebrow">
+              <div class="ldot" style="background:rgba(255,255,255,0.8);"></div>
+              Live USDA Market Data
             </div>
-            <div class="nlc-item">
-              <div class="nlc-dot usda"></div>
-              <div>
-                <div class="nlc-headline">Weekly Fruit &amp; Vegetable Report — National Terminal Markets</div>
-                <div class="nlc-meta">USDA · 2h ago</div>
-              </div>
+            <h1 class="bento-h1">Wholesale Produce<br>Prices, Today.</h1>
+            <p class="bento-sub">Real-time terminal market and FOB shipping point intelligence for growers, brokers, and distributors. Updated daily from USDA Agricultural Marketing Service.</p>
+            <div class="bento-tags">
+              <span class="bento-tag" onclick="hdrSearch('Avocados')">Avocados</span>
+              <span class="bento-tag" onclick="hdrSearch('Tomatoes')">Tomatoes</span>
+              <span class="bento-tag" onclick="hdrSearch('Strawberries')">Strawberries</span>
+              <span class="bento-tag" onclick="hdrSearch('Lettuce')">Lettuce</span>
+              <span class="bento-tag" onclick="hdrSearch('Peppers')">Peppers</span>
             </div>
-            <div class="nlc-item">
-              <div class="nlc-dot alert"></div>
-              <div>
-                <div class="nlc-headline">Nogales Port Delays: 24–48hr Backlogs on Mexican Produce</div>
-                <div class="nlc-meta">Alert · 3h ago</div>
-              </div>
-            </div>
-            <div class="nlc-item">
-              <div class="nlc-dot supply"></div>
-              <div>
-                <div class="nlc-headline">Baja Berry Harvest Expected to Tighten Through April</div>
-                <div class="nlc-meta">Supply · 5h ago</div>
-              </div>
-            </div>
-            <div class="nlc-item">
-              <div class="nlc-dot market"></div>
-              <div>
-                <div class="nlc-headline">Florida Citrus: Smaller Crop, Higher Prices Midsummer</div>
-                <div class="nlc-meta">Markets · 8h ago</div>
-              </div>
+            <div class="bento-hero-search">
+              <input id="dashQ" placeholder="Search any commodity…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
+              <button onclick="hdrSearch(document.getElementById('dashQ').value)">Search →</button>
             </div>
           </div>
-
-          <!-- Bottom: Latest terminal market reports -->
-          <div class="reports-card">
-            <div class="rc-header">
-              <div class="rc-label">Latest Terminal Reports</div>
-              <span class="nlc-see-all" onclick="gv('terminal')">View all →</span>
-            </div>
-            <div id="rcMktList">
-              <!-- JS filled with live market data -->
-              <div class="rc-mkt-item"><span class="rc-mkt-name">Loading…</span></div>
-            </div>
-          </div>
-
-        </div>
-      </div><!-- end row2 -->
-
-      <!-- ══ ROW 3 REMOVED ══ -->
-
-      <!-- ══ ROW 4: Commodity table section ══ -->
-      <div class="home-row4">
-
-        <!-- Filter bar — tab style -->
-        <div class="home-row4-filter">
-          <button class="tab-cat on" data-c="All"               onclick="homeDarkCat(this,'All')">All</button>
-          <div class="tab-divider"></div>
-          <button class="tab-cat"    data-c="Fruits"            onclick="homeDarkCat(this,'Fruits')">Fruits</button>
-          <button class="tab-cat"    data-c="Vegetables"        onclick="homeDarkCat(this,'Vegetables')">Vegetables</button>
-          <button class="tab-cat"    data-c="Onions & Potatoes" onclick="homeDarkCat(this,'Onions & Potatoes')">Onions &amp; Potatoes</button>
-          <button class="tab-cat"    data-c="Nuts"              onclick="homeDarkCat(this,'Nuts')">Nuts</button>
-          <div class="home-search-inline">
-            <span style="font-size:13px;color:var(--outline);">⌕</span>
-            <input id="homeTableQ" placeholder="Filter table…" oninput="buildHomeTable()"/>
+          <!-- Decorative orbs -->
+          <div class="bento-hero-orbs" aria-hidden="true">
+            <div class="orb orb-1">↑</div>
+            <div class="orb orb-2">↓</div>
+            <div class="orb-ring orb-ring-1"></div>
+            <div class="orb-ring orb-ring-2"></div>
           </div>
         </div>
 
-        <!-- Dark commodity table -->
-        <div style="overflow-x:auto;">
-          <table class="dark-table">
-            <thead>
-              <tr>
+        <!-- CELL 2: Industry Pulse news list -->
+        <div class="bento-cell bento-news">
+          <div class="bento-cell-label">
+            <div class="ldot"></div> Industry Pulse
+            <span class="news-live-tag" style="margin-left:4px;">Live feed coming soon</span>
+          </div>
+          <div class="bento-news-list">
+            <div class="bni"><div class="bni-dot usda"></div><div><div class="bni-head">Weekly Fruit &amp; Vegetable Report — National Terminal Markets</div><div class="bni-meta">USDA · 2h ago</div></div></div>
+            <div class="bni"><div class="bni-dot alert"></div><div><div class="bni-head">Nogales Port Delays: 24–48hr Backlogs on Mexican Produce</div><div class="bni-meta">Alert · 3h ago</div></div></div>
+            <div class="bni"><div class="bni-dot supply"></div><div><div class="bni-head">Baja Berry Harvest Expected to Tighten Through April</div><div class="bni-meta">Supply · 5h ago</div></div></div>
+            <div class="bni"><div class="bni-dot market"></div><div><div class="bni-head">Florida Citrus: Smaller Crop, Higher Prices Midsummer</div><div class="bni-meta">Markets · 8h ago</div></div></div>
+          </div>
+        </div>
+
+        <!-- CELL 3: Terminal Markets feature card -->
+        <div class="bento-cell bento-feature bento-feature-terminal" onclick="gv('terminal')" style="cursor:pointer;">
+          <div class="bento-feature-content">
+            <div class="bento-cell-label" style="color:rgba(255,255,255,0.65);">Destination prices</div>
+            <div class="bento-feature-title">Terminal Markets</div>
+            <div class="bento-feature-body">What buyers pay at New York, Chicago, Miami and 7 other distribution hubs.</div>
+            <div class="bento-feature-cta">Browse markets →</div>
+          </div>
+          <div class="bento-feature-graphic">
+            <div class="feat-orb">⊛</div>
+            <div class="feat-ring feat-ring-1"></div>
+            <div class="feat-ring feat-ring-2"></div>
+          </div>
+        </div>
+
+        <!-- CELL 4: FOB Origins feature card -->
+        <div class="bento-cell bento-feature bento-feature-fob" onclick="gv('fob')" style="cursor:pointer;">
+          <div class="bento-feature-content">
+            <div class="bento-cell-label" style="color:rgba(255,255,255,0.65);">Origin prices + spread</div>
+            <div class="bento-feature-title">FOB Origins</div>
+            <div class="bento-feature-body">What shippers charge at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
+            <div class="bento-feature-cta">View spreads →</div>
+          </div>
+          <div class="bento-feature-graphic">
+            <div class="feat-orb">⊡</div>
+            <div class="feat-ring feat-ring-1"></div>
+            <div class="feat-ring feat-ring-2"></div>
+          </div>
+        </div>
+
+        <!-- CELL 5: Latest terminal reports -->
+        <div class="bento-cell bento-reports">
+          <div class="bento-cell-label">Latest Terminal Reports</div>
+          <div id="rcMktList"><div style="font-size:0.875rem;color:var(--on-var);">Loading…</div></div>
+        </div>
+
+        <!-- CELL 6: Data freshness stat card -->
+        <div class="bento-cell bento-stat">
+          <div class="bento-cell-label">Last Updated</div>
+          <div class="bento-stat-value" id="igDate">—</div>
+          <div class="bento-stat-sub" id="igRecords">—</div>
+          <div class="bento-stat-cta" onclick="gv('terminal')">Check prices →</div>
+        </div>
+
+        <!-- CELL 7: Alert count stat -->
+        <div class="bento-cell bento-stat bento-stat-alert" id="alertStatCell">
+          <div class="bento-cell-label" style="color:rgba(255,255,255,0.65);">Price Alerts</div>
+          <div class="bento-stat-value" id="alertStatVal" style="color:#fff;">—</div>
+          <div class="bento-stat-sub" style="color:rgba(255,255,255,0.65);">significant moves this week</div>
+          <div class="bento-stat-cta" style="color:rgba(255,255,255,0.8);" onclick="document.getElementById('homeTableWrap').scrollIntoView({behavior:'smooth'})">See alerts ↓</div>
+        </div>
+
+        <!-- CELL 8: Full-width table section -->
+        <div class="bento-cell bento-table-cell" id="homeTableWrap">
+          <div class="bento-table-header">
+            <div>
+              <div class="bento-cell-label">All Commodities</div>
+              <div style="font-size:0.68rem;color:var(--on-var);" id="homeTableCount"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button class="tab-cat on" data-c="All"               onclick="homeDarkCat(this,'All')">All</button>
+              <button class="tab-cat"    data-c="Fruits"            onclick="homeDarkCat(this,'Fruits')">Fruits</button>
+              <button class="tab-cat"    data-c="Vegetables"        onclick="homeDarkCat(this,'Vegetables')">Vegetables</button>
+              <button class="tab-cat"    data-c="Onions &amp; Potatoes" onclick="homeDarkCat(this,'Onions &amp; Potatoes')">Onions &amp; Potatoes</button>
+              <button class="tab-cat"    data-c="Nuts"              onclick="homeDarkCat(this,'Nuts')">Nuts</button>
+              <div class="home-search-inline">
+                <span style="font-size:13px;color:var(--outline);">⌕</span>
+                <input id="homeTableQ" placeholder="Filter…" oninput="buildHomeTable()"/>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="dark-table">
+              <thead><tr>
                 <th style="min-width:180px;">Commodity</th>
                 <th>Market</th>
                 <th class="r">Avg price</th>
                 <th class="r">Price range</th>
                 <th class="r">WoW change</th>
                 <th class="c">Status</th>
-              </tr>
-            </thead>
-            <tbody id="homeTableBody">
-              <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--on-var);">Loading market data…</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="dark-foot">
-          <span class="dark-foot-count" id="homeTableCount"></span>
-          <div class="dark-pg-btns">
-            <button class="dark-pg-btn" id="htPrev" onclick="htPg(-1)" disabled>‹</button>
-            <button class="dark-pg-btn on" id="htPg1">1</button>
-            <button class="dark-pg-btn" id="htPg2" style="display:none;">2</button>
-            <button class="dark-pg-btn" id="htPg3" style="display:none;">3</button>
-            <button class="dark-pg-btn" id="htNext" onclick="htPg(1)">›</button>
+              </tr></thead>
+              <tbody id="homeTableBody">
+                <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--on-var);">Loading market data…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="dark-foot">
+            <span class="dark-foot-count" id="homeTableFootCount"></span>
+            <div class="dark-pg-btns">
+              <button class="dark-pg-btn" id="htPrev" onclick="htPg(-1)" disabled>‹</button>
+              <button class="dark-pg-btn on" id="htPg1">1</button>
+              <button class="dark-pg-btn" id="htPg2" style="display:none;">2</button>
+              <button class="dark-pg-btn" id="htPg3" style="display:none;">3</button>
+              <button class="dark-pg-btn" id="htNext" onclick="htPg(1)">›</button>
+            </div>
           </div>
         </div>
 
-      </div><!-- end row4 -->
-
+      </div><!-- end bento-grid -->
     </div>
   </main>
 </div>
-
 <!-- ══════════════════════════════════════
      TERMINAL MARKETS — sidebar layout
 ══════════════════════════════════════ -->
@@ -1788,8 +2074,8 @@ function buildDashboard(){
 
   // Price alert cards
   const anomalies=changes.filter(x=>Math.abs(x.ch)>4).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch)).slice(0,6);
-  document.getElementById('alertSecLbl').textContent=`Price Alerts — ${anomalies.length} significant moves this week`;
-  document.getElementById('alertCards').innerHTML=anomalies.map(x=>{
+  var asl=document.getElementById('alertStatVal'); if(asl) asl.textContent=anomalies.length;
+  var acEl=document.getElementById('alertCards'); if(acEl) acEl.innerHTML=anomalies.map(x=>{
     const isSpike=Math.abs(x.ch)>10;
     const type=isSpike?'spike':x.ch>0?'surge':'drop';
     const tag=isSpike?'⚠ Price Spike':x.ch>0?'↑ Surging':'↓ Dropping';
@@ -2106,7 +2392,7 @@ var homeDarkCatAct='All', htPgN=1, htRows=[];
 
 function homeDarkCat(el,c){
   homeDarkCatAct=c; htPgN=1;
-  document.querySelectorAll('.home-row4-filter .tab-cat').forEach(function(b){ b.classList.toggle('on',b.dataset.c===c); });
+  document.querySelectorAll('.bento-table-header .tab-cat').forEach(function(b){ b.classList.toggle('on',b.dataset.c===c); });
   buildHomeTable();
 }
 
@@ -2128,7 +2414,9 @@ function renderHomeTable(){
   htPgN=Math.min(htPgN,pages);
   var start=(htPgN-1)*PG, pg=htRows.slice(start,start+PG);
   var ct=document.getElementById('homeTableCount');
-  if(ct) ct.textContent='Showing '+(start+1)+'–'+Math.min(start+pg.length,total)+' of '+total.toLocaleString()+' listings';
+  if(ct) ct.textContent=total.toLocaleString()+' listings';
+  var ct2=document.getElementById('homeTableFootCount');
+  if(ct2) ct2.textContent='Showing '+(start+1)+'–'+Math.min(start+pg.length,total)+' of '+total.toLocaleString();
   var prev=document.getElementById('htPrev'),next=document.getElementById('htNext');
   if(prev) prev.disabled=htPgN<=1;
   if(next) next.disabled=htPgN>=pages;
