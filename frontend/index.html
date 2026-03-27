@@ -1343,6 +1343,280 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
   .bento-hero-orbs { display: none; }
 }
 
+
+/* ══════════════════════════════════════
+   COMPREHENSIVE MOBILE FIXES
+══════════════════════════════════════ */
+
+/* ── Prevent horizontal overflow on root ── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ── Smooth momentum scrolling on iOS ── */
+main, .term-sidebar, .news-scroll, .alert-cards, .hub-inline {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Touch targets: minimum 44px ── */
+.nav-link, .cat-pill, .tab-cat, .dark-pill, .pg-btn, .dark-pg-btn,
+.sb-mkt-item, .sb-all-item, .bento-tag, .hero-tag, .rc-mkt-item,
+.bni, .nlc-item { min-height: 44px; display: flex; align-items: center; }
+.nav-link { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* ── Mobile hamburger ── */
+.nav-mobile-btn {
+  display: none;
+  flex-direction: column; justify-content: center;
+  gap: 5px; width: 44px; height: 44px;
+  cursor: pointer; flex-shrink: 0;
+}
+.nav-mobile-btn span {
+  display: block; width: 22px; height: 2px;
+  background: var(--on-surf); border-radius: 2px;
+  transition: all 0.2s;
+}
+
+/* ── Mobile nav drawer ── */
+.nav-drawer {
+  display: none;
+  position: fixed; top: 60px; left: 0; right: 0;
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(190,201,194,0.2);
+  z-index: 299; padding: 8px 0 16px;
+  flex-direction: column;
+}
+.nav-drawer.open { display: flex; }
+.nav-drawer .nav-link {
+  padding: 12px var(--px);
+  font-size: 1rem; font-weight: 600;
+  border-bottom: none; border-left: 3px solid transparent;
+}
+.nav-drawer .nav-link.on {
+  border-left-color: var(--primary);
+  background: var(--s-low);
+}
+
+/* ── Bento hero mobile ── */
+@media(max-width: 768px) {
+  .bento-hero {
+    min-height: auto;
+    flex-direction: column;
+  }
+  .bento-hero-content {
+    padding: 32px 24px 28px;
+  }
+  .bento-h1 { font-size: 1.875rem; }
+  .bento-sub { font-size: 0.875rem; max-width: 100%; }
+  .bento-hero-orbs { display: none; }
+  .bento-hero-search { max-width: 100%; }
+  .bento-tags { gap: 6px; }
+}
+
+/* ── Bento grid mobile ── */
+@media(max-width: 768px) {
+  .bento-grid { gap: 10px; }
+  .bento-hero  { grid-column: span 12; }
+  .bento-news  { grid-column: span 12; }
+  .bento-feature { grid-column: span 12; min-height: 160px; }
+  .bento-reports { grid-column: span 12; }
+  .bento-stat  { grid-column: span 12; }
+  .bento-table-cell { grid-column: span 12; }
+
+  .bento-feature-graphic { width: 100px; }
+  .bento-feature-content { padding: 22px 20px; }
+  .bento-feature-title { font-size: 1.125rem; }
+}
+
+/* ── Bento table header mobile ── */
+@media(max-width: 768px) {
+  .bento-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px 10px;
+  }
+  .bento-table-header > div:last-child {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+  .bento-table-header > div:last-child::-webkit-scrollbar { display: none; }
+  .home-search-inline { margin-left: 0; flex-shrink: 0; }
+  .home-search-inline input { width: 120px; }
+}
+
+/* ── Header mobile ── */
+@media(max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-mobile-btn { display: flex; }
+  .h-search { display: none; }
+  .h-badge { display: none; }
+  .header-inner { justify-content: space-between; }
+}
+
+/* ── Terminal page mobile ── */
+@media(max-width: 900px) {
+  .term-sidebar { display: none !important; }
+  .term-content { padding: 16px 0 0 0; }
+
+  /* Show a mobile market selector above table */
+  .term-mobile-mkt-bar {
+    padding: 12px var(--px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    display: flex; gap: 8px;
+    border-bottom: 1px solid rgba(190,201,194,0.15);
+  }
+  .term-mobile-mkt-bar::-webkit-scrollbar { display: none; }
+  .term-mobile-mkt-btn {
+    flex-shrink: 0; padding: 6px 14px;
+    border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+    border: 1px solid rgba(190,201,194,0.3);
+    color: var(--on-var); white-space: nowrap;
+    transition: all 0.12s;
+  }
+  .term-mobile-mkt-btn.active {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+}
+@media(min-width: 901px) {
+  .term-mobile-mkt-bar { display: none; }
+}
+
+/* ── FOB filter bar mobile ── */
+@media(max-width: 768px) {
+  .filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-bar-right {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  .filter-bar-right .f-sel { width: 100%; }
+  .filter-bar-right > div { width: 100%; }
+}
+
+/* ── Tables mobile: horizontal scroll ── */
+@media(max-width: 768px) {
+  .ledger-tbl, .dark-table {
+    font-size: 0.8rem;
+  }
+  .ledger-tbl th, .ledger-tbl td,
+  .dark-table th, .dark-table td {
+    padding: 10px 12px;
+  }
+  .dark-table thead th,
+  .ledger-tbl thead th {
+    font-size: 0.6rem;
+    white-space: nowrap;
+  }
+  .com-name { font-size: 0.8rem; }
+  .price-main, .dt-price { font-size: 0.875rem; }
+}
+
+/* ── Sheet overlay mobile ── */
+@media(max-width: 768px) {
+  .sheet {
+    max-height: 85vh;
+    border-radius: 20px 20px 0 0;
+  }
+  /* Prevent body scroll when sheet open */
+  body.sheet-open { overflow: hidden; position: fixed; width: 100%; }
+}
+
+/* ── News cards horizontal scroll ── */
+@media(max-width: 768px) {
+  .news-scroll {
+    padding: 0 var(--px) 4px;
+    margin: 0 calc(-1 * var(--px));
+  }
+  .news-card {
+    min-width: 280px;
+  }
+}
+
+/* ── Ledger footer mobile ── */
+@media(max-width: 640px) {
+  .ledger-foot, .dark-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* ── Terminal page grid mobile ── */
+@media(max-width: 900px) {
+  .term-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Page head mobile ── */
+@media(max-width: 640px) {
+  .page-head { 
+    flex-direction: column; 
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .page-actions { display: none; }
+  .mkt-toggle-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hub-inline {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .term-content { padding: 16px 0 0 0; }
+}
+
+/* ── Fix iOS input zoom (font-size must be >= 16px on inputs) ── */
+@media(max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Prevent content shift when iOS keyboard opens ── */
+.sheet {
+  position: fixed;
+  bottom: 0;
+  /* Use env() for safe area on notched phones */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Safe area padding for notched iPhones ── */
+.header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.header-inner {
+  height: 60px;
+}
+
+/* ── Active state for touch (replaces hover on mobile) ── */
+@media(hover: none) {
+  .sb-mkt-item:hover { background: transparent; }
+  .sb-mkt-item:active { background: var(--s-low); }
+  .bento-tag:hover { background: rgba(255,255,255,0.14); }
+  .bento-tag:active { background: rgba(255,255,255,0.28); }
+  .rc-mkt-item:hover { background: transparent; }
+  .rc-mkt-item:active { background: var(--s-low); }
+  .bento-feature:hover .bento-feature-cta { color: rgba(255,255,255,0.85); }
+}
+
 </style>
 </head>
 <body>
@@ -1362,11 +1636,21 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
       <span class="h-ico">⌕</span>
       <input id="hdrQ" placeholder="Lookup commodity…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
     </div>
-    <div class="h-badge"><div class="ldot"></div><span id="freshBadge">LIVE</span></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="h-badge"><div class="ldot"></div><span id="freshBadge">LIVE</span></div>
+      <div class="nav-mobile-btn" onclick="toggleMobileNav()" id="mobileMenuBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
   </div>
 </header>
 
-<!-- ══════════════════════════════════════
+<!-- Mobile nav drawer -->
+<nav class="nav-drawer" id="mobileNavDrawer">
+  <a class="nav-link on" data-v="home"     onclick="gv('home');toggleMobileNav()">Dashboard</a>
+  <a class="nav-link"    data-v="terminal" onclick="gv('terminal');toggleMobileNav()">Terminal Markets</a>
+  <a class="nav-link"    data-v="fob"      onclick="gv('fob');toggleMobileNav()">FOB Origins</a>
+</nav>
      DASHBOARD
 ══════════════════════════════════════ -->
 <div id="view-home" class="view active">
@@ -1601,6 +1885,8 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
     <div class="term-content">
       <!-- Content pane -->
       <div id="termActivePane">
+        <!-- Mobile market picker (shown instead of sidebar on small screens) -->
+        <div class="term-mobile-mkt-bar" id="termMobileMktBar"></div>
 
         <!-- Header row: title + controls -->
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
@@ -1922,6 +2208,9 @@ function gv(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
   document.getElementById(`view-${v}`).classList.add('active');
   document.querySelectorAll('.nav-link').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('.nav-drawer .nav-link').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  var drawer=document.getElementById('mobileNavDrawer');
+  if(drawer) drawer.classList.remove('open');
   window.scrollTo(0,0);
 }
 function hdrSearch(q){if(!q.trim())return;const m=ALL.find(i=>i.commodity.toLowerCase().includes(q.toLowerCase()));if(m)openSheet(m.commodity);}
@@ -2144,14 +2433,14 @@ function termSbPickAll(){
   termActiveMkt=null; termPgN=1;
   document.getElementById('termPaneCom').textContent='All Markets';
   if(document.getElementById('termQ')) document.getElementById('termQ').value='';
-  buildSidebar(); buildTermRows(); renderTerm();
+  buildSidebar(); buildMobileMktBar(); buildTermRows(); renderTerm();
 }
 
 function termSbPickMkt(mkt){
   termActiveMkt=mkt; termPgN=1;
   document.getElementById('termPaneCom').textContent=mkt;
   if(document.getElementById('termQ')) document.getElementById('termQ').value='';
-  buildSidebar(); buildTermRows(); renderTerm();
+  buildSidebar(); buildMobileMktBar(); buildTermRows(); renderTerm();
 }
 
 function onTermSearch(){ termPgN=1; buildTermRows(); renderTerm(); }
@@ -2484,6 +2773,34 @@ function buildRcMktList(){
   el.innerHTML=rows;
 }
 
+/* ── Mobile nav ── */
+function toggleMobileNav(){
+  var d=document.getElementById('mobileNavDrawer');
+  d.classList.toggle('open');
+}
+// Close drawer when tapping outside
+document.addEventListener('click',function(e){
+  var drawer=document.getElementById('mobileNavDrawer');
+  var btn=document.getElementById('mobileMenuBtn');
+  if(drawer&&drawer.classList.contains('open')&&!drawer.contains(e.target)&&!btn.contains(e.target)){
+    drawer.classList.remove('open');
+  }
+});
+
+/* ── Mobile market bar for terminal ── */
+function buildMobileMktBar(){
+  var bar=document.getElementById('termMobileMktBar');
+  if(!bar)return;
+  var termItems=ALL.filter(function(i){ return i.market_type==='terminal'||!i.market_type; });
+  var markets=[...new Set(termItems.map(function(i){ return i.market; }).filter(Boolean))].sort();
+  var html='<button class="term-mobile-mkt-btn'+(termActiveMkt===null?' active':'')+'" onclick="termSbPickAll()">All</button>';
+  markets.forEach(function(m){
+    var safe=m.replace(/"/g,'&quot;');
+    html+='<button class="term-mobile-mkt-btn'+(termActiveMkt===m?' active':'')+'" data-mkt="'+safe+'" onclick="termSbPickMkt(this.dataset.mkt)">'+m+'</button>';
+  });
+  bar.innerHTML=html;
+}
+
 /* ── INIT ── */
 async function init(){
   try{
@@ -2500,6 +2817,7 @@ async function init(){
     buildRcMktList();
     buildHomeTable();
     buildSidebar();
+    buildMobileMktBar();
     buildTermRows(); renderTerm();
     buildFobFilters();buildFobRows();renderFob();
   }catch(e){console.error(e);}
