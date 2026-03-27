@@ -799,23 +799,24 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
      TERMINAL MARKETS — sidebar layout
 ══════════════════════════════════════ -->
 <div id="view-terminal" class="view">
-  <!-- Page header + search — full width above the split -->
-  <div style="padding-top:24px;padding-bottom:0;" class="ctr">
+  <!-- Page header -->
+  <div class="ctr" style="padding-top:24px;padding-bottom:20px;">
     <nav class="breadcrumb">
       <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
       <span class="bc-sep">›</span>
       <span class="bc-cur">Terminal Prices</span>
     </nav>
-    <div class="page-head" style="margin-bottom:14px;">
-        <p class="page-desc">What buyers pay at destination hubs. Select a commodity from the left, or search directly.</p>
+    <div class="page-head" style="margin-bottom:16px;">
+      <div>
+        <h1 class="page-title">Terminal Market Prices</h1>
+        <p class="page-desc">What buyers pay at destination hubs. Search or select a market from the left.</p>
       </div>
       <div class="page-actions">
         <button class="btn-export">↓ Export CSV</button>
       </div>
     </div>
-
-    <!-- News strip full width -->
-    <div class="news-strip-wrap" style="margin-bottom:0;padding-bottom:20px;">
+    <!-- News strip — contained inside the same max-width wrapper -->
+    <div class="news-strip-wrap" style="margin-bottom:0;">
       <div class="news-strip-head">
         <div class="news-strip-label">Terminal Market News <span class="news-live-tag">Live feed coming soon</span></div>
       </div>
@@ -842,8 +843,9 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
     </div>
   </div>
 
-  <!-- Sidebar + content split -->
-  <div style="max-width:var(--max-w);margin:0 auto;border-top:1px solid rgba(190,201,194,0.18);display:grid;grid-template-columns:220px 1fr;gap:0;align-items:start;min-height:calc(100vh - 280px);">
+  <!-- Sidebar + content — full-width row but content constrained by inner padding -->
+  <div style="border-top:1px solid rgba(190,201,194,0.18);">
+    <div style="max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:220px 1fr;gap:0;align-items:start;min-height:calc(100vh - 240px);">
 
     <!-- ── LEFT SIDEBAR ── -->
     <aside class="term-sidebar">
@@ -923,8 +925,9 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 
       </div><!-- end termActivePane -->
     </div><!-- end term-content -->
-  </div><!-- end grid -->
-</div>
+    </div><!-- end grid -->
+  </div><!-- end border wrapper -->
+</div><!-- end view-terminal -->
 
 <!-- ══════════════════════════════════════
      FOB ORIGINS
