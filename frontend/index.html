@@ -574,43 +574,32 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 /* ══════════════════════════════════════
    TERMINAL LAYOUT — sidebar + content
 ══════════════════════════════════════ */
-.term-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  min-height: calc(100vh - 280px);
-  align-items: start;
-}
-@media(max-width: 900px) {
-  .term-layout { grid-template-columns: 1fr; }
-  .term-sidebar { display: none; }
-}
 
 /* ── Left sidebar ── */
 .term-sidebar {
   position: sticky;
-  top: 76px;
-  height: calc(100vh - 90px);
+  top: 60px;
+  height: calc(100vh - 60px);
   overflow-y: auto;
   border-right: 1px solid rgba(190,201,194,0.18);
-  padding-bottom: 40px;
   scrollbar-width: none;
 }
 .term-sidebar::-webkit-scrollbar { display: none; }
+@media(max-width: 900px) { .term-sidebar { display: none; } }
 
 /* All Markets item */
 .sb-all-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 20px 14px;
+  padding: 20px 22px 18px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(190,201,194,0.15);
-  margin-bottom: 6px;
   transition: background 0.12s;
+  border-bottom: 1px solid rgba(190,201,194,0.15);
 }
 .sb-all-item:hover { background: var(--s-low); }
 .sb-all-name {
   font-family: var(--f-data);
-  font-size: 0.875rem; font-weight: 700;
-  color: var(--on-var); letter-spacing: 0.02em;
+  font-size: 0.9375rem; font-weight: 700;
+  color: var(--on-surf);
 }
 .sb-all-item.active .sb-all-name { color: var(--primary); }
 .sb-all-count {
@@ -621,7 +610,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 /* Individual market items */
 .sb-mkt-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 20px;
+  padding: 13px 22px;
   cursor: pointer;
   transition: background 0.1s;
   gap: 12px;
@@ -631,35 +620,19 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 .sb-mkt-item.active {
   background: rgba(0,69,50,0.07);
   border-left-color: var(--primary);
-  padding-left: 18px;
+  padding-left: 20px;
 }
 .sb-mkt-name {
-  font-size: 0.8125rem; font-weight: 500; color: var(--on-surf); flex: 1;
+  font-size: 0.875rem; font-weight: 500; color: var(--on-surf); flex: 1;
 }
 .sb-mkt-item.active .sb-mkt-name { font-weight: 700; color: var(--primary); }
 .sb-mkt-count {
   font-family: var(--f-data);
-  font-size: 0.7rem; color: var(--outline-var); flex-shrink: 0;
+  font-size: 0.72rem; color: var(--outline-var); flex-shrink: 0;
 }
 
 /* ── Right content pane ── */
-.term-content { padding: 0 0 0 32px; min-width: 0; }
-
-/* Empty state */
-.term-empty-state {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 80px 20px; text-align: center;
-}
-.tes-icon {
-  width: 52px; height: 52px; border-radius: 14px; background: var(--s-low);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.375rem; margin-bottom: 16px;
-}
-.tes-title {
-  font-family: var(--f-data); font-size: 1.0625rem; font-weight: 700;
-  color: var(--on-surf); margin-bottom: 8px;
-}
-.tes-body { font-size: 0.875rem; color: var(--on-var); line-height: 1.6; max-width: 260px; }
+.term-content { padding: 28px 0 0 32px; min-width: 0; }
 
 
 </style>
@@ -827,15 +800,13 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 ══════════════════════════════════════ -->
 <div id="view-terminal" class="view">
   <!-- Page header + search — full width above the split -->
-  <div style="padding-top:32px;padding-bottom:20px;" class="ctr">
+  <div style="padding-top:24px;padding-bottom:0;" class="ctr">
     <nav class="breadcrumb">
       <a onclick="gv('home')" style="cursor:pointer;">Markets</a>
       <span class="bc-sep">›</span>
       <span class="bc-cur">Terminal Prices</span>
     </nav>
-    <div class="page-head">
-      <div>
-        <h1 class="page-title">Terminal Market Prices</h1>
+    <div class="page-head" style="margin-bottom:14px;">
         <p class="page-desc">What buyers pay at destination hubs. Select a commodity from the left, or search directly.</p>
       </div>
       <div class="page-actions">
@@ -844,7 +815,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
     </div>
 
     <!-- News strip full width -->
-    <div class="news-strip-wrap" style="margin-bottom:0;">
+    <div class="news-strip-wrap" style="margin-bottom:0;padding-bottom:20px;">
       <div class="news-strip-head">
         <div class="news-strip-label">Terminal Market News <span class="news-live-tag">Live feed coming soon</span></div>
       </div>
@@ -872,7 +843,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
   </div>
 
   <!-- Sidebar + content split -->
-  <div style="max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:224px 1fr;gap:0;align-items:start;min-height:calc(100vh - 320px);">
+  <div style="max-width:var(--max-w);margin:0 auto;border-top:1px solid rgba(190,201,194,0.18);display:grid;grid-template-columns:220px 1fr;gap:0;align-items:start;min-height:calc(100vh - 280px);">
 
     <!-- ── LEFT SIDEBAR ── -->
     <aside class="term-sidebar">
@@ -887,14 +858,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 
     <!-- ── RIGHT CONTENT ── -->
     <div class="term-content">
-      <!-- Empty state (shown on load before selection) -->
-      <div class="term-empty-state" id="termEmptyState">
-        <div class="tes-icon">⊛</div>
-        <div class="tes-title">Select a commodity</div>
-        <p class="tes-body">Choose a category from the left sidebar, then select a commodity to view its prices across all terminal markets.</p>
-      </div>
-
-      <!-- Content pane (always visible once data loads) -->
+      <!-- Content pane -->
       <div id="termActivePane">
 
         <!-- Header row: title + controls -->
