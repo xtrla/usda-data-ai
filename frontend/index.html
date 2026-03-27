@@ -716,7 +716,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 
 /* Hero card */
 .hero-card {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-cont) 100%);
+  background: linear-gradient(140deg, var(--primary) 0%, #1a5c38 60%, var(--primary-cont) 100%);
   border-radius: var(--r-2xl);
   padding: 44px 40px;
   position: relative;
@@ -726,43 +726,44 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
   justify-content: space-between;
   min-height: 360px;
 }
+.hero-card > * { position: relative; z-index: 2; }
 .hero-card::after {
   content: '';
-  position: absolute;
-  right: -60px; bottom: -60px;
-  width: 280px; height: 280px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  pointer-events: none;
-}
-.hero-card::before {
-  content: '';
-  position: absolute;
-  right: 40px; top: -40px;
-  width: 180px; height: 180px;
+  position: absolute; z-index: 1;
+  right: -80px; bottom: -80px;
+  width: 340px; height: 340px;
   border-radius: 50%;
   background: rgba(255,255,255,0.04);
   pointer-events: none;
 }
+.hero-card::before {
+  content: '';
+  position: absolute; z-index: 1;
+  right: 60px; top: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.035);
+  pointer-events: none;
+}
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.18);
   border-radius: 100px; padding: 5px 13px;
   font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255,255,255,0.92);
   margin-bottom: 20px; width: fit-content;
 }
 .hero-h1 {
   font-family: var(--f-data);
-  font-size: clamp(1.75rem, 3.5vw, 2.625rem);
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
   font-weight: 700; letter-spacing: -0.04em;
-  color: #fff; line-height: 1.1;
+  color: #fff; line-height: 1.05;
   margin-bottom: 14px;
 }
 .hero-sub {
-  font-size: 0.9375rem; color: rgba(255,255,255,0.78);
-  line-height: 1.6; margin-bottom: 28px;
+  font-size: 0.9375rem; color: rgba(255,255,255,0.82);
+  line-height: 1.65; margin-bottom: 28px;
   max-width: 420px;
 }
 /* Suggested searches */
@@ -972,90 +973,99 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
 
 /* ROW 4: Dark section — filters + table */
 .home-row4 {
-  background: var(--on-surf);
+  background: var(--bg);
+  border: 1px solid rgba(190,201,194,0.18);
   border-radius: var(--r-2xl);
   overflow: hidden;
   margin-bottom: 48px;
 }
 .home-row4-filter {
-  padding: 18px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(190,201,194,0.15);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
 }
-.dark-pill {
-  padding: 6px 16px; border-radius: 100px;
-  font-size: 0.8rem; font-weight: 600;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.65);
-  transition: all 0.15s; cursor: pointer;
+
+/* ── Tab-style category selectors ── */
+.tab-cat {
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 2px solid transparent;
+  padding: 4px 14px 6px;
+  font-size: 0.8125rem; font-weight: 600;
+  color: var(--on-var);
+  cursor: pointer; background: none;
+  transition: color 0.14s, border-color 0.14s;
+  white-space: nowrap;
 }
-.dark-pill:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
-.dark-pill.on { background: #fff; color: var(--on-surf); border-color: #fff; }
-.dark-search {
+.tab-cat:hover { color: var(--on-surf); }
+.tab-cat.on { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-divider { width: 1px; height: 16px; background: rgba(190,201,194,0.25); margin: 0 2px; }
+
+.home-search-inline {
   display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--s-low);
   border-radius: 100px; padding: 6px 14px;
   margin-left: auto;
 }
-.dark-search input {
-  font-size: 0.8125rem; color: #fff; outline: none;
+.home-search-inline input {
+  font-size: 0.8125rem; color: var(--on-surf); outline: none;
   background: transparent; width: 160px;
 }
-.dark-search input::placeholder { color: rgba(255,255,255,0.4); }
+.home-search-inline input::placeholder { color: var(--outline); }
 
-/* Table inside dark section */
+/* Light commodity table */
 .dark-table { width: 100%; border-collapse: collapse; }
-.dark-table thead tr { background: rgba(255,255,255,0.05); }
+.dark-table thead tr { background: var(--s-low); }
 .dark-table thead th {
   padding: 11px 20px;
   font-size: 0.67rem; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase;
-  color: rgba(255,255,255,0.45); text-align: left;
+  color: var(--on-var); text-align: left;
+  border-bottom: 1px solid rgba(190,201,194,0.15);
 }
 .dark-table thead th.r { text-align: right; }
 .dark-table thead th.c { text-align: center; }
 .dark-table tbody tr {
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(190,201,194,0.1);
   cursor: pointer; transition: background 0.08s;
 }
 .dark-table tbody tr:last-child { border-bottom: none; }
-.dark-table tbody tr:hover { background: rgba(255,255,255,0.05); }
-.dark-table tbody td { padding: 13px 20px; vertical-align: middle; color: #fff; }
+.dark-table tbody tr:hover { background: var(--s-low) !important; }
+.dark-table tbody tr:nth-child(even) { background: rgba(239,244,255,0.4); }
+.dark-table tbody td { padding: 13px 20px; vertical-align: middle; }
 .dark-table tbody td.r { text-align: right; }
 .dark-table tbody td.c { text-align: center; }
-.dt-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
-.dt-sub  { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top:2px; }
-.dt-price { font-family:var(--f-data); font-size:1rem; font-weight:700; color:#fff; }
-.dt-wow-up   { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:#6ee7b7; }
-.dt-wow-dn   { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:#fca5a5; }
-.dt-wow-flat { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:rgba(255,255,255,0.4); }
+.dt-name { font-size: 0.875rem; font-weight: 600; color: var(--on-surf); }
+.dt-sub  { font-size: 0.7rem; color: var(--on-var); margin-top:2px; }
+.dt-price { font-family:var(--f-data); font-size:1rem; font-weight:700; color:var(--on-surf); }
+.dt-wow-up   { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:var(--primary); }
+.dt-wow-dn   { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:var(--err); }
+.dt-wow-flat { font-family:var(--f-data); font-size:0.78rem; font-weight:700; color:var(--on-var); }
 .dt-icon {
   width:30px;height:30px;border-radius:6px;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--f-data);font-size:0.55rem;font-weight:700;
 }
 
-/* Dark table footer */
+/* Table footer */
 .dark-foot {
   padding: 12px 20px;
   display: flex; align-items: center; justify-content: space-between;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(190,201,194,0.12);
   flex-wrap: wrap; gap: 8px;
 }
-.dark-foot-count { font-size:0.72rem; color:rgba(255,255,255,0.4); }
+.dark-foot-count { font-size:0.72rem; color:var(--on-var); }
 .dark-pg-btns { display:flex; gap:4px; }
 .dark-pg-btn {
   width:28px;height:28px;border-radius:5px;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--f-data);font-size:0.75rem;font-weight:700;
-  color:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.12);
+  color:var(--on-var);
+  border:1px solid rgba(190,201,194,0.3);
   transition:all 0.12s;
 }
-.dark-pg-btn:hover:not(:disabled){color:#fff;border-color:rgba(255,255,255,0.3);}
-.dark-pg-btn.on{background:rgba(255,255,255,0.12);color:#fff;}
-.dark-pg-btn:disabled{opacity:0.25;cursor:default;}
+.dark-pg-btn:hover:not(:disabled){ border-color:var(--primary); color:var(--primary); }
+.dark-pg-btn.on{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.dark-pg-btn:disabled{ opacity:0.3; cursor:default; }
 
 </style>
 </head>
@@ -1186,47 +1196,21 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
         </div>
       </div><!-- end row2 -->
 
-      <!-- ══ ROW 3: Intro card (left) + Notify (right) ══ -->
-      <div class="home-row3">
+      <!-- ══ ROW 3 REMOVED ══ -->
 
-        <!-- Left: intro to the table -->
-        <div class="intro-card">
-          <div class="intro-card-label">Price Alerts — <span id="alertSecLbl2"></span></div>
-          <div class="intro-card-title" id="dashAlertTitle">Market intelligence from USDA data.</div>
-          <p class="intro-card-body">Commodities showing unusual price movement this week — potential supply disruptions or demand shifts that may affect your markets.</p>
-        </div>
-
-        <!-- Right: notify/alert signup -->
-        <div class="notify-card">
-          <div class="notify-title">Get price alerts by email</div>
-          <p class="notify-body">Sign up to receive daily market alerts for the commodities you trade. Be the first to know when prices shift.</p>
-          <div class="notify-form">
-            <input type="email" placeholder="your@email.com"/>
-            <button class="notify-btn">Notify me</button>
-          </div>
-          <div class="notify-note">Free during beta. No spam. Unsubscribe anytime.</div>
-        </div>
-
-      </div><!-- end row3 -->
-
-      <!-- ══ ROW 4: Dark section — alerts + filter + table ══ -->
+      <!-- ══ ROW 4: Commodity table section ══ -->
       <div class="home-row4">
 
-        <!-- Price alert chips (horizontal scroll inside dark section) -->
-        <div style="padding:20px 24px 0;">
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px;" id="alertSecLbl">Price Alerts</div>
-          <div class="alert-cards" id="alertCards" style="margin-bottom:0;"></div>
-        </div>
-
-        <!-- Filter bar -->
-        <div class="home-row4-filter" style="margin-top:20px;">
-          <button class="dark-pill on" data-c="All"               onclick="homeDarkCat(this,'All')">All</button>
-          <button class="dark-pill"    data-c="Fruits"            onclick="homeDarkCat(this,'Fruits')">🍎 Fruits</button>
-          <button class="dark-pill"    data-c="Vegetables"        onclick="homeDarkCat(this,'Vegetables')">🥬 Vegetables</button>
-          <button class="dark-pill"    data-c="Onions & Potatoes" onclick="homeDarkCat(this,'Onions & Potatoes')">🧅 Onions &amp; Potatoes</button>
-          <button class="dark-pill"    data-c="Nuts"              onclick="homeDarkCat(this,'Nuts')">🥜 Nuts</button>
-          <div class="dark-search">
-            <span style="font-size:13px;color:rgba(255,255,255,0.4);">⌕</span>
+        <!-- Filter bar — tab style -->
+        <div class="home-row4-filter">
+          <button class="tab-cat on" data-c="All"               onclick="homeDarkCat(this,'All')">All</button>
+          <div class="tab-divider"></div>
+          <button class="tab-cat"    data-c="Fruits"            onclick="homeDarkCat(this,'Fruits')">Fruits</button>
+          <button class="tab-cat"    data-c="Vegetables"        onclick="homeDarkCat(this,'Vegetables')">Vegetables</button>
+          <button class="tab-cat"    data-c="Onions & Potatoes" onclick="homeDarkCat(this,'Onions & Potatoes')">Onions &amp; Potatoes</button>
+          <button class="tab-cat"    data-c="Nuts"              onclick="homeDarkCat(this,'Nuts')">Nuts</button>
+          <div class="home-search-inline">
+            <span style="font-size:13px;color:var(--outline);">⌕</span>
             <input id="homeTableQ" placeholder="Filter table…" oninput="buildHomeTable()"/>
           </div>
         </div>
@@ -1245,7 +1229,7 @@ footer{background:#f1f5fb;border-top:1px solid rgba(190,201,194,0.2);padding:24p
               </tr>
             </thead>
             <tbody id="homeTableBody">
-              <tr><td colspan="6" style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);">Loading market data…</td></tr>
+              <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--on-var);">Loading market data…</td></tr>
             </tbody>
           </table>
         </div>
@@ -2123,7 +2107,7 @@ var homeDarkCatAct='All', htPgN=1, htRows=[];
 
 function homeDarkCat(el,c){
   homeDarkCatAct=c; htPgN=1;
-  document.querySelectorAll('.home-row4-filter .dark-pill').forEach(function(b){ b.classList.toggle('on',b.dataset.c===c); });
+  document.querySelectorAll('.home-row4-filter .tab-cat').forEach(function(b){ b.classList.toggle('on',b.dataset.c===c); });
   buildHomeTable();
 }
 
@@ -2161,25 +2145,28 @@ function renderHomeTable(){
   var tbody=document.getElementById('homeTableBody');
   if(!tbody)return;
   if(!pg.length){ tbody.innerHTML='<tr><td colspan="6" style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);">No results found.</td></tr>'; return; }
-  var cats={fruit:'rgba(110,231,183,0.15)',veg:'rgba(147,197,253,0.15)',onion:'rgba(251,191,36,0.15)',nut:'rgba(249,168,212,0.15)',other:'rgba(255,255,255,0.08)'};
-  var catcols={fruit:'#6ee7b7',veg:'#93c5fd',onion:'#fbbf24',nut:'#f9a8d4',other:'rgba(255,255,255,0.5)'};
-  function iconStyle(c){ var cc=catClass(c); var k=cc==='cat-fruit'?'fruit':cc==='cat-veg'?'veg':cc==='cat-onion'?'onion':cc==='cat-nut'?'nut':'other'; return 'background:'+cats[k]+';color:'+catcols[k]+';'; }
   tbody.innerHTML=pg.map(function(item){
     var ch=trendPct(item.commodity),avg=avgP([item]);
     var lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
     var st=getStatus(ch);
     var wCls=ch>0.5?'dt-wow-up':ch<-0.5?'dt-wow-dn':'dt-wow-flat';
     var wStr=ch>0.5?'↑ +'+ch.toFixed(1)+'%':ch<-0.5?'↓ '+ch.toFixed(1)+'%':'— 0.0%';
-    var dotClr=st.k==='stable'||st.k==='bullish'?'#6ee7b7':st.k==='neutral'?'rgba(255,255,255,0.3)':'#fca5a5';
-    var lblClr=st.k==='stable'||st.k==='bullish'?'#6ee7b7':st.k==='neutral'?'rgba(255,255,255,0.4)':'#fca5a5';
+    var dotClr=st.k==='stable'||st.k==='bullish'?'var(--primary)':st.k==='neutral'?'var(--outline-var)':'var(--err)';
+    var lblClr=st.k==='stable'||st.k==='bullish'?'var(--primary)':st.k==='neutral'?'var(--on-var)':'var(--err)';
     return '<tr data-com="'+item.commodity.replace(/"/g,'&quot;')+'" onclick="openSheet(this.dataset.com)">'
-      +'<td><div style="display:flex;align-items:center;gap:10px;"><div class="dt-icon" style="'+iconStyle(item.commodity)+'">'+ticker(item.commodity)+'</div>'
-      +'<div><div class="dt-name">'+item.commodity+'</div><div class="dt-sub">'+([item.variety,item.size,item.grade].filter(Boolean).join(' · ')||item.package||'—')+'</div></div></div></td>'
-      +'<td><div class="dt-sub" style="color:rgba(255,255,255,0.65);">'+(item.market||'—')+'</div></td>'
+      +'<td><div style="display:flex;align-items:center;gap:10px;">'
+        +'<div class="dt-icon '+catClass(item.commodity)+'">'+ticker(item.commodity)+'</div>'
+        +'<div><div class="dt-name">'+item.commodity+'</div>'
+        +'<div class="dt-sub">'+([item.variety,item.size,item.grade].filter(Boolean).join(' · ')||item.package||'—')+'</div>'
+        +'</div></div></td>'
+      +'<td><div class="dt-sub">'+(item.market||'—')+'</div></td>'
       +'<td class="r"><span class="dt-price">'+fP(avg)+'</span></td>'
-      +'<td class="r"><span class="dt-sub" style="color:rgba(255,255,255,0.5);">'+fR(lo,hi)+'</span></td>'
+      +'<td class="r"><span class="dt-sub">'+fR(lo,hi)+'</span></td>'
       +'<td class="r"><span class="'+wCls+'">'+wStr+'</span></td>'
-      +'<td class="c"><div style="display:flex;align-items:center;justify-content:center;gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:'+dotClr+';"></div><span style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:'+lblClr+';">'+st.l+'</span></div></td>'
+      +'<td class="c"><div style="display:flex;align-items:center;justify-content:center;gap:6px;">'
+        +'<div style="width:6px;height:6px;border-radius:50%;background:'+dotClr+';"></div>'
+        +'<span style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:'+lblClr+';">'+st.l+'</span>'
+      +'</div></td>'
     +'</tr>';
   }).join('');
 }
