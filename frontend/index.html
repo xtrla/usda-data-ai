@@ -1748,7 +1748,8 @@ main, .term-sidebar, .news-scroll, .alert-cards, .hub-inline {
 
         <!-- CELL 5: Latest terminal reports -->
         <div class="bento-cell bento-reports">
-          <div class="bento-cell-label">Latest Terminal Reports</div>
+          <div class="bento-cell-label">Today's Reports</div>
+          <div style="font-size:0.7rem;color:var(--on-var);margin-bottom:12px;" id="rcReportDate"></div>
           <div id="rcMktList"><div style="font-size:0.875rem;color:var(--on-var);">Loading…</div></div>
         </div>
 
@@ -2749,26 +2750,32 @@ function goTermMarket(mkt){
 }
 
 function buildRcMktList(){
-  var termItems=ALL.filter(function(i){ return i.market_type==='terminal'||!i.market_type; });
-  var mkts=[...new Set(termItems.map(function(i){ return i.market; }).filter(Boolean))];
-  mkts.sort(function(a,b){
-    return termItems.filter(function(i){ return i.market===b; }).length
-          -termItems.filter(function(i){ return i.market===a; }).length;
-  });
   var el=document.getElementById('rcMktList');
   if(!el)return;
+  var latestDate=DATES[0]&&DATES[0].date;
+  if(!latestDate){el.innerHTML='<div style="font-size:0.875rem;color:var(--on-var);">No data yet.</div>';return;}
+  var d=new Date(latestDate+'T12:00:00');
+  var dateLabel=d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  var rcDate=document.getElementById('rcReportDate');
+  if(rcDate) rcDate.textContent=dateLabel;
+  var todayItems=(DATED[latestDate]||[]).filter(function(i){return i.market_type==='terminal'||!i.market_type;});
+  var todayMkts=[...new Set(todayItems.map(function(i){return i.market;}).filter(Boolean))].sort();
+  if(!todayMkts.length){el.innerHTML='<div style="font-size:0.875rem;color:var(--on-var);">No terminal reports for this date.</div>';return;}
   var rows='';
-  mkts.slice(0,5).forEach(function(mkt){
-    var count=termItems.filter(function(i){ return i.market===mkt; }).length;
-    var mktComms=[...new Set(termItems.filter(function(i){ return i.market===mkt; }).map(function(i){ return i.commodity; }))];
-    var avgCh=mktComms.length?mktComms.reduce(function(s,c){ return s+trendPct(c); },0)/mktComms.length:0;
+  todayMkts.forEach(function(mkt){
+    var mktItems=todayItems.filter(function(i){return i.market===mkt;});
+    var comCount=[...new Set(mktItems.map(function(i){return i.commodity;}))].length;
+    var mktComms=[...new Set(mktItems.map(function(i){return i.commodity;}))];
+    var avgCh=mktComms.length?mktComms.reduce(function(s,c){return s+trendPct(c);},0)/mktComms.length:0;
     var cls=avgCh>0.5?'up':avgCh<-0.5?'dn':'flat';
-    var pct=avgCh>0.5?'+'+avgCh.toFixed(1)+'%':avgCh<-0.5?avgCh.toFixed(1)+'%':'Stable';
+    var trend=avgCh>0.5?'↑':avgCh<-0.5?'↓':'—';
     rows+='<div class="rc-mkt-item" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="goTermMarket(this.dataset.mkt)" style="cursor:pointer;">'
-      +'<span class="rc-mkt-name">'+mkt+'</span>'
-      +'<span class="rc-mkt-count">'+count+' listings</span>'
-      +'<span class="rc-mkt-badge '+cls+'">'+pct+'</span>'
-      +'</div>';
+      +'<div style="display:flex;flex-direction:column;flex:1;min-width:0;">'
+        +'<span class="rc-mkt-name">'+mkt+'</span>'
+        +'<span class="rc-mkt-count">'+comCount+' commodit'+(comCount===1?'y':'ies')+' reported</span>'
+      +'</div>'
+      +'<span class="rc-mkt-badge '+cls+'">'+trend+'</span>'
+    +'</div>';
   });
   el.innerHTML=rows;
 }
