@@ -536,6 +536,132 @@ main { padding-top: 54px; }
 @media(hover: none) { .feat-card:hover { transform: none; } .rep-card:hover { transform: none; } }
 @media(max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
 .r { text-align: right; } .c { text-align: center; }
+
+/* ════════════════════════════════════════
+   FOB ORIGINS PAGE — specific styles
+════════════════════════════════════════ */
+.fob-legend {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  font-size: .72rem; color: var(--i3); margin-bottom: 16px;
+}
+.fob-legend-item { display: flex; align-items: center; gap: 5px; }
+.fob-legend-note { color: var(--i4); margin-left: auto; }
+.fob-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.fob-dot.wide  { background: var(--g); }
+.fob-dot.tight { background: var(--red); }
+
+.fob-filter-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.fob-cats { display: flex; gap: 6px; flex-wrap: wrap; }
+.fob-controls { display: flex; gap: 8px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+
+.fob-organic-toggle {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .78rem; font-weight: 500; color: var(--i3); cursor: pointer;
+}
+.fob-organic-toggle input { accent-color: var(--g); }
+
+/* Price cells */
+.fob-price-cell { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.fob-price-main { font-family: var(--fh); font-size: .9375rem; font-weight: 700; color: var(--ink); }
+.fob-price-range { font-size: .7rem; color: var(--i4); }
+.fob-mostly { font-size: .78rem; color: var(--i3); font-style: italic; }
+.fob-mostly-na { font-size: .72rem; color: var(--i4); }
+
+/* Spec cell */
+.fob-spec { display: flex; flex-direction: column; gap: 2px; }
+.fob-spec-main { font-size: .8125rem; font-weight: 500; color: var(--ink-2); }
+.fob-spec-origin { font-size: .7rem; color: var(--i3); margin-top: 1px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fob-shipping-pt { font-size: .8rem; color: var(--i2); font-weight: 500; }
+
+/* Spread cell */
+.spread-cell { display: flex; align-items: center; gap: 7px; justify-content: flex-end; }
+.sbar-track { width: 36px; height: 3px; background: var(--bd2); border-radius: var(--rp); overflow: hidden; flex-shrink: 0; }
+.sbar-fill  { height: 100%; border-radius: var(--rp); }
+.sbar-fill.pos  { background: var(--g); }
+.sbar-fill.neg  { background: var(--red); }
+.spread-val { font-family: var(--fh); font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.spread-val.pos { color: var(--g); }
+.spread-val.neg { color: var(--red); }
+.spread-val.na  { color: var(--i4); font-weight: 400; font-size: .72rem; }
+.spread-pct { font-size: .68rem; color: var(--i4); }
+
+/* Movement badge */
+.mvmt-cell { display: flex; align-items: center; }
+.mvmt-badge { font-size: .68rem; font-weight: 600; padding: 2px 8px; border-radius: var(--rp); text-transform: capitalize; display: inline-flex; align-items: center; gap: 3px; }
+.mvmt-badge.higher { background: var(--gl); color: var(--g); }
+.mvmt-badge.lower  { background: var(--rbg); color: var(--red); }
+.mvmt-badge.steady { background: var(--bg); color: var(--i3); }
+.mvmt-badge.active { background: var(--gl); color: var(--g); }
+.mvmt-badge.slow   { background: var(--abg); color: var(--amb); }
+
+/* Organic badge */
+.badge-org { display: inline-flex; align-items: center; gap: 3px; font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: #f0fdf4; color: #15803d; border-radius: var(--rp); padding: 1px 6px; }
+
+/* Region badge */
+.reg-badge { display: inline-block; font-size: .6rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 6px; border-radius: var(--rp); }
+.reg-badge.border  { background: var(--abg); color: var(--amb); }
+.reg-badge.west    { background: var(--gl);  color: var(--g); }
+.reg-badge.east    { background: #eef2ff; color: #4338ca; }
+.reg-badge.south   { background: #fce7f3; color: #9d174d; }
+.reg-badge.imports { background: #f0f9ff; color: #0369a1; }
+
+@media(max-width:900px){
+  .fob-filter-row { flex-direction: column; align-items: flex-start; }
+  .fob-controls { margin-left: 0; width: 100%; }
+  .fob-legend-note { display: none; }
+}
+
+
+/* FOB page */
+.fob-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.72rem;color:var(--i3);margin-bottom:14px;padding:10px 14px;background:var(--wh);border:1.5px solid var(--bd);border-radius:var(--rl);box-shadow:var(--s1);}
+.fob-legend-item{display:flex;align-items:center;gap:5px;}
+.fob-legend-note{color:var(--i4);margin-left:auto;}
+.fob-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.fob-dot.wide{background:var(--g);}
+.fob-dot.tight{background:var(--red);}
+.fob-filter-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.fob-cats{display:flex;gap:6px;flex-wrap:wrap;}
+.fob-controls{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;}
+.fob-organic-toggle{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;color:var(--i3);cursor:pointer;}
+.fob-organic-toggle input{accent-color:var(--g);}
+.fob-price-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.fob-price-main{font-family:var(--fh);font-size:.9375rem;font-weight:700;color:var(--ink);}
+.fob-mostly{font-size:.75rem;color:var(--i3);}
+.fob-mostly-na{font-size:.72rem;color:var(--i4);}
+.fob-spec{display:flex;flex-direction:column;gap:2px;}
+.fob-spec-main{font-size:.8rem;font-weight:500;color:var(--i2);}
+.fob-spec-origin{font-size:.7rem;color:var(--i3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fob-shipping-pt{font-size:.8rem;color:var(--i2);font-weight:500;}
+.spread-cell{display:flex;align-items:center;gap:7px;justify-content:flex-end;}
+.sbar-track{width:36px;height:3px;background:var(--bd2);border-radius:var(--rp);overflow:hidden;flex-shrink:0;}
+.sbar-fill{height:100%;border-radius:var(--rp);}
+.sbar-fill.pos{background:var(--g);}
+.sbar-fill.neg{background:var(--red);}
+.spread-val{font-family:var(--fh);font-size:.78rem;font-weight:700;white-space:nowrap;}
+.spread-val.pos{color:var(--g);}
+.spread-val.neg{color:var(--red);}
+.spread-val.na{color:var(--i4);font-weight:400;font-size:.72rem;}
+.spread-pct{font-size:.68rem;color:var(--i4);}
+.mvmt-cell{display:flex;align-items:center;}
+.mvmt-badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:var(--rp);display:inline-flex;align-items:center;}
+.mvmt-badge.higher{background:var(--gl);color:var(--g);}
+.mvmt-badge.lower{background:var(--rbg);color:var(--red);}
+.mvmt-badge.steady{background:var(--bg);color:var(--i3);}
+.mvmt-badge.active{background:var(--gl);color:var(--g);}
+.mvmt-badge.slow{background:var(--abg);color:var(--amb);}
+.badge-org{display:inline-flex;align-items:center;gap:2px;font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#f0fdf4;color:#15803d;border-radius:var(--rp);padding:1px 6px;}
+.reg-badge{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:var(--rp);}
+.reg-badge.border{background:var(--abg);color:var(--amb);}
+.reg-badge.west{background:var(--gl);color:var(--g);}
+.reg-badge.east{background:#eef2ff;color:#4338ca;}
+.reg-badge.south{background:#fce7f3;color:#9d174d;}
+.reg-badge.imports{background:#f0f9ff;color:#0369a1;}
+@media(max-width:900px){.fob-filter-row{flex-direction:column;align-items:flex-start;}.fob-controls{margin-left:0;width:100%;}.fob-legend-note{display:none;}}
 </style>
 </head>
 <body>
@@ -555,7 +681,7 @@ main { padding-top: 54px; }
       <input id="hdrQ" placeholder="Search commodities — avocados, tomatoes…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
     </div>
     <div class="nav-right">
-      <div class="live-pill"><div class="live-dot"></div><span id="freshBadge">Updated Mar —</span></div>
+      <div class="live-pill"><div class="live-dot"></div><span id="freshBadge">Updated —</span></div>
       <div class="nav-av">U</div>
       <div class="nav-ham" onclick="toggleNav()" id="hamBtn"><span></span><span></span><span></span></div>
     </div>
@@ -569,7 +695,6 @@ main { padding-top: 54px; }
   <a class="nav-link"    data-v="alerts"   onclick="gv('alerts');toggleNav()">Alerts</a>
 </nav>
 
-<!-- Sheet -->
 <div class="sh-ov" id="shOv" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
   <div class="sh-drag"></div>
@@ -708,6 +833,8 @@ main { padding-top: 54px; }
 </div>
 
 <!-- ═══ TERMINAL MARKETS ═══ -->
+
+<!-- ═══ TERMINAL MARKETS ═══ -->
 <div id="view-terminal" class="view">
   <div class="term-mob" id="termMobBar"></div>
   <div class="term-shell">
@@ -768,48 +895,61 @@ main { padding-top: 54px; }
 </div>
 
 <!-- ═══ FOB ORIGINS ═══ -->
+
+<!-- ═══ FOB ORIGINS ═══ -->
 <div id="view-fob" class="view">
 <div class="page-wrap">
-  <div class="page-top">
-    <div class="page-title">FOB Origin Prices &amp; Margin Spread</div>
-    <div class="page-desc">Shipper prices at source — with spread vs. terminal market calculated. Positive spread = potential margin before freight.</div>
+  <div style="margin-bottom:20px;">
+    <div class="page-title">FOB Origin Prices</div>
+    <div class="page-desc">What shippers charge at source. Spread = terminal avg − FOB price — your potential margin before freight.</div>
   </div>
-
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-    <button class="cpill on" data-c="All"               onclick="fobSetCat(this,'All')">All</button>
-    <button class="cpill"    data-c="Fruits"            onclick="fobSetCat(this,'Fruits')">🍎 Fruits</button>
-    <button class="cpill"    data-c="Vegetables"        onclick="fobSetCat(this,'Vegetables')">🥬 Vegetables</button>
-    <button class="cpill"    data-c="Onions & Potatoes" onclick="fobSetCat(this,'Onions & Potatoes')">🧅 Onions</button>
-    <button class="cpill"    data-c="Nuts"              onclick="fobSetCat(this,'Nuts')">🥜 Nuts</button>
-    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;">
-      <select class="f-sel" id="fobOriginFilter" onchange="onFobSearch()"><option value="">All origins</option></select>
+  <div class="fob-legend">
+    <span class="fob-legend-item"><span class="fob-dot wide"></span> Wide spread — strong margin</span>
+    <span class="fob-legend-item"><span class="fob-dot tight"></span> Tight / negative — watch carefully</span>
+    <span class="fob-legend-note">Prices shown: FOB ask range + where most trades occur</span>
+  </div>
+  <div class="fob-filter-row">
+    <div class="fob-cats">
+      <button class="cpill on" data-c="All"               onclick="fobSetCat(this,'All')">All</button>
+      <button class="cpill"    data-c="Fruits"            onclick="fobSetCat(this,'Fruits')">🍎 Fruits</button>
+      <button class="cpill"    data-c="Vegetables"        onclick="fobSetCat(this,'Vegetables')">🥬 Vegetables</button>
+      <button class="cpill"    data-c="Onions & Potatoes" onclick="fobSetCat(this,'Onions & Potatoes')">🧅 Onions</button>
+      <button class="cpill"    data-c="Nuts"              onclick="fobSetCat(this,'Nuts')">🥜 Nuts</button>
+    </div>
+    <div class="fob-controls">
+      <select class="f-sel" id="fobShippingPt" onchange="onFobSearch()"><option value="">All shipping points</option></select>
       <select class="f-sel" id="fobSortFilter" onchange="onFobSearch()">
         <option value="az">A–Z</option>
         <option value="spread-hi">Best margin first</option>
-        <option value="spread-lo">Tightest margin first</option>
-        <option value="fob-lo">FOB price ↑</option>
+        <option value="spread-lo">Tightest first</option>
+        <option value="fob-lo">Lowest FOB price</option>
         <option value="change">Biggest WoW move</option>
       </select>
+      <label class="fob-organic-toggle" id="fobOrganicWrap" style="display:none;">
+        <input type="checkbox" id="fobOrganic" onchange="onFobSearch()"/>
+        <span>Organic only</span>
+      </label>
       <div class="isrch">
         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="fobQ" placeholder="Search…" oninput="onFobSearch()"/>
+        <input id="fobQ" placeholder="Search commodity or origin…" oninput="onFobSearch()"/>
       </div>
     </div>
   </div>
-
   <div class="htbl-card" style="border-radius:var(--rx);">
     <div class="tbl-wrap">
       <table class="ledger">
         <thead><tr>
           <th style="min-width:160px;">Commodity</th>
-          <th>Origin · Grade</th>
-          <th class="r">FOB price</th>
-          <th class="r">Terminal avg</th>
-          <th class="r">Spread</th>
-          <th class="r">WoW</th>
-          <th>Movement</th>
+          <th style="min-width:180px;">Origin · Spec</th>
+          <th style="min-width:100px;">Shipping point</th>
+          <th class="r" style="min-width:130px;">FOB price</th>
+          <th class="r" style="min-width:120px;">Mostly trades at</th>
+          <th class="r" style="min-width:110px;">Terminal avg</th>
+          <th class="r" style="min-width:120px;">Spread</th>
+          <th class="r" style="min-width:70px;">WoW</th>
+          <th style="min-width:90px;">Movement</th>
         </tr></thead>
-        <tbody id="fobTbody"><tr><td colspan="7" style="padding:40px;text-align:center;color:var(--i4);">Loading…</td></tr></tbody>
+        <tbody id="fobTbody"><tr><td colspan="9" style="padding:40px;text-align:center;color:var(--i4);">Loading FOB data…</td></tr></tbody>
       </table>
     </div>
     <div class="tbl-foot">
@@ -829,7 +969,7 @@ main { padding-top: 54px; }
 <!-- ═══ REPORTS ═══ -->
 <div id="view-reports" class="view">
 <div class="page-wrap">
-  <div class="page-top">
+  <div style="margin-bottom:22px;">
     <div class="page-title">USDA Market Reports</div>
     <div class="page-desc">Daily and weekly wholesale price reports from USDA Agricultural Marketing Service.</div>
   </div>
@@ -850,7 +990,7 @@ main { padding-top: 54px; }
 <!-- ═══ ALERTS ═══ -->
 <div id="view-alerts" class="view">
 <div class="page-wrap">
-  <div class="page-top">
+  <div style="margin-bottom:22px;">
     <div class="page-title">Industry Alerts</div>
     <div class="page-desc">Price spikes, supply disruptions, and market signals from USDA data.</div>
   </div>
@@ -867,11 +1007,6 @@ main { padding-top: 54px; }
 </main>
 
 <script>
-
-/* ═══════════════════════════════════════════════
-   agraX — Complete Application Logic
-   API: https://produce-iq-production.up.railway.app
-═══════════════════════════════════════════════ */
 const API='https://produce-iq-production.up.railway.app';
 let ALL=[],DATED={},DATES=[];
 let tActiveMkt=null,tMktMode='all',tPgN=1,tRows=[];
@@ -916,6 +1051,242 @@ function getStatus(ch){
 }
 
 /* Nav */
+/* ══════════════════════════════════════
+   FOB ORIGINS — Complete data logic
+   Priority fields: mostly_price (where trades actually occur),
+   then full range as context. Spread vs terminal is the key metric.
+══════════════════════════════════════ */
+
+/* Shipping point region classification */
+function fobRegion(market, origin) {
+  const m = (market || '').toLowerCase();
+  const o = (origin || '').toLowerCase();
+  if (m.includes('nogales') || o.includes('mexico') || o.includes('nogales')) return {label:'Mexico/Border', cls:'border'};
+  if (m.includes('miami') && m.includes('import')) return {label:'Imports', cls:'imports'};
+  if (m.includes('orlando') && m.includes('import')) return {label:'Imports', cls:'imports'};
+  if (m.includes('fresno') || o.includes('california') || o.includes('southern ca') || o.includes('central ca')) return {label:'California', cls:'west'};
+  if (m.includes('phoenix') || o.includes('arizona')) return {label:'Southwest', cls:'border'};
+  if (m.includes('orlando') || m.includes('florida') || o.includes('florida')) return {label:'Florida', cls:'east'};
+  if (m.includes('thomasville') || o.includes('georgia') || o.includes('carolina')) return {label:'Southeast', cls:'south'};
+  return {label:'', cls:''};
+}
+
+/* Clean up spec string: variety + size + grade */
+function fobSpec(item) {
+  const parts = [item.variety, item.size, item.grade].filter(v => v && v !== 'N/A' && v !== 'N/A ');
+  return parts.join(' · ') || null;
+}
+
+/* Movement direction from normalized movement field */
+function fobMovement(item) {
+  const m = (item.movement || '').toLowerCase().trim();
+  if (!m || m === 'n/a' || m === 'unchanged' || m === 'about steady') return {label:'Steady', cls:'steady'};
+  if (m === 'higher' || m.includes('higher')) return {label:'Higher', cls:'higher'};
+  if (m === 'lower' || m.includes('lower')) return {label:'Lower', cls:'lower'};
+  if (m.includes('active') || m.includes('good') || m.includes('brisk')) return {label:'Active', cls:'active'};
+  if (m.includes('slow') || m.includes('light') || m.includes('limited')) return {label:'Slow', cls:'slow'};
+  return {label:'Steady', cls:'steady'};
+}
+
+/* Build FOB filters dropdowns */
+function buildFobFilters() {
+  const sp = [...new Set(ALL
+    .filter(i => i.market_type === 'shipping_point')
+    .map(i => i.market).filter(Boolean))].sort();
+  const sel = document.getElementById('fobShippingPt');
+  if (sel) sel.innerHTML = '<option value="">All shipping points</option>' +
+    sp.map(m => `<option value="${m}">${m}</option>`).join('');
+  // Show organic toggle only if we have organic records
+  const hasOrg = ALL.some(i => i.market_type === 'shipping_point' && i.organic);
+  const orgWrap = document.getElementById('fobOrganicWrap');
+  if (orgWrap) orgWrap.style.display = hasOrg ? 'flex' : 'none';
+}
+
+function fobSetCat(el, c) {
+  fCat = c; fPgN = 1;
+  document.querySelectorAll('#view-fob .cpill').forEach(b => b.classList.toggle('on', b.dataset.c === c));
+  buildFobRows(); renderFob();
+}
+
+function onFobSearch() { fPgN = 1; buildFobRows(); renderFob(); }
+
+function buildFobRows() {
+  const q   = (document.getElementById('fobQ')?.value || '').toLowerCase().trim();
+  const sp  = document.getElementById('fobShippingPt')?.value || '';
+  const srt = document.getElementById('fobSortFilter')?.value || 'az';
+  const org = document.getElementById('fobOrganic')?.checked || false;
+
+  let items = ALL.filter(i => i.market_type === 'shipping_point');
+
+  // Fallback: if no shipping_point records, show terminal data with note
+  if (!items.length) { fRows = []; return; }
+
+  if (fCat !== 'All') items = items.filter(i => gc(i.commodity) === fCat);
+  if (sp)  items = items.filter(i => i.market === sp);
+  if (org) items = items.filter(i => i.organic === true || i.organic === 'true');
+  if (q)   items = items.filter(i =>
+    i.commodity.toLowerCase().includes(q) ||
+    (i.origin || '').toLowerCase().includes(q) ||
+    (i.market  || '').toLowerCase().includes(q) ||
+    (i.variety || '').toLowerCase().includes(q)
+  );
+
+  // Deduplicate: commodity + market + variety + size + grade is a unique row
+  const seen = new Set(); fRows = [];
+  items.sort((a, b) => a.commodity.localeCompare(b.commodity) || (a.market||'').localeCompare(b.market||'')).forEach(r => {
+    const k = [r.commodity, r.market, r.variety||'', r.size||'', r.grade||'', r.origin||''].join('|');
+    if (!seen.has(k)) { seen.add(k); fRows.push(r); }
+  });
+
+  // Compute derived values for each row
+  fRows.forEach(r => {
+    // "Mostly" price = where actual trades cluster — primary display price
+    const ml = parseFloat(r.price_mostly_low || 0);
+    const mh = parseFloat(r.price_mostly_high || 0);
+    r._mostly_lo = ml > 0 ? ml : null;
+    r._mostly_hi = mh > 0 ? mh : null;
+    // Full range as context
+    const fl = parseFloat(r.price_low || 0);
+    const fh = parseFloat(r.price_high || 0);
+    r._fob_lo = fl > 0 ? fl : null;
+    r._fob_hi = fh > 0 && fh !== fl ? fh : null;
+    // Representative FOB price: prefer mostly midpoint, fall back to low
+    r._fob_rep = r._mostly_lo
+      ? (r._mostly_hi ? (r._mostly_lo + r._mostly_hi) / 2 : r._mostly_lo)
+      : r._fob_lo;
+    // Terminal average for this commodity
+    r._term_avg = getTermAvg(r.commodity);
+    // Spread: terminal avg − FOB representative price
+    r._spread = (r._fob_rep && r._term_avg) ? r._term_avg - r._fob_rep : null;
+    r._spread_pct = (r._spread && r._fob_rep) ? (r._spread / r._fob_rep) * 100 : null;
+  });
+
+  // Sort
+  if (srt === 'spread-hi') fRows.sort((a, b) => (b._spread || -999) - (a._spread || -999));
+  else if (srt === 'spread-lo') fRows.sort((a, b) => (a._spread || 999) - (b._spread || 999));
+  else if (srt === 'fob-lo')    fRows.sort((a, b) => (a._fob_rep || 0) - (b._fob_rep || 0));
+  else if (srt === 'change')    fRows.sort((a, b) => Math.abs(trendPct(b.commodity)) - Math.abs(trendPct(a.commodity)));
+}
+
+function renderFob() {
+  const total = fRows.length, pages = Math.max(1, Math.ceil(total / PER));
+  fPgN = Math.min(fPgN, pages);
+  const start = (fPgN - 1) * PER, pg = fRows.slice(start, start + PER);
+
+  document.getElementById('fobCount').textContent =
+    `Showing ${start + 1}–${Math.min(start + pg.length, total)} of ${total.toLocaleString()} listings`;
+  document.getElementById('fobPrev').disabled = fPgN <= 1;
+  document.getElementById('fobNext').disabled = fPgN >= pages;
+  for (let i = 1; i <= 3; i++) {
+    const b = document.getElementById('fobPg' + i); if (!b) continue;
+    const n = fPgN <= 2 ? i : (fPgN - 1) + (i - 1);
+    b.style.display = n <= pages ? 'flex' : 'none';
+    b.textContent = n;
+    b.classList.toggle('on', n === fPgN);
+    (p => b.onclick = () => { fPgN = p; renderFob(); })(n);
+  }
+
+  const tbody = document.getElementById('fobTbody');
+  if (!tbody) return;
+
+  if (!pg.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="padding:48px;text-align:center;color:var(--i4);font-size:.875rem;">No shipping point data for current filters.<br><span style="font-size:.78rem;margin-top:4px;display:block;">FOB data comes from USDA shipping point reports (Nogales, Fresno, Orlando, etc.).</span></td></tr>';
+    return;
+  }
+
+  // Max spread for bar scaling
+  const maxSpread = Math.max(...fRows.map(r => Math.abs(r._spread || 0)), 1);
+
+  tbody.innerHTML = pg.map(item => {
+    const ch = trendPct(item.commodity);
+    const wCls = ch > 0.5 ? 'up' : ch < -0.5 ? 'dn' : 'flat';
+    const wStr = ch > 0.5 ? `↑ +${ch.toFixed(1)}%` : ch < -0.5 ? `↓ ${ch.toFixed(1)}%` : `— 0.0%`;
+
+    const region = fobRegion(item.market, item.origin);
+    const spec   = fobSpec(item);
+    const mv     = fobMovement(item);
+
+    // FOB price cell: primary = full range; secondary = mostly (where trades happen)
+    const priceHtml = (() => {
+      const lo = item._fob_lo, hi = item._fob_hi;
+      const ml = item._mostly_lo, mh = item._mostly_hi;
+      const rangeStr = (lo && hi) ? `${fP(lo)} – ${fP(hi)}` : fP(lo);
+      const mostlyStr = ml ? (mh && mh !== ml ? `${fP(ml)} – ${fP(mh)}` : fP(ml)) : null;
+      return `<div class="fob-price-cell">
+        <span class="fob-price-main">${rangeStr}</span>
+        ${mostlyStr ? `<span class="fob-mostly">mostly ${mostlyStr}</span>` : '<span class="fob-mostly-na">—</span>'}
+      </div>`;
+    })();
+
+    // Terminal avg
+    const termHtml = item._term_avg
+      ? `<span class="price-main" style="font-size:.875rem;">${fP(item._term_avg)}</span>`
+      : `<span style="color:var(--i4);font-size:.72rem;">No terminal data</span>`;
+
+    // Spread cell
+    const spreadHtml = (() => {
+      if (item._spread === null) return '<span class="spread-val na">—</span>';
+      const isNeg = item._spread < 0;
+      const barW  = Math.min(100, (Math.abs(item._spread) / maxSpread) * 100).toFixed(0);
+      const pctStr = item._spread_pct ? `${item._spread_pct > 0 ? '+' : ''}${item._spread_pct.toFixed(0)}%` : '';
+      return `<div class="spread-cell">
+        <div class="sbar-track">
+          <div class="sbar-fill ${isNeg ? 'neg' : 'pos'}" style="width:${barW}%"></div>
+        </div>
+        <div>
+          <div class="spread-val ${isNeg ? 'neg' : 'pos'}">${item._spread > 0 ? '+' : ''}${fP(item._spread)}</div>
+          ${pctStr ? `<div class="spread-pct">${pctStr}</div>` : ''}
+        </div>
+      </div>`;
+    })();
+
+    // Organic badge
+    const orgBadge = (item.organic === true || item.organic === 'true')
+      ? `<span class="badge-org">🌿 Organic</span>` : '';
+
+    // Origin string — cleaned, not the full verbose USDA text
+    const originDisplay = (item.origin && item.origin !== 'N/A')
+      ? item.origin.split('/')[0].trim()  // show first part only if it's a combo
+      : '—';
+
+    return `<tr data-com="${item.commodity.replace(/"/g,'&quot;')}" onclick="openSheet(this.dataset.com)">
+      <td>
+        <div class="com-cell">
+          <div class="com-icon ${catClass(item.commodity)}">${ticker(item.commodity)}</div>
+          <div>
+            <div class="com-name">${item.commodity} ${orgBadge}</div>
+            ${region.label ? `<span class="reg-badge ${region.cls}">${region.label}</span>` : ''}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="fob-spec">
+          <div class="fob-spec-main">${spec || '—'}</div>
+          <div class="fob-spec-origin" title="${item.origin || ''}">${originDisplay}</div>
+        </div>
+      </td>
+      <td><span class="fob-shipping-pt">${item.market || '—'}</span></td>
+      <td class="r">${priceHtml}</td>
+      <td class="r">
+        ${item._mostly_lo
+          ? `<span class="fob-mostly" style="font-style:normal;font-size:.8125rem;color:var(--i2);">${item._mostly_lo && item._mostly_hi && item._mostly_hi !== item._mostly_lo ? fP(item._mostly_lo)+' – '+fP(item._mostly_hi) : fP(item._mostly_lo)}</span>`
+          : `<span style="color:var(--i4);font-size:.72rem;">—</span>`}
+      </td>
+      <td class="r">${termHtml}</td>
+      <td class="r">${spreadHtml}</td>
+      <td class="r"><span class="wow ${wCls}">${wStr}</span></td>
+      <td>
+        <div class="mvmt-cell">
+          <span class="mvmt-badge ${mv.cls}">${mv.label}</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function fobPg(d) { fPgN = Math.max(1, fPgN + d); renderFob(); window.scrollTo(0, 180); }
+
+
 function gv(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
@@ -1104,63 +1475,16 @@ function renderTerm(){
 function termPg(d){tPgN=Math.max(1,tPgN+d);renderTerm();window.scrollTo(0,180);}
 
 /* ─── FOB ─── */
-function originRegion(o){if(!o)return{label:'',cls:''};const l=o.toLowerCase();if(l.includes('nogales')||l.includes('mexico')||l.includes('laredo'))return{label:'Border',cls:'border'};if(l.includes('california')||l.includes('salinas')||l.includes('fresno')||l.includes('watsonville')||l.includes('oxnard'))return{label:'West Coast',cls:'west'};if(l.includes('florida')||l.includes('plant city')||l.includes('immokalee'))return{label:'Southeast',cls:'east'};if(l.includes('georgia')||l.includes('carolina')||l.includes('virginia'))return{label:'Southeast',cls:'south'};if(l.includes('washington')||l.includes('oregon')||l.includes('idaho'))return{label:'Pacific NW',cls:'west'};if(l.includes('texas')||l.includes('colorado')||l.includes('arizona'))return{label:'Central',cls:'central'};return{label:'Domestic',cls:'west'};}
-function gradeLabel(i){return[i.variety,i.size,i.grade].filter(Boolean).join(' · ')||i.package||'—';}
-function movementSignal(i){const mv=(i.movement||'').toLowerCase().trim();if(!mv||mv==='n/a'||mv==='unchanged'||mv==='-')return null;if(mv.includes('good')||mv.includes('active')||mv.includes('brisk')||mv.includes('higher'))return{label:'Active',cls:'good'};if(mv.includes('light')||mv.includes('slow')||mv.includes('limited')||mv.includes('lower'))return{label:'Slow',cls:'light'};if(mv.includes('moderate')||mv.includes('fair')||mv.includes('fairly'))return{label:'Moderate',cls:'mod'};if(mv.includes('heavy')||mv.includes('demand'))return{label:'Strong',cls:'good'};return null;}
-function getTermAvg(com){return avgP(ALL.filter(i=>i.commodity===com&&(i.market_type==='terminal'||!i.market_type)));}
-function buildFobFilters(){const origins=[...new Set(ALL.map(i=>i.origin).filter(Boolean))].sort();const sel=document.getElementById('fobOriginFilter');if(sel)sel.innerHTML='<option value="">All origins</option>'+origins.map(o=>`<option value="${o}">${o}</option>`).join('');}
-function fobSetCat(el,c){fCat=c;fPgN=1;document.querySelectorAll('#view-fob .cat-pill').forEach(b=>b.classList.toggle('on',b.dataset.c===c));buildFobRows();renderFob();}
-function onFobSearch(){fPgN=1;buildFobRows();renderFob();}
-function buildFobRows(){
-  const q=(document.getElementById('fobQ')?.value||'').toLowerCase().trim();
-  const org=document.getElementById('fobOriginFilter')?.value||'';
-  const srt=document.getElementById('fobSortFilter')?.value||'az';
-  let items=ALL;
-  const hasSp=ALL.some(i=>i.market_type==='shipping_point');
-  if(hasSp)items=items.filter(i=>i.market_type==='shipping_point');
-  if(fCat!=='All')items=items.filter(i=>gc(i.commodity)===fCat);
-  if(org)items=items.filter(i=>i.origin===org);
-  if(q)items=items.filter(i=>i.commodity.toLowerCase().includes(q)||(i.origin||'').toLowerCase().includes(q)||(i.variety||'').toLowerCase().includes(q));
-  const seen=new Set();fRows=[];
-  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{const k=r.commodity+'|'+(r.origin||'')+'|'+(r.grade||'')+'|'+(r.size||'');if(!seen.has(k)){seen.add(k);fRows.push(r);}});
-  fRows.forEach(r=>{r._fa=avgP([r]);r._ta=getTermAvg(r.commodity);r._sp=(r._fa&&r._ta)?r._ta-r._fa:null;});
-  if(srt==='spread-hi')fRows.sort((a,b)=>(b._sp||0)-(a._sp||0));
-  else if(srt==='spread-lo')fRows.sort((a,b)=>(a._sp||0)-(b._sp||0));
-  else if(srt==='fob-lo')fRows.sort((a,b)=>(a._fa||0)-(b._fa||0));
-  else if(srt==='change')fRows.sort((a,b)=>Math.abs(trendPct(b.commodity))-Math.abs(trendPct(a.commodity)));
-}
-function renderFob(){
-  const total=fRows.length,pages=Math.max(1,Math.ceil(total/PER));
-  fPgN=Math.min(fPgN,pages);const start=(fPgN-1)*PER,pg=fRows.slice(start,start+PER);
-  document.getElementById('fobCount').textContent=`Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total.toLocaleString()} listings`;
-  document.getElementById('fobPrev').disabled=fPgN<=1;document.getElementById('fobNext').disabled=fPgN>=pages;
-  for(let i=1;i<=3;i++){const b=document.getElementById('fobPg'+i);if(!b)continue;const n=fPgN<=2?i:(fPgN-1)+(i-1);b.style.display=n<=pages?'flex':'none';b.textContent=n;b.classList.toggle('on',n===fPgN);(p=>b.onclick=()=>{fPgN=p;renderFob();})(n);}
-  if(!pg.length){document.getElementById('fobTbody').innerHTML='<tr><td colspan="8" style="padding:40px;text-align:center;color:var(--i4);">No FOB data. Dataset may only contain terminal market prices.</td></tr>';return;}
-  const maxSp=Math.max(...fRows.map(r=>Math.abs(r._sp||0)),1);
-  document.getElementById('fobTbody').innerHTML=pg.map(item=>{
-    const ch=trendPct(item.commodity),wCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-    const wStr=ch>0.5?`↑ +${ch.toFixed(1)}%`:ch<-0.5?`↓ ${ch.toFixed(1)}%`:`— 0.0%`;
-    const region=originRegion(item.origin),grade=gradeLabel(item),mv=movementSignal(item),sp=item._sp;
-    let spHtml;
-    if(sp===null){spHtml='<span class="spread-na">—</span>';}
-    else{const pct=item._fa?((sp/item._fa)*100).toFixed(0):0,barW=Math.min(100,(Math.abs(sp)/maxSp)*100).toFixed(0),tight=sp<0;spHtml=`<div class="sbar-wrap"><div class="sbar-track"><div class="sbar-fill${tight?' tight':''}" style="width:${barW}%"></div></div><span class="${tight?'spread-neg':'spread-pos'}">${sp>0?'+':''}${fP(sp)} (${pct}%)</span></div>`;}
-    const mvHtml=mv?`<span class="mvmt ${mv.cls}">${mv.label}</span>`:'<span style="font-size:.72rem;color:var(--i4);">—</span>';
-    return`<tr data-com="${item.commodity.replace(/"/g,'&quot;')}" onclick="openSheet(this.dataset.com)">
-      <td><div class="com-cell"><div class="com-icon ${catClass(item.commodity)}">${ticker(item.commodity)}</div>
-      <div><div class="com-name">${item.commodity}</div>${region.label?`<span class="orig-reg ${region.cls}">${region.label}</span>`:''}</div></div></td>
-      <td><div class="grade-tag${grade.toLowerCase().includes('no. 1')||grade.toLowerCase().includes('fancy')?' fancy':''}">${grade}</div><div class="com-sub">${(item.origin&&item.origin!=='N/A')?item.origin:'—'}</div></td>
-      <td class="r"><span class="price-main">${fP(item._fa)}</span></td>
-      <td class="r"><span class="price-dim">${item._ta?fP(item._ta):'<span style="color:var(--i4)">—</span>'}</span></td>
-      <td class="r">${spHtml}</td>
-      <td class="r"><span class="wow ${wCls}">${wStr}</span></td>
-      <td>${mvHtml}</td>
-    </tr>`;
-  }).join('');
-}
-function fobPg(d){fPgN=Math.max(1,fPgN+d);renderFob();window.scrollTo(0,180);}
 
-/* ─── REPORTS ─── */
-let rptFV='all';
+
+
+
+
+
+
+
+
+
 function rptF(el,f){rptFV=f;document.querySelectorAll('#view-reports .af-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');buildReports();}
 function buildReports(){
   const el=document.getElementById('rptList');if(!el)return;
@@ -1236,7 +1560,6 @@ async function init(){
   }catch(e){console.error('Init:',e);}
 }
 init();
-
 </script>
 </body>
 </html>
