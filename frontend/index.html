@@ -39,7 +39,7 @@
   --fh: 'Space Grotesk', sans-serif;
   --fb: 'Inter', sans-serif;
   /* Layout */
-  --mw: 1160px;
+  --mw: 1200px;
   --px: clamp(16px, 4vw, 40px);
   /* Radii */
   --r:  8px;
@@ -293,10 +293,10 @@ main { padding-top: 54px; }
 /* ════════════════════════════════════════
    HOME PAGE
 ════════════════════════════════════════ */
-.home-wrap { max-width: 900px; margin: 0 auto; padding: 44px var(--px) 80px; }
+.home-wrap { max-width: 720px; margin: 0 auto; padding: 40px var(--px) 80px; }
 
 /* Hero */
-.hero { text-align: center; padding-bottom: 40px; }
+.hero { padding-bottom: 36px; }
 .hero-kicker {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
@@ -304,14 +304,14 @@ main { padding-top: 54px; }
   border-radius: var(--rp); padding: 5px 13px; margin-bottom: 20px;
 }
 .hero-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); animation: blink 2s ease-in-out infinite; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.045em; color: var(--ink); line-height: 1.06; margin-bottom: 24px; }
-.hero-chips { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-.hero-search-wrap { display: flex; max-width: 500px; margin: 0 auto; gap: 8px; align-items: center; }
-.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 10px 16px; transition: border-color .15s, box-shadow .15s; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 24px; }
+.hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
+.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
 .hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
-.hero-search input { flex: 1; font-size: .9rem; outline: none; background: transparent; color: var(--ink); }
+.hero-search input { flex: 1; font-size: .9375rem; outline: none; background: transparent; color: var(--ink); }
 .hero-search input::placeholder { color: var(--i4); }
-.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 10px 22px; font-size: .875rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
+.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 12px 26px; font-size: .9375rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
 .hero-btn:hover { background: var(--gm); }
 
 /* Feature cards */
@@ -662,6 +662,20 @@ main { padding-top: 54px; }
 .reg-badge.south{background:#fce7f3;color:#9d174d;}
 .reg-badge.imports{background:#f0f9ff;color:#0369a1;}
 @media(max-width:900px){.fob-filter-row{flex-direction:column;align-items:flex-start;}.fob-controls{margin-left:0;width:100%;}.fob-legend-note{display:none;}}
+
+/* Today's Reports — vertical list */
+.rep-list-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); box-shadow: var(--s1); overflow: hidden; margin-bottom: 20px; }
+.rep-list-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--bd); }
+.rep-list-item { display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background .06s; gap: 12px; }
+.rep-list-item:last-child { border-bottom: none; }
+.rep-list-item:hover { background: var(--gl); }
+.rep-date-tag { font-size: .72rem; color: var(--i4); flex-shrink: 0; }
+.rep-viewmore { display: block; padding: 12px 18px; font-size: .8rem; font-weight: 600; color: var(--g); cursor: pointer; border-top: 1px solid var(--bd); text-align: center; transition: background .08s; }
+.rep-viewmore:hover { background: var(--gl); }
+/* Pulse — vertical list card */
+.pulse-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); box-shadow: var(--s1); margin-bottom: 20px; overflow: hidden; }
+.pulse-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--bd); }
+
 </style>
 </head>
 <body>
@@ -717,9 +731,16 @@ main { padding-top: 54px; }
 <!-- ═══ HOME ═══ -->
 <div id="view-home" class="view active">
 <div class="home-wrap">
+
   <div class="hero">
-    <div class="hero-kicker"><div class="hero-kicker-dot"></div>Live USDA Market Data</div>
     <h1 class="hero-h1">Wholesale Produce<br>Price Intelligence.</h1>
+    <div class="hero-search-wrap">
+      <div class="hero-search">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
+      </div>
+      <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
+    </div>
     <div class="hero-chips">
       <button class="fpill on"  data-q=""             onclick="hpChip(this,'')">All markets</button>
       <button class="fpill"     data-q="Avocados"     onclick="hpChip(this,'Avocados')"><span class="fpill-icon">🥑</span> Avocados</button>
@@ -727,13 +748,6 @@ main { padding-top: 54px; }
       <button class="fpill"     data-q="Strawberries" onclick="hpChip(this,'Strawberries')"><span class="fpill-icon">🍓</span> Strawberries</button>
       <button class="fpill"     data-q="Lettuce"      onclick="hpChip(this,'Lettuce')"><span class="fpill-icon">🥬</span> Lettuce</button>
       <button class="fpill"     data-q="Peppers"      onclick="hpChip(this,'Peppers')"><span class="fpill-icon">🫑</span> Peppers</button>
-    </div>
-    <div class="hero-search-wrap">
-      <div class="hero-search">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
-      </div>
-      <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
     </div>
   </div>
 
@@ -748,40 +762,23 @@ main { padding-top: 54px; }
     </div>
   </div>
 
-  <div class="pulse-strip">
-    <span class="pulse-lbl">Industry Pulse</span>
-    <div class="pulse-div"></div>
-    <div class="pulse-scroll">
-      <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-g"></div><span class="pulse-text">Weekly USDA Terminal Market Report published</span><span class="pulse-ago">2h ago</span></div>
-      <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-r"></div><span class="pulse-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="pulse-ago">3h ago</span></div>
-      <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-a"></div><span class="pulse-text">Baja berry harvest tightening through April</span><span class="pulse-ago">5h ago</span></div>
-      <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-i"></div><span class="pulse-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="pulse-ago">8h ago</span></div>
+  <div class="pulse-card">
+    <div class="pulse-head">
+      <span class="pulse-lbl">Industry Pulse</span>
+      <span class="sec-link" onclick="gv('alerts')">View all →</span>
     </div>
+    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-g"></div><span class="pulse-text">Weekly USDA Terminal Market Report published</span><span class="pulse-ago">2h ago</span></div>
+    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-r"></div><span class="pulse-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="pulse-ago">3h ago</span></div>
+    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-a"></div><span class="pulse-text">Baja berry harvest tightening through April</span><span class="pulse-ago">5h ago</span></div>
+    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-i"></div><span class="pulse-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="pulse-ago">8h ago</span></div>
   </div>
 
-  <div class="sec-head">
-    <div class="sec-title">Today's Reports</div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:.72rem;color:var(--i4);" id="rcDate">—</span>
-      <span class="sec-link" onclick="gv('reports')">All reports →</span>
+  <div class="rep-list-card">
+    <div class="rep-list-head">
+      <span class="sec-title">Today's Reports</span>
     </div>
-  </div>
-  <div class="rep-grid" id="rcList">
-    <div class="rep-card"><div class="rep-city" style="color:var(--i4);">Loading…</div></div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card stat-light">
-      <div class="stat-lbl">Data last updated</div>
-      <div class="stat-val" id="igDate" style="font-size:1.125rem;letter-spacing:-.02em;">—</div>
-      <div class="stat-sub" id="igRecords">—</div>
-      <span class="stat-cta" onclick="gv('terminal')">Check terminal prices →</span>
-    </div>
-    <div class="stat-card stat-dark">
-      <div class="stat-lbl">Price Alerts</div>
-      <div class="stat-val" id="alertStatVal">—</div>
-      <div class="stat-sub">significant price moves this week</div>
-      <span class="stat-cta" onclick="document.getElementById('hpTable').scrollIntoView({behavior:'smooth'})">See all in table ↓</span>
+    <div id="rcList">
+      <div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">Loading…</span></div>
     </div>
   </div>
 
@@ -796,7 +793,7 @@ main { padding-top: 54px; }
           <button class="tab on" data-c="All"               onclick="hpCat(this,'All')">All</button>
           <button class="tab"    data-c="Fruits"            onclick="hpCat(this,'Fruits')">Fruits</button>
           <button class="tab"    data-c="Vegetables"        onclick="hpCat(this,'Vegetables')">Vegetables</button>
-          <button class="tab"    data-c="Onions & Potatoes" onclick="hpCat(this,'Onions & Potatoes')">Onions</button>
+          <button class="tab"    data-c="Onions &amp; Potatoes" onclick="hpCat(this,'Onions &amp; Potatoes')">Onions</button>
           <button class="tab"    data-c="Nuts"              onclick="hpCat(this,'Nuts')">Nuts</button>
         </div>
         <div class="isrch" style="margin-left:8px;flex-shrink:0;">
@@ -829,6 +826,7 @@ main { padding-top: 54px; }
       </div>
     </div>
   </div>
+
 </div>
 </div>
 
@@ -1385,27 +1383,38 @@ function renderHomeTable(){
 function htPg(d){htPgN=Math.max(1,htPgN+d);renderHomeTable();window.scrollTo(0,400);}
 
 function buildRcMktList(){
-  /* Today's Reports — show market name + trend direction only.
-     No commodity counts — not meaningful to the end user. */
-  const el=document.getElementById('rcList');if(!el)return;
-  const latestDate=DATES[0]?.date;if(!latestDate){el.innerHTML='<div class="rep-card"><div class="rep-city" style="color:var(--i4);">No data.</div></div>';return;}
-  const d=new Date(latestDate+'T12:00:00');
-  const label=d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
-  const rcDate=document.getElementById('rcDate');if(rcDate)rcDate.textContent=label;
-  const todayItems=(DATED[latestDate]||[]).filter(i=>i.market_type==='terminal'||!i.market_type);
-  const mkts=[...new Set(todayItems.map(i=>i.market).filter(Boolean))].sort();
-  if(!mkts.length){el.innerHTML='<div class="rep-card"><div class="rep-city" style="color:var(--i4);">No terminal reports.</div></div>';return;}
-  el.innerHTML=mkts.map(mkt=>{
-    const mItems=todayItems.filter(i=>i.market===mkt);
-    const comCount=[...new Set(mItems.map(i=>i.commodity))].length;
-    const avgCh=[...new Set(mItems.map(i=>i.commodity))].reduce((s,c)=>s+trendPct(c),0)/([...new Set(mItems.map(i=>i.commodity))].length||1);
-    const cls=avgCh>0.5?'up':avgCh<-0.5?'dn':'flat';
-    const trend=avgCh>0.5?'↑ Up':avgCh<-0.5?'↓ Down':'— Stable';
-    return'<div class="rep-card" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="gv(\'terminal\');tPickMkt(this.dataset.mkt)">'
-      +'<div class="rep-city">'+mkt+'</div>'
-      +'<div class="rep-trend '+cls+'" style="margin-top:8px;">'+trend+'</div>'
+  var el=document.getElementById('rcList');
+  if(!el)return;
+  var latestDate=DATES[0]&&DATES[0].date;
+  if(!latestDate){
+    el.innerHTML='<div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">No data yet.</span></div>';
+    return;
+  }
+  var todayItems=(DATED[latestDate]||[]).filter(function(i){return i.market_type==='terminal'||!i.market_type;});
+  var mkts=[...new Set(todayItems.map(function(i){return i.market;}).filter(Boolean))].sort();
+  if(!mkts.length){
+    el.innerHTML='<div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">No terminal reports today.</span></div>';
+    return;
+  }
+  var shown=mkts.slice(0,5);
+  var d=new Date(latestDate+'T12:00:00');
+  var dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  var rows=shown.map(function(mkt){
+    var mItems=todayItems.filter(function(i){return i.market===mkt;});
+    var comms=[...new Set(mItems.map(function(i){return i.commodity;}))];
+    var avgCh=comms.length?comms.reduce(function(s,c){return s+trendPct(c);},0)/comms.length:0;
+    var cls=avgCh>0.5?'up':avgCh<-0.5?'dn':'flat';
+    var trend=avgCh>0.5?'↑ Up':avgCh<-0.5?'↓ Down':'— Stable';
+    return'<div class="rep-list-item" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="gv(\'terminal\');tPickMkt(this.dataset.mkt)">'
+      +'<span class="rep-city">'+mkt+'</span>'
+      +'<span class="rep-date-tag">'+dateStr+'</span>'
+      +'<span class="rep-trend '+cls+'">'+trend+'</span>'
       +'</div>';
   }).join('');
+  var viewMore=mkts.length>5
+    ?'<div class="rep-viewmore" onclick="gv(\'reports\')">View all '+mkts.length+' markets →</div>'
+    :'<div class="rep-viewmore" onclick="gv(\'reports\')">View all reports →</div>';
+  el.innerHTML=rows+viewMore;
 }
 
 function buildDashboard(){
