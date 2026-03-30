@@ -1044,8 +1044,326 @@ def run(target_date: str = None):
     except Exception as e:
         log.error("Failed to fetch FVWTRDS: %s", e)
 
+    # ── Movement Data (WA_FV175 slug 3284) ───────────────────────────────────
+    log.info("Fetching WA_FV175 (slug 3284) — National Movement Report...")
+    try:
+        movement_rows = fetch_report(3284, target_date) or fetch_latest_report(3284)
+        if movement_rows:
+            sample_date_raw = (
+                movement_rows[0].get("report_date") or
+                movement_rows[0].get("report_begin_date") or ""
+            )
+            try:
+                movement_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date()
+            except Exception:
+                movement_date = date.today()
+
+            age_days = (date.today() - movement_date).days
+            if age_days <= MAX_FALLBACK_DAYS:
+                movement_date_str = movement_date.isoformat()
+                built_movement = []
+                for raw in movement_rows:
+                    row = build_movement_row(raw)
+                    if row:
+                        built_movement.append(row)
+                if built_movement:
+                    purge_old_movement_rows(movement_date_str)
+                    upserted = upsert_movement_rows(built_movement)
+                    grand_total += upserted
+                    log.info(
+                        "  Upserted %d movement rows (report_date=%s)",
+                        upserted, movement_date_str
+                    )
+            else:
+                log.info("  Movement data is %d days old, skipping", age_days)
+        else:
+            log.info("  No movement data available")
+    except Exception as e:
+        log.error("Failed to fetch WA_FV175: %s", e)
+
     log.info("Ingestion complete. Total rows upserted: %d", grand_total)
     return grand_total
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# MOVEMENT DATA — WA_FV175 (slug 3284)
+# National Truck, Air & Boat Daily Movement Report
+# Schema: produce_movement table (see migration_movement.sql)
+# ═══════════════════════════════════════════════════════════════════════════
+
+MOVEMENT_TABLE = "produce_movement"
+
+# Origin code → human-readable name
+ORIGIN_NAMES: dict[str, str] = {
+    "MX": "Mexico",
+    "CA": "California",
+    "CA-C": "California (Central)",
+    "CA-S": "California (South)",
+    "CA-I": "California (Imperial)",
+    "CA-N": "California (North)",
+    "AZ": "Arizona",
+    "FL": "Florida",
+    "TX": "Texas",
+    "GU": "Guatemala",
+    "CL": "Chile",
+    "PE": "Peru",
+    "EC": "Ecuador",
+    "CR": "Costa Rica",
+    "CD": "Canada",
+    "DR": "Dominican Republic",
+    "CB": "Colombia",
+    "PN": "Panama",
+    "HD": "Honduras",
+    "NI": "Nicaragua",
+    "BR": "Brazil",
+    "AR": "Argentina",
+    "AG": "Argentina",
+    "SF": "South Africa",
+    "NZ": "New Zealand",
+    "AU": "Australia",
+    "NL": "Netherlands",
+    "SP": "Spain",
+    "IT": "Italy",
+    "FR": "France",
+    "GR": "Greece",
+    "IS": "Israel",
+    "EG": "Egypt",
+    "MA": "Morocco",
+    "MR": "Morocco",
+    "TU": "Turkey",
+    "LE": "Lebanon",
+    "IQ": "Iraq",
+    "AI": "Saudi Arabia",
+    "TI": "Tunisia",
+    "VN": "Vietnam",
+    "TL": "Thailand",
+    "CQ": "China",
+    "JA": "Japan",
+    "SK": "South Korea",
+    "FI": "Philippines",
+    "TT": "Trinidad",
+    "JM": "Jamaica",
+    "OR": "Oregon",
+    "WA": "Washington",
+    "ID": "Idaho",
+    "CO": "Colorado",
+    "ND": "North Dakota",
+    "MN": "Minnesota",
+    "WI": "Wisconsin",
+    "MI": "Michigan",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "LA": "Louisiana",
+    "MS": "Mississippi",
+    "VA": "Virginia",
+    "NE": "Nebraska",
+    "ME": "Maine",
+    "PA": "Pennsylvania",
+    "AP": "Appalachian Region",
+    "NENG": "New England",
+    "USMC": "US Mountain Central",
+    "USMW": "US Midwest",
+    "USRM": "US Rocky Mountain",
+    "USSW": "US Southwest",
+    "USWC": "US West Coast",
+    "EL": "El Salvador",
+    "BL": "Belgium",
+    "GE": "Germany",
+    "PL": "Poland",
+    "FN": "Finland",
+    "CI": "Ivory Coast",
+    "GH": "Ghana",
+    "NG": "Nigeria",
+    "SL": "Sri Lanka",
+    "PK": "Pakistan",
+    "BO": "Bolivia",
+    "GH": "Ghana",
+    "TT": "Trinidad and Tobago",
+}
+
+TRANS_MODE_NAMES: dict[str, str] = {
+    "T": "Truck",
+    "A": "Air",
+    "B": "Boat",
+}
+
+
+def normalize_movement_commodity(name: str) -> str:
+    """Normalize commodity name — uppercase, strip extra whitespace."""
+    if not name:
+        return ""
+    return " ".join(name.upper().strip().split())
+
+
+def build_movement_row(raw: dict) -> dict | None:
+    """
+    Parse a single raw MARS API row from WA_FV175 into a movement record.
+
+    Key fields from the API:
+      commodity, class, organic, environment, origin, trans_mode,
+      package, we_add_subtract, date (correction date),
+      package_count, total_pounds, units_10k (10000 lb units)
+    """
+    commodity = (raw.get("commodity") or "").strip()
+    if not commodity:
+        return None
+
+    commodity = normalize_movement_commodity(commodity)
+
+    # Parse date — MARS returns "MM/DD/YYYY"
+    date_raw = raw.get("report_date") or raw.get("report_begin_date") or ""
+    try:
+        report_date = datetime.strptime(date_raw, "%m/%d/%Y").date().isoformat()
+    except Exception:
+        return None
+
+    # Variety / property
+    variety = (raw.get("class") or raw.get("variety") or "").strip() or None
+    if variety:
+        variety = " ".join(variety.upper().strip().split())
+
+    # Organic flag
+    organic_raw = (raw.get("organic") or "").strip().lower()
+    organic = organic_raw in ("organic", "yes", "true", "1", "y")
+
+    # Environment
+    env_raw = (raw.get("environment") or "").strip().upper() or None
+
+    # Origin
+    origin_code = (raw.get("origin") or "").strip().upper()
+    if not origin_code:
+        return None
+    origin_name = ORIGIN_NAMES.get(origin_code)
+
+    # Transport mode
+    trans_raw = (raw.get("trans_mode") or "").strip().upper()
+    if trans_raw not in ("T", "A", "B"):
+        return None
+    trans_mode_full = TRANS_MODE_NAMES.get(trans_raw)
+
+    # Volume fields — MARS may use different field names
+    def _int(val) -> int | None:
+        if val is None:
+            return None
+        try:
+            v = str(val).replace(",", "").strip()
+            if v in ("", "*", "N/A"):
+                return None
+            return int(float(v))
+        except Exception:
+            return None
+
+    def _float(val) -> float | None:
+        if val is None:
+            return None
+        try:
+            v = str(val).replace(",", "").strip()
+            if v in ("", "*", "N/A"):
+                return None
+            return round(float(v), 1)
+        except Exception:
+            return None
+
+    total_pounds = _int(
+        raw.get("total_pounds") or raw.get("total_lbs") or raw.get("pounds")
+    )
+    package_count = _int(
+        raw.get("package_count") or raw.get("packages") or raw.get("pkg_count")
+    )
+    units_10k = _float(
+        raw.get("10000_lb_units") or raw.get("units_10k") or raw.get("10k_units")
+    )
+
+    # If we have total_pounds but not units_10k, derive it
+    if total_pounds and units_10k is None:
+        units_10k = round(total_pounds / 10000, 1)
+
+    # W/E Add/Subtract flags
+    we_flag = (raw.get("we_add_subtract") or raw.get("we_flag") or "").strip().upper()
+    is_weekly    = we_flag == "W" or we_flag.startswith("W/E") or we_flag == "WE"
+    is_correction = we_flag in ("A", "S") or "ADD" in we_flag or "SUBTRACT" in we_flag
+
+    # Correction date
+    correction_date = None
+    if is_correction:
+        corr_raw = (raw.get("date") or raw.get("correction_date") or "").strip()
+        if corr_raw:
+            try:
+                correction_date = datetime.strptime(corr_raw, "%m/%d/%Y").date().isoformat()
+            except Exception:
+                pass
+
+    # Row hash for deduplication
+    hash_parts = [
+        report_date,
+        commodity,
+        variety or "",
+        "organic" if organic else "",
+        env_raw or "",
+        origin_code,
+        trans_raw,
+        str(total_pounds or ""),
+        we_flag,
+        correction_date or "",
+    ]
+    row_hash = hashlib.md5("|".join(hash_parts).encode()).hexdigest()
+
+    return {
+        "report_date":    report_date,
+        "slug_id":        3284,
+        "source_report":  "WA_FV175",
+        "commodity":      commodity,
+        "variety":        variety,
+        "organic":        organic,
+        "environment":    env_raw,
+        "origin_code":    origin_code,
+        "origin_name":    origin_name,
+        "trans_mode":     trans_raw,
+        "trans_mode_full": trans_mode_full,
+        "total_pounds":   total_pounds,
+        "package_count":  package_count,
+        "units_10k":      units_10k,
+        "is_weekly":      is_weekly,
+        "is_correction":  is_correction,
+        "correction_date": correction_date,
+        "row_hash":       row_hash,
+    }
+
+
+def purge_old_movement_rows(keep_date: str):
+    """Delete movement rows older than keep_date to prevent stale data."""
+    try:
+        result = (
+            supabase.table(MOVEMENT_TABLE)
+            .delete()
+            .lt("report_date", keep_date)
+            .execute()
+        )
+        deleted = len(result.data) if result.data else 0
+        if deleted:
+            log.info("  Purged %d stale movement rows older than %s", deleted, keep_date)
+    except Exception as e:
+        log.warning("Movement purge failed: %s", e)
+
+
+def upsert_movement_rows(rows: list[dict]) -> int:
+    """Upsert movement rows into produce_movement table in chunks."""
+    if not rows:
+        return 0
+    CHUNK = 500
+    total = 0
+    for i in range(0, len(rows), CHUNK):
+        chunk = rows[i:i + CHUNK]
+        try:
+            result = (
+                supabase.table(MOVEMENT_TABLE)
+                .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
+                .execute()
+            )
+            total += len(result.data) if result.data else len(chunk)
+        except Exception as e:
+            log.error("Movement upsert failed for chunk %d: %s", i // CHUNK, e)
+    return total
 
 
 if __name__ == "__main__":
