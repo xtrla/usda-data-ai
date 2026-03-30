@@ -721,6 +721,63 @@ main { padding-top: 54px; }
   .home-two-col { grid-template-columns: 1fr; }
 }
 
+
+/* ── HERO WITH PHOTO BACKGROUND ── */
+.hero {
+  position: relative;
+  border-radius: var(--rx);
+  overflow: hidden;
+  padding: 72px 56px 64px;
+  margin-bottom: 16px;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80');
+  background-size: cover; background-position: center 40%;
+  filter: brightness(0.38) saturate(0.7);
+}
+.hero::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(10,61,47,0.72) 0%,
+    rgba(10,61,47,0.45) 60%,
+    rgba(0,0,0,0.2) 100%
+  );
+}
+.hero > * { position: relative; z-index: 2; }
+.hero-h1 {
+  color: #ffffff !important;
+  letter-spacing: -.05em;
+}
+.hero-search { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.3) !important; }
+.hero-search:focus-within { background: rgba(255,255,255,0.18) !important; border-color: rgba(255,255,255,0.6) !important; box-shadow: none !important; }
+.hero-search input { color: #fff !important; }
+.hero-search input::placeholder { color: rgba(255,255,255,0.55) !important; }
+.hero-btn { background: #fff !important; color: var(--g) !important; }
+.hero-btn:hover { background: var(--gl) !important; }
+.fpill { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; color: rgba(255,255,255,0.9) !important; box-shadow: none !important; }
+.fpill:hover { background: rgba(255,255,255,0.22) !important; border-color: rgba(255,255,255,0.45) !important; color: #fff !important; }
+.fpill.on { background: #fff !important; color: var(--g) !important; border-color: #fff !important; }
+
+/* ── FEATURE CARDS WITH IMAGE STRIPS ── */
+.feat-card { padding: 0 !important; overflow: hidden; }
+.feat-card-img {
+  width: 100%; height: 160px;
+  background-size: cover; background-position: center;
+  flex-shrink: 0;
+}
+.feat-card-body { padding: 20px 20px 18px; }
+.feat-card-img.terminal { background-image: url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=900&q=80'); }
+.feat-card-img.fob       { background-image: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=900&q=80');  background-position: center 60%; }
+
+@media(max-width: 640px) {
+  .hero { padding: 48px 24px 44px; }
+  .feat-card-img { height: 120px; }
+}
+
 </style>
 </head>
 <body>
@@ -798,12 +855,18 @@ main { padding-top: 54px; }
 
   <div class="feat-grid">
     <div class="feat-card" onclick="gv('terminal')">
-      <div class="feat-top"><div class="feat-title">Terminal Markets</div><div class="feat-arrow">›</div></div>
-      <div class="feat-desc">What buyers pay at New York, Chicago, Miami and 7 other major U.S. distribution hubs.</div>
+      <div class="feat-card-img terminal"></div>
+      <div class="feat-card-body">
+        <div class="feat-top"><div class="feat-title">Terminal Markets</div><div class="feat-arrow">›</div></div>
+        <div class="feat-desc">What buyers pay at New York, Chicago, Miami and 7 other major U.S. distribution hubs.</div>
+      </div>
     </div>
     <div class="feat-card" onclick="gv('fob')">
-      <div class="feat-top"><div class="feat-title">FOB Origins</div><div class="feat-arrow">›</div></div>
-      <div class="feat-desc">Shipper prices at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
+      <div class="feat-card-img fob"></div>
+      <div class="feat-card-body">
+        <div class="feat-top"><div class="feat-title">FOB Origins</div><div class="feat-arrow">›</div></div>
+        <div class="feat-desc">Shipper prices at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
+      </div>
     </div>
   </div>
 
