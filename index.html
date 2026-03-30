@@ -710,6 +710,17 @@ main { padding-top: 54px; }
 }
 .home-list-more:hover { background: var(--gl); }
 
+
+.home-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media(max-width: 768px) {
+  .home-two-col { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -796,44 +807,47 @@ main { padding-top: 54px; }
     </div>
   </div>
 
-  <!-- Industry Pulse — same card structure as Today's Reports -->
-  <div class="home-list-card">
-    <div class="home-list-head">
-      <span class="home-list-title">Industry Pulse</span>
-      <span class="sec-link" onclick="gv('alerts')">View all →</span>
-    </div>
-    <div class="home-list-item" onclick="gv('alerts')">
-      <div class="hli-dot pd-g"></div>
-      <span class="hli-text">Weekly USDA Terminal Market Report published</span>
-      <span class="hli-meta">2h ago</span>
-    </div>
-    <div class="home-list-item" onclick="gv('alerts')">
-      <div class="hli-dot pd-r"></div>
-      <span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span>
-      <span class="hli-meta">3h ago</span>
-    </div>
-    <div class="home-list-item" onclick="gv('alerts')">
-      <div class="hli-dot pd-a"></div>
-      <span class="hli-text">Baja berry harvest tightening through April</span>
-      <span class="hli-meta">5h ago</span>
-    </div>
-    <div class="home-list-item" onclick="gv('alerts')">
-      <div class="hli-dot pd-i"></div>
-      <span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span>
-      <span class="hli-meta">8h ago</span>
-    </div>
-    <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
-  </div>
+  <!-- Industry Pulse + Today's Reports — side by side -->
+  <div class="home-two-col">
 
-  <!-- Today's Reports — same card structure as Industry Pulse -->
-  <div class="home-list-card">
-    <div class="home-list-head">
-      <span class="home-list-title">Today's Reports</span>
-      <span class="sec-link" onclick="gv('reports')">View all →</span>
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Industry Pulse</span>
+        <span class="sec-link" onclick="gv('alerts')">View all →</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--g);"></div>
+        <span class="hli-text">Weekly USDA Terminal Market Report published</span>
+        <span class="hli-meta">2h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--red);"></div>
+        <span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span>
+        <span class="hli-meta">3h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--amb);"></div>
+        <span class="hli-text">Baja berry harvest tightening through April</span>
+        <span class="hli-meta">5h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--ind);"></div>
+        <span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span>
+        <span class="hli-meta">8h ago</span>
+      </div>
+      <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
     </div>
-    <div id="rcList">
-      <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
+
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Today's Reports</span>
+        <span class="sec-link" onclick="gv('reports')">View all →</span>
+      </div>
+      <div id="rcList">
+        <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
+      </div>
     </div>
+
   </div>
 
   <div class="htbl-card" id="hpTable">

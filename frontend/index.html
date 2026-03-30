@@ -293,11 +293,7 @@ main { padding-top: 54px; }
 /* ════════════════════════════════════════
    HOME PAGE
 ════════════════════════════════════════ */
-<<<<<<< HEAD
-.home-wrap { max-width: var(--mw); margin: 0 auto; padding: 40px var(--px) 80px; }
-=======
-.home-wrap { max-width: 720px; margin: 0 auto; padding: 40px var(--px) 80px; }
->>>>>>> a85235a99ace6f13507af8a17f19bce09b0398e4
+.home-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 40px 80px; }
 
 /* Hero */
 .hero { padding-bottom: 36px; }
@@ -680,6 +676,51 @@ main { padding-top: 54px; }
 .pulse-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); box-shadow: var(--s1); margin-bottom: 20px; overflow: hidden; }
 .pulse-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--bd); }
 
+
+/* Unified home list card — used for both Industry Pulse and Today's Reports */
+.home-list-card {
+  background: var(--wh); border: 1.5px solid var(--bd);
+  border-radius: var(--rx); box-shadow: var(--s1);
+  overflow: hidden; margin-bottom: 16px;
+}
+.home-list-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--bd);
+}
+.home-list-title {
+  font-size: .8rem; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--i3);
+}
+.home-list-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 20px; border-bottom: 1px solid #f3f4f6;
+  cursor: pointer; transition: background .06s;
+}
+.home-list-item:last-child { border-bottom: none; }
+.home-list-item:hover { background: var(--gl); }
+.hli-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.hli-text { font-size: .875rem; font-weight: 500; color: var(--ink); flex: 1; }
+.hli-meta { font-size: .75rem; color: var(--i4); flex-shrink: 0; white-space: nowrap; }
+.home-list-more {
+  padding: 12px 20px; font-size: .8125rem; font-weight: 600;
+  color: var(--g); cursor: pointer; border-top: 1px solid var(--bd);
+  text-align: center; transition: background .08s;
+}
+.home-list-more:hover { background: var(--gl); }
+
+
+.home-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media(max-width: 768px) {
+  .home-two-col { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -746,12 +787,12 @@ main { padding-top: 54px; }
       <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
     </div>
     <div class="hero-chips">
-      <button class="fpill on"  data-q=""             onclick="hpChip(this,'')">All markets</button>
-      <button class="fpill"     data-q="Avocados"     onclick="hpChip(this,'Avocados')"><span class="fpill-icon">🥑</span> Avocados</button>
-      <button class="fpill"     data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')"><span class="fpill-icon">🍅</span> Tomatoes</button>
-      <button class="fpill"     data-q="Strawberries" onclick="hpChip(this,'Strawberries')"><span class="fpill-icon">🍓</span> Strawberries</button>
-      <button class="fpill"     data-q="Lettuce"      onclick="hpChip(this,'Lettuce')"><span class="fpill-icon">🥬</span> Lettuce</button>
-      <button class="fpill"     data-q="Peppers"      onclick="hpChip(this,'Peppers')"><span class="fpill-icon">🫑</span> Peppers</button>
+      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
+      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')"><span class="fpill-icon">🥑</span> Avocados</button>
+      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')"><span class="fpill-icon">🍅</span> Tomatoes</button>
+      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')"><span class="fpill-icon">🍓</span> Strawberries</button>
+      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')"><span class="fpill-icon">🥬</span> Lettuce</button>
+      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')"><span class="fpill-icon">🫑</span> Peppers</button>
     </div>
   </div>
 
@@ -766,24 +807,47 @@ main { padding-top: 54px; }
     </div>
   </div>
 
-  <div class="pulse-card">
-    <div class="pulse-head">
-      <span class="pulse-lbl">Industry Pulse</span>
-      <span class="sec-link" onclick="gv('alerts')">View all →</span>
-    </div>
-    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-g"></div><span class="pulse-text">Weekly USDA Terminal Market Report published</span><span class="pulse-ago">2h ago</span></div>
-    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-r"></div><span class="pulse-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="pulse-ago">3h ago</span></div>
-    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-a"></div><span class="pulse-text">Baja berry harvest tightening through April</span><span class="pulse-ago">5h ago</span></div>
-    <div class="pulse-item" onclick="gv('alerts')"><div class="pd pd-i"></div><span class="pulse-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="pulse-ago">8h ago</span></div>
-  </div>
+  <!-- Industry Pulse + Today's Reports — side by side -->
+  <div class="home-two-col">
 
-  <div class="rep-list-card">
-    <div class="rep-list-head">
-      <span class="sec-title">Today's Reports</span>
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Industry Pulse</span>
+        <span class="sec-link" onclick="gv('alerts')">View all →</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--g);"></div>
+        <span class="hli-text">Weekly USDA Terminal Market Report published</span>
+        <span class="hli-meta">2h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--red);"></div>
+        <span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span>
+        <span class="hli-meta">3h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--amb);"></div>
+        <span class="hli-text">Baja berry harvest tightening through April</span>
+        <span class="hli-meta">5h ago</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')">
+        <div class="hli-dot" style="background:var(--ind);"></div>
+        <span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span>
+        <span class="hli-meta">8h ago</span>
+      </div>
+      <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
     </div>
-    <div id="rcList">
-      <div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">Loading…</span></div>
+
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Today's Reports</span>
+        <span class="sec-link" onclick="gv('reports')">View all →</span>
+      </div>
+      <div id="rcList">
+        <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
+      </div>
     </div>
+
   </div>
 
   <div class="htbl-card" id="hpTable">
@@ -1391,34 +1455,29 @@ function buildRcMktList(){
   if(!el)return;
   var latestDate=DATES[0]&&DATES[0].date;
   if(!latestDate){
-    el.innerHTML='<div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">No data yet.</span></div>';
+    el.innerHTML='<div class="home-list-item"><span class="hli-text" style="color:var(--i4);">No data yet.</span></div>';
     return;
   }
   var todayItems=(DATED[latestDate]||[]).filter(function(i){return i.market_type==='terminal'||!i.market_type;});
   var mkts=[...new Set(todayItems.map(function(i){return i.market;}).filter(Boolean))].sort();
   if(!mkts.length){
-    el.innerHTML='<div class="rep-list-item"><span class="rep-city" style="color:var(--i4);">No terminal reports today.</span></div>';
+    el.innerHTML='<div class="home-list-item"><span class="hli-text" style="color:var(--i4);">No terminal reports today.</span></div>';
     return;
   }
-  var shown=mkts.slice(0,5);
   var d=new Date(latestDate+'T12:00:00');
   var dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  var shown=mkts.slice(0,5);
   var rows=shown.map(function(mkt){
-    var mItems=todayItems.filter(function(i){return i.market===mkt;});
-    var comms=[...new Set(mItems.map(function(i){return i.commodity;}))];
-    var avgCh=comms.length?comms.reduce(function(s,c){return s+trendPct(c);},0)/comms.length:0;
-    var cls=avgCh>0.5?'up':avgCh<-0.5?'dn':'flat';
-    var trend=avgCh>0.5?'↑ Up':avgCh<-0.5?'↓ Down':'— Stable';
-    return'<div class="rep-list-item" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="gv(\'terminal\');tPickMkt(this.dataset.mkt)">'
-      +'<span class="rep-city">'+mkt+'</span>'
-      +'<span class="rep-date-tag">'+dateStr+'</span>'
-      +'<span class="rep-trend '+cls+'">'+trend+'</span>'
+    return'<div class="home-list-item" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="gv(\'terminal\');tPickMkt(this.dataset.mkt)">'
+      +'<div class="hli-dot" style="background:var(--g);"></div>'
+      +'<span class="hli-text">'+mkt+'</span>'
+      +'<span class="hli-meta">'+dateStr+'</span>'
       +'</div>';
   }).join('');
-  var viewMore=mkts.length>5
-    ?'<div class="rep-viewmore" onclick="gv(\'reports\')">View all '+mkts.length+' markets →</div>'
-    :'<div class="rep-viewmore" onclick="gv(\'reports\')">View all reports →</div>';
-  el.innerHTML=rows+viewMore;
+  var more=mkts.length>5
+    ?'<div class="home-list-more" onclick="gv(\'reports\')">View all '+mkts.length+' markets →</div>'
+    :'<div class="home-list-more" onclick="gv(\'reports\')">View all reports →</div>';
+  el.innerHTML=rows+more;
 }
 
 function buildDashboard(){
