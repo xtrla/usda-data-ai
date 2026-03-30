@@ -743,7 +743,7 @@ main { padding-top: 60px; }
 }
 .feat-card-body { padding: 20px 20px 18px; }
 .feat-card-img.terminal { background-image: url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=900&q=80'); }
-.feat-card-img.fob       { background-image: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=900&q=80');  background-position: center 60%; }
+.feat-card-img.fob       { background-image: url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80'); background-position: center 50%; }
 
 @media(max-width: 640px) {
   .hero { padding: 48px 24px 44px; }
@@ -753,6 +753,10 @@ main { padding-top: 60px; }
 
 .nav-logo { cursor: pointer; flex-shrink: 0; margin-right: 6px; display: flex; align-items: center; }
 .nav-logo-img { height: 36px; width: auto; display: block; }
+
+
+.htbl-chips { display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 16px 8px; }
+.htbl-chips .fpill { font-size:.78rem;padding:5px 14px;box-shadow:none; }
 
 </style>
 </head>
@@ -819,14 +823,7 @@ main { padding-top: 60px; }
       </div>
       <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
     </div>
-    <div class="hero-chips">
-      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
-      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')">🥑 Avocados</button>
-      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')">🍅 Tomatoes</button>
-      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')">🍓 Strawberries</button>
-      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')">🥬 Lettuce</button>
-      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')">🫑 Peppers</button>
-    </div>
+    
   </div>
 
   <!-- Row 1: Industry Pulse + Today's Reports side by side -->
@@ -872,7 +869,15 @@ main { padding-top: 60px; }
   </div>
 
   <!-- Commodity table -->
-  <div class="htbl-card" id="hpTable">
+      <div class="htbl-chips">
+      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
+      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')">Avocados</button>
+      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')">Tomatoes</button>
+      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')">Strawberries</button>
+      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')">Lettuce</button>
+      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')">Peppers</button>
+    </div>
+    <div class="htbl-card" id="hpTable">
     <div class="htbl-head">
       <div class="htbl-meta">
         <div class="htbl-lbl">Commodity prices</div>
