@@ -514,23 +514,44 @@ main { padding-top: 60px; }
    RESPONSIVE
 ════════════════════════════════════════ */
 @media(max-width: 900px) {
-  .nav-links { display: none; }
-  .nav-ham   { display: flex; }
+  /* Nav */
+  .nav-links  { display: none; }
+  .nav-ham    { display: flex; }
   .nav-search { display: none; }
-  .feat-grid, .stats-grid { grid-template-columns: 1fr; }
-  .rep-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-  .term-sb   { display: none; }
-  .term-mob  { display: flex; }
-  .term-content { padding: 16px; }
+  .nav-inner  { padding: 0 16px; gap: 8px; }
+  .nav-logo-img { height: 30px; }
+  .live-pill  { font-size: .68rem; padding: 4px 8px; }
+  .nav-av     { width: 28px; height: 28px; font-size: .68rem; }
+  /* Home */
+  .home-wrap  { padding: 28px 16px 60px; }
+  .home-two-col { grid-template-columns: 1fr; }
+  .feat-grid  { grid-template-columns: 1fr; }
+  /* Hero */
   .hero-search-wrap { flex-direction: column; }
-  .hero-btn { width: 100%; }
-  .filt-bar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; }
+  .hero-btn   { width: 100%; justify-content: center; }
+  .hero-h1    { font-size: clamp(2rem, 8vw, 2.75rem); }
+  /* Terminal */
+  .term-sb    { display: none; }
+  .term-mob   { display: flex; }
+  .term-content { padding: 16px; }
+  /* Misc */
+  .filt-bar   { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; }
   .filt-bar::-webkit-scrollbar { display: none; }
+  .htbl-chips { gap: 6px; padding: 12px 14px 6px; }
+  .htbl-chips .fpill { font-size: .75rem; padding: 5px 12px; }
+  .page-wrap  { padding: 20px 16px 60px; }
 }
 @media(max-width: 640px) {
   .term-shell { grid-template-columns: 1fr; }
-  .hero-h1 { font-size: 2rem; }
-  .rep-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav { height: 54px; }
+  main { padding-top: 54px; }
+  .home-wrap { padding: 24px 16px 56px; }
+  .feat-card-img { height: 130px; }
+  .home-list-item { padding: 11px 14px; }
+  .home-list-head { padding: 12px 14px; }
+  .home-list-more { padding: 10px 14px; }
+  .htbl-head { padding: 10px 14px 0; }
+  .htbl-chips { padding: 10px 14px 4px; }
 }
 @media(min-width: 901px) { .term-mob { display: none; } }
 @media(hover: none) { .feat-card:hover { transform: none; } .rep-card:hover { transform: none; } }
