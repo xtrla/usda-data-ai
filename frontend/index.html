@@ -750,13 +750,17 @@ main { padding-top: 54px; }
   .feat-card-img { height: 120px; }
 }
 
+
+.nav-logo { cursor: pointer; flex-shrink: 0; margin-right: 6px; display: flex; align-items: center; }
+.nav-logo-img { height: 28px; width: auto; display: block; }
+
 </style>
 </head>
 <body>
 
 <header class="nav">
   <div class="nav-inner">
-    <div class="nav-logo" onclick="gv('home')">agra<span class="logo-x">X</span></div>
+    <div class="nav-logo" onclick="gv('home')"><img src="agrax-logo-new.png" alt="agraX" class="nav-logo-img"/></div>
     <nav class="nav-links">
       <a class="nav-link on" data-v="home"     onclick="gv('home')">Dashboard</a>
       <a class="nav-link"    data-v="terminal" onclick="gv('terminal')">Terminal Markets</a>
