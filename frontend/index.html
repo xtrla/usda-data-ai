@@ -26,7 +26,7 @@
   --i2:   #374151;
   --i3:   #6b7280;
   --i4:   #9ca3af;
-  --bg:   #f4f3ef;
+  --bg:   #ffffff;
   --wh:   #ffffff;
   --bd:   #e5e7eb;
   --bd2:  #d1d5db;
@@ -53,7 +53,7 @@
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; overflow-x: hidden; }
-body { font-family: var(--fb); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+body { font-family: var(--fb); background:#ffffff; color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 button, input, select, a { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; text-decoration: none; }
 .view { display: none; }
 .view.active { display: block; }
@@ -722,45 +722,17 @@ main { padding-top: 54px; }
 }
 
 
-/* ── HERO WITH PHOTO BACKGROUND ── */
-.hero {
-  position: relative;
-  border-radius: var(--rx);
-  overflow: hidden;
-  padding: 72px 56px 64px;
-  margin-bottom: 16px;
-}
-.hero::before {
-  content: '';
-  position: absolute; inset: 0; z-index: 0;
-  background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80');
-  background-size: cover; background-position: center 40%;
-  filter: brightness(0.38) saturate(0.7);
-}
-.hero::after {
-  content: '';
-  position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(
-    135deg,
-    rgba(10,61,47,0.72) 0%,
-    rgba(10,61,47,0.45) 60%,
-    rgba(0,0,0,0.2) 100%
-  );
-}
-.hero > * { position: relative; z-index: 2; }
-.hero-h1 {
-  color: #ffffff !important;
-  letter-spacing: -.05em;
-}
-.hero-search { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.3) !important; }
-.hero-search:focus-within { background: rgba(255,255,255,0.18) !important; border-color: rgba(255,255,255,0.6) !important; box-shadow: none !important; }
-.hero-search input { color: #fff !important; }
-.hero-search input::placeholder { color: rgba(255,255,255,0.55) !important; }
-.hero-btn { background: #fff !important; color: var(--g) !important; }
-.hero-btn:hover { background: var(--gl) !important; }
-.fpill { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; color: rgba(255,255,255,0.9) !important; box-shadow: none !important; }
-.fpill:hover { background: rgba(255,255,255,0.22) !important; border-color: rgba(255,255,255,0.45) !important; color: #fff !important; }
-.fpill.on { background: #fff !important; color: var(--g) !important; border-color: #fff !important; }
+/* ── HERO — clean light ── */
+.hero { padding-bottom: 36px; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 24px; }
+.hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
+.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
+.hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
+.hero-search input { flex: 1; font-size: .9375rem; outline: none; background: transparent; color: var(--ink); }
+.hero-search input::placeholder { color: var(--i4); }
+.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 12px 26px; font-size: .9375rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
+.hero-btn:hover { background: var(--gm); }
+.hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
 
 /* ── FEATURE CARDS WITH IMAGE STRIPS ── */
 .feat-card { padding: 0 !important; overflow: hidden; }
@@ -845,14 +817,39 @@ main { padding-top: 54px; }
     </div>
     <div class="hero-chips">
       <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
-      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')"><span class="fpill-icon">🥑</span> Avocados</button>
-      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')"><span class="fpill-icon">🍅</span> Tomatoes</button>
-      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')"><span class="fpill-icon">🍓</span> Strawberries</button>
-      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')"><span class="fpill-icon">🥬</span> Lettuce</button>
-      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')"><span class="fpill-icon">🫑</span> Peppers</button>
+      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')">🥑 Avocados</button>
+      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')">🍅 Tomatoes</button>
+      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')">🍓 Strawberries</button>
+      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')">🥬 Lettuce</button>
+      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')">🫑 Peppers</button>
     </div>
   </div>
 
+  <!-- Row 1: Industry Pulse + Today's Reports side by side -->
+  <div class="home-two-col">
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Industry Pulse</span>
+        <span class="sec-link" onclick="gv('alerts')">View all →</span>
+      </div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--g);"></div><span class="hli-text">Weekly USDA Terminal Market Report published</span><span class="hli-meta">2h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--red);"></div><span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="hli-meta">3h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--amb);"></div><span class="hli-text">Baja berry harvest tightening through April</span><span class="hli-meta">5h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--ind);"></div><span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="hli-meta">8h ago</span></div>
+      <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
+    </div>
+    <div class="home-list-card">
+      <div class="home-list-head">
+        <span class="home-list-title">Today's Reports</span>
+        <span class="sec-link" onclick="gv('reports')">View all →</span>
+      </div>
+      <div id="rcList">
+        <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Terminal Markets + FOB Origins feature cards with photos -->
   <div class="feat-grid">
     <div class="feat-card" onclick="gv('terminal')">
       <div class="feat-card-img terminal"></div>
@@ -870,49 +867,7 @@ main { padding-top: 54px; }
     </div>
   </div>
 
-  <!-- Industry Pulse + Today's Reports — side by side -->
-  <div class="home-two-col">
-
-    <div class="home-list-card">
-      <div class="home-list-head">
-        <span class="home-list-title">Industry Pulse</span>
-        <span class="sec-link" onclick="gv('alerts')">View all →</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--g);"></div>
-        <span class="hli-text">Weekly USDA Terminal Market Report published</span>
-        <span class="hli-meta">2h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--red);"></div>
-        <span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span>
-        <span class="hli-meta">3h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--amb);"></div>
-        <span class="hli-text">Baja berry harvest tightening through April</span>
-        <span class="hli-meta">5h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--ind);"></div>
-        <span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span>
-        <span class="hli-meta">8h ago</span>
-      </div>
-      <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
-    </div>
-
-    <div class="home-list-card">
-      <div class="home-list-head">
-        <span class="home-list-title">Today's Reports</span>
-        <span class="sec-link" onclick="gv('reports')">View all →</span>
-      </div>
-      <div id="rcList">
-        <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
-      </div>
-    </div>
-
-  </div>
-
+  <!-- Commodity table -->
   <div class="htbl-card" id="hpTable">
     <div class="htbl-head">
       <div class="htbl-meta">
