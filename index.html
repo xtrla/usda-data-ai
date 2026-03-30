@@ -26,7 +26,7 @@
   --i2:   #374151;
   --i3:   #6b7280;
   --i4:   #9ca3af;
-  --bg:   #f4f3ef;
+  --bg:   #f7f6f2;
   --wh:   #ffffff;
   --bd:   #e5e7eb;
   --bd2:  #d1d5db;
@@ -53,7 +53,7 @@
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; overflow-x: hidden; }
-body { font-family: var(--fb); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+body { font-family: var(--fb); background:#f7f6f2; color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 button, input, select, a { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; text-decoration: none; }
 .view { display: none; }
 .view.active { display: block; }
@@ -61,7 +61,7 @@ button, input, select, a { font-family: inherit; cursor: pointer; border: none; 
 /* ── NAV — identical across all pages ── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-  height: 54px; background: rgba(255,255,255,.97);
+  height: 60px; background: rgba(255,255,255,1);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bd);
 }
@@ -110,12 +110,12 @@ button, input, select, a { font-family: inherit; cursor: pointer; border: none; 
 }
 .nav-ham { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px; width: 36px; height: 36px; flex-shrink: 0; }
 .nav-ham span { display: block; width: 16px; height: 1.5px; background: var(--ink); border-radius: 2px; }
-.nav-drawer { display: none; position: fixed; top: 54px; left: 0; right: 0; background: rgba(255,255,255,.98); backdrop-filter: blur(12px); border-bottom: 1px solid var(--bd); z-index: 299; flex-direction: column; padding: 4px 0 10px; }
+.nav-drawer { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(255,255,255,.98); backdrop-filter: blur(12px); border-bottom: 1px solid var(--bd); z-index: 299; flex-direction: column; padding: 4px 0 10px; }
 .nav-drawer.open { display: flex; }
 .nav-drawer .nav-link { padding: 13px var(--px); border-radius: 0; font-size: .9375rem; min-height: 48px; display: flex; align-items: center; }
 
 /* ── SHARED LAYOUT ── */
-main { padding-top: 54px; }
+main { padding-top: 60px; }
 
 /* ── SHARED COMPONENTS ── */
 
@@ -304,7 +304,8 @@ main { padding-top: 54px; }
   border-radius: var(--rp); padding: 5px 13px; margin-bottom: 20px;
 }
 .hero-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); animation: blink 2s ease-in-out infinite; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 24px; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
+.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
 .hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
 .hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
 .hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
@@ -386,10 +387,10 @@ main { padding-top: 54px; }
    TERMINAL MARKETS PAGE
    Sidebar + content split layout
 ════════════════════════════════════════ */
-.term-shell { display: grid; grid-template-columns: 180px 1fr; min-height: calc(100vh - 54px); border-top: 1px solid var(--bd); }
+.term-shell { display: grid; grid-template-columns: 180px 1fr; min-height: calc(100vh - 60px); border-top: 1px solid var(--bd); }
 
 /* Sidebar — markets only, no record counts */
-.term-sb { position: sticky; top: 54px; height: calc(100vh - 54px); overflow-y: auto; border-right: 1px solid var(--bd); scrollbar-width: none; -webkit-overflow-scrolling: touch; background: var(--wh); }
+.term-sb { position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; border-right: 1px solid var(--bd); scrollbar-width: none; -webkit-overflow-scrolling: touch; background: var(--wh); }
 .term-sb::-webkit-scrollbar { display: none; }
 .sb-all {
   display: flex; align-items: center; justify-content: space-between;
@@ -514,23 +515,46 @@ main { padding-top: 54px; }
    RESPONSIVE
 ════════════════════════════════════════ */
 @media(max-width: 900px) {
-  .nav-links { display: none; }
-  .nav-ham   { display: flex; }
+  /* Nav */
+  .nav-links  { display: none; }
+  .nav-ham    { display: flex; }
   .nav-search { display: none; }
-  .feat-grid, .stats-grid { grid-template-columns: 1fr; }
-  .rep-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-  .term-sb   { display: none; }
-  .term-mob  { display: flex; }
-  .term-content { padding: 16px; }
+  .nav-inner  { padding: 0 16px; gap: 8px; }
+  .nav-logo-img { height: 30px; }
+  .live-pill  { font-size: .68rem; padding: 4px 8px; }
+  .nav-av     { width: 28px; height: 28px; font-size: .68rem; }
+  /* Home */
+  .home-wrap  { padding: 28px 16px 60px; }
+  .home-two-col { grid-template-columns: 1fr; }
+  .feat-grid  { grid-template-columns: 1fr; }
+  /* Hero */
   .hero-search-wrap { flex-direction: column; }
-  .hero-btn { width: 100%; }
-  .filt-bar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; }
+  .hero-btn   { width: 100%; justify-content: center; }
+  .hero-h1    { font-size: clamp(1.875rem, 8vw, 2.75rem); }
+  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
+  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
+  /* Terminal */
+  .term-sb    { display: none; }
+  .term-mob   { display: flex; }
+  .term-content { padding: 16px; }
+  /* Misc */
+  .filt-bar   { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; }
   .filt-bar::-webkit-scrollbar { display: none; }
+  .htbl-chips { gap: 6px; padding: 12px 14px 6px; }
+  .htbl-chips .fpill { font-size: .75rem; padding: 5px 12px; }
+  .page-wrap  { padding: 20px 16px 60px; }
 }
 @media(max-width: 640px) {
   .term-shell { grid-template-columns: 1fr; }
-  .hero-h1 { font-size: 2rem; }
-  .rep-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav { height: 54px; }
+  main { padding-top: 54px; }
+  .home-wrap { padding: 24px 16px 56px; }
+  .feat-card-img { height: 130px; }
+  .home-list-item { padding: 11px 14px; }
+  .home-list-head { padding: 12px 14px; }
+  .home-list-more { padding: 10px 14px; }
+  .htbl-head { padding: 10px 14px 0; }
+  .htbl-chips { padding: 10px 14px 4px; }
 }
 @media(min-width: 901px) { .term-mob { display: none; } }
 @media(hover: none) { .feat-card:hover { transform: none; } .rep-card:hover { transform: none; } }
@@ -721,13 +745,51 @@ main { padding-top: 54px; }
   .home-two-col { grid-template-columns: 1fr; }
 }
 
+
+/* ── HERO — clean light ── */
+.hero { padding-bottom: 36px; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
+.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
+.hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
+.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
+.hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
+.hero-search input { flex: 1; font-size: .9375rem; outline: none; background: transparent; color: var(--ink); }
+.hero-search input::placeholder { color: var(--i4); }
+.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 12px 26px; font-size: .9375rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
+.hero-btn:hover { background: var(--gm); }
+.hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+
+/* ── FEATURE CARDS WITH IMAGE STRIPS ── */
+.feat-card { padding: 0 !important; overflow: hidden; }
+.feat-card-img {
+  width: 100%; height: 160px;
+  background-size: cover; background-position: center;
+  flex-shrink: 0;
+}
+.feat-card-body { padding: 20px 20px 18px; }
+.feat-card-img.terminal { background-image: url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=900&q=80'); }
+.feat-card-img.fob       { background-image: url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80'); background-position: center 50%; }
+
+@media(max-width: 640px) {
+  .hero { padding: 48px 24px 44px; }
+  .feat-card-img { height: 120px; }
+}
+
+
+.nav-logo { cursor: pointer; flex-shrink: 0; margin-right: 6px; display: flex; align-items: center; }
+.nav-logo-img { height: 36px; width: auto; display: block; }
+
+
+.htbl-chips { display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 16px 8px; }
+.htbl-chips .fpill { font-size:.78rem;padding:5px 14px;box-shadow:none; }
+
 </style>
 </head>
 <body>
 
 <header class="nav">
   <div class="nav-inner">
-    <div class="nav-logo" onclick="gv('home')">agra<span class="logo-x">X</span></div>
+    <div class="nav-logo" onclick="gv('home')"><img src="agrax-logo-new.png" alt="agraX" class="nav-logo-img"/></div>
     <nav class="nav-links">
       <a class="nav-link on" data-v="home"     onclick="gv('home')">Dashboard</a>
       <a class="nav-link"    data-v="terminal" onclick="gv('terminal')">Terminal Markets</a>
@@ -779,6 +841,7 @@ main { padding-top: 54px; }
 
   <div class="hero">
     <h1 class="hero-h1">Wholesale Produce<br>Price Intelligence.</h1>
+    <p class="hero-sub">Terminal markets and FOB origins — updated daily from USDA.</p>
     <div class="hero-search-wrap">
       <div class="hero-search">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -786,58 +849,21 @@ main { padding-top: 54px; }
       </div>
       <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
     </div>
-    <div class="hero-chips">
-      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
-      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')"><span class="fpill-icon">🥑</span> Avocados</button>
-      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')"><span class="fpill-icon">🍅</span> Tomatoes</button>
-      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')"><span class="fpill-icon">🍓</span> Strawberries</button>
-      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')"><span class="fpill-icon">🥬</span> Lettuce</button>
-      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')"><span class="fpill-icon">🫑</span> Peppers</button>
-    </div>
   </div>
 
-  <div class="feat-grid">
-    <div class="feat-card" onclick="gv('terminal')">
-      <div class="feat-top"><div class="feat-title">Terminal Markets</div><div class="feat-arrow">›</div></div>
-      <div class="feat-desc">What buyers pay at New York, Chicago, Miami and 7 other major U.S. distribution hubs.</div>
-    </div>
-    <div class="feat-card" onclick="gv('fob')">
-      <div class="feat-top"><div class="feat-title">FOB Origins</div><div class="feat-arrow">›</div></div>
-      <div class="feat-desc">Shipper prices at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
-    </div>
-  </div>
-
-  <!-- Industry Pulse + Today's Reports — side by side -->
+  <!-- Row 1: Industry Pulse + Today's Reports side by side -->
   <div class="home-two-col">
-
     <div class="home-list-card">
       <div class="home-list-head">
         <span class="home-list-title">Industry Pulse</span>
         <span class="sec-link" onclick="gv('alerts')">View all →</span>
       </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--g);"></div>
-        <span class="hli-text">Weekly USDA Terminal Market Report published</span>
-        <span class="hli-meta">2h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--red);"></div>
-        <span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span>
-        <span class="hli-meta">3h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--amb);"></div>
-        <span class="hli-text">Baja berry harvest tightening through April</span>
-        <span class="hli-meta">5h ago</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')">
-        <div class="hli-dot" style="background:var(--ind);"></div>
-        <span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span>
-        <span class="hli-meta">8h ago</span>
-      </div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--g);"></div><span class="hli-text">Weekly USDA Terminal Market Report published</span><span class="hli-meta">2h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--red);"></div><span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="hli-meta">3h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--amb);"></div><span class="hli-text">Baja berry harvest tightening through April</span><span class="hli-meta">5h ago</span></div>
+      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--ind);"></div><span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="hli-meta">8h ago</span></div>
       <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
     </div>
-
     <div class="home-list-card">
       <div class="home-list-head">
         <span class="home-list-title">Today's Reports</span>
@@ -847,10 +873,36 @@ main { padding-top: 54px; }
         <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
       </div>
     </div>
-
   </div>
 
-  <div class="htbl-card" id="hpTable">
+  <!-- Row 2: Terminal Markets + FOB Origins feature cards with photos -->
+  <div class="feat-grid">
+    <div class="feat-card" onclick="gv('terminal')">
+      <div class="feat-card-img terminal"></div>
+      <div class="feat-card-body">
+        <div class="feat-top"><div class="feat-title">Terminal Markets</div><div class="feat-arrow">›</div></div>
+        <div class="feat-desc">What buyers pay at New York, Chicago, Miami and 7 other major U.S. distribution hubs.</div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="gv('fob')">
+      <div class="feat-card-img fob"></div>
+      <div class="feat-card-body">
+        <div class="feat-top"><div class="feat-title">FOB Origins</div><div class="feat-arrow">›</div></div>
+        <div class="feat-desc">Shipper prices at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commodity table -->
+      <div class="htbl-chips">
+      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
+      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')">Avocados</button>
+      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')">Tomatoes</button>
+      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')">Strawberries</button>
+      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')">Lettuce</button>
+      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')">Peppers</button>
+    </div>
+    <div class="htbl-card" id="hpTable">
     <div class="htbl-head">
       <div class="htbl-meta">
         <div class="htbl-lbl">Commodity prices</div>

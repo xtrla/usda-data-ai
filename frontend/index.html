@@ -304,7 +304,8 @@ main { padding-top: 60px; }
   border-radius: var(--rp); padding: 5px 13px; margin-bottom: 20px;
 }
 .hero-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); animation: blink 2s ease-in-out infinite; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 24px; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
+.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
 .hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
 .hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
 .hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
@@ -529,7 +530,9 @@ main { padding-top: 60px; }
   /* Hero */
   .hero-search-wrap { flex-direction: column; }
   .hero-btn   { width: 100%; justify-content: center; }
-  .hero-h1    { font-size: clamp(2rem, 8vw, 2.75rem); }
+  .hero-h1    { font-size: clamp(1.875rem, 8vw, 2.75rem); }
+  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
+  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
   /* Terminal */
   .term-sb    { display: none; }
   .term-mob   { display: flex; }
@@ -745,7 +748,8 @@ main { padding-top: 60px; }
 
 /* ── HERO — clean light ── */
 .hero { padding-bottom: 36px; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 24px; }
+.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
+.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
 .hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
 .hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
 .hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
@@ -837,6 +841,7 @@ main { padding-top: 60px; }
 
   <div class="hero">
     <h1 class="hero-h1">Wholesale Produce<br>Price Intelligence.</h1>
+    <p class="hero-sub">Terminal markets and FOB origins — updated daily from USDA.</p>
     <div class="hero-search-wrap">
       <div class="hero-search">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -844,7 +849,6 @@ main { padding-top: 60px; }
       </div>
       <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
     </div>
-    
   </div>
 
   <!-- Row 1: Industry Pulse + Today's Reports side by side -->
