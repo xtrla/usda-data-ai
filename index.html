@@ -4,1686 +4,1185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agraX — Wholesale Produce Intelligence</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   agraX — Single Coherent Design System
-   Every page uses the same tokens, spacing, and
-   component language. No page-specific overrides.
-═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  /* Palette */
-  --g:    #0A3D2F;
-  --gd:   #072b20;
-  --gm:   #0f5c46;
-  --gl:   #e8f2ee;
-  --g2:   #c8e0d5;
-  --blue: #2563eb;
-  --blu-bg:#eff6ff;
-  --blu-bd:#bfdbfe;
-  --ink:  #111827;
-  --i2:   #374151;
-  --i3:   #6b7280;
-  --i4:   #9ca3af;
-  --bg:   #f7f6f2;
-  --wh:   #ffffff;
-  --bd:   #e5e7eb;
-  --bd2:  #d1d5db;
-  --red:  #dc2626;
-  --rbg:  #fef2f2;
-  --amb:  #d97706;
-  --abg:  #fffbeb;
-  --ind:  #4f46e5;
-  /* Typography */
-  --fh: 'Space Grotesk', sans-serif;
-  --fb: 'Inter', sans-serif;
-  /* Layout */
-  --mw: 1200px;
-  --px: clamp(16px, 4vw, 40px);
-  /* Radii */
-  --r:  8px;
-  --rl: 12px;
-  --rx: 16px;
-  --rp: 999px;
-  /* Shadows */
-  --s1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --s2: 0 4px 14px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.04);
+  --bg:       #f0efeb;
+  --white:    #ffffff;
+  --panel:    #faf9f6;
+  --border:   #e2e0d8;
+  --border2:  #d4d0c4;
+  --muted:    #9a9888;
+  --dim:      #7a7a6e;
+  --ink:      #1a1a14;
+  --lime:     #9dda3a;
+  --lime2:    #b8f050;
+  --lime-bg:  #f0fad8;
+  --lime-dk:  #3a8a10;
+  --amber:    #c4820a;
+  --amber-bg: #fff8e6;
+  --red:      #c03020;
+  --red-bg:   #fef0ee;
+  --blue:     #2a70c4;
+  --blue-bg:  #eef4ff;
+  --purple:   #7050c0;
+  --purple-bg:#f5f0ff;
 }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: 'Barlow', sans-serif; font-weight: 400; line-height: 1.5; overflow-x: hidden; }
 
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; overflow-x: hidden; }
-body { font-family: var(--fb); background:#f7f6f2; color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
-button, input, select, a { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; text-decoration: none; }
-.view { display: none; }
-.view.active { display: block; }
-
-/* ── NAV — identical across all pages ── */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-  height: 60px; background: rgba(255,255,255,1);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--bd);
-}
-.nav-inner {
-  max-width: var(--mw); margin: 0 auto; padding: 0 var(--px);
-  height: 100%; display: flex; align-items: center; gap: 10px;
-}
-.nav-logo {
-  font-family: var(--fh); font-size: 1.125rem; font-weight: 700;
-  letter-spacing: -.03em; color: var(--ink); cursor: pointer;
-  flex-shrink: 0; margin-right: 6px; display: flex; align-items: center;
-}
-.logo-x { color: var(--g); }
-.nav-links { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
-.nav-link {
-  font-size: .8rem; font-weight: 500; color: var(--i3);
-  padding: 5px 10px; border-radius: var(--r);
-  transition: background .1s, color .1s; white-space: nowrap; border-bottom: none;
-}
-.nav-link:hover { background: var(--gl); color: var(--g); }
-.nav-link.on { color: var(--g); font-weight: 600; }
-.nav-search {
-  flex: 1; max-width: 260px; margin: 0 auto;
-  display: flex; align-items: center; gap: 7px;
-  background: var(--bg); border: 1.5px solid var(--bd2);
-  border-radius: var(--rp); padding: 6px 13px;
-  transition: border-color .15s, box-shadow .15s;
-}
-.nav-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
-.nav-search input { flex: 1; font-size: .8rem; outline: none; background: transparent; color: var(--ink); min-width: 0; }
-.nav-search input::placeholder { color: var(--i4); }
-.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.live-pill {
-  display: flex; align-items: center; gap: 5px;
-  background: var(--blu-bg); border: 1px solid var(--blu-bd);
-  border-radius: var(--rp); padding: 4px 10px;
-  font-size: .72rem; font-weight: 600; color: var(--blue); white-space: nowrap;
-}
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: blink 2s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-.nav-av {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--g); display: flex; align-items: center; justify-content: center;
-  font-size: .72rem; font-weight: 700; color: #fff;
-  border: 2px solid var(--bd); flex-shrink: 0;
-}
-.nav-ham { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px; width: 36px; height: 36px; flex-shrink: 0; }
-.nav-ham span { display: block; width: 16px; height: 1.5px; background: var(--ink); border-radius: 2px; }
-.nav-drawer { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(255,255,255,.98); backdrop-filter: blur(12px); border-bottom: 1px solid var(--bd); z-index: 299; flex-direction: column; padding: 4px 0 10px; }
-.nav-drawer.open { display: flex; }
-.nav-drawer .nav-link { padding: 13px var(--px); border-radius: 0; font-size: .9375rem; min-height: 48px; display: flex; align-items: center; }
-
-/* ── SHARED LAYOUT ── */
-main { padding-top: 60px; }
-
-/* ── SHARED COMPONENTS ── */
-
-/* Tags */
-.tag { display: inline-flex; align-items: center; font-size: .62rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--rp); }
-.tag-g   { background: var(--gl); color: var(--g); }
-.tag-r   { background: var(--rbg); color: var(--red); }
-.tag-a   { background: var(--abg); color: var(--amb); }
-.tag-i   { background: #eef2ff; color: var(--ind); }
-.tag-b   { background: var(--blu-bg); color: var(--blue); }
-
-/* Filter pills — used on home hero, alerts, reports */
-.fpill {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--wh); border: 1.5px solid var(--bd);
-  border-radius: var(--rp); padding: 7px 14px;
-  font-size: .8125rem; font-weight: 500; color: var(--i2);
-  box-shadow: var(--s1); transition: all .12s; cursor: pointer;
-}
-.fpill:hover { border-color: var(--g); color: var(--g); }
-.fpill.on { background: var(--g); color: #fff; border-color: var(--g); box-shadow: none; }
-.fpill-icon { font-size: .9375rem; line-height: 1; }
-
-/* Category pill row — FOB, used consistently */
-.cpill {
-  padding: 6px 14px; border-radius: var(--rp); font-size: .8rem; font-weight: 600;
-  border: 1.5px solid var(--bd); color: var(--i3);
-  transition: all .12s; min-height: 34px; display: inline-flex; align-items: center; gap: 5px;
-}
-.cpill:hover { border-color: var(--g); color: var(--g); }
-.cpill.on { background: var(--g); color: #fff; border-color: var(--g); }
-
-/* Inline search */
-.isrch {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--bg); border: 1px solid var(--bd);
-  border-radius: var(--rp); padding: 6px 12px;
-}
-.isrch input { font-size: .78rem; outline: none; background: transparent; color: var(--ink); width: 130px; }
-.isrch input::placeholder { color: var(--i4); }
-
-/* Buttons */
-.btn-ghost {
-  background: transparent; color: var(--i3); border: 1px solid var(--bd2);
-  border-radius: var(--r); padding: 7px 13px; font-size: .78rem; font-weight: 600;
-  transition: all .12s; display: inline-flex; align-items: center; gap: 5px;
-}
-.btn-ghost:hover { background: var(--wh); color: var(--ink); }
-
-/* Sort select — identical across terminal and FOB */
-.f-sel {
-  font-size: .78rem; font-weight: 500; color: var(--i3);
-  border: 1px solid var(--bd2); border-radius: var(--r);
-  padding: 6px 26px 6px 10px; background: var(--wh); cursor: pointer;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 8px center;
-}
-
-/* Section header — identical across all pages */
-.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
-.sec-title { font-family: var(--fh); font-size: .9375rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
-.sec-link { font-size: .78rem; font-weight: 600; color: var(--g); cursor: pointer; }
-.sec-link:hover { text-decoration: underline; }
-
-/* ── LEDGER TABLE — shared across Terminal, FOB, Home ── */
-.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.ledger { width: 100%; border-collapse: collapse; }
-.ledger thead th {
-  padding: 9px 16px; font-size: .62rem; font-weight: 700;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--i4);
-  text-align: left; background: #fafaf9; border-bottom: 1px solid var(--bd); white-space: nowrap;
-}
-.ledger thead th.r { text-align: right; }
-.ledger thead th.c { text-align: center; }
-.ledger tbody tr { border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background .06s; }
-.ledger tbody tr:last-child { border-bottom: none; }
-.ledger tbody tr:hover { background: var(--gl); }
-.ledger tbody td { padding: 12px 16px; vertical-align: middle; }
-.ledger tbody td.r { text-align: right; }
-.ledger tbody td.c { text-align: center; }
-
-/* Commodity cell */
-.com-cell { display: flex; align-items: center; gap: 10px; }
-.com-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--fh); font-size: .52rem; font-weight: 700; letter-spacing: .03em; flex-shrink: 0;
-}
-.cat-fruit  { background: #e0f0e8; color: var(--g); }
-.cat-veg    { background: #dde9f8; color: #1d4ed8; }
-.cat-onion  { background: #fef3c7; color: #92400e; }
-.cat-nut    { background: #fce7e7; color: #b91c1c; }
-.cat-other  { background: #f3f4f6; color: var(--i4); }
-.com-name { font-size: .875rem; font-weight: 600; color: var(--ink); }
-.com-sub  { font-size: .7rem; color: var(--i4); margin-top: 1px; }
-
-/* Price */
-.price-main { font-family: var(--fh); font-size: .9375rem; font-weight: 700; color: var(--ink); }
-.price-rng  { font-size: .78rem; color: var(--i4); }
-
-/* WoW change */
-.wow { font-family: var(--fh); font-size: .78rem; font-weight: 700; }
-.wow.up   { color: var(--g); }
-.wow.dn   { color: var(--red); }
-.wow.flat { color: var(--i4); }
-
-/* Status */
-.st-cell { display: flex; align-items: center; justify-content: flex-start; gap: 5px; }
-.st-dot  { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.st-lbl  { font-size: .68rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
-.st-dot.bullish, .st-dot.stable  { background: var(--g); }
-.st-lbl.bullish, .st-lbl.stable  { color: var(--g); }
-.st-dot.volatile, .st-dot.bearish { background: var(--red); }
-.st-lbl.volatile, .st-lbl.bearish { color: var(--red); }
-.st-dot.neutral { background: var(--i4); }
-.st-lbl.neutral { color: var(--i4); }
-
-/* Table footer & pagination — identical everywhere */
-.tbl-foot {
-  padding: 11px 16px; display: flex; align-items: center;
-  justify-content: space-between; border-top: 1px solid var(--bd); gap: 8px; flex-wrap: wrap;
-}
-.tbl-ct { font-size: .72rem; color: var(--i4); }
-.pg-btns { display: flex; gap: 3px; }
-.pg-btn {
-  width: 28px; height: 28px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .8rem; font-weight: 600; color: var(--i3);
-  border: 1px solid var(--bd); transition: all .1s;
-}
-.pg-btn.on  { background: var(--g); color: #fff; border-color: var(--g); }
-.pg-btn:hover:not(.on):not(:disabled) { border-color: var(--g); color: var(--g); }
-.pg-btn:disabled { opacity: .25; cursor: default; }
-
-/* Tab bar — used on home table header */
-.tab-bar { display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; }
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab {
-  padding: 8px 12px; font-size: .8rem; font-weight: 500; color: var(--i4);
-  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
-  transition: color .1s, border-color .1s; min-height: 40px; display: inline-flex; align-items: center;
-}
-.tab:hover { color: var(--i2); }
-.tab.on { color: var(--g); border-bottom-color: var(--g); font-weight: 600; }
-
-/* ── PAGE WRAPPER — all interior pages share this ── */
-.page-wrap {
-  max-width: var(--mw); margin: 0 auto;
-  padding: 28px var(--px) 72px;
-}
-.page-title { font-family: var(--fh); font-size: 1.5rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); margin-bottom: 4px; }
-.page-desc  { font-size: .8375rem; color: var(--i3); line-height: 1.6; }
-.page-top   { margin-bottom: 24px; }
-
-/* ── DETAIL SHEET ── */
-.sh-ov { position: fixed; inset: 0; z-index: 800; background: rgba(17,24,39,.28); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .2s; }
-.sh-ov.on { opacity: 1; pointer-events: all; }
-.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; background: var(--wh); border-radius: 16px 16px 0 0; max-height: 88vh; overflow-y: auto; transform: translateY(100%); transition: transform .28s cubic-bezier(.22,1,.36,1); -webkit-overflow-scrolling: touch; padding-bottom: env(safe-area-inset-bottom,0); }
-.sheet.on { transform: translateY(0); }
-.sh-drag { width: 32px; height: 3px; background: var(--bd2); border-radius: var(--rp); margin: 10px auto 0; }
-.sh-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.sh-title { font-family: var(--fh); font-size: 1.0625rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
-.sh-close { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: .875rem; color: var(--i3); }
-.sh-tabs { display: flex; border-bottom: 1px solid var(--bd); padding: 0 20px; }
-.sh-tab { padding: 10px 0; margin-right: 20px; font-size: .8125rem; font-weight: 600; color: var(--i4); border-bottom: 2px solid transparent; transition: color .1s, border-color .1s; }
-.sh-tab.on { color: var(--g); border-bottom-color: var(--g); }
-.sh-body { padding: 20px; }
-.sh-chart-wrap { height: 180px; margin-bottom: 16px; }
-.sh-mkt-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--bd); gap: 8px; }
-.sh-mkt-row:last-child { border-bottom: none; }
-.sh-mkt-name { font-size: .8125rem; font-weight: 600; color: var(--ink); }
-.sh-mkt-price { font-family: var(--fh); font-size: .9375rem; font-weight: 700; color: var(--ink); }
-
-/* ════════════════════════════════════════
-   HOME PAGE
-════════════════════════════════════════ */
-.home-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 40px 80px; }
-
-/* Hero */
-.hero { padding-bottom: 36px; }
-.hero-kicker {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--g); background: var(--gl); border: 1px solid var(--g2);
-  border-radius: var(--rp); padding: 5px 13px; margin-bottom: 20px;
-}
-.hero-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); animation: blink 2s ease-in-out infinite; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
-.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
-.hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
-.hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
-.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
-.hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
-.hero-search input { flex: 1; font-size: .9375rem; outline: none; background: transparent; color: var(--ink); }
-.hero-search input::placeholder { color: var(--i4); }
-.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 12px 26px; font-size: .9375rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
-.hero-btn:hover { background: var(--gm); }
-
-/* Feature cards */
-.feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.feat-card {
-  background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx);
-  padding: 22px 22px 18px; box-shadow: var(--s1); cursor: pointer;
-  transition: box-shadow .15s, transform .12s;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.feat-card:hover { box-shadow: var(--s2); transform: translateY(-1px); }
-.feat-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.feat-title { font-family: var(--fh); font-size: 1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
-.feat-arrow { width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--bd); display: flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--i4); flex-shrink: 0; transition: background .12s, color .12s, border-color .12s; }
-.feat-card:hover .feat-arrow { background: var(--g); color: #fff; border-color: var(--g); }
-.feat-desc { font-size: .8rem; color: var(--i3); line-height: 1.55; }
-
-/* Industry Pulse */
-.pulse-strip { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rl); padding: 11px 16px; display: flex; align-items: center; gap: 10px; box-shadow: var(--s1); margin-bottom: 32px; }
-.pulse-lbl { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--i3); flex-shrink: 0; }
-.pulse-div { width: 1px; height: 12px; background: var(--bd); flex-shrink: 0; }
-.pulse-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; flex: 1; -webkit-overflow-scrolling: touch; }
-.pulse-scroll::-webkit-scrollbar { display: none; }
-.pulse-item { display: flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; flex-shrink: 0; }
-.pd { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.pd-g { background: var(--g); } .pd-r { background: var(--red); } .pd-a { background: var(--amb); } .pd-i { background: var(--ind); }
-.pulse-text { font-size: .78rem; font-weight: 500; color: var(--i2); }
-.pulse-ago  { font-size: .68rem; color: var(--i4); }
-
-/* Today's Reports — intentionally simple: city name + trend only */
-.rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 28px; }
-.rep-card {
-  background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rl);
-  padding: 14px 14px 12px; box-shadow: var(--s1); cursor: pointer;
-  transition: box-shadow .12s, transform .1s;
-}
-.rep-card:hover { box-shadow: var(--s2); transform: translateY(-1px); }
-.rep-city  { font-size: .8125rem; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
-.rep-trend { font-size: .72rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-.rep-trend.up { color: var(--g); }
-.rep-trend.dn { color: var(--red); }
-.rep-trend.flat { color: var(--i4); }
-
-/* Stat cards */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.stat-card { border-radius: var(--rx); padding: 20px 20px 16px; display: flex; flex-direction: column; }
-.stat-light { background: var(--wh); border: 1.5px solid var(--bd); box-shadow: var(--s1); }
-.stat-dark  { background: var(--g); }
-.stat-lbl { font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
-.stat-light .stat-lbl { color: var(--i4); }
-.stat-dark  .stat-lbl { color: rgba(255,255,255,.5); }
-.stat-val { font-family: var(--fh); font-size: 1.75rem; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
-.stat-light .stat-val { color: var(--ink); }
-.stat-dark  .stat-val { color: #fff; }
-.stat-sub { font-size: .78rem; line-height: 1.4; flex: 1; }
-.stat-light .stat-sub { color: var(--i3); }
-.stat-dark  .stat-sub { color: rgba(255,255,255,.6); }
-.stat-cta { font-size: .75rem; font-weight: 600; cursor: pointer; margin-top: 14px; display: inline-block; }
-.stat-light .stat-cta { color: var(--g); }
-.stat-dark  .stat-cta { color: rgba(255,255,255,.7); }
-
-/* Home table card */
-.htbl-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); overflow: hidden; box-shadow: var(--s1); }
-.htbl-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px 0; border-bottom: 1px solid var(--bd); gap: 8px; flex-wrap: wrap; }
-.htbl-meta { padding-bottom: 13px; }
-.htbl-lbl  { font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--i4); margin-bottom: 2px; }
-.htbl-ct   { font-size: .72rem; color: var(--i4); }
-.htbl-filt { display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; }
-.htbl-filt::-webkit-scrollbar { display: none; }
-
-/* ════════════════════════════════════════
-   TERMINAL MARKETS PAGE
-   Sidebar + content split layout
-════════════════════════════════════════ */
-.term-shell { display: grid; grid-template-columns: 180px 1fr; min-height: calc(100vh - 60px); border-top: 1px solid var(--bd); }
-
-/* Sidebar — markets only, no record counts */
-.term-sb { position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; border-right: 1px solid var(--bd); scrollbar-width: none; -webkit-overflow-scrolling: touch; background: var(--wh); }
-.term-sb::-webkit-scrollbar { display: none; }
-.sb-all {
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; cursor: pointer; transition: background .1s;
-  border-bottom: 1px solid var(--bd); min-height: 46px;
+  padding: 0 48px; height: 56px;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
-.sb-all:hover, .sb-all.on { background: var(--gl); }
-.sb-all-name { font-family: var(--fh); font-size: .8125rem; font-weight: 700; color: var(--ink); }
-.sb-all.on .sb-all-name { color: var(--g); }
-.sb-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; cursor: pointer; transition: background .08s;
-  gap: 8px; border-left: 2px solid transparent; min-height: 40px;
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); cursor: pointer; }
+.nav-logo span { color: var(--lime); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-link { font-size: 12px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); text-decoration: none; cursor: pointer; transition: color 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--ink); font-weight: 600; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.nav-cta { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--white); background: var(--ink); border: none; padding: 9px 20px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.nav-cta:hover { background: #2a2a20; transform: translateY(-1px); }
+
+/* ── TICKER ── */
+.ticker-bar {
+  position: fixed; top: 56px; left: 0; right: 0; z-index: 199;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  height: 34px; overflow: hidden; display: flex; align-items: center;
 }
-.sb-item:hover { background: var(--gl); }
-.sb-item.on { background: var(--gl); border-left-color: var(--g); padding-left: 14px; }
-.sb-name { font-size: .78rem; font-weight: 500; color: var(--ink); flex: 1; }
-.sb-item.on .sb-name { font-weight: 700; color: var(--g); }
-/* No record count shown in sidebar — not useful to end user */
+.ticker-label { flex-shrink: 0; padding: 0 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white); background: var(--ink); border-right: 1px solid var(--border); height: 100%; display: flex; align-items: center; gap: 6px; z-index: 2; }
+.ticker-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.ticker-track { display: flex; gap: 0; white-space: nowrap; animation: ticker 50s linear infinite; }
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.tick-item { display: flex; align-items: center; gap: 8px; padding: 0 24px; border-right: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; }
+.tick-name { color: var(--dim); font-weight: 500; }
+.tick-price { color: var(--ink); font-weight: 500; }
+.tick-up { color: var(--lime-dk); font-size: 10px; font-weight: 600; }
+.tick-down { color: var(--red); font-size: 10px; font-weight: 600; }
+.tick-flat { color: var(--muted); font-size: 10px; }
 
-.term-content { padding: 24px; min-width: 0; }
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
 
-/* Mobile market bar */
-.term-mob { display: none; padding: 10px var(--px); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 6px; border-bottom: 1px solid var(--bd); }
-.term-mob::-webkit-scrollbar { display: none; }
-.mob-mkt { flex-shrink: 0; padding: 6px 12px; border-radius: var(--rp); font-size: .78rem; font-weight: 600; border: 1px solid var(--bd); color: var(--i3); white-space: nowrap; min-height: 32px; transition: all .1s; }
-.mob-mkt.on { background: var(--g); color: #fff; border-color: var(--g); }
-
-/* Toggle pills (All Markets / One Market) */
-.tog-wrap { display: flex; background: var(--bg); border-radius: 8px; padding: 2px; border: 1px solid var(--bd); width: fit-content; }
-.tog-btn { padding: 5px 12px; border-radius: 6px; font-size: .78rem; font-weight: 600; color: var(--i3); transition: all .1s; min-height: 30px; }
-.tog-btn.on { background: var(--wh); color: var(--g); box-shadow: 0 1px 3px rgba(0,0,0,.07); }
-
-/* Hub pills (when One Market selected) */
-.hub-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-.hub-pill { font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: var(--rp); border: 1px solid var(--bd); color: var(--i3); transition: all .1s; }
-.hub-pill.on { background: var(--g); color: #fff; border-color: var(--g); }
-
-/* Terminal search */
-.term-search {
-  width: 100%; padding: 10px 14px; margin-bottom: 14px;
-  border: 1.5px solid var(--bd); border-radius: var(--rl);
-  font-size: .875rem; outline: none; background: var(--wh); color: var(--ink);
-  transition: border-color .15s;
+/* ── HERO (home) ── */
+.hero-wrap { padding-top: 90px; }
+.hero {
+  min-height: calc(100vh - 90px);
+  display: grid; grid-template-columns: 1fr 420px;
+  background: var(--white); border-bottom: 1px solid var(--border);
 }
-.term-search:focus { border-color: var(--g); }
+.hero-left { padding: 72px 64px 72px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); }
+.hero-eyebrow { display: flex; align-items: center; gap: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+.eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 6px var(--lime); animation: pulse 1.5s infinite; }
+.hero-headline { font-family: 'Playfair Display', serif; font-size: clamp(48px, 5vw, 78px); font-weight: 900; line-height: 0.95; letter-spacing: -2.5px; color: var(--ink); margin-bottom: 28px; }
+.hero-headline em { font-style: italic; color: var(--lime); }
+.hero-sub { font-size: 16px; font-weight: 300; color: var(--dim); max-width: 460px; line-height: 1.65; margin-bottom: 40px; }
+.hero-sub strong { color: var(--ink); font-weight: 600; }
+.hero-actions { display: flex; align-items: center; gap: 16px; margin-bottom: 56px; }
+.btn-primary { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--lime); color: var(--ink); padding: 13px 28px; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 12px rgba(157,218,58,0.3); }
+.btn-primary:hover { background: var(--lime2); transform: translateY(-1px); }
+.btn-ghost { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--dim); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+.btn-ghost:hover { color: var(--ink); }
+.btn-ghost::after { content: '→'; font-size: 16px; }
+.hero-stats { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.stat-cell { padding: 18px 20px; border-right: 1px solid var(--border); background: var(--panel); }
+.stat-cell:last-child { border-right: none; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -1px; line-height: 1; }
+.stat-num span { color: var(--lime); }
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
 
-/* ════════════════════════════════════════
-   FOB ORIGINS PAGE
-   Full width, no sidebar
-════════════════════════════════════════ */
-/* FOB-specific data cells */
-.spread-pos { font-family: var(--fh); font-size: .78rem; font-weight: 700; color: var(--g); }
-.spread-neg { font-family: var(--fh); font-size: .78rem; font-weight: 700; color: var(--red); }
-.spread-na  { font-size: .78rem; color: var(--i4); }
-.sbar-wrap  { display: flex; align-items: center; gap: 7px; }
-.sbar-track { width: 40px; height: 3px; background: var(--bd2); border-radius: var(--rp); overflow: hidden; flex-shrink: 0; }
-.sbar-fill  { height: 100%; border-radius: var(--rp); background: var(--g); }
-.sbar-fill.tight { background: var(--red); }
-.orig-reg { display: inline-block; font-size: .6rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 6px; border-radius: var(--rp); margin-top: 2px; }
-.orig-reg.border  { background: var(--abg); color: var(--amb); }
-.orig-reg.west    { background: var(--gl);  color: var(--g); }
-.orig-reg.east    { background: #eef2ff; color: #4338ca; }
-.orig-reg.south   { background: #fce7f3; color: #9d174d; }
-.orig-reg.central { background: #f5f3ff; color: #6d28d9; }
-/* Movement — cleaned up labels, not raw DB values */
-.mvmt { display: inline-block; font-size: .65rem; font-weight: 600; padding: 2px 8px; border-radius: var(--rp); text-transform: capitalize; }
-.mvmt.good  { background: var(--gl); color: var(--g); }
-.mvmt.light { background: var(--abg); color: var(--amb); }
-.mvmt.slow  { background: var(--rbg); color: var(--red); }
-.mvmt.mod   { background: var(--bg);  color: var(--i3); }
+/* hero right panel */
+.hero-right { background: var(--panel); display: flex; flex-direction: column; }
+.hero-panel-header { padding: 22px 28px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.hph-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.hph-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.hero-panel-row { padding: 13px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.12s; }
+.hero-panel-row:hover { background: var(--white); }
+.hpr-left { display: flex; flex-direction: column; gap: 1px; }
+.hpr-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.hpr-spec { font-size: 10px; color: var(--muted); }
+.hpr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.hpr-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); }
+.hpr-delta { font-size: 10px; font-weight: 600; }
+.d-up { color: var(--lime-dk); }
+.d-down { color: var(--red); }
+.d-flat { color: var(--muted); }
+.hero-panel-footer { margin-top: auto; padding: 14px 28px; border-top: 1px solid var(--border); background: var(--white); display: flex; align-items: center; justify-content: space-between; }
+.hpf-label { font-size: 11px; color: var(--muted); }
+.hpf-link { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.hpf-link::after { content: '→'; }
 
-/* ════════════════════════════════════════
-   REPORTS PAGE
-════════════════════════════════════════ */
-.rpt-list { display: flex; flex-direction: column; gap: 8px; }
-.rpt-row {
-  background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rl);
-  padding: 16px 18px; display: flex; align-items: center; gap: 16px;
-  box-shadow: var(--s1); cursor: pointer; transition: box-shadow .12s;
+/* MARQUEE */
+.marquee-band { background: var(--ink); padding: 11px 0; overflow: hidden; display: flex; align-items: center; }
+.marquee-inner { display: flex; gap: 0; white-space: nowrap; animation: marquee 32s linear infinite; }
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.marquee-item { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 0 28px; display: flex; align-items: center; gap: 10px; }
+.marquee-item.hi { color: var(--lime); }
+.marquee-sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+
+/* SECTION */
+.section-wrap { padding: 64px 64px; }
+.section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.section-label::before { content: ''; display: block; width: 16px; height: 1px; background: var(--border2); }
+.section-title { font-family: 'Playfair Display', serif; font-size: clamp(28px,3vw,42px); font-weight: 700; letter-spacing: -1px; color: var(--ink); line-height: 1.1; margin-bottom: 32px; }
+.section-title em { font-style: italic; color: var(--muted); }
+
+/* MARKET SNAPSHOT */
+.market-section { background: var(--white); border-top: 1px solid var(--border); }
+.market-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.market-col { border-right: 1px solid var(--border); }
+.market-col:last-child { border-right: none; }
+.market-col-header { padding: 13px 20px; background: var(--panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.mcl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dim); }
+.mcl-badges { display: flex; gap: 5px; }
+.mcl-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
+.badge-fruit { background: var(--red-bg); color: var(--red); border: 1px solid #f8ccc4; }
+.badge-veg { background: var(--blue-bg); color: var(--blue); border: 1px solid #c0d8f5; }
+.badge-other { background: var(--amber-bg); color: var(--amber); border: 1px solid #eed090; }
+.badge-live { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c0e880; }
+.market-row { padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f4f2ec; cursor: pointer; transition: background 0.12s; }
+.market-row:last-child { border-bottom: none; }
+.market-row:hover { background: var(--panel); }
+.mr-left { display: flex; flex-direction: column; gap: 1px; }
+.mr-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.mr-origin { font-size: 10px; color: var(--muted); }
+.mr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.mr-price { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--ink); font-weight: 500; }
+.mr-change { font-size: 10px; font-weight: 600; }
+.chg-up { color: var(--lime-dk); }
+.chg-down { color: var(--red); }
+.chg-flat { color: var(--muted); }
+.market-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }
+.market-date { font-size: 11px; color: var(--muted); }
+.market-date strong { color: var(--dim); }
+.view-all-link { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
+.view-all-link:hover { gap: 10px; }
+.view-all-link::after { content: '→'; }
+
+/* REPORT TYPE CARDS */
+.reports-section { background: var(--white); border-top: 1px solid var(--border); }
+.reports-grid { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.report-card { background: var(--white); padding: 26px 22px; border-right: 1px solid var(--border); cursor: pointer; transition: background 0.15s; position: relative; display: flex; flex-direction: column; }
+.report-card:last-child { border-right: none; }
+.report-card:hover { background: var(--panel); }
+.report-card::after { content: '→'; position: absolute; top: 22px; right: 20px; font-size: 16px; color: var(--border2); transition: color 0.2s, transform 0.2s; }
+.report-card:hover::after { color: var(--ink); transform: translateX(3px); }
+.rc-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+.rc-stripe { width: 16px; height: 2px; border-radius: 1px; }
+.rc-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 10px; }
+.rc-desc { font-size: 12px; color: var(--muted); line-height: 1.55; flex: 1; }
+.rc-meta { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.rc-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.rc-cadence { font-size: 10px; color: var(--muted); }
+
+/* CTA */
+.cta-section { background: var(--ink); padding: 80px 64px; display: flex; align-items: center; justify-content: space-between; gap: 60px; }
+.cta-left { max-width: 540px; }
+.cta-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+.cta-headline { font-family: 'Playfair Display', serif; font-size: clamp(32px,3.5vw,50px); font-weight: 900; letter-spacing: -1.5px; color: #f0efeb; line-height: 1; margin-bottom: 18px; }
+.cta-headline em { font-style: italic; color: var(--lime); }
+.cta-body { font-size: 15px; color: rgba(255,255,255,0.4); line-height: 1.65; }
+.cta-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 26px; width: 280px; }
+.cta-box-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+.cta-market-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 13px; }
+.cta-market-row:last-of-type { border-bottom: none; margin-bottom: 18px; }
+.cmr-name { color: rgba(255,255,255,0.65); }
+.cmr-live { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--lime); }
+.cmr-live::before { content: ''; display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--lime); animation: pulse 1.5s infinite; }
+.btn-cta { width: 100%; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--lime); color: var(--ink); border: none; padding: 13px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+.btn-cta:hover { background: var(--lime2); }
+
+/* FOOTER */
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26px 64px; display: flex; align-items: center; justify-content: space-between; }
+.footer-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); }
+.footer-logo span { color: var(--lime); }
+.footer-copy { font-size: 11px; color: var(--muted); }
+.footer-source { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.footer-source::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--lime); display: block; }
+
+/* ── MARKETS PAGE ── */
+.markets-page { padding-top: 90px; }
+.page-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 24px 40px 0; }
+.ph-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+.ph-breadcrumb { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.ph-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; letter-spacing: -1px; color: var(--ink); }
+.ph-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.ph-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); display: inline-block; margin-right: 3px; animation: pulse 1.5s infinite; }
+.ph-sep { width: 1px; height: 10px; background: var(--border); }
+.ph-tabs { display: flex; gap: 0; }
+.ph-tab { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 10px 18px; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.15s; display: flex; align-items: center; gap: 7px; margin-bottom: -1px; }
+.ph-tab:hover { color: var(--ink); }
+.ph-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.ph-tab-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* CONTROL BAR */
+.control-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 11px 40px; display: flex; align-items: center; gap: 10px; position: sticky; top: 90px; z-index: 90; }
+.search-wrap { position: relative; flex: 1; max-width: 320px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
+.search-input { width: 100%; font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--border); padding: 8px 12px 8px 32px; border-radius: 6px; outline: none; transition: border-color 0.15s; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--border2); background: var(--white); }
+.filter-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--panel); border: 1px solid var(--border); color: var(--dim); padding: 7px 13px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.filter-btn:hover { border-color: var(--border2); color: var(--ink); }
+.filter-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.market-select { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--panel); border: 1px solid var(--border); color: var(--dim); padding: 7px 12px; border-radius: 6px; cursor: pointer; outline: none; }
+.ctrl-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.results-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.results-count strong { color: var(--dim); }
+
+/* MAIN LAYOUT */
+.main-layout { display: grid; grid-template-columns: 210px 1fr; min-height: 60vh; align-items: start; }
+.sidebar { border-right: 1px solid var(--border); background: var(--white); padding: 18px 0; position: sticky; top: calc(90px + 45px + 45px); max-height: calc(100vh - 180px); overflow-y: auto; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.sb-section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 6px 18px 3px; }
+.sb-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px; cursor: pointer; transition: background 0.12s; text-decoration: none; }
+.sb-item:hover { background: var(--panel); }
+.sb-item.active { background: var(--lime-bg); }
+.sb-name { font-size: 13px; color: var(--ink); font-weight: 500; }
+.sb-item.active .sb-name { color: var(--lime-dk); font-weight: 600; }
+.sb-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 1px 6px; border-radius: 10px; }
+.sb-item.active .sb-count { background: var(--lime-bg); border-color: #c0e880; color: var(--lime-dk); }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* TABLE */
+.commodity-list {}
+.table-header { display: grid; grid-template-columns: 2fr 120px 170px 130px 110px 50px; padding: 0 28px; background: var(--panel); border-bottom: 2px solid var(--border); position: sticky; top: calc(90px + 45px + 45px); z-index: 8; }
+.th-cell { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 8px 0; }
+.cat-header { padding: 14px 28px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-bottom: 1px solid var(--border); }
+.cat-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); }
+.cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
+
+.commodity-row { display: grid; grid-template-columns: 2fr 120px 170px 130px 110px 50px; align-items: center; padding: 0 28px; border-bottom: 1px solid #eeecea; cursor: pointer; transition: background 0.12s; min-height: 60px; background: var(--white); text-decoration: none; color: inherit; }
+.commodity-row:hover { background: #fdfcf8; }
+.commodity-row:hover .cr-arrow { opacity: 1; }
+.cr-name-col { display: flex; align-items: center; gap: 11px; padding: 12px 0; }
+.cr-emoji { font-size: 19px; width: 26px; text-align: center; flex-shrink: 0; }
+.cr-name { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.cr-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.cond-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+.cond-steady { background: #edf4e0; color: var(--lime-dk); border: 1px solid #c0e880; }
+.cond-higher { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #b0e060; }
+.cond-lower { background: var(--red-bg); color: var(--red); border: 1px solid #f0c0b8; }
+.cond-light { background: var(--purple-bg); color: var(--purple); border: 1px solid #c8b0f0; }
+.cond-volatile { background: var(--amber-bg); color: var(--amber); border: 1px solid #e8d090; }
+.cr-price-col { display: flex; flex-direction: column; gap: 1px; }
+.cr-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); }
+.cr-price-sub { font-size: 10px; color: var(--muted); }
+.cr-price-sub.up { color: var(--lime-dk); font-weight: 600; }
+.cr-price-sub.down { color: var(--red); font-weight: 600; }
+.cr-origins { display: flex; gap: 4px; flex-wrap: wrap; }
+.origin-pip { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; background: var(--panel); color: var(--dim); border: 1px solid var(--border); white-space: nowrap; }
+.mini-spark { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
+.spark-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
+.spark-bar.hi { background: var(--lime); }
+.spark-bar.lo { background: #fcc; }
+.spark-bar.now { background: var(--ink); }
+.cr-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
+.wow-up { color: var(--lime-dk); }
+.wow-down { color: var(--red); }
+.wow-flat { color: var(--muted); }
+.cr-arrow { font-size: 16px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
+.organic-band { padding: 9px 28px; background: var(--lime-bg); border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890; display: flex; align-items: center; gap: 8px; }
+.ob-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
+.loading-row { padding: 48px 28px; text-align: center; background: var(--white); }
+.loading-row p { font-size: 13px; color: var(--muted); }
+.empty-row { padding: 48px 28px; text-align: center; background: var(--white); }
+.empty-row p { font-size: 13px; color: var(--muted); }
+
+/* ── DETAIL PANEL ── */
+.detail-overlay { position: fixed; inset: 0; background: rgba(15,15,10,0.25); z-index: 300; display: none; backdrop-filter: blur(2px); }
+.detail-overlay.open { display: block; }
+.detail-panel {
+  position: fixed; top: 56px; right: 0; bottom: 0; width: 660px;
+  background: var(--white); border-left: 1px solid var(--border);
+  overflow-y: auto; z-index: 301;
+  transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+  display: flex; flex-direction: column;
 }
-.rpt-row:hover { box-shadow: var(--s2); }
-.rpt-date { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 40px; flex-shrink: 0; }
-.rpt-day  { font-family: var(--fh); font-size: 1.375rem; font-weight: 700; color: var(--ink); line-height: 1; }
-.rpt-mon  { font-size: .65rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--i4); }
-.rpt-body { flex: 1; min-width: 0; }
-.rpt-title { font-size: .875rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
-.rpt-meta  { font-size: .72rem; color: var(--i4); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.rpt-sep   { width: 3px; height: 3px; border-radius: 50%; background: var(--bd2); flex-shrink: 0; }
-.rpt-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.detail-panel.open { transform: translateX(0); }
+.detail-panel::-webkit-scrollbar { width: 5px; }
+.detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* Filter bar — used on Reports and Alerts, consistent pill style */
-.filt-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-.filt-pill { padding: 6px 14px; border-radius: var(--rp); font-size: .8rem; font-weight: 600; border: 1.5px solid var(--bd); color: var(--i3); transition: all .12s; white-space: nowrap; }
-.filt-pill.on { background: var(--g); color: #fff; border-color: var(--g); }
-.filt-pill:hover:not(.on) { border-color: var(--g); color: var(--g); }
+/* panel header */
+.dp-header { padding: 22px 26px 18px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 10; }
+.dp-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.dp-close { width: 28px; height: 28px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--dim); transition: all 0.15s; flex-shrink: 0; }
+.dp-close:hover { background: var(--border); color: var(--ink); }
+.dp-title-block { display: flex; align-items: center; gap: 12px; }
+.dp-emoji { font-size: 26px; }
+.dp-commodity { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
+.dp-pack { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.dp-meta-row { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.dp-cond { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; }
+.dp-market-tag { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.dp-live { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); display: inline-block; animation: pulse 1.5s infinite; }
+.dp-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
 
-/* ════════════════════════════════════════
-   ALERTS PAGE
-════════════════════════════════════════ */
-.alt-list { display: flex; flex-direction: column; gap: 8px; }
-.alt-item {
-  background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rl);
-  padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start;
-  box-shadow: var(--s1); transition: box-shadow .12s;
-}
-.alt-item:hover { box-shadow: var(--s2); }
-.alt-item.urgent { border-left: 3px solid var(--red); }
-.alt-item.info   { border-left: 3px solid var(--g); }
-.alt-item.warn   { border-left: 3px solid var(--amb); }
-.alt-icon { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .875rem; }
-.alt-icon.urgent { background: var(--rbg); color: var(--red); }
-.alt-icon.info   { background: var(--gl);  color: var(--g); }
-.alt-icon.warn   { background: var(--abg); color: var(--amb); }
-.alt-content { flex: 1; min-width: 0; }
-.alt-title { font-size: .875rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-.alt-body  { font-size: .8rem; color: var(--i3); line-height: 1.5; }
-.alt-foot  { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.alt-time  { font-size: .68rem; color: var(--i4); }
+/* price strip */
+.dp-price-strip { display: grid; grid-template-columns: repeat(3,1fr); border-bottom: 1px solid var(--border); }
+.phc { padding: 16px 22px; border-right: 1px solid var(--border); }
+.phc:last-child { border-right: none; }
+.phc-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.phc-value { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
+.phc-value.up { color: var(--lime-dk); }
+.phc-value.down { color: var(--red); }
+.phc-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
 
-/* ════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════ */
-@media(max-width: 900px) {
-  /* Nav */
-  .nav-links  { display: none; }
-  .nav-ham    { display: flex; }
-  .nav-search { display: none; }
-  .nav-inner  { padding: 0 16px; gap: 8px; }
-  .nav-logo-img { height: 30px; }
-  .live-pill  { font-size: .68rem; padding: 4px 8px; }
-  .nav-av     { width: 28px; height: 28px; font-size: .68rem; }
-  /* Home */
-  .home-wrap  { padding: 28px 16px 60px; }
-  .home-two-col { grid-template-columns: 1fr; }
-  .feat-grid  { grid-template-columns: 1fr; }
-  /* Hero */
-  .hero-search-wrap { flex-direction: column; }
-  .hero-btn   { width: 100%; justify-content: center; }
-  .hero-h1    { font-size: clamp(1.875rem, 8vw, 2.75rem); }
-  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
-  .hero-sub   { font-size: .875rem; margin-bottom: 20px; }
-  /* Terminal */
-  .term-sb    { display: none; }
-  .term-mob   { display: flex; }
-  .term-content { padding: 16px; }
-  /* Misc */
-  .filt-bar   { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; }
-  .filt-bar::-webkit-scrollbar { display: none; }
-  .htbl-chips { gap: 6px; padding: 12px 14px 6px; }
-  .htbl-chips .fpill { font-size: .75rem; padding: 5px 12px; }
-  .page-wrap  { padding: 20px 16px 60px; }
-}
-@media(max-width: 640px) {
-  .term-shell { grid-template-columns: 1fr; }
-  .nav { height: 54px; }
-  main { padding-top: 54px; }
-  .home-wrap { padding: 24px 16px 56px; }
-  .feat-card-img { height: 130px; }
-  .home-list-item { padding: 11px 14px; }
-  .home-list-head { padding: 12px 14px; }
-  .home-list-more { padding: 10px 14px; }
-  .htbl-head { padding: 10px 14px 0; }
-  .htbl-chips { padding: 10px 14px 4px; }
-}
-@media(min-width: 901px) { .term-mob { display: none; } }
-@media(hover: none) { .feat-card:hover { transform: none; } .rep-card:hover { transform: none; } }
-@media(max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
-.r { text-align: right; } .c { text-align: center; }
+/* panel section */
+.dp-section { padding: 18px 26px; border-bottom: 1px solid var(--border); }
+.dp-section:last-child { border-bottom: none; }
+.dp-section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
 
-/* ════════════════════════════════════════
-   FOB ORIGINS PAGE — specific styles
-════════════════════════════════════════ */
-.fob-legend {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  font-size: .72rem; color: var(--i3); margin-bottom: 16px;
-}
-.fob-legend-item { display: flex; align-items: center; gap: 5px; }
-.fob-legend-note { color: var(--i4); margin-left: auto; }
-.fob-dot {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-}
-.fob-dot.wide  { background: var(--g); }
-.fob-dot.tight { background: var(--red); }
+/* breakdown table */
+.bt { width: 100%; border-collapse: collapse; }
+.bt thead tr { border-bottom: 2px solid var(--border); }
+.bt thead th { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 0 8px 7px; text-align: left; }
+.bt thead th.r { text-align: right; }
+.bt thead th.c { text-align: center; }
+.bt tbody tr { border-bottom: 1px solid #f0efe8; transition: background 0.12s; }
+.bt tbody tr:last-child { border-bottom: none; }
+.bt tbody tr:hover { background: var(--panel); }
+.bt tbody td { padding: 8px 8px; font-size: 12px; vertical-align: middle; }
+.otag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.6px; text-transform: uppercase; background: var(--panel); color: var(--dim); border: 1px solid var(--border); white-space: nowrap; }
+.vtag { font-size: 10px; font-style: italic; color: var(--muted); margin-left: 5px; }
+.sc { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; text-align: center; }
+.gtag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+.g-std { background: var(--panel); color: var(--muted); border: 1px solid var(--border); }
+.g-fine { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c0e880; }
+.g-fair { background: var(--red-bg); color: var(--red); border: 1px solid #f0c0b8; }
+.g-hold { background: var(--amber-bg); color: var(--amber); border: 1px solid #e8d090; }
+.pc { text-align: right; white-space: nowrap; }
+.pr { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
+.pm { font-size: 10px; color: var(--lime-dk); font-weight: 600; display: block; text-align: right; margin-top: 1px; }
 
-.fob-filter-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px; flex-wrap: wrap;
-}
-.fob-cats { display: flex; gap: 6px; flex-wrap: wrap; }
-.fob-controls { display: flex; gap: 8px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+/* history table */
+.ht { width: 100%; border-collapse: collapse; }
+.ht thead th { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 0 10px 7px; text-align: left; border-bottom: 2px solid var(--border); }
+.ht thead th.r { text-align: right; }
+.ht tbody tr { border-bottom: 1px solid #f0efe8; }
+.ht tbody tr:last-child { border-bottom: none; }
+.ht tbody td { padding: 7px 10px; font-size: 12px; }
+.ht-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.ht-price { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); text-align: right; }
+.ht-delta { font-size: 11px; font-weight: 600; text-align: right; }
+.ht-cond { font-size: 11px; color: var(--muted); }
 
-.fob-organic-toggle {
-  display: flex; align-items: center; gap: 5px;
-  font-size: .78rem; font-weight: 500; color: var(--i3); cursor: pointer;
-}
-.fob-organic-toggle input { accent-color: var(--g); }
+/* panel footer */
+.dp-footer { padding: 14px 26px; background: var(--panel); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: auto; }
+.dp-footer a { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink); text-decoration: none; cursor: pointer; }
 
-/* Price cells */
-.fob-price-cell { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
-.fob-price-main { font-family: var(--fh); font-size: .9375rem; font-weight: 700; color: var(--ink); }
-.fob-price-range { font-size: .7rem; color: var(--i4); }
-.fob-mostly { font-size: .78rem; color: var(--i3); font-style: italic; }
-.fob-mostly-na { font-size: .72rem; color: var(--i4); }
+/* ── LOADING SPINNER ── */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Spec cell */
-.fob-spec { display: flex; flex-direction: column; gap: 2px; }
-.fob-spec-main { font-size: .8125rem; font-weight: 500; color: var(--ink-2); }
-.fob-spec-origin { font-size: .7rem; color: var(--i3); margin-top: 1px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fob-shipping-pt { font-size: .8rem; color: var(--i2); font-weight: 500; }
+/* ── ERROR BANNER ── */
+.error-banner { background: var(--red-bg); border: 1px solid #f0c0b8; border-radius: 8px; padding: 12px 16px; margin: 16px 28px; font-size: 13px; color: var(--red); display: none; }
+.error-banner.show { display: block; }
 
-/* Spread cell */
-.spread-cell { display: flex; align-items: center; gap: 7px; justify-content: flex-end; }
-.sbar-track { width: 36px; height: 3px; background: var(--bd2); border-radius: var(--rp); overflow: hidden; flex-shrink: 0; }
-.sbar-fill  { height: 100%; border-radius: var(--rp); }
-.sbar-fill.pos  { background: var(--g); }
-.sbar-fill.neg  { background: var(--red); }
-.spread-val { font-family: var(--fh); font-size: .78rem; font-weight: 700; white-space: nowrap; }
-.spread-val.pos { color: var(--g); }
-.spread-val.neg { color: var(--red); }
-.spread-val.na  { color: var(--i4); font-weight: 400; font-size: .72rem; }
-.spread-pct { font-size: .68rem; color: var(--i4); }
-
-/* Movement badge */
-.mvmt-cell { display: flex; align-items: center; }
-.mvmt-badge { font-size: .68rem; font-weight: 600; padding: 2px 8px; border-radius: var(--rp); text-transform: capitalize; display: inline-flex; align-items: center; gap: 3px; }
-.mvmt-badge.higher { background: var(--gl); color: var(--g); }
-.mvmt-badge.lower  { background: var(--rbg); color: var(--red); }
-.mvmt-badge.steady { background: var(--bg); color: var(--i3); }
-.mvmt-badge.active { background: var(--gl); color: var(--g); }
-.mvmt-badge.slow   { background: var(--abg); color: var(--amb); }
-
-/* Organic badge */
-.badge-org { display: inline-flex; align-items: center; gap: 3px; font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: #f0fdf4; color: #15803d; border-radius: var(--rp); padding: 1px 6px; }
-
-/* Region badge */
-.reg-badge { display: inline-block; font-size: .6rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 6px; border-radius: var(--rp); }
-.reg-badge.border  { background: var(--abg); color: var(--amb); }
-.reg-badge.west    { background: var(--gl);  color: var(--g); }
-.reg-badge.east    { background: #eef2ff; color: #4338ca; }
-.reg-badge.south   { background: #fce7f3; color: #9d174d; }
-.reg-badge.imports { background: #f0f9ff; color: #0369a1; }
-
-@media(max-width:900px){
-  .fob-filter-row { flex-direction: column; align-items: flex-start; }
-  .fob-controls { margin-left: 0; width: 100%; }
-  .fob-legend-note { display: none; }
-}
-
-
-/* FOB page */
-.fob-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.72rem;color:var(--i3);margin-bottom:14px;padding:10px 14px;background:var(--wh);border:1.5px solid var(--bd);border-radius:var(--rl);box-shadow:var(--s1);}
-.fob-legend-item{display:flex;align-items:center;gap:5px;}
-.fob-legend-note{color:var(--i4);margin-left:auto;}
-.fob-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.fob-dot.wide{background:var(--g);}
-.fob-dot.tight{background:var(--red);}
-.fob-filter-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.fob-cats{display:flex;gap:6px;flex-wrap:wrap;}
-.fob-controls{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;}
-.fob-organic-toggle{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;color:var(--i3);cursor:pointer;}
-.fob-organic-toggle input{accent-color:var(--g);}
-.fob-price-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
-.fob-price-main{font-family:var(--fh);font-size:.9375rem;font-weight:700;color:var(--ink);}
-.fob-mostly{font-size:.75rem;color:var(--i3);}
-.fob-mostly-na{font-size:.72rem;color:var(--i4);}
-.fob-spec{display:flex;flex-direction:column;gap:2px;}
-.fob-spec-main{font-size:.8rem;font-weight:500;color:var(--i2);}
-.fob-spec-origin{font-size:.7rem;color:var(--i3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fob-shipping-pt{font-size:.8rem;color:var(--i2);font-weight:500;}
-.spread-cell{display:flex;align-items:center;gap:7px;justify-content:flex-end;}
-.sbar-track{width:36px;height:3px;background:var(--bd2);border-radius:var(--rp);overflow:hidden;flex-shrink:0;}
-.sbar-fill{height:100%;border-radius:var(--rp);}
-.sbar-fill.pos{background:var(--g);}
-.sbar-fill.neg{background:var(--red);}
-.spread-val{font-family:var(--fh);font-size:.78rem;font-weight:700;white-space:nowrap;}
-.spread-val.pos{color:var(--g);}
-.spread-val.neg{color:var(--red);}
-.spread-val.na{color:var(--i4);font-weight:400;font-size:.72rem;}
-.spread-pct{font-size:.68rem;color:var(--i4);}
-.mvmt-cell{display:flex;align-items:center;}
-.mvmt-badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:var(--rp);display:inline-flex;align-items:center;}
-.mvmt-badge.higher{background:var(--gl);color:var(--g);}
-.mvmt-badge.lower{background:var(--rbg);color:var(--red);}
-.mvmt-badge.steady{background:var(--bg);color:var(--i3);}
-.mvmt-badge.active{background:var(--gl);color:var(--g);}
-.mvmt-badge.slow{background:var(--abg);color:var(--amb);}
-.badge-org{display:inline-flex;align-items:center;gap:2px;font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#f0fdf4;color:#15803d;border-radius:var(--rp);padding:1px 6px;}
-.reg-badge{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:var(--rp);}
-.reg-badge.border{background:var(--abg);color:var(--amb);}
-.reg-badge.west{background:var(--gl);color:var(--g);}
-.reg-badge.east{background:#eef2ff;color:#4338ca;}
-.reg-badge.south{background:#fce7f3;color:#9d174d;}
-.reg-badge.imports{background:#f0f9ff;color:#0369a1;}
-@media(max-width:900px){.fob-filter-row{flex-direction:column;align-items:flex-start;}.fob-controls{margin-left:0;width:100%;}.fob-legend-note{display:none;}}
-
-/* Today's Reports — vertical list */
-.rep-list-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); box-shadow: var(--s1); overflow: hidden; margin-bottom: 20px; }
-.rep-list-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--bd); }
-.rep-list-item { display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background .06s; gap: 12px; }
-.rep-list-item:last-child { border-bottom: none; }
-.rep-list-item:hover { background: var(--gl); }
-.rep-date-tag { font-size: .72rem; color: var(--i4); flex-shrink: 0; }
-.rep-viewmore { display: block; padding: 12px 18px; font-size: .8rem; font-weight: 600; color: var(--g); cursor: pointer; border-top: 1px solid var(--bd); text-align: center; transition: background .08s; }
-.rep-viewmore:hover { background: var(--gl); }
-/* Pulse — vertical list card */
-.pulse-card { background: var(--wh); border: 1.5px solid var(--bd); border-radius: var(--rx); box-shadow: var(--s1); margin-bottom: 20px; overflow: hidden; }
-.pulse-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--bd); }
-
-
-/* Unified home list card — used for both Industry Pulse and Today's Reports */
-.home-list-card {
-  background: var(--wh); border: 1.5px solid var(--bd);
-  border-radius: var(--rx); box-shadow: var(--s1);
-  overflow: hidden; margin-bottom: 16px;
-}
-.home-list-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; border-bottom: 1px solid var(--bd);
-}
-.home-list-title {
-  font-size: .8rem; font-weight: 700; letter-spacing: .09em;
-  text-transform: uppercase; color: var(--i3);
-}
-.home-list-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 20px; border-bottom: 1px solid #f3f4f6;
-  cursor: pointer; transition: background .06s;
-}
-.home-list-item:last-child { border-bottom: none; }
-.home-list-item:hover { background: var(--gl); }
-.hli-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-}
-.hli-text { font-size: .875rem; font-weight: 500; color: var(--ink); flex: 1; }
-.hli-meta { font-size: .75rem; color: var(--i4); flex-shrink: 0; white-space: nowrap; }
-.home-list-more {
-  padding: 12px 20px; font-size: .8125rem; font-weight: 600;
-  color: var(--g); cursor: pointer; border-top: 1px solid var(--bd);
-  text-align: center; transition: background .08s;
-}
-.home-list-more:hover { background: var(--gl); }
-
-
-.home-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-@media(max-width: 768px) {
-  .home-two-col { grid-template-columns: 1fr; }
-}
-
-
-/* ── HERO — clean light ── */
-.hero { padding-bottom: 36px; }
-.hero-h1 { font-family: var(--fh); font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; color: var(--ink); line-height: 1.05; margin-bottom: 10px; }
-.hero-sub { font-size: .9375rem; color: var(--i3); font-weight: 400; line-height: 1.5; margin-bottom: 28px; letter-spacing: 0; }
-.hero-search-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 0; }
-.hero-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--wh); border: 1.5px solid var(--bd2); border-radius: var(--rp); padding: 12px 18px; transition: border-color .15s, box-shadow .15s; }
-.hero-search:focus-within { border-color: var(--g); box-shadow: 0 0 0 3px rgba(10,61,47,.08); }
-.hero-search input { flex: 1; font-size: .9375rem; outline: none; background: transparent; color: var(--ink); }
-.hero-search input::placeholder { color: var(--i4); }
-.hero-btn { background: var(--g); color: #fff; border-radius: var(--rp); padding: 12px 26px; font-size: .9375rem; font-weight: 700; transition: background .12s; white-space: nowrap; flex-shrink: 0; }
-.hero-btn:hover { background: var(--gm); }
-.hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
-
-/* ── FEATURE CARDS WITH IMAGE STRIPS ── */
-.feat-card { padding: 0 !important; overflow: hidden; }
-.feat-card-img {
-  width: 100%; height: 160px;
-  background-size: cover; background-position: center;
-  flex-shrink: 0;
-}
-.feat-card-body { padding: 20px 20px 18px; }
-.feat-card-img.terminal { background-image: url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=900&q=80'); }
-.feat-card-img.fob       { background-image: url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80'); background-position: center 50%; }
-
-@media(max-width: 640px) {
-  .hero { padding: 48px 24px 44px; }
-  .feat-card-img { height: 120px; }
-}
-
-
-.nav-logo { cursor: pointer; flex-shrink: 0; margin-right: 6px; display: flex; align-items: center; }
-.nav-logo-img { height: 36px; width: auto; display: block; }
-
-
-.htbl-chips { display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 16px 8px; }
-.htbl-chips .fpill { font-size:.78rem;padding:5px 14px;box-shadow:none; }
-
+/* animations */
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.hero-eyebrow { animation: fadeUp 0.5s ease both; }
+.hero-headline { animation: fadeUp 0.5s 0.08s ease both; }
+.hero-sub      { animation: fadeUp 0.5s 0.14s ease both; }
+.hero-actions  { animation: fadeUp 0.5s 0.20s ease both; }
+.hero-stats    { animation: fadeUp 0.5s 0.26s ease both; }
 </style>
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-inner">
-    <div class="nav-logo" onclick="gv('home')"><img src="agrax-logo-new.png" alt="agraX" class="nav-logo-img"/></div>
-    <nav class="nav-links">
-      <a class="nav-link on" data-v="home"     onclick="gv('home')">Dashboard</a>
-      <a class="nav-link"    data-v="terminal" onclick="gv('terminal')">Terminal Markets</a>
-      <a class="nav-link"    data-v="fob"      onclick="gv('fob')">FOB Origins</a>
-      <a class="nav-link"    data-v="reports"  onclick="gv('reports')">Reports</a>
-      <a class="nav-link"    data-v="alerts"   onclick="gv('alerts')">Alerts</a>
-    </nav>
-    <div class="nav-search">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input id="hdrQ" placeholder="Search commodities — avocados, tomatoes…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
-    </div>
-    <div class="nav-right">
-      <div class="live-pill"><div class="live-dot"></div><span id="freshBadge">Updated —</span></div>
-      <div class="nav-av">U</div>
-      <div class="nav-ham" onclick="toggleNav()" id="hamBtn"><span></span><span></span><span></span></div>
-    </div>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">agra<span>X</span></div>
+  <div class="nav-links">
+    <span class="nav-link active" onclick="showPage('home')" id="nav-home">Dashboard</span>
+    <span class="nav-link" onclick="showPage('markets')" id="nav-markets">Terminal Markets</span>
+    <span class="nav-link" onclick="showPage('fob')" id="nav-fob">FOB Origins</span>
+    <span class="nav-link" onclick="showPage('reports')" id="nav-reports">Reports</span>
   </div>
-</header>
-<nav class="nav-drawer" id="navDrawer">
-  <a class="nav-link on" data-v="home"     onclick="gv('home');toggleNav()">Dashboard</a>
-  <a class="nav-link"    data-v="terminal" onclick="gv('terminal');toggleNav()">Terminal Markets</a>
-  <a class="nav-link"    data-v="fob"      onclick="gv('fob');toggleNav()">FOB Origins</a>
-  <a class="nav-link"    data-v="reports"  onclick="gv('reports');toggleNav()">Reports</a>
-  <a class="nav-link"    data-v="alerts"   onclick="gv('alerts');toggleNav()">Alerts</a>
+  <div class="nav-right">
+    <span class="nav-date" id="nav-date">Loading…</span>
+    <button class="nav-cta" onclick="showPage('markets')">View Markets</button>
+  </div>
 </nav>
 
-<div class="sh-ov" id="shOv" onclick="closeSheet()"></div>
-<div class="sheet" id="sheet">
-  <div class="sh-drag"></div>
-  <div class="sh-head">
-    <div class="sh-title" id="shTitle">—</div>
-    <div class="sh-close" onclick="closeSheet()">✕</div>
-  </div>
-  <div class="sh-tabs">
-    <div class="sh-tab on" onclick="shTab('trend')">7-day trend</div>
-    <div class="sh-tab"    onclick="shTab('markets')">By market</div>
-  </div>
-  <div class="sh-body">
-    <div class="sh-chart-wrap"><canvas id="shChart"></canvas></div>
-    <div id="shMkts"></div>
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-label"><div class="ticker-live-dot"></div>Live</div>
+  <div class="ticker-track" id="ticker-track">
+    <div class="tick-item"><span class="tick-name">Loading market data…</span></div>
   </div>
 </div>
 
-<main>
-
-<!-- ═══ HOME ═══ -->
-<div id="view-home" class="view active">
-<div class="home-wrap">
-
-  <div class="hero">
-    <h1 class="hero-h1">Wholesale Produce<br>Price Intelligence.</h1>
-    <p class="hero-sub">Terminal markets and FOB origins — updated daily from USDA.</p>
-    <div class="hero-search-wrap">
-      <div class="hero-search">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="dashQ" placeholder="Search any commodity — avocados, cilantro, almonds…" onkeydown="if(event.key==='Enter')hdrSearch(this.value)"/>
-      </div>
-      <button class="hero-btn" onclick="hdrSearch(document.getElementById('dashQ').value)">Search</button>
-    </div>
-  </div>
-
-  <!-- Row 1: Industry Pulse + Today's Reports side by side -->
-  <div class="home-two-col">
-    <div class="home-list-card">
-      <div class="home-list-head">
-        <span class="home-list-title">Industry Pulse</span>
-        <span class="sec-link" onclick="gv('alerts')">View all →</span>
-      </div>
-      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--g);"></div><span class="hli-text">Weekly USDA Terminal Market Report published</span><span class="hli-meta">2h ago</span></div>
-      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--red);"></div><span class="hli-text">Nogales port delays — avocado &amp; pepper shipments</span><span class="hli-meta">3h ago</span></div>
-      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--amb);"></div><span class="hli-text">Baja berry harvest tightening through April</span><span class="hli-meta">5h ago</span></div>
-      <div class="home-list-item" onclick="gv('alerts')"><div class="hli-dot" style="background:var(--ind);"></div><span class="hli-text">Florida citrus: smaller crop, higher prices midsummer</span><span class="hli-meta">8h ago</span></div>
-      <div class="home-list-more" onclick="gv('alerts')">View all alerts →</div>
-    </div>
-    <div class="home-list-card">
-      <div class="home-list-head">
-        <span class="home-list-title">Today's Reports</span>
-        <span class="sec-link" onclick="gv('reports')">View all →</span>
-      </div>
-      <div id="rcList">
-        <div class="home-list-item"><span class="hli-text" style="color:var(--i4);">Loading…</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Row 2: Terminal Markets + FOB Origins feature cards with photos -->
-  <div class="feat-grid">
-    <div class="feat-card" onclick="gv('terminal')">
-      <div class="feat-card-img terminal"></div>
-      <div class="feat-card-body">
-        <div class="feat-top"><div class="feat-title">Terminal Markets</div><div class="feat-arrow">›</div></div>
-        <div class="feat-desc">What buyers pay at New York, Chicago, Miami and 7 other major U.S. distribution hubs.</div>
-      </div>
-    </div>
-    <div class="feat-card" onclick="gv('fob')">
-      <div class="feat-card-img fob"></div>
-      <div class="feat-card-body">
-        <div class="feat-top"><div class="feat-title">FOB Origins</div><div class="feat-arrow">›</div></div>
-        <div class="feat-desc">Shipper prices at source — Nogales, Salinas, Fresno — with margin spread calculated.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Commodity table -->
-      <div class="htbl-chips">
-      <button class="fpill on" data-q=""             onclick="hpChip(this,'')">All markets</button>
-      <button class="fpill"    data-q="Avocados"     onclick="hpChip(this,'Avocados')">Avocados</button>
-      <button class="fpill"    data-q="Tomatoes"     onclick="hpChip(this,'Tomatoes')">Tomatoes</button>
-      <button class="fpill"    data-q="Strawberries" onclick="hpChip(this,'Strawberries')">Strawberries</button>
-      <button class="fpill"    data-q="Lettuce"      onclick="hpChip(this,'Lettuce')">Lettuce</button>
-      <button class="fpill"    data-q="Peppers"      onclick="hpChip(this,'Peppers')">Peppers</button>
-    </div>
-    <div class="htbl-card" id="hpTable">
-    <div class="htbl-head">
-      <div class="htbl-meta">
-        <div class="htbl-lbl">Commodity prices</div>
-        <div class="htbl-ct" id="homeTableCount">—</div>
-      </div>
-      <div class="htbl-filt">
-        <div class="tab-bar" style="border-bottom:1px solid var(--bd);margin-bottom:-1px;">
-          <button class="tab on" data-c="All"               onclick="hpCat(this,'All')">All</button>
-          <button class="tab"    data-c="Fruits"            onclick="hpCat(this,'Fruits')">Fruits</button>
-          <button class="tab"    data-c="Vegetables"        onclick="hpCat(this,'Vegetables')">Vegetables</button>
-          <button class="tab"    data-c="Onions &amp; Potatoes" onclick="hpCat(this,'Onions &amp; Potatoes')">Onions</button>
-          <button class="tab"    data-c="Nuts"              onclick="hpCat(this,'Nuts')">Nuts</button>
+<!-- ═══════════════════════ HOME PAGE ═══════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero-wrap">
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Live · Wholesale Produce Intelligence</div>
+        <h1 class="hero-headline">Every price.<br>Every market.<br><em>Every morning.</em></h1>
+        <p class="hero-sub">Terminal market prices from <strong>12 major U.S. hubs</strong> — fruits, vegetables, onions, potatoes, and nuts — pulled daily from USDA and built for the people who move produce.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="showPage('markets')">View Today's Markets</button>
+          <button class="btn-ghost" onclick="showPage('reports')">See all reports</button>
         </div>
-        <div class="isrch" style="margin-left:8px;flex-shrink:0;">
-          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input id="homeTableQ" placeholder="Filter…" oninput="buildHomeTable()"/>
+        <div class="hero-stats">
+          <div class="stat-cell"><div class="stat-num" id="stat-markets">—</div><div class="stat-label">Terminal Markets</div></div>
+          <div class="stat-cell"><div class="stat-num">4</div><div class="stat-label">Report Types</div></div>
+          <div class="stat-cell"><div class="stat-num">10<span>:15</span></div><div class="stat-label">Daily Update ET</div></div>
+          <div class="stat-cell"><div class="stat-num" id="stat-records">—</div><div class="stat-label">Price Records</div></div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-panel-header">
+          <span class="hph-title">NY Terminal · Top Movers</span>
+          <span class="hph-date" id="hero-panel-date">—</span>
+        </div>
+        <div id="hero-movers">
+          <div class="hero-panel-row"><div class="hpr-left"><span class="hpr-name"><span class="spinner"></span></span></div></div>
+        </div>
+        <div class="hero-panel-footer">
+          <span class="hpf-label">USDA AMS · NX_FV010/20/30/40</span>
+          <span class="hpf-link" onclick="showPage('markets')">All markets</span>
         </div>
       </div>
     </div>
-    <div class="tbl-wrap">
-      <table class="ledger">
-        <thead><tr>
-          <th style="min-width:180px;">Commodity</th>
-          <th>Market</th>
-          <th class="r">Avg price</th>
-          <th class="r">Price range</th>
-          <th class="r">WoW</th>
-          <th>Status</th>
-        </tr></thead>
-        <tbody id="homeTableBody"><tr><td colspan="6" style="padding:40px;text-align:center;color:var(--i4);">Loading market data…</td></tr></tbody>
-      </table>
-    </div>
-    <div class="tbl-foot">
-      <span class="tbl-ct" id="homeTableFootCount"></span>
-      <div class="pg-btns">
-        <button class="pg-btn" id="htPrev" onclick="htPg(-1)" disabled>‹</button>
-        <button class="pg-btn on" id="htPg1">1</button>
-        <button class="pg-btn" id="htPg2" style="display:none;">2</button>
-        <button class="pg-btn" id="htPg3" style="display:none;">3</button>
-        <button class="pg-btn" id="htNext" onclick="htPg(1)">›</button>
+
+    <!-- MARQUEE -->
+    <div class="marquee-band">
+      <div class="marquee-inner">
+        <div class="marquee-item hi">Fruits</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Vegetables</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">Onions &amp; Potatoes</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Nuts</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">Organic</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Terminal Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">FOB Origins</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Daily USDA Data</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">12 Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Price Intelligence</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">Fruits</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Vegetables</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">Onions &amp; Potatoes</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Nuts</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">Organic</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Terminal Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">FOB Origins</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Daily USDA Data</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item hi">12 Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+        <div class="marquee-item">Price Intelligence</div><div class="marquee-item"><div class="marquee-sep"></div></div>
       </div>
+    </div>
+
+    <!-- MARKET SNAPSHOT -->
+    <section class="market-section">
+      <div class="section-wrap">
+        <div class="section-label">Live Data</div>
+        <div class="section-title">Today's <em>market snapshot</em></div>
+        <div class="market-grid" id="home-snapshot">
+          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Fruits</span><div class="mcl-badges"><span class="mcl-badge badge-fruit">FV010</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-fruits"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
+          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Vegetables</span><div class="mcl-badges"><span class="mcl-badge badge-veg">FV020</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-veg"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
+          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Onions, Potatoes &amp; Nuts</span><div class="mcl-badges"><span class="mcl-badge badge-other">FV030/40</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-other"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
+        </div>
+        <div class="market-footer">
+          <span class="market-date" id="snapshot-date">Loading…</span>
+          <span class="view-all-link" onclick="showPage('markets')">View all commodities</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORT CARDS -->
+    <section class="reports-section">
+      <div class="section-wrap">
+        <div class="section-label">What we track</div>
+        <div class="section-title">Four reports.<br><em>One place.</em></div>
+        <div class="reports-grid">
+          <div class="report-card" onclick="showPage('markets','fruits')"><div class="rc-eyebrow" style="color:var(--red)"><div class="rc-stripe" style="background:var(--red)"></div>Fruit</div><div class="rc-name">Terminal Market Fruits</div><div class="rc-desc">Berries, citrus, melons, tropicals, stone fruit. Origin, variety, size, and grade — every price tier the USDA reports.</div><div class="rc-meta"><span class="rc-code">FV010</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
+          <div class="report-card" onclick="showPage('markets','vegetables')"><div class="rc-eyebrow" style="color:var(--blue)"><div class="rc-stripe" style="background:var(--blue)"></div>Vegetables</div><div class="rc-name">Terminal Market Vegetables</div><div class="rc-desc">Herbs, greens, brassicas, roots, specialty. Every lot, variety, and grade qualifier preserved from source.</div><div class="rc-meta"><span class="rc-code">FV020</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
+          <div class="report-card" onclick="showPage('markets','onions_potatoes')"><div class="rc-eyebrow" style="color:var(--amber)"><div class="rc-stripe" style="background:var(--amber)"></div>Onions &amp; Potatoes</div><div class="rc-name">Onions &amp; Potatoes</div><div class="rc-desc">Dry onions, green onions, russets, specialty potatoes. US grade marks and sweet designations tracked.</div><div class="rc-meta"><span class="rc-code">FV030</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
+          <div class="report-card" onclick="showPage('markets','nuts')"><div class="rc-eyebrow" style="color:var(--purple)"><div class="rc-stripe" style="background:var(--purple)"></div>Nuts</div><div class="rc-name">Terminal Market Nuts</div><div class="rc-desc">Almonds, walnuts, pecans, peanuts, filberts. Process state — raw, roasted, salted, green — tracked per lot.</div><div class="rc-meta"><span class="rc-code">FV040</span><span class="rc-cadence">Daily · 10 markets</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <div class="cta-left">
+        <div class="cta-eyebrow">Built for the trade</div>
+        <div class="cta-headline">The morning report,<br><em>rebuilt.</em></div>
+        <p class="cta-body">Buyers, distributors, and brokers have relied on USDA terminal market reports since 1915. agraX takes that data and makes it searchable, comparable, and actionable — without the PDFs.</p>
+      </div>
+      <div>
+        <div class="cta-box">
+          <div class="cta-box-label">Markets currently tracked</div>
+          <div class="cta-market-row"><span class="cmr-name">New York</span><span class="cmr-live">Live today</span></div>
+          <div class="cta-market-row"><span class="cmr-name">Los Angeles</span><span class="cmr-live">Live today</span></div>
+          <div class="cta-market-row"><span class="cmr-name">Chicago</span><span class="cmr-live">Live today</span></div>
+          <div class="cta-market-row"><span class="cmr-name">Miami</span><span class="cmr-live">Live today</span></div>
+          <div class="cta-market-row"><span class="cmr-name">Boston + 7 more</span><span class="cmr-live">Live today</span></div>
+          <button class="btn-cta" onclick="showPage('markets')">Open Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-logo">agra<span>X</span></div>
+      <div class="footer-copy">© 2026 agraX · Wholesale Produce Intelligence</div>
+      <div class="footer-source">Data: USDA Agricultural Marketing Service</div>
+    </footer>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MARKETS PAGE ═══════════════════════ -->
+<div id="page-markets" class="page markets-page">
+  <div class="page-header">
+    <div class="ph-top">
+      <div>
+        <div class="ph-breadcrumb">Dashboard › <span>Terminal Markets</span></div>
+        <div class="ph-title">Terminal Markets</div>
+        <div class="ph-meta">
+          <span><span class="ph-live-dot"></span>Live</span>
+          <span class="ph-sep"></span>
+          <span id="markets-date">Loading…</span>
+          <span class="ph-sep"></span>
+          <span>USDA AMS</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;padding-top:24px;">
+        <select class="market-select" id="market-filter" onchange="filterAndRender()">
+          <option value="">All Markets</option>
+        </select>
+      </div>
+    </div>
+    <div class="ph-tabs">
+      <button class="ph-tab active" id="tab-all" onclick="setTab('all')"><span class="ph-tab-dot" style="background:var(--ink)"></span>All</button>
+      <button class="ph-tab" id="tab-fruits" onclick="setTab('fruits')"><span class="ph-tab-dot" style="background:var(--red)"></span>Fruit</button>
+      <button class="ph-tab" id="tab-vegetables" onclick="setTab('vegetables')"><span class="ph-tab-dot" style="background:var(--blue)"></span>Vegetables</button>
+      <button class="ph-tab" id="tab-onions_potatoes" onclick="setTab('onions_potatoes')"><span class="ph-tab-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes</button>
+      <button class="ph-tab" id="tab-nuts" onclick="setTab('nuts')"><span class="ph-tab-dot" style="background:var(--purple)"></span>Nuts</button>
     </div>
   </div>
 
-</div>
-</div>
+  <div class="control-bar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input class="search-input" type="text" placeholder="Search commodities, origins…" id="search-input" oninput="filterAndRender()">
+    </div>
+    <button class="filter-btn active" id="filter-all" onclick="setOrganic('all')">All</button>
+    <button class="filter-btn" id="filter-organic" onclick="setOrganic('organic')">Organic only</button>
+    <div class="ctrl-right">
+      <span class="results-count"><strong id="row-count">—</strong> commodities</span>
+    </div>
+  </div>
 
-<!-- ═══ TERMINAL MARKETS ═══ -->
+  <div class="error-banner" id="markets-error">Unable to load data. Check that the backend is running at <code>produce-iq-production.up.railway.app</code></div>
 
-<!-- ═══ TERMINAL MARKETS ═══ -->
-<div id="view-terminal" class="view">
-  <div class="term-mob" id="termMobBar"></div>
-  <div class="term-shell">
-    <aside class="term-sb">
-      <div class="sb-all on" id="sbAll" onclick="tPickAll()">
-        <span class="sb-all-name">All Markets</span>
+  <div class="main-layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sb-section-label">Categories</div>
+      <div id="sidebar-cats"></div>
+      <div class="sb-divider"></div>
+      <div class="sb-section-label">Markets</div>
+      <div id="sidebar-markets"></div>
+    </div>
+    <div class="commodity-list" id="commodity-list">
+      <div class="table-header">
+        <div class="th-cell">Commodity</div>
+        <div class="th-cell">Condition</div>
+        <div class="th-cell">Price range</div>
+        <div class="th-cell">Origins</div>
+        <div class="th-cell">Trend</div>
+        <div class="th-cell"></div>
       </div>
-      <div id="sbList"></div>
-    </aside>
-    <div class="term-content">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      <div class="loading-row" id="list-loading"><p><span class="spinner"></span> &nbsp;Loading market data…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ FOB PAGE (stub) ═══════════════════════ -->
+<div id="page-fob" class="page markets-page">
+  <div class="page-header">
+    <div class="ph-top">
+      <div>
+        <div class="ph-breadcrumb">Dashboard › <span>FOB Origins</span></div>
+        <div class="ph-title">FOB Origins</div>
+        <div class="ph-meta"><span><span class="ph-live-dot"></span>Shipper prices at source</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:60px;text-align:center;color:var(--muted);font-size:14px;">FOB Origins page — coming soon. Data is in the pipeline.</div>
+</div>
+
+<!-- ═══════════════════════ REPORTS PAGE (stub) ═══════════════════════ -->
+<div id="page-reports" class="page markets-page">
+  <div class="page-header">
+    <div class="ph-top">
+      <div>
+        <div class="ph-breadcrumb">Dashboard › <span>Reports</span></div>
+        <div class="ph-title">USDA Reports</div>
+        <div class="ph-meta"><span>Daily and weekly wholesale price reports</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:60px;text-align:center;color:var(--muted);font-size:14px;">Reports archive — coming soon.</div>
+</div>
+
+<!-- ═══════════════════════ DETAIL PANEL ═══════════════════════ -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-header">
+    <div class="dp-header-top">
+      <div class="dp-title-block">
+        <span class="dp-emoji" id="dp-emoji">🌿</span>
         <div>
-          <div style="font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--i4);margin-bottom:4px;" id="tCtxLbl">All Markets</div>
-          <div style="font-family:var(--fh);font-size:1.375rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);" id="tCtxMkt">Terminal Market Prices</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;">
-          <div class="tog-wrap">
-            <button class="tog-btn on" id="tmAll" onclick="tMode('all')">All Markets</button>
-            <button class="tog-btn"    id="tmOne" onclick="tMode('one')">One Market</button>
-          </div>
-          <select class="f-sel" id="termSort" onchange="buildTermRows();renderTerm()">
-            <option value="az">A–Z</option>
-            <option value="price-hi">Price ↓</option>
-            <option value="price-lo">Price ↑</option>
-            <option value="change">Biggest move</option>
-          </select>
+          <div class="dp-commodity" id="dp-name">—</div>
+          <div class="dp-pack" id="dp-pack">—</div>
         </div>
       </div>
-      <div class="hub-pills" id="termHubs" style="display:none;margin-bottom:14px;"></div>
-      <input class="term-search" id="termQ" placeholder="Search commodities…" oninput="onTermSearch()"/>
-      <div class="htbl-card" style="border-radius:var(--rx);">
-        <div class="tbl-wrap">
-          <table class="ledger">
-            <thead><tr>
-              <th style="min-width:180px;">Commodity</th>
-              <th>Market</th>
-              <th class="r">Avg price</th>
-              <th class="r">Price range</th>
-              <th class="r">WoW</th>
-              <th>Status</th>
-            </tr></thead>
-            <tbody id="termTbody"><tr><td colspan="6" style="padding:40px;text-align:center;color:var(--i4);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-        <div class="tbl-foot">
-          <span class="tbl-ct" id="termCount"></span>
-          <div class="pg-btns">
-            <button class="pg-btn" id="termPrev" onclick="termPg(-1)" disabled>‹</button>
-            <button class="pg-btn on" id="termPg1">1</button>
-            <button class="pg-btn" id="termPg2" style="display:none;">2</button>
-            <button class="pg-btn" id="termPg3" style="display:none;">3</button>
-            <button class="pg-btn" id="termNext" onclick="termPg(1)">›</button>
-          </div>
-        </div>
-      </div>
+      <div class="dp-close" onclick="closeDetail()">✕</div>
+    </div>
+    <div class="dp-meta-row">
+      <span class="dp-cond cond-steady" id="dp-cond">Steady</span>
+      <span class="dp-market-tag"><span class="dp-live"></span><span id="dp-market">—</span></span>
+      <span class="dp-code" id="dp-code">—</span>
+      <span style="font-size:11px;color:var(--muted)" id="dp-date">—</span>
     </div>
   </div>
-</div>
 
-<!-- ═══ FOB ORIGINS ═══ -->
+  <div class="dp-price-strip">
+    <div class="phc"><div class="phc-label">Price range</div><div class="phc-value" id="dp-price-range">—</div><div class="phc-sub" id="dp-price-sub">—</div></div>
+    <div class="phc"><div class="phc-label">Top grade</div><div class="phc-value up" id="dp-fine-price">—</div><div class="phc-sub" id="dp-fine-sub">—</div></div>
+    <div class="phc"><div class="phc-label">Market signal</div><div class="phc-value" id="dp-movement">—</div><div class="phc-sub" id="dp-activity">—</div></div>
+  </div>
 
-<!-- ═══ FOB ORIGINS ═══ -->
-<div id="view-fob" class="view">
-<div class="page-wrap">
-  <div style="margin-bottom:20px;">
-    <div class="page-title">FOB Origin Prices</div>
-    <div class="page-desc">What shippers charge at source. Spread = terminal avg − FOB price — your potential margin before freight.</div>
+  <div class="dp-section">
+    <div class="dp-section-label">Price breakdown</div>
+    <table class="bt">
+      <thead><tr><th>Origin</th><th class="c">Size</th><th>Grade / Quality</th><th class="r">Price</th></tr></thead>
+      <tbody id="dp-breakdown"></tbody>
+    </table>
   </div>
-  <div class="fob-legend">
-    <span class="fob-legend-item"><span class="fob-dot wide"></span> Wide spread — strong margin</span>
-    <span class="fob-legend-item"><span class="fob-dot tight"></span> Tight / negative — watch carefully</span>
-    <span class="fob-legend-note">Prices shown: FOB ask range + where most trades occur</span>
-  </div>
-  <div class="fob-filter-row">
-    <div class="fob-cats">
-      <button class="cpill on" data-c="All"               onclick="fobSetCat(this,'All')">All</button>
-      <button class="cpill"    data-c="Fruits"            onclick="fobSetCat(this,'Fruits')">🍎 Fruits</button>
-      <button class="cpill"    data-c="Vegetables"        onclick="fobSetCat(this,'Vegetables')">🥬 Vegetables</button>
-      <button class="cpill"    data-c="Onions & Potatoes" onclick="fobSetCat(this,'Onions & Potatoes')">🧅 Onions</button>
-      <button class="cpill"    data-c="Nuts"              onclick="fobSetCat(this,'Nuts')">🥜 Nuts</button>
-    </div>
-    <div class="fob-controls">
-      <select class="f-sel" id="fobShippingPt" onchange="onFobSearch()"><option value="">All shipping points</option></select>
-      <select class="f-sel" id="fobSortFilter" onchange="onFobSearch()">
-        <option value="az">A–Z</option>
-        <option value="spread-hi">Best margin first</option>
-        <option value="spread-lo">Tightest first</option>
-        <option value="fob-lo">Lowest FOB price</option>
-        <option value="change">Biggest WoW move</option>
-      </select>
-      <label class="fob-organic-toggle" id="fobOrganicWrap" style="display:none;">
-        <input type="checkbox" id="fobOrganic" onchange="onFobSearch()"/>
-        <span>Organic only</span>
-      </label>
-      <div class="isrch">
-        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="fobQ" placeholder="Search commodity or origin…" oninput="onFobSearch()"/>
-      </div>
-    </div>
-  </div>
-  <div class="htbl-card" style="border-radius:var(--rx);">
-    <div class="tbl-wrap">
-      <table class="ledger">
-        <thead><tr>
-          <th style="min-width:160px;">Commodity</th>
-          <th style="min-width:180px;">Origin · Spec</th>
-          <th style="min-width:100px;">Shipping point</th>
-          <th class="r" style="min-width:130px;">FOB price</th>
-          <th class="r" style="min-width:120px;">Mostly trades at</th>
-          <th class="r" style="min-width:110px;">Terminal avg</th>
-          <th class="r" style="min-width:120px;">Spread</th>
-          <th class="r" style="min-width:70px;">WoW</th>
-          <th style="min-width:90px;">Movement</th>
-        </tr></thead>
-        <tbody id="fobTbody"><tr><td colspan="9" style="padding:40px;text-align:center;color:var(--i4);">Loading FOB data…</td></tr></tbody>
-      </table>
-    </div>
-    <div class="tbl-foot">
-      <span class="tbl-ct" id="fobCount"></span>
-      <div class="pg-btns">
-        <button class="pg-btn" id="fobPrev" onclick="fobPg(-1)" disabled>‹</button>
-        <button class="pg-btn on" id="fobPg1">1</button>
-        <button class="pg-btn" id="fobPg2" style="display:none;">2</button>
-        <button class="pg-btn" id="fobPg3" style="display:none;">3</button>
-        <button class="pg-btn" id="fobNext" onclick="fobPg(1)">›</button>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
 
-<!-- ═══ REPORTS ═══ -->
-<div id="view-reports" class="view">
-<div class="page-wrap">
-  <div style="margin-bottom:22px;">
-    <div class="page-title">USDA Market Reports</div>
-    <div class="page-desc">Daily and weekly wholesale price reports from USDA Agricultural Marketing Service.</div>
+  <div class="dp-section">
+    <div class="dp-section-label">All records for this commodity</div>
+    <table class="ht">
+      <thead><tr><th>Market</th><th>Origin</th><th>Package</th><th class="r">Price</th></tr></thead>
+      <tbody id="dp-history"></tbody>
+    </table>
   </div>
-  <div class="filt-bar">
-    <button class="filt-pill on" onclick="rptF(this,'all')">All reports</button>
-    <button class="filt-pill"    onclick="rptF(this,'terminal')">Terminal Markets</button>
-    <button class="filt-pill"    onclick="rptF(this,'fob')">FOB Shipping Points</button>
-    <button class="filt-pill"    onclick="rptF(this,'weekly')">Weekly summaries</button>
-    <div class="isrch" style="margin-left:auto;">
-      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--i4);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input id="rptQ" placeholder="Search reports…" oninput="buildReports()"/>
-    </div>
-  </div>
-  <div class="rpt-list" id="rptList"><div style="padding:40px;text-align:center;color:var(--i4);">Loading…</div></div>
-</div>
-</div>
 
-<!-- ═══ ALERTS ═══ -->
-<div id="view-alerts" class="view">
-<div class="page-wrap">
-  <div style="margin-bottom:22px;">
-    <div class="page-title">Industry Alerts</div>
-    <div class="page-desc">Price spikes, supply disruptions, and market signals from USDA data.</div>
+  <div class="dp-footer">
+    <span id="dp-source">USDA AMS</span>
+    <a onclick="closeDetail()">Close panel</a>
   </div>
-  <div class="filt-bar">
-    <button class="filt-pill on" onclick="altF(this,'all')">All</button>
-    <button class="filt-pill"    onclick="altF(this,'urgent')">Urgent</button>
-    <button class="filt-pill"    onclick="altF(this,'info')">Price moves</button>
-    <button class="filt-pill"    onclick="altF(this,'warn')">Supply</button>
-  </div>
-  <div class="alt-list" id="altList"><div style="padding:40px;text-align:center;color:var(--i4);">Loading…</div></div>
 </div>
-</div>
-
-</main>
 
 <script>
-const API='https://produce-iq-production.up.railway.app';
-let ALL=[],DATED={},DATES=[];
-let tActiveMkt=null,tMktMode='all',tPgN=1,tRows=[];
-let fCat='All',fPgN=1,fRows=[];
-let hCat='All',htPgN=1,htRows=[];
-let shCI=null;
-const PER=25;
+// ── CONFIG ──────────────────────────────────────────────────────
+const API = 'https://produce-iq-production.up.railway.app';
 
-/* Helpers */
-const CATS={
-  'Fruits':['apple','pear','grape','cherry','peach','plum','nectarine','kiwi','melon','watermelon','cantaloupe','strawberr','blueberr','raspberr','blackberr','cranberr','avocado','mango','papaya','pineapple','banana','lime','lemon','orange','grapefruit','tangerine','mandarin','clementine','fig','persimmon','pomegranate','passion'],
-  'Vegetables':['lettuce','tomato','pepper','cucumber','squash','zucchini','broccoli','cauliflower','cabbage','spinach','kale','arugula','chard','celery','carrot','beet','fennel','artichoke','asparagus','eggplant','okra','corn','bean','pea','sprout','leek','herb','basil','cilantro','mint','parsley','mushroom','radish'],
-  'Onions & Potatoes':['onion','shallot','garlic','potato','yam','sweet potato'],
-  'Nuts':['almond','walnut','pecan','pistachio','cashew','peanut','hazelnut','macadamia','pine nut']
-};
-function gc(n){const l=n.toLowerCase();for(const[c,ks]of Object.entries(CATS))if(ks.some(k=>l.includes(k)))return c;return'Other';}
-function ticker(n){const w=n.replace(/[,.]/g,'').trim().split(/\s+/);return w.length===1?n.slice(0,3).toUpperCase():w.slice(0,3).map(x=>x[0]).join('').toUpperCase();}
-function catClass(n){const c=gc(n);return c==='Fruits'?'cat-fruit':c==='Vegetables'?'cat-veg':c==='Onions & Potatoes'?'cat-onion':c==='Nuts'?'cat-nut':'cat-other';}
-function avgP(items){const p=items.map(i=>parseFloat(i.price_low||0)).filter(v=>v>0);return p.length?p.reduce((a,b)=>a+b,0)/p.length:null;}
-function fP(v){return(v==null||isNaN(v))?'—':'$'+Number(v).toFixed(2);}
-function fR(lo,hi){return(lo&&hi&&hi>lo)?`${fP(lo)} – ${fP(hi)}`:fP(lo||null);}
-function trendPct(c){
-  if(DATES.length<2)return 0;
-  const t=DATED[DATES[0].date]?.filter(x=>x.commodity===c)||[];
-  const w=DATED[DATES[Math.min(6,DATES.length-1)].date]?.filter(x=>x.commodity===c)||[];
-  if(!t.length||!w.length)return 0;
-  const at=t.reduce((s,x)=>s+parseFloat(x.price_low||0),0)/t.length;
-  const aw=w.reduce((s,x)=>s+parseFloat(x.price_low||0),0)/w.length;
-  return aw?((at-aw)/aw)*100:0;
+// ── STATE ───────────────────────────────────────────────────────
+let allRows = [];
+let latestDate = null;
+let activeTab = 'all';
+let activeOrganic = 'all';
+let activeMarket = '';
+let markets = [];
+let currentCommodity = null;
+
+// ── UTILS ───────────────────────────────────────────────────────
+function fmt(v) {
+  if (v == null) return null;
+  return '$' + parseFloat(v).toFixed(2).replace('.00', '');
 }
-function hist7(c){
-  const r=[];
-  for(let i=Math.min(6,DATES.length-1);i>=0;i--){const d=DATES[i]?.date;if(!d)continue;const a=avgP(DATED[d]?.filter(x=>x.commodity===c)||[]);if(a)r.push({date:d,price:a});}
-  return r;
+function fmtRange(low, high) {
+  if (!low) return '—';
+  if (!high || high === low) return fmt(low);
+  return fmt(low) + ' – ' + fmt(high);
 }
-function getStatus(ch){
-  if(ch>8)return{k:'bullish',l:'Bullish'};
-  if(ch>1)return{k:'stable',l:'Stable'};
-  if(ch<-5)return{k:'volatile',l:'Volatile'};
-  if(ch<-1)return{k:'bearish',l:'Bearish'};
-  return{k:'neutral',l:'Neutral'};
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function condClass(movement) {
+  if (!movement) return 'cond-steady';
+  const m = movement.toLowerCase();
+  if (m.includes('higher')) return 'cond-higher';
+  if (m.includes('lower')) return 'cond-lower';
+  if (m.includes('light') || m.includes('insufficient')) return 'cond-light';
+  return 'cond-steady';
+}
+function condLabel(movement, supply) {
+  if (movement && movement !== 'Steady' && movement !== 'Unchanged') return movement;
+  if (supply && supply.toLowerCase().includes('light')) return 'Offerings Light';
+  return 'Steady';
+}
+function emojiFor(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('avocado')) return '🥑';
+  if (n.includes('strawberr')) return '🍓';
+  if (n.includes('blueberr')) return '🫐';
+  if (n.includes('blackberr')) return '🫐';
+  if (n.includes('raspberr')) return '🍇';
+  if (n.includes('apple')) return '🍎';
+  if (n.includes('orange') || n.includes('tangelo') || n.includes('tangerine') || n.includes('satsuma')) return '🍊';
+  if (n.includes('lemon') || n.includes('meyer')) return '🍋';
+  if (n.includes('lime')) return '🍈';
+  if (n.includes('grapefruit')) return '🍊';
+  if (n.includes('grape')) return '🍇';
+  if (n.includes('mango')) return '🥭';
+  if (n.includes('pineapple')) return '🍍';
+  if (n.includes('watermelon')) return '🍉';
+  if (n.includes('cantaloupe') || n.includes('honeydew') || n.includes('melon')) return '🍈';
+  if (n.includes('banana') || n.includes('plantain')) return '🍌';
+  if (n.includes('pear')) return '🍐';
+  if (n.includes('peach') || n.includes('nectarine')) return '🍑';
+  if (n.includes('cherry') || n.includes('cherries')) return '🍒';
+  if (n.includes('plum')) return '🍑';
+  if (n.includes('fig')) return '🫐';
+  if (n.includes('coconut')) return '🥥';
+  if (n.includes('tomato')) return '🍅';
+  if (n.includes('pepper')) return '🌶️';
+  if (n.includes('broccoli')) return '🥦';
+  if (n.includes('cauliflower')) return '🥦';
+  if (n.includes('cabbage')) return '🥬';
+  if (n.includes('lettuce')) return '🥬';
+  if (n.includes('spinach') || n.includes('arugula')) return '🥬';
+  if (n.includes('carrot')) return '🥕';
+  if (n.includes('corn')) return '🌽';
+  if (n.includes('mushroom')) return '🍄';
+  if (n.includes('eggplant')) return '🍆';
+  if (n.includes('cucumber')) return '🥒';
+  if (n.includes('celery')) return '🌿';
+  if (n.includes('asparagus')) return '🌿';
+  if (n.includes('onion')) return '🧅';
+  if (n.includes('potato') || n.includes('yam') || n.includes('sweet potato')) return '🥔';
+  if (n.includes('garlic')) return '🧄';
+  if (n.includes('walnut') || n.includes('pecan') || n.includes('almond') || n.includes('nut') || n.includes('peanut')) return '🥜';
+  if (n.includes('date')) return '🌴';
+  if (n.includes('dragon fruit')) return '🐉';
+  return '🌿';
+}
+function originPip(origin) {
+  if (!origin) return '';
+  const o = origin.trim();
+  const short = o.length > 12 ? o.substring(0,3).toUpperCase() : o.substring(0,4).toUpperCase();
+  const colors = {
+    'MEX': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+    'CAL': 'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
+    'FLO': 'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
+    'PER': 'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
+    'CHI': 'background:#edf4e0;color:#1a5010;border-color:#a0d080',
+    'DOM': 'background:#edf4e0;color:#2e6010;border-color:#b0e090',
+    'WAS': 'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
+    'ORE': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+    'IDA': 'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
+    'NOR': 'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
+    'GEO': 'background:#edf4e0;color:#2e6010;border-color:#b0e090',
+    'TEX': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+  };
+  const key = short.substring(0,3).toUpperCase();
+  const style = colors[key] || 'background:var(--panel);color:var(--dim);border-color:var(--border)';
+  const display = o.length > 10 ? o.substring(0,10) : o;
+  return `<span class="origin-pip" style="${style}">${display}</span>`;
 }
 
-/* Nav */
-/* ══════════════════════════════════════
-   FOB ORIGINS — Complete data logic
-   Priority fields: mostly_price (where trades actually occur),
-   then full range as context. Spread vs terminal is the key metric.
-══════════════════════════════════════ */
-
-/* Shipping point region classification */
-function fobRegion(market, origin) {
-  const m = (market || '').toLowerCase();
-  const o = (origin || '').toLowerCase();
-  if (m.includes('nogales') || o.includes('mexico') || o.includes('nogales')) return {label:'Mexico/Border', cls:'border'};
-  if (m.includes('miami') && m.includes('import')) return {label:'Imports', cls:'imports'};
-  if (m.includes('orlando') && m.includes('import')) return {label:'Imports', cls:'imports'};
-  if (m.includes('fresno') || o.includes('california') || o.includes('southern ca') || o.includes('central ca')) return {label:'California', cls:'west'};
-  if (m.includes('phoenix') || o.includes('arizona')) return {label:'Southwest', cls:'border'};
-  if (m.includes('orlando') || m.includes('florida') || o.includes('florida')) return {label:'Florida', cls:'east'};
-  if (m.includes('thomasville') || o.includes('georgia') || o.includes('carolina')) return {label:'Southeast', cls:'south'};
-  return {label:'', cls:''};
+// ── NAVIGATION ───────────────────────────────────────────────────
+function showPage(page, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo(0,0);
+  if (page === 'markets' && tab) {
+    setTab(tab);
+  }
 }
 
-/* Clean up spec string: variety + size + grade */
-function fobSpec(item) {
-  const parts = [item.variety, item.size, item.grade].filter(v => v && v !== 'N/A' && v !== 'N/A ');
-  return parts.join(' · ') || null;
+// ── TAB + FILTER ─────────────────────────────────────────────────
+function setTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.ph-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById('tab-' + tab);
+  if (el) el.classList.add('active');
+  filterAndRender();
+}
+function setOrganic(val) {
+  activeOrganic = val;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('filter-' + val).classList.add('active');
+  filterAndRender();
 }
 
-/* Movement direction from normalized movement field */
-function fobMovement(item) {
-  const m = (item.movement || '').toLowerCase().trim();
-  if (!m || m === 'n/a' || m === 'unchanged' || m === 'about steady') return {label:'Steady', cls:'steady'};
-  if (m === 'higher' || m.includes('higher')) return {label:'Higher', cls:'higher'};
-  if (m === 'lower' || m.includes('lower')) return {label:'Lower', cls:'lower'};
-  if (m.includes('active') || m.includes('good') || m.includes('brisk')) return {label:'Active', cls:'active'};
-  if (m.includes('slow') || m.includes('light') || m.includes('limited')) return {label:'Slow', cls:'slow'};
-  return {label:'Steady', cls:'steady'};
+// ── FETCH ────────────────────────────────────────────────────────
+async function apiFetch(path) {
+  const r = await fetch(API + path, { headers: { 'Accept': 'application/json' } });
+  if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+  return r.json();
 }
 
-/* Build FOB filters dropdowns */
-function buildFobFilters() {
-  const sp = [...new Set(ALL
-    .filter(i => i.market_type === 'shipping_point')
-    .map(i => i.market).filter(Boolean))].sort();
-  const sel = document.getElementById('fobShippingPt');
-  if (sel) sel.innerHTML = '<option value="">All shipping points</option>' +
-    sp.map(m => `<option value="${m}">${m}</option>`).join('');
-  // Show organic toggle only if we have organic records
-  const hasOrg = ALL.some(i => i.market_type === 'shipping_point' && i.organic);
-  const orgWrap = document.getElementById('fobOrganicWrap');
-  if (orgWrap) orgWrap.style.display = hasOrg ? 'flex' : 'none';
+// ── BOOT ────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    // Load stats for homepage
+    loadStats();
+    // Get latest date
+    const dates = await apiFetch('/dates');
+    if (!dates || dates.length === 0) throw new Error('No dates available');
+    latestDate = dates[0].date;
+    // Update date displays
+    const fd = fmtDate(latestDate);
+    document.getElementById('nav-date').textContent = fd;
+    document.getElementById('markets-date').textContent = fd;
+    document.getElementById('hero-panel-date').textContent = fd;
+    document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
+    // Load all rows for latest date
+    allRows = await apiFetch('/commodities/by-date/' + latestDate);
+    // Populate market filter
+    populateMarkets();
+    // Build ticker
+    buildTicker();
+    // Render home snapshot
+    renderSnapshot();
+    // Render hero movers
+    renderHeroMovers();
+    // Render markets list
+    filterAndRender();
+  } catch(e) {
+    console.error('Boot failed:', e);
+    document.getElementById('nav-date').textContent = 'Offline';
+    document.getElementById('markets-error').classList.add('show');
+    document.getElementById('list-loading').innerHTML = '<p style="color:var(--red)">Backend offline — ' + e.message + '</p>';
+  }
 }
 
-function fobSetCat(el, c) {
-  fCat = c; fPgN = 1;
-  document.querySelectorAll('#view-fob .cpill').forEach(b => b.classList.toggle('on', b.dataset.c === c));
-  buildFobRows(); renderFob();
+async function loadStats() {
+  try {
+    const s = await apiFetch('/stats');
+    document.getElementById('stat-markets').textContent = s.markets || '12';
+    const rec = s.total_records;
+    document.getElementById('stat-records').innerHTML = rec > 1000
+      ? Math.round(rec/1000) + '<span>k</span>'
+      : rec;
+  } catch(e) {}
 }
 
-function onFobSearch() { fPgN = 1; buildFobRows(); renderFob(); }
+function populateMarkets() {
+  const seen = new Set();
+  allRows.forEach(r => { if (r.market) seen.add(r.market); });
+  const sel = document.getElementById('market-filter');
+  const sbMkts = document.getElementById('sidebar-markets');
+  const sorted = [...seen].sort();
+  markets = sorted;
+  sorted.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    sel.appendChild(opt);
+    const div = document.createElement('div');
+    div.className = 'sb-item';
+    div.innerHTML = `<span class="sb-name">${m}</span><span class="sb-count">${allRows.filter(r=>r.market===m).length}</span>`;
+    div.onclick = () => { activeMarket = m; sel.value = m; filterAndRender(); };
+    sbMkts.appendChild(div);
+  });
+}
 
-function buildFobRows() {
-  const q   = (document.getElementById('fobQ')?.value || '').toLowerCase().trim();
-  const sp  = document.getElementById('fobShippingPt')?.value || '';
-  const srt = document.getElementById('fobSortFilter')?.value || 'az';
-  const org = document.getElementById('fobOrganic')?.checked || false;
+// ── TICKER ───────────────────────────────────────────────────────
+function buildTicker() {
+  const sample = allRows
+    .filter(r => r.price_low && r.market === 'New York')
+    .slice(0, 20);
+  if (!sample.length) return;
+  let html = '';
+  const doubled = [...sample, ...sample];
+  doubled.forEach(r => {
+    const price = fmtRange(r.price_low, r.price_high);
+    const mv = r.movement || '';
+    let cls = 'tick-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'tick-up'; sym = '▲ Higher'; }
+    else if (mv.toLowerCase().includes('lower')) { cls = 'tick-down'; sym = '▼ Lower'; }
+    html += `<div class="tick-item"><span class="tick-name">${r.commodity}${r.variety ? ' · ' + r.variety : ''}</span><span class="tick-price">${price}</span><span class="${cls}">${sym}</span></div>`;
+  });
+  document.getElementById('ticker-track').innerHTML = html;
+}
 
-  let items = ALL.filter(i => i.market_type === 'shipping_point');
+// ── HOME SNAPSHOT ────────────────────────────────────────────────
+function renderSnapshot() {
+  const nyRows = allRows.filter(r => r.market === 'New York');
+  renderSnapCol('snap-fruits', nyRows.filter(r => r.commodity_type === 'fruits'), 6);
+  renderSnapCol('snap-veg', nyRows.filter(r => r.commodity_type === 'vegetables'), 6);
+  renderSnapCol('snap-other', nyRows.filter(r => r.commodity_type === 'onions_potatoes' || r.commodity_type === 'nuts'), 6);
+}
 
-  // Fallback: if no shipping_point records, show terminal data with note
-  if (!items.length) { fRows = []; return; }
+function renderSnapCol(id, rows, limit) {
+  const el = document.getElementById(id);
+  if (!rows.length) { el.innerHTML = '<div class="empty-row"><p>No data</p></div>'; return; }
+  const grouped = groupByCommodity(rows);
+  const top = grouped.slice(0, limit);
+  el.innerHTML = top.map(g => {
+    const price = fmtRange(g.price_low, g.price_high);
+    const mv = g.movement || '';
+    let cls = 'chg-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'chg-up'; sym = '▲ ' + mv; }
+    else if (mv.toLowerCase().includes('lower')) { cls = 'chg-down'; sym = '▼ ' + mv; }
+    const origin = g.origins.slice(0,2).join(' · ');
+    return `<div class="market-row" onclick="openDetail('${esc(g.commodity)}')">
+      <div class="mr-left"><span class="mr-name">${g.commodity}</span><span class="mr-origin">${origin}</span></div>
+      <div class="mr-right"><span class="mr-price">${price}</span><span class="mr-change ${cls}">${sym}</span></div>
+    </div>`;
+  }).join('');
+}
 
-  if (fCat !== 'All') items = items.filter(i => gc(i.commodity) === fCat);
-  if (sp)  items = items.filter(i => i.market === sp);
-  if (org) items = items.filter(i => i.organic === true || i.organic === 'true');
-  if (q)   items = items.filter(i =>
-    i.commodity.toLowerCase().includes(q) ||
-    (i.origin || '').toLowerCase().includes(q) ||
-    (i.market  || '').toLowerCase().includes(q) ||
-    (i.variety || '').toLowerCase().includes(q)
+function renderHeroMovers() {
+  const nyRows = allRows.filter(r => r.market === 'New York' && r.price_low);
+  const grouped = groupByCommodity(nyRows).slice(0, 8);
+  document.getElementById('hero-movers').innerHTML = grouped.map(g => {
+    const price = fmtRange(g.price_low, g.price_high);
+    const mv = g.movement || '';
+    let cls = 'd-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'd-up'; sym = '▲ ' + mv; }
+    else if (mv.toLowerCase().includes('lower')) { cls = 'd-down'; sym = '▼ ' + mv; }
+    const spec = [g.variety, g.origins[0]].filter(Boolean).join(' · ');
+    return `<div class="hero-panel-row" onclick="openDetail('${esc(g.commodity)}'); showPage('markets')">
+      <div class="hpr-left"><span class="hpr-name">${g.commodity}</span><span class="hpr-spec">${spec}</span></div>
+      <div class="hpr-right"><span class="hpr-price">${price}</span><span class="hpr-delta ${cls}">${sym}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── GROUP BY COMMODITY ───────────────────────────────────────────
+function groupByCommodity(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const key = r.commodity;
+    if (!map[key]) {
+      map[key] = { commodity: r.commodity, commodity_type: r.commodity_type, price_low: null, price_high: null, movement: r.movement, supply_note: r.supply_note, trading_activity: r.trading_activity, source_report: r.source_report, origins: [], packages: new Set(), rows: [] };
+    }
+    const g = map[key];
+    if (r.price_low && (!g.price_low || r.price_low < g.price_low)) g.price_low = r.price_low;
+    if (r.price_high && (!g.price_high || r.price_high > g.price_high)) g.price_high = r.price_high;
+    if (r.origin && !g.origins.includes(r.origin)) g.origins.push(r.origin);
+    if (r.package) g.packages.add(r.package);
+    if (!g.movement && r.movement) g.movement = r.movement;
+    g.rows.push(r);
+  });
+  return Object.values(map).sort((a,b) => a.commodity.localeCompare(b.commodity));
+}
+
+// ── MAIN RENDER ──────────────────────────────────────────────────
+function filterAndRender() {
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  activeMarket = document.getElementById('market-filter')?.value || '';
+
+  let filtered = allRows;
+  if (activeTab !== 'all') filtered = filtered.filter(r => r.commodity_type === activeTab);
+  if (activeOrganic === 'organic') filtered = filtered.filter(r => r.organic);
+  if (activeMarket) filtered = filtered.filter(r => r.market === activeMarket);
+  if (q) filtered = filtered.filter(r =>
+    (r.commodity||'').toLowerCase().includes(q) ||
+    (r.origin||'').toLowerCase().includes(q) ||
+    (r.variety||'').toLowerCase().includes(q)
   );
 
-  // Deduplicate: commodity + market + variety + size + grade is a unique row
-  const seen = new Set(); fRows = [];
-  items.sort((a, b) => a.commodity.localeCompare(b.commodity) || (a.market||'').localeCompare(b.market||'')).forEach(r => {
-    const k = [r.commodity, r.market, r.variety||'', r.size||'', r.grade||'', r.origin||''].join('|');
-    if (!seen.has(k)) { seen.add(k); fRows.push(r); }
+  const grouped = groupByCommodity(filtered);
+  document.getElementById('row-count').textContent = grouped.length;
+
+  // Build sidebar categories
+  const catMap = {};
+  grouped.forEach(g => {
+    const ct = g.commodity_type || 'other';
+    if (!catMap[ct]) catMap[ct] = 0;
+    catMap[ct]++;
+  });
+  const catLabels = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
+  document.getElementById('sidebar-cats').innerHTML = Object.entries(catMap).map(([k,v]) =>
+    `<div class="sb-item ${activeTab===k?'active':''}" onclick="setTab('${k}')">
+      <span class="sb-name">${catLabels[k]||k}</span>
+      <span class="sb-count">${v}</span>
+    </div>`
+  ).join('');
+
+  // Render rows by commodity type group
+  const typeOrder = ['fruits','vegetables','onions_potatoes','nuts','other'];
+  const byType = {};
+  grouped.forEach(g => {
+    const ct = g.commodity_type || 'other';
+    if (!byType[ct]) byType[ct] = [];
+    byType[ct].push(g);
   });
 
-  // Compute derived values for each row
-  fRows.forEach(r => {
-    // "Mostly" price = where actual trades cluster — primary display price
-    const ml = parseFloat(r.price_mostly_low || 0);
-    const mh = parseFloat(r.price_mostly_high || 0);
-    r._mostly_lo = ml > 0 ? ml : null;
-    r._mostly_hi = mh > 0 ? mh : null;
-    // Full range as context
-    const fl = parseFloat(r.price_low || 0);
-    const fh = parseFloat(r.price_high || 0);
-    r._fob_lo = fl > 0 ? fl : null;
-    r._fob_hi = fh > 0 && fh !== fl ? fh : null;
-    // Representative FOB price: prefer mostly midpoint, fall back to low
-    r._fob_rep = r._mostly_lo
-      ? (r._mostly_hi ? (r._mostly_lo + r._mostly_hi) / 2 : r._mostly_lo)
-      : r._fob_lo;
-    // Terminal average for this commodity
-    r._term_avg = getTermAvg(r.commodity);
-    // Spread: terminal avg − FOB representative price
-    r._spread = (r._fob_rep && r._term_avg) ? r._term_avg - r._fob_rep : null;
-    r._spread_pct = (r._spread && r._fob_rep) ? (r._spread / r._fob_rep) * 100 : null;
+  let html = '';
+  typeOrder.forEach(ct => {
+    const grp = byType[ct];
+    if (!grp || !grp.length) return;
+
+    // Organic separator within each group
+    const conv = grp.filter(g => !g.rows.every(r=>r.organic));
+    const org  = grp.filter(g => g.rows.every(r=>r.organic));
+
+    if (conv.length) {
+      html += `<div class="cat-header"><span class="cat-title">${catLabels[ct]||ct} <span class="cat-count">${grp.length} commodities</span></span></div>`;
+      html += conv.map(g => rowHtml(g)).join('');
+    }
+    if (org.length) {
+      html += `<div class="organic-band"><span class="ob-label">Organic · ${catLabels[ct]||ct}</span></div>`;
+      html += org.map(g => rowHtml(g, true)).join('');
+    }
   });
 
-  // Sort
-  if (srt === 'spread-hi') fRows.sort((a, b) => (b._spread || -999) - (a._spread || -999));
-  else if (srt === 'spread-lo') fRows.sort((a, b) => (a._spread || 999) - (b._spread || 999));
-  else if (srt === 'fob-lo')    fRows.sort((a, b) => (a._fob_rep || 0) - (b._fob_rep || 0));
-  else if (srt === 'change')    fRows.sort((a, b) => Math.abs(trendPct(b.commodity)) - Math.abs(trendPct(a.commodity)));
+  if (!html) html = `<div class="empty-row"><p>No commodities match your filters.</p></div>`;
+
+  const list = document.getElementById('commodity-list');
+  list.innerHTML = `<div class="table-header">
+    <div class="th-cell">Commodity</div>
+    <div class="th-cell">Condition</div>
+    <div class="th-cell">Price range</div>
+    <div class="th-cell">Origins</div>
+    <div class="th-cell">Trend</div>
+    <div class="th-cell"></div>
+  </div>` + html;
+
+  document.getElementById('list-loading').style.display = 'none';
 }
 
-function renderFob() {
-  const total = fRows.length, pages = Math.max(1, Math.ceil(total / PER));
-  fPgN = Math.min(fPgN, pages);
-  const start = (fPgN - 1) * PER, pg = fRows.slice(start, start + PER);
+function rowHtml(g, organic) {
+  const price = fmtRange(g.price_low, g.price_high);
+  const mv = g.movement || '';
+  const cc = condClass(mv + ' ' + (g.supply_note||''));
+  const cl = condLabel(mv, g.supply_note);
+  const pips = g.origins.slice(0,3).map(o => originPip(o)).join('');
+  const emoji = emojiFor(g.commodity);
+  const pkg = [...g.packages][0] || '';
+  const orgTag = organic ? `<span style="font-size:10px;color:var(--lime-dk);font-weight:700;margin-left:4px;">ORG</span>` : '';
+  // mini spark — static for now, would need history
+  const bars = [8,10,11,12,11,13,14].map((h,i) => `<div class="spark-bar${i===6?' now':''}" style="height:${h}px"></div>`).join('');
+  let wowCls = 'wow-flat', wowTxt = '— Steady';
+  if (mv.toLowerCase().includes('higher')) { wowCls = 'wow-up'; wowTxt = '▲ ' + mv; }
+  else if (mv.toLowerCase().includes('lower')) { wowCls = 'wow-down'; wowTxt = '▼ ' + mv; }
 
-  document.getElementById('fobCount').textContent =
-    `Showing ${start + 1}–${Math.min(start + pg.length, total)} of ${total.toLocaleString()} listings`;
-  document.getElementById('fobPrev').disabled = fPgN <= 1;
-  document.getElementById('fobNext').disabled = fPgN >= pages;
-  for (let i = 1; i <= 3; i++) {
-    const b = document.getElementById('fobPg' + i); if (!b) continue;
-    const n = fPgN <= 2 ? i : (fPgN - 1) + (i - 1);
-    b.style.display = n <= pages ? 'flex' : 'none';
-    b.textContent = n;
-    b.classList.toggle('on', n === fPgN);
-    (p => b.onclick = () => { fPgN = p; renderFob(); })(n);
+  return `<div class="commodity-row" onclick="openDetail('${esc(g.commodity)}')" style="${organic?'background:var(--lime-bg)':''}">
+    <div class="cr-name-col">
+      <span class="cr-emoji">${emoji}</span>
+      <div><div class="cr-name">${g.commodity}${orgTag}</div><div class="cr-sub">${pkg}</div></div>
+    </div>
+    <div><span class="cond-badge ${cc}">${cl}</span></div>
+    <div class="cr-price-col">
+      <span class="cr-price">${price}</span>
+      <span class="cr-price-sub">${g.origins.length} origin${g.origins.length!==1?'s':''}</span>
+    </div>
+    <div class="cr-origins">${pips}</div>
+    <div class="cr-trend-col">
+      <div class="mini-spark">${bars}</div>
+      <span class="cr-wow ${wowCls}">${wowTxt}</span>
+    </div>
+    <div class="cr-arrow">›</div>
+  </div>`;
+}
+
+function esc(s) { return (s||'').replace(/'/g, "\\'"); }
+
+// ── DETAIL PANEL ─────────────────────────────────────────────────
+function openDetail(commodity) {
+  const rows = allRows.filter(r => r.commodity === commodity);
+  if (!rows.length) return;
+
+  currentCommodity = commodity;
+  const g = groupByCommodity(rows)[0];
+
+  // Header
+  document.getElementById('dp-emoji').textContent = emojiFor(commodity);
+  document.getElementById('dp-name').textContent = commodity;
+  const pkg = rows.find(r => r.package)?.package || '';
+  document.getElementById('dp-pack').textContent = pkg;
+
+  const mv = g.movement || '';
+  const cc = condClass(mv);
+  const cl = condLabel(mv, g.supply_note);
+  const condEl = document.getElementById('dp-cond');
+  condEl.className = 'dp-cond ' + cc;
+  condEl.textContent = cl;
+
+  const mkt = rows[0]?.market || '—';
+  document.getElementById('dp-market').textContent = mkt;
+  document.getElementById('dp-code').textContent = rows[0]?.source_report || '—';
+  document.getElementById('dp-date').textContent = fmtDate(latestDate);
+
+  // Price strip
+  document.getElementById('dp-price-range').textContent = fmtRange(g.price_low, g.price_high);
+  document.getElementById('dp-price-sub').textContent = g.origins.slice(0,2).join(' · ');
+
+  // Fine appearance
+  const fineRow = rows.find(r => r.quality_note === 'fine appearance' && r.price_low);
+  if (fineRow) {
+    document.getElementById('dp-fine-price').textContent = fmtRange(fineRow.price_low, fineRow.price_high);
+    document.getElementById('dp-fine-sub').textContent = 'Fine appearance';
+  } else {
+    document.getElementById('dp-fine-price').textContent = '—';
+    document.getElementById('dp-fine-sub').textContent = 'No fine tier today';
   }
 
-  const tbody = document.getElementById('fobTbody');
-  if (!tbody) return;
+  document.getElementById('dp-movement').textContent = mv || 'Steady';
+  document.getElementById('dp-activity').textContent = g.trading_activity || g.supply_note || '';
 
-  if (!pg.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="padding:48px;text-align:center;color:var(--i4);font-size:.875rem;">No shipping point data for current filters.<br><span style="font-size:.78rem;margin-top:4px;display:block;">FOB data comes from USDA shipping point reports (Nogales, Fresno, Orlando, etc.).</span></td></tr>';
-    return;
-  }
-
-  // Max spread for bar scaling
-  const maxSpread = Math.max(...fRows.map(r => Math.abs(r._spread || 0)), 1);
-
-  tbody.innerHTML = pg.map(item => {
-    const ch = trendPct(item.commodity);
-    const wCls = ch > 0.5 ? 'up' : ch < -0.5 ? 'dn' : 'flat';
-    const wStr = ch > 0.5 ? `↑ +${ch.toFixed(1)}%` : ch < -0.5 ? `↓ ${ch.toFixed(1)}%` : `— 0.0%`;
-
-    const region = fobRegion(item.market, item.origin);
-    const spec   = fobSpec(item);
-    const mv     = fobMovement(item);
-
-    // FOB price cell: primary = full range; secondary = mostly (where trades happen)
-    const priceHtml = (() => {
-      const lo = item._fob_lo, hi = item._fob_hi;
-      const ml = item._mostly_lo, mh = item._mostly_hi;
-      const rangeStr = (lo && hi) ? `${fP(lo)} – ${fP(hi)}` : fP(lo);
-      const mostlyStr = ml ? (mh && mh !== ml ? `${fP(ml)} – ${fP(mh)}` : fP(ml)) : null;
-      return `<div class="fob-price-cell">
-        <span class="fob-price-main">${rangeStr}</span>
-        ${mostlyStr ? `<span class="fob-mostly">mostly ${mostlyStr}</span>` : '<span class="fob-mostly-na">—</span>'}
-      </div>`;
-    })();
-
-    // Terminal avg
-    const termHtml = item._term_avg
-      ? `<span class="price-main" style="font-size:.875rem;">${fP(item._term_avg)}</span>`
-      : `<span style="color:var(--i4);font-size:.72rem;">No terminal data</span>`;
-
-    // Spread cell
-    const spreadHtml = (() => {
-      if (item._spread === null) return '<span class="spread-val na">—</span>';
-      const isNeg = item._spread < 0;
-      const barW  = Math.min(100, (Math.abs(item._spread) / maxSpread) * 100).toFixed(0);
-      const pctStr = item._spread_pct ? `${item._spread_pct > 0 ? '+' : ''}${item._spread_pct.toFixed(0)}%` : '';
-      return `<div class="spread-cell">
-        <div class="sbar-track">
-          <div class="sbar-fill ${isNeg ? 'neg' : 'pos'}" style="width:${barW}%"></div>
-        </div>
-        <div>
-          <div class="spread-val ${isNeg ? 'neg' : 'pos'}">${item._spread > 0 ? '+' : ''}${fP(item._spread)}</div>
-          ${pctStr ? `<div class="spread-pct">${pctStr}</div>` : ''}
-        </div>
-      </div>`;
-    })();
-
-    // Organic badge
-    const orgBadge = (item.organic === true || item.organic === 'true')
-      ? `<span class="badge-org">🌿 Organic</span>` : '';
-
-    // Origin string — cleaned, not the full verbose USDA text
-    const originDisplay = (item.origin && item.origin !== 'N/A')
-      ? item.origin.split('/')[0].trim()  // show first part only if it's a combo
-      : '—';
-
-    return `<tr data-com="${item.commodity.replace(/"/g,'&quot;')}" onclick="openSheet(this.dataset.com)">
-      <td>
-        <div class="com-cell">
-          <div class="com-icon ${catClass(item.commodity)}">${ticker(item.commodity)}</div>
-          <div>
-            <div class="com-name">${item.commodity} ${orgBadge}</div>
-            ${region.label ? `<span class="reg-badge ${region.cls}">${region.label}</span>` : ''}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="fob-spec">
-          <div class="fob-spec-main">${spec || '—'}</div>
-          <div class="fob-spec-origin" title="${item.origin || ''}">${originDisplay}</div>
-        </div>
-      </td>
-      <td><span class="fob-shipping-pt">${item.market || '—'}</span></td>
-      <td class="r">${priceHtml}</td>
-      <td class="r">
-        ${item._mostly_lo
-          ? `<span class="fob-mostly" style="font-style:normal;font-size:.8125rem;color:var(--i2);">${item._mostly_lo && item._mostly_hi && item._mostly_hi !== item._mostly_lo ? fP(item._mostly_lo)+' – '+fP(item._mostly_hi) : fP(item._mostly_lo)}</span>`
-          : `<span style="color:var(--i4);font-size:.72rem;">—</span>`}
-      </td>
-      <td class="r">${termHtml}</td>
-      <td class="r">${spreadHtml}</td>
-      <td class="r"><span class="wow ${wCls}">${wStr}</span></td>
-      <td>
-        <div class="mvmt-cell">
-          <span class="mvmt-badge ${mv.cls}">${mv.label}</span>
-        </div>
-      </td>
+  // Breakdown table
+  const breakdown = rows.slice(0, 40).map(r => {
+    const qn = r.quality_note || '';
+    let gtag = `<span class="gtag g-std">Standard</span>`;
+    if (qn.includes('fine')) gtag = `<span class="gtag g-fine">Fine appearance</span>`;
+    else if (qn.includes('fair')) gtag = `<span class="gtag g-fair">${titleCase(qn)}</span>`;
+    else if (qn.includes('holdover')) gtag = `<span class="gtag g-hold">Holdover</span>`;
+    else if (r.grade) gtag = `<span class="gtag g-std">${r.grade}</span>`;
+    const mostly = r.price_mostly_low ? `<span class="pm">Mostly ${fmtRange(r.price_mostly_low, r.price_mostly_high)}</span>` : '';
+    const variety = r.variety ? `<span class="vtag">${r.variety}</span>` : '';
+    return `<tr>
+      <td><span class="otag">${r.origin || '—'}</span>${variety}</td>
+      <td class="sc">${r.size || '<span style="color:#ccc">—</span>'}</td>
+      <td>${gtag}</td>
+      <td class="pc"><span class="pr">${fmtRange(r.price_low, r.price_high)}</span>${mostly}</td>
     </tr>`;
   }).join('');
+  document.getElementById('dp-breakdown').innerHTML = breakdown || '<tr><td colspan="4" style="color:var(--muted);padding:12px 8px;font-size:12px;">No breakdown data</td></tr>';
+
+  // All records
+  const hist = rows.slice(0, 20).map(r =>
+    `<tr>
+      <td class="ht-cond">${r.market || '—'}</td>
+      <td class="ht-cond">${r.origin || '—'}</td>
+      <td class="ht-cond">${r.package || '—'}</td>
+      <td class="ht-price">${fmtRange(r.price_low, r.price_high)}</td>
+    </tr>`
+  ).join('');
+  document.getElementById('dp-history').innerHTML = hist;
+
+  document.getElementById('dp-source').textContent = `USDA AMS · ${rows[0]?.source_report || ''} · ${fmtDate(latestDate)}`;
+
+  // Open panel
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
 }
 
-function fobPg(d) { fPgN = Math.max(1, fPgN + d); renderFob(); window.scrollTo(0, 180); }
-
-
-function gv(v){
-  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  document.getElementById('navDrawer').classList.remove('open');
-  window.scrollTo(0,0);
-  if(v==='reports')buildReports();
-  if(v==='alerts')buildAlerts();
-}
-function toggleNav(){document.getElementById('navDrawer').classList.toggle('open');}
-document.addEventListener('click',e=>{
-  const d=document.getElementById('navDrawer'),b=document.getElementById('hamBtn');
-  if(d&&d.classList.contains('open')&&!d.contains(e.target)&&!b.contains(e.target))d.classList.remove('open');
-});
-function hdrSearch(q){if(!q.trim())return;gv('terminal');document.getElementById('termQ').value=q;buildTermRows();renderTerm();}
-
-/* Row builder */
-function buildRow(item,ch,col2){
-  const avg=avgP([item]),lo=parseFloat(item.price_low||0),hi=parseFloat(item.price_high||item.price_low||0);
-  const st=getStatus(ch),wCls=ch>0.5?'up':ch<-0.5?'dn':'flat';
-  const wStr=ch>0.5?`↑ +${ch.toFixed(1)}%`:ch<-0.5?`↓ ${ch.toFixed(1)}%`:`— 0.0%`;
-  return`<tr data-com="${item.commodity.replace(/"/g,'&quot;')}" onclick="openSheet(this.dataset.com)">
-    <td><div class="com-cell"><div class="com-icon ${catClass(item.commodity)}">${ticker(item.commodity)}</div>
-    <div><div class="com-name">${item.commodity}</div><div class="com-sub">${[item.variety,item.size,item.grade].filter(Boolean).join(' · ')||item.package||'—'}</div></div></div></td>
-    <td><span style="font-size:.8125rem;color:var(--i2);">${col2}</span></td>
-    <td class="r"><span class="price-main">${fP(avg)}</span></td>
-    <td class="r"><span class="price-dim">${fR(lo,hi)}</span></td>
-    <td class="r"><span class="wow ${wCls}">${wStr}</span></td>
-    <td class="c"><div class="st-cell"><div class="st-dot ${st.k}"></div><span class="st-lbl ${st.k}">${st.l}</span></div></td>
-  </tr>`;
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+  currentCommodity = null;
 }
 
-/* Sheet */
-function openSheet(com){
-  const items=ALL.filter(i=>i.commodity===com),ch=trendPct(com);
-  document.getElementById('shTitle').textContent=com;
-  document.getElementById('shOv').classList.add('on');
-  document.getElementById('sheet').classList.add('on');
-  document.body.style.overflow='hidden';
-  shTab('trend');
-  setTimeout(()=>{
-    const canvas=document.getElementById('shChart');
-    if(shCI)shCI.destroy();
-    const history=hist7(com);
-    if(canvas&&history.length){
-      shCI=new Chart(canvas,{type:'line',data:{
-        labels:history.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
-        datasets:[{data:history.map(h=>h.price),borderColor:ch<-0.5?'#dc2626':'#0A3D2F',backgroundColor:ch<-0.5?'rgba(220,38,38,.07)':'rgba(10,61,47,.07)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:ch<-0.5?'#dc2626':'#0A3D2F',pointBorderColor:'#fff',pointBorderWidth:2}]
-      },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#6b7280',font:{family:"'Inter'",size:11}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#6b7280',font:{family:"'Inter'",size:11},callback:v=>'$'+v.toFixed(0)}}}}});
-    }
-    const mkts=[...new Set(items.map(i=>i.market))].sort();
-    document.getElementById('shMkts').innerHTML=mkts.map(m=>{
-      const a=avgP(items.filter(i=>i.market===m));
-      return`<div class="sh-mkt-row"><span style="font-size:.8125rem;font-weight:600;">${m}</span><span style="font-family:var(--fh);font-size:.9375rem;font-weight:700;">${fP(a)}</span></div>`;
-    }).join('');
-  },80);
-}
-function closeSheet(){document.getElementById('shOv').classList.remove('on');document.getElementById('sheet').classList.remove('on');document.body.style.overflow='';if(shCI){shCI.destroy();shCI=null;}}
-function shTab(t){document.querySelectorAll('.sh-tab').forEach((b,i)=>b.classList.toggle('on',i===(t==='trend'?0:1)));document.getElementById('shChart').closest('.sh-chart-wrap').style.display=t==='trend'?'block':'none';document.getElementById('shMkts').style.display=t==='markets'?'block':'none';}
-
-/* ─── HOME ─── */
-function hpChip(el,q){
-  document.querySelectorAll('.hero-chips .pill').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('homeTableQ').value=q;
-  hCat='All';
-  document.querySelectorAll('.htbl-head .tab').forEach(b=>b.classList.toggle('on',b.dataset.c==='All'));
-  htPgN=1;buildHomeTable();
-}
-function hpCat(el,c){
-  hCat=c;htPgN=1;
-  document.querySelectorAll('.htbl-head .tab').forEach(b=>b.classList.toggle('on',b.dataset.c===c));
-  buildHomeTable();
-}
-function buildHomeTable(){
-  const q=(document.getElementById('homeTableQ')?.value||'').toLowerCase().trim();
-  let items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  if(hCat!=='All')items=items.filter(i=>gc(i.commodity)===hCat);
-  if(q)items=items.filter(i=>i.commodity.toLowerCase().includes(q)||(i.market||'').toLowerCase().includes(q));
-  const seen=new Set();htRows=[];
-  items.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{const k=r.commodity+'|'+r.market;if(!seen.has(k)){seen.add(k);htRows.push(r);}});
-  renderHomeTable();
-}
-function renderHomeTable(){
-  const total=htRows.length,pages=Math.max(1,Math.ceil(total/PER));
-  htPgN=Math.min(htPgN,pages);
-  const start=(htPgN-1)*PER,pg=htRows.slice(start,start+PER);
-  const ct=document.getElementById('homeTableCount');if(ct)ct.textContent=total.toLocaleString()+' listings';
-  const ct2=document.getElementById('homeTableFootCount');if(ct2)ct2.textContent=`Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total.toLocaleString()}`;
-  const prev=document.getElementById('htPrev'),next=document.getElementById('htNext');
-  if(prev)prev.disabled=htPgN<=1;if(next)next.disabled=htPgN>=pages;
-  for(let i=1;i<=3;i++){const b=document.getElementById('htPg'+i);if(!b)continue;const n=htPgN<=2?i:(htPgN-1)+(i-1);b.style.display=n<=pages?'flex':'none';b.textContent=n;b.classList.toggle('on',n===htPgN);(p=>b.onclick=()=>{htPgN=p;renderHomeTable();})(n);}
-  const tbody=document.getElementById('homeTableBody');if(!tbody)return;
-  tbody.innerHTML=pg.length?pg.map(item=>buildRow(item,trendPct(item.commodity),item.market||'—')).join(''):'<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--i4);">No results.</td></tr>';
-}
-function htPg(d){htPgN=Math.max(1,htPgN+d);renderHomeTable();window.scrollTo(0,400);}
-
-function buildRcMktList(){
-  var el=document.getElementById('rcList');
-  if(!el)return;
-  var latestDate=DATES[0]&&DATES[0].date;
-  if(!latestDate){
-    el.innerHTML='<div class="home-list-item"><span class="hli-text" style="color:var(--i4);">No data yet.</span></div>';
-    return;
-  }
-  var todayItems=(DATED[latestDate]||[]).filter(function(i){return i.market_type==='terminal'||!i.market_type;});
-  var mkts=[...new Set(todayItems.map(function(i){return i.market;}).filter(Boolean))].sort();
-  if(!mkts.length){
-    el.innerHTML='<div class="home-list-item"><span class="hli-text" style="color:var(--i4);">No terminal reports today.</span></div>';
-    return;
-  }
-  var d=new Date(latestDate+'T12:00:00');
-  var dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  var shown=mkts.slice(0,5);
-  var rows=shown.map(function(mkt){
-    return'<div class="home-list-item" data-mkt="'+mkt.replace(/"/g,'&quot;')+'" onclick="gv(\'terminal\');tPickMkt(this.dataset.mkt)">'
-      +'<div class="hli-dot" style="background:var(--g);"></div>'
-      +'<span class="hli-text">'+mkt+'</span>'
-      +'<span class="hli-meta">'+dateStr+'</span>'
-      +'</div>';
-  }).join('');
-  var more=mkts.length>5
-    ?'<div class="home-list-more" onclick="gv(\'reports\')">View all '+mkts.length+' markets →</div>'
-    :'<div class="home-list-more" onclick="gv(\'reports\')">View all reports →</div>';
-  el.innerHTML=rows+more;
+function titleCase(s) {
+  return (s||'').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase());
 }
 
-function buildDashboard(){
-  const comms=[...new Set(ALL.map(i=>i.commodity))];
-  const changes=comms.map(c=>({c,ch:trendPct(c),avg:avgP(ALL.filter(i=>i.commodity===c))}));
-  const anomalies=changes.filter(x=>Math.abs(x.ch)>4).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch));
-  const d=new Date(DATES[0].date+'T12:00:00');
-  const _=id=>document.getElementById(id);
-  if(_('igDate'))_('igDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
-  if(_('igRecords'))_('igRecords').textContent=`${ALL.length.toLocaleString()} records · ${comms.length} commodities · ${[...new Set(ALL.map(i=>i.market))].length} markets`;
-  if(_('alertStatVal'))_('alertStatVal').textContent=anomalies.length;
-  if(_('freshBadge'))_('freshBadge').textContent='Updated '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-}
-
-/* ─── TERMINAL ─── */
-function buildSidebar(){
-  const items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  const mkts=[...new Set(items.map(i=>i.market).filter(Boolean))].sort();
-  const sbAllCt=document.getElementById('sbAllCt');if(sbAllCt)sbAllCt.textContent=items.length;
-  const sbAll=document.getElementById('sbAll');if(sbAll)sbAll.classList.toggle('on',tActiveMkt===null);
-  document.getElementById('sbList').innerHTML=mkts.map(m=>{
-    const ct=items.filter(i=>i.market===m).length;
-    return`<div class="sb-item${tActiveMkt===m?' on':''}" data-mkt="${m.replace(/"/g,'&quot;')}" onclick="tPickMkt(this.dataset.mkt)"><span class="sb-name">${m}</span></div>`;
-  }).join('');
-}
-function buildMobBar(){
-  const bar=document.getElementById('termMobBar');if(!bar)return;
-  const items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  const mkts=[...new Set(items.map(i=>i.market).filter(Boolean))].sort();
-  bar.innerHTML=`<button class="mob-btn${tActiveMkt===null?' on':''}" onclick="tPickAll()">All</button>`+
-    mkts.map(m=>`<button class="mob-btn${tActiveMkt===m?' on':''}" data-mkt="${m.replace(/"/g,'&quot;')}" onclick="tPickMkt(this.dataset.mkt)">${m}</button>`).join('');
-}
-function tPickAll(){tActiveMkt=null;tPgN=1;tMktMode='all';const c=document.getElementById('tCtxMkt');if(c)c.textContent='Terminal Market Prices';const l=document.getElementById('tCtxLbl');if(l)l.textContent='All Markets';buildSidebar();buildMobBar();buildTermRows();renderTerm();}
-function tPickMkt(m){tActiveMkt=m;tPgN=1;const c=document.getElementById('tCtxMkt');if(c)c.textContent=m;const l=document.getElementById('tCtxLbl');if(l)l.textContent='Terminal Market';buildSidebar();buildMobBar();buildTermRows();renderTerm();}
-function tMode(mode){
-  tMktMode=mode;tPgN=1;
-  document.getElementById('tmAll').classList.toggle('on',mode==='all');
-  document.getElementById('tmOne').classList.toggle('on',mode==='one');
-  const hubs=document.getElementById('termHubs');
-  if(mode==='one'){
-    hubs.style.display='flex';
-    const mkts=[...new Set(ALL.filter(i=>i.market_type==='terminal'||!i.market_type).map(i=>i.market).filter(Boolean))].sort();
-    hubs.innerHTML=mkts.map(m=>`<button class="hub-pill${tActiveMkt===m?' on':''}" data-mkt="${m.replace(/"/g,'&quot;')}" onclick="tPickMkt(this.dataset.mkt)">${m}</button>`).join('');
-  }else{hubs.style.display='none';}
-  buildTermRows();renderTerm();
-}
-function onTermSearch(){tPgN=1;buildTermRows();renderTerm();}
-function buildTermRows(){
-  const q=(document.getElementById('termQ')?.value||'').toLowerCase().trim();
-  const sort=document.getElementById('termSort')?.value||'az';
-  let items=ALL.filter(i=>i.market_type==='terminal'||!i.market_type);
-  if(tActiveMkt)items=items.filter(i=>i.market===tActiveMkt);
-  if(q)items=items.filter(i=>i.commodity.toLowerCase().includes(q)||(i.origin||'').toLowerCase().includes(q)||(i.market||'').toLowerCase().includes(q));
-  const sf=sort==='price-hi'?(a,b)=>(avgP([b])||0)-(avgP([a])||0):sort==='price-lo'?(a,b)=>(avgP([a])||0)-(avgP([b])||0):sort==='change'?(a,b)=>Math.abs(trendPct(b.commodity))-Math.abs(trendPct(a.commodity)):(a,b)=>a.commodity.localeCompare(b.commodity)||(a.market||'').localeCompare(b.market||'');
-  const seen=new Set();tRows=[];
-  items.sort(sf).forEach(r=>{const k=r.commodity+'|'+r.market;if(!seen.has(k)){seen.add(k);tRows.push(r);}});
-}
-function renderTerm(){
-  const total=tRows.length,pages=Math.max(1,Math.ceil(total/PER));
-  tPgN=Math.min(tPgN,pages);const start=(tPgN-1)*PER,pg=tRows.slice(start,start+PER);
-  const ml=tActiveMkt?` · ${tActiveMkt}`:'';
-  document.getElementById('termCount').textContent=`Showing ${start+1}–${Math.min(start+pg.length,total)} of ${total.toLocaleString()}${ml}`;
-  document.getElementById('termPrev').disabled=tPgN<=1;document.getElementById('termNext').disabled=tPgN>=pages;
-  for(let i=1;i<=3;i++){const b=document.getElementById('termPg'+i);if(!b)continue;const n=tPgN<=2?i:(tPgN-1)+(i-1);b.style.display=n<=pages?'flex':'none';b.textContent=n;b.classList.toggle('on',n===tPgN);(p=>b.onclick=()=>{tPgN=p;renderTerm();})(n);}
-  document.getElementById('termTbody').innerHTML=pg.length?pg.map(item=>buildRow(item,trendPct(item.commodity),item.market||'—')).join(''):'<tr><td colspan="7" style="padding:40px;text-align:center;color:var(--i4);">No results.</td></tr>';
-}
-function termPg(d){tPgN=Math.max(1,tPgN+d);renderTerm();window.scrollTo(0,180);}
-
-/* ─── FOB ─── */
-
-
-
-
-
-
-
-
-
-
-function rptF(el,f){rptFV=f;document.querySelectorAll('#view-reports .af-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');buildReports();}
-function buildReports(){
-  const el=document.getElementById('rptList');if(!el)return;
-  if(!DATES.length){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--i4);">Loading reports…</div>';return;}
-  const q=(document.getElementById('rptQ')?.value||'').toLowerCase().trim();
-  const types=['Terminal Markets','FOB Shipping Points','Weekly Summary','Terminal Markets','FOB Shipping Points'];
-  const rows=DATES.map((d,i)=>{
-    const dt=new Date(d.date+'T12:00:00'),type=types[i%types.length],count=(DATED[d.date]||[]).length;
-    const tf=rptFV==='terminal'?'Terminal':rptFV==='fob'?'FOB':rptFV==='weekly'?'Weekly':null;
-    if(tf&&!type.includes(tf))return null;
-    if(q&&!type.toLowerCase().includes(q)&&!d.date.includes(q))return null;
-    const tag=type.includes('Terminal')?{cls:'tag-g',l:'Terminal'}:type.includes('FOB')?{cls:'tag-i',l:'FOB'}:{cls:'tag-a',l:'Weekly'};
-    const mktCount=[...new Set((DATED[d.date]||[]).map(i=>i.market))].filter(Boolean).length;
-    return`<div class="rpt-row" onclick="gv('terminal')">
-      <div class="rpt-date"><div class="rpt-day">${dt.getDate()}</div><div class="rpt-mon">${dt.toLocaleDateString('en-US',{month:'short'})}</div></div>
-      <div class="rpt-body">
-        <div class="rpt-title">USDA AMS ${type} Price Report</div>
-        <div class="rpt-meta"><span>${dt.toLocaleDateString('en-US',{weekday:'long'})}</span><div class="rpt-dot"></div><span>${count.toLocaleString()} price records</span><div class="rpt-dot"></div><span>${mktCount} markets</span></div>
-      </div>
-      <div class="rpt-right"><span class="tag ${tag.cls}">${tag.l}</span><button class="btn-gh" style="font-size:.75rem;padding:6px 12px;">↓ CSV</button></div>
-    </div>`;
-  }).filter(Boolean);
-  el.innerHTML=rows.length?rows.join(''):'<div style="padding:40px;text-align:center;color:var(--i4);">No reports found.</div>';
-}
-
-/* ─── ALERTS ─── */
-const STATIC_ALERTS=[
-  {type:'urgent',icon:'⚠',title:'Nogales Port Delays — 24–48hr Processing Backlogs',body:'CBP processing slowdowns affecting avocados, peppers, and cucumbers. Shippers advised to build extra lead time. FOB prices may spike short-term.',time:'3h ago',tags:['Avocados','Peppers']},
-  {type:'warn',icon:'⚡',title:'Baja Berry Harvest Expected to Tighten Through April',body:'Cooler-than-normal temperatures in Mexico primary strawberry and blueberry growing regions are delaying harvest volumes.',time:'5h ago',tags:['Strawberries','Blueberries']},
-  {type:'info',icon:'📋',title:'Weekly USDA Fruit & Vegetable Report Published',body:'USDA Agricultural Marketing Service has released the weekly wholesale price report covering 10 major U.S. terminal markets.',time:'2h ago',tags:['All markets']},
-  {type:'warn',icon:'🌤',title:'Florida Citrus: Smaller Crop, Higher Prices Expected Midsummer',body:'USDA crop report estimates Florida orange production down 12% YoY, signaling upward pressure on terminal market asks.',time:'8h ago',tags:['Oranges','Grapefruit']},
-  {type:'info',icon:'↓',title:'Lettuce: Chicago prices at 8-week low',body:'Salinas Valley harvest is ahead of schedule pushing Chicago lettuce prices to their lowest level in 8 weeks.',time:'1 day ago',tags:['Lettuce']},
-];
-let altFV='all';
-function altF(el,f){altFV=f;document.querySelectorAll('#view-alerts .af-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');buildAlerts();}
-function buildAlerts(){
-  const el=document.getElementById('altList');if(!el)return;
-  const comms=[...new Set(ALL.map(i=>i.commodity))];
-  const liveAlerts=comms.map(c=>({c,ch:trendPct(c),avg:avgP(ALL.filter(i=>i.commodity===c))}))
-    .filter(x=>Math.abs(x.ch)>5).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch)).slice(0,4)
-    .map(x=>({type:x.ch>0?'info':'urgent',icon:x.ch>0?'↑':'↓',title:`${x.c}: ${x.ch>0?'+':''}${x.ch.toFixed(1)}% price ${x.ch>0?'surge':'drop'} this week`,body:`${x.c} averaging ${fP(x.avg)} today. ${Math.abs(x.ch)>10?'Significant spike may indicate supply disruption.':'Watch for further movement.'}`,time:'Live',tags:[x.c]}));
-  const all=[...liveAlerts,...STATIC_ALERTS];
-  const filtered=altFV==='all'?all:all.filter(a=>a.type===altFV);
-  el.innerHTML=filtered.length?filtered.map(a=>`
-    <div class="alt-item ${a.type}">
-      <div class="alt-icon ${a.type}">${a.icon}</div>
-      <div class="alt-content">
-        <div class="alt-title">${a.title}</div>
-        <div class="alt-body">${a.body}</div>
-        <div class="alt-foot">
-          <span class="alt-time">${a.time}</span>
-          ${a.tags.map(t=>`<span class="tag tag-g">${t}</span>`).join('')}
-        </div>
-      </div>
-    </div>`).join(''):'<div style="padding:40px;text-align:center;color:var(--i4);">No alerts for this filter.</div>';
-}
-
-/* ─── INIT ─── */
-async function init(){
-  try{
-    DATES=await(await fetch(`${API}/dates`)).json();
-    if(!DATES.length)return;
-    DATED[DATES[0].date]=await(await fetch(`${API}/commodities/by-date/${DATES[0].date}`)).json();
-    ALL=DATED[DATES[0].date];
-    for(let i=1;i<=6&&i<DATES.length;i++){try{DATED[DATES[i].date]=await(await fetch(`${API}/commodities/by-date/${DATES[i].date}`)).json();}catch{}}
-    buildDashboard();
-    buildRcMktList();
-    buildHomeTable();
-    buildSidebar();
-    buildMobBar();
-    buildTermRows();renderTerm();
-    buildFobFilters();buildFobRows();renderFob();
-  }catch(e){console.error('Init:',e);}
-}
-init();
+// ── START ────────────────────────────────────────────────────────
+boot();
 </script>
 </body>
 </html>
