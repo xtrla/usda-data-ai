@@ -49,6 +49,113 @@ nav {
 .nav-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
 .nav-cta { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--white); background: var(--ink); border: none; padding: 9px 20px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
 .nav-cta:hover { background: #2a2a20; transform: translateY(-1px); }
+/* ── NAV SEARCH TRIGGER ── */
+.nav-search-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  transition: all 0.15s; min-width: 190px;
+}
+.nav-search-btn:hover { border-color: var(--border2); background: var(--white); }
+.nav-search-icon { font-size: 13px; color: var(--muted); }
+.nav-search-text { font-size: 12px; color: var(--muted); flex: 1; text-align: left; font-family: 'Barlow', sans-serif; }
+.nav-search-kbd { display: flex; align-items: center; gap: 3px; }
+.kbd { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; line-height: 1.4; }
+
+/* ── SEARCH OVERLAY ── */
+.search-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(15,15,10,0.4); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 72px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.search-overlay.open { opacity: 1; pointer-events: auto; }
+.search-modal {
+  width: 100%; max-width: 620px; margin: 0 16px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transform: translateY(-12px) scale(0.98);
+  transition: transform 0.2s cubic-bezier(0.22,1,0.36,1);
+}
+.search-overlay.open .search-modal { transform: translateY(0) scale(1); }
+
+.search-input-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.search-input-icon { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+.search-main-input {
+  flex: 1; font-family: 'Barlow', sans-serif;
+  font-size: 17px; font-weight: 400; color: var(--ink);
+  border: none; outline: none; background: transparent;
+}
+.search-main-input::placeholder { color: var(--muted); }
+.search-esc { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; white-space: nowrap; }
+
+.search-filter-row {
+  display: flex; gap: 6px; padding: 10px 20px;
+  border-bottom: 1px solid var(--border); background: var(--panel);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.search-filter-row::-webkit-scrollbar { display: none; }
+.sf-chip {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px; cursor: pointer; white-space: nowrap;
+  background: var(--white); color: var(--muted); border: 1px solid var(--border);
+  transition: all 0.12s; flex-shrink: 0;
+}
+.sf-chip:hover { border-color: var(--border2); color: var(--ink); }
+.sf-chip.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+.search-results-list { max-height: 400px; overflow-y: auto; }
+.search-results-list::-webkit-scrollbar { width: 4px; }
+.search-results-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.sr-section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--muted); padding: 10px 20px 4px;
+  background: var(--panel); border-bottom: 1px solid var(--border);
+}
+.sr-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 20px; cursor: pointer;
+  border-bottom: 1px solid #f4f2ec; transition: background 0.1s;
+}
+.sr-row:last-child { border-bottom: none; }
+.sr-row:hover, .sr-row.focused { background: var(--lime-bg); }
+.sr-row:hover .sr-arrow, .sr-row.focused .sr-arrow { opacity: 1; color: var(--lime-dk); }
+.sr-emoji { font-size: 19px; width: 26px; text-align: center; flex-shrink: 0; }
+.sr-main { flex: 1; min-width: 0; }
+.sr-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.sr-name mark { background: transparent; color: var(--lime-dk); font-weight: 700; }
+.sr-meta { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.sr-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); }
+.sr-signal { font-size: 10px; font-weight: 600; }
+.sr-arrow { font-size: 16px; color: var(--border2); opacity: 0; transition: opacity 0.12s; }
+
+.sr-empty { padding: 44px 20px; text-align: center; display: none; }
+.sr-empty.show { display: block; }
+.sr-empty p { font-size: 13px; color: var(--muted); }
+.sr-empty strong { color: var(--ink); }
+
+.search-footer {
+  padding: 9px 20px; border-top: 1px solid var(--border); background: var(--panel);
+  display: flex; align-items: center; gap: 14px;
+}
+.sf-hint { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+.sf-hint .kbd { font-size: 9px; }
+.sr-count { margin-left: auto; font-size: 11px; color: var(--muted); }
+.sig-up   { color: var(--lime-dk); }
+.sig-down { color: var(--red); }
+.sig-flat { color: var(--muted); }
+
 
 /* ── TICKER ── */
 .ticker-bar {
@@ -467,6 +574,7 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   nav { padding: 0 24px; }
   .nav-links { gap: 20px; }
   .nav-date { display: none; }
+  .nav-search-btn { min-width: 160px; }
   .section-wrap { padding: 48px 32px; }
   .hero-left { padding: 56px 40px; }
   .hero-headline { font-size: 52px; }
@@ -497,6 +605,9 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .nav-cta { display: none; }
   .nav-date { display: none; }
   .nav-hamburger { display: flex; }
+  .nav-search-btn { min-width: 0; padding: 7px 10px; }
+  .nav-search-text { display: none; }
+  .nav-search-kbd { display: none; }
 
   /* ticker */
   .ticker-bar { top: 52px; }
@@ -632,6 +743,11 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
     <span class="nav-link" onclick="showPage('reports')" id="nav-reports">Reports</span>
   </div>
   <div class="nav-right">
+    <div class="nav-search-btn" onclick="openSearch()" id="nav-search-btn">
+      <span class="nav-search-icon">⌕</span>
+      <span class="nav-search-text">Search commodities…</span>
+      <span class="nav-search-kbd"><span class="kbd">⌘</span><span class="kbd">K</span></span>
+    </div>
     <span class="nav-date" id="nav-date">Loading…</span>
     <button class="nav-cta" onclick="showPage('markets')">View Markets</button>
     <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
@@ -653,6 +769,40 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   <div class="ticker-label"><div class="ticker-live-dot"></div>Live</div>
   <div class="ticker-track" id="ticker-track">
     <div class="tick-item"><span class="tick-name">Loading market data…</span></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════ SEARCH OVERLAY ═══════════════════════ -->
+<div class="search-overlay" id="search-overlay" onclick="handleOverlayClick(event)">
+  <div class="search-modal" id="search-modal">
+    <div class="search-input-row">
+      <span class="search-input-icon">⌕</span>
+      <input class="search-main-input" id="search-cmd-input" type="text"
+        placeholder="Search by commodity, origin, or market…"
+        oninput="handleSearchInput(this.value)"
+        autocomplete="off">
+      <span class="search-esc" onclick="closeSearch()">esc</span>
+    </div>
+    <div class="search-filter-row">
+      <span class="sf-chip active" onclick="setSearchFilter(this,'all')">All</span>
+      <span class="sf-chip" onclick="setSearchFilter(this,'fruits')">🍎 Fruit</span>
+      <span class="sf-chip" onclick="setSearchFilter(this,'vegetables')">🥬 Vegetables</span>
+      <span class="sf-chip" onclick="setSearchFilter(this,'onions_potatoes')">🧅 Onions &amp; Potatoes</span>
+      <span class="sf-chip" onclick="setSearchFilter(this,'nuts')">🥜 Nuts</span>
+      <span class="sf-chip" onclick="setSearchFilter(this,'organic')">🌿 Organic</span>
+    </div>
+    <div class="search-results-list" id="search-results-list">
+      <div class="sr-empty show" id="sr-empty-state">
+        <p>Start typing to search commodities…</p>
+      </div>
+    </div>
+    <div class="search-footer">
+      <span class="sf-hint"><span class="kbd">↑</span><span class="kbd">↓</span> navigate</span>
+      <span class="sf-hint"><span class="kbd">↵</span> open</span>
+      <span class="sf-hint"><span class="kbd">esc</span> close</span>
+      <span class="sr-count" id="sr-count"></span>
+    </div>
   </div>
 </div>
 
@@ -1417,6 +1567,181 @@ function titleCase(s) {
   return (s||'').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase());
 }
 
+
+
+// ── SEARCH ───────────────────────────────────────────────────────
+let searchFilter = 'all';
+let searchFocusIndex = -1;
+let searchResults = [];
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(() => {
+    const inp = document.getElementById('search-cmd-input');
+    inp.focus();
+    inp.value = '';
+    renderSearchResults('');
+  }, 40);
+}
+
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  searchFocusIndex = -1;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('search-overlay')) closeSearch();
+}
+
+function setSearchFilter(el, val) {
+  searchFilter = val;
+  document.querySelectorAll('.sf-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const q = document.getElementById('search-cmd-input').value;
+  renderSearchResults(q);
+}
+
+function handleSearchInput(q) {
+  renderSearchResults(q);
+}
+
+function renderSearchResults(q) {
+  const list = document.getElementById('search-results-list');
+  const empty = document.getElementById('sr-empty-state');
+  const countEl = document.getElementById('sr-count');
+
+  if (!allRows.length) {
+    list.innerHTML = '<div class="sr-empty show"><p>Loading market data…</p></div>';
+    return;
+  }
+
+  // Filter rows
+  let filtered = allRows;
+  if (searchFilter !== 'all' && searchFilter !== 'organic') {
+    filtered = filtered.filter(r => r.commodity_type === searchFilter);
+  }
+  if (searchFilter === 'organic') {
+    filtered = filtered.filter(r => r.organic);
+  }
+  if (q && q.trim()) {
+    const term = q.toLowerCase();
+    filtered = filtered.filter(r =>
+      (r.commodity||'').toLowerCase().includes(term) ||
+      (r.origin||'').toLowerCase().includes(term) ||
+      (r.variety||'').toLowerCase().includes(term) ||
+      (r.market||'').toLowerCase().includes(term)
+    );
+  }
+
+  // Group by commodity + market
+  const grouped = groupByCommodity(filtered).slice(0, 12);
+  searchResults = grouped;
+
+  if (!grouped.length) {
+    list.innerHTML = `<div class="sr-empty show"><p>No results for <strong>"${q}"</strong></p></div>`;
+    countEl.textContent = '';
+    return;
+  }
+
+  countEl.textContent = grouped.length + ' result' + (grouped.length !== 1 ? 's' : '');
+
+  // Group by market for section labels
+  const byMarket = {};
+  grouped.forEach(g => {
+    const mkt = g.rows[0]?.market || 'Unknown';
+    if (!byMarket[mkt]) byMarket[mkt] = [];
+    byMarket[mkt].push(g);
+  });
+
+  let html = '';
+  Object.entries(byMarket).forEach(([mkt, items]) => {
+    html += `<div class="sr-section-label">${mkt} · Today</div>`;
+    items.forEach((g, i) => {
+      const price = fmtRange(g.price_low, g.price_high);
+      const mv = g.movement || '';
+      let sigCls = 'sig-flat', sigTxt = '— Steady';
+      if (mv.toLowerCase().includes('higher')) { sigCls = 'sig-up'; sigTxt = '▲ ' + mv; }
+      else if (mv.toLowerCase().includes('lower')) { sigCls = 'sig-down'; sigTxt = '▼ ' + mv; }
+      const emoji = emojiFor(g.commodity);
+      const pips = g.origins.slice(0,3).map(o => {
+        const short = (o||'').substring(0,3).toUpperCase();
+        return `<span class="origin-pip" style="font-size:9px;padding:1px 6px">${(o||'').substring(0,10)}</span>`;
+      }).join('');
+      const nameHtml = q ? highlightMatch(g.commodity, q) : g.commodity;
+      const variety = g.rows[0]?.variety ? ` · ${g.rows[0].variety}` : '';
+      const pkg = [...g.packages][0] || '';
+      html += `<div class="sr-row" onclick="selectSearchResult('${esc(g.commodity)}')">
+        <span class="sr-emoji">${emoji}</span>
+        <div class="sr-main">
+          <div class="sr-name">${nameHtml}</div>
+          <div class="sr-meta">${pips}<span>${variety}${pkg ? ' · ' + pkg : ''}</span></div>
+        </div>
+        <div class="sr-right">
+          <span class="sr-price">${price}</span>
+          <span class="sr-signal ${sigCls}">${sigTxt}</span>
+        </div>
+        <span class="sr-arrow">›</span>
+      </div>`;
+    });
+  });
+
+  list.innerHTML = html;
+  searchFocusIndex = -1;
+}
+
+function highlightMatch(text, q) {
+  if (!q) return text;
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return text;
+  return text.substring(0, idx) +
+    '<mark>' + text.substring(idx, idx + q.length) + '</mark>' +
+    text.substring(idx + q.length);
+}
+
+function selectSearchResult(commodity) {
+  closeSearch();
+  showPage('markets');
+  setTimeout(() => openDetail(commodity), 150);
+}
+
+// Keyboard nav in search
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    const overlay = document.getElementById('search-overlay');
+    if (overlay.classList.contains('open')) closeSearch();
+    else openSearch();
+    return;
+  }
+  if (e.key === 'Escape') {
+    closeSearch();
+    return;
+  }
+  const overlay = document.getElementById('search-overlay');
+  if (!overlay.classList.contains('open')) return;
+
+  const rows = document.querySelectorAll('.sr-row');
+  if (!rows.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    searchFocusIndex = Math.min(searchFocusIndex + 1, rows.length - 1);
+    updateSearchFocus(rows);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    searchFocusIndex = Math.max(searchFocusIndex - 1, 0);
+    updateSearchFocus(rows);
+  } else if (e.key === 'Enter' && searchFocusIndex >= 0) {
+    rows[searchFocusIndex]?.click();
+  }
+});
+
+function updateSearchFocus(rows) {
+  rows.forEach((r, i) => r.classList.toggle('focused', i === searchFocusIndex));
+  if (searchFocusIndex >= 0) rows[searchFocusIndex].scrollIntoView({ block: 'nearest' });
+}
+
+// Also hide nav search btn text on smaller screens — handled in responsive CSS
 
 // ── MOBILE NAV ───────────────────────────────────────────────────
 function toggleMobileNav() {
