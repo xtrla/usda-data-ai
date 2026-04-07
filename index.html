@@ -732,6 +732,296 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .ph-tabs { gap: 0; }
   .ph-tab { padding: 9px 10px; font-size: 10px; }
 }
+
+/* ══════════════════════════════════════
+   REBUILT TERMINAL MARKETS PAGE
+══════════════════════════════════════ */
+
+/* MARKET SWITCHER BAR */
+.market-switcher {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.market-switcher::-webkit-scrollbar { display: none; }
+.mkt-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 14px 20px; cursor: pointer; border: none; background: transparent;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  margin-bottom: -1px;
+}
+.mkt-tab:hover { color: var(--ink); }
+.mkt-tab.active { color: var(--ink); border-bottom-color: var(--lime); }
+.mkt-tab-count {
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 10px; font-family: 'DM Mono', monospace;
+}
+.mkt-tab.active .mkt-tab-count { background: var(--lime-bg); border-color: #c0e880; color: var(--lime-dk); }
+
+/* MARKETS PAGE HEADER - rebuilt */
+.tm-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 40px 0;
+  position: sticky; top: 90px; z-index: 95;
+}
+.tm-header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0; padding-bottom: 16px;
+}
+.tm-title-block {}
+.tm-breadcrumb { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.tm-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1;
+}
+.tm-meta {
+  display: flex; align-items: center; gap: 10px; margin-top: 5px;
+  font-size: 11px; color: var(--muted);
+}
+.tm-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); display: inline-block; animation: pulse 1.5s infinite; margin-right: 3px; }
+.tm-sep { width: 1px; height: 10px; background: var(--border); }
+
+/* TYPE TABS */
+.tm-type-tabs {
+  display: flex; gap: 0; border-top: 1px solid var(--border); margin: 0 -40px; padding: 0 40px;
+}
+.tm-type-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 10px 16px; cursor: pointer; border: none; background: transparent;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  margin-bottom: -1px;
+}
+.tm-type-tab:hover { color: var(--ink); }
+.tm-type-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.tm-type-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* CONTROL ROW */
+.tm-controls {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 40px;
+  display: flex; align-items: center; gap: 8px;
+  position: sticky; top: calc(90px + 152px); z-index: 94;
+}
+.tm-search-wrap { position: relative; flex: 1; max-width: 300px; }
+.tm-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
+.tm-search-input {
+  width: 100%; font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--ink);
+  background: var(--white); border: 1px solid var(--border);
+  padding: 7px 12px 7px 30px; border-radius: 6px; outline: none;
+  transition: border-color 0.15s;
+}
+.tm-search-input::placeholder { color: var(--muted); }
+.tm-search-input:focus { border-color: var(--border2); }
+.tm-filter { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--dim); padding: 7px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.tm-filter:hover { border-color: var(--border2); color: var(--ink); }
+.tm-filter.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.tm-ctrl-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.tm-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.tm-count strong { color: var(--dim); }
+
+/* SORT TABS */
+.tm-sort-tabs { display: flex; gap: 4px; }
+.tm-sort-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--muted); padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.tm-sort-btn:hover { color: var(--ink); border-color: var(--border2); }
+.tm-sort-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+/* TWO ZONE LAYOUT */
+.tm-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: calc(100vh - 300px);
+  align-items: start;
+}
+
+/* LEFT NAV */
+.tm-leftnav {
+  border-right: 1px solid var(--border);
+  background: var(--white);
+  padding: 16px 0;
+  position: sticky;
+  top: calc(90px + 152px + 41px);
+  max-height: calc(100vh - 283px);
+  overflow-y: auto;
+}
+.tm-leftnav::-webkit-scrollbar { width: 4px; }
+.tm-leftnav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tn-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 6px 16px 3px; }
+.tn-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; cursor: pointer; transition: background 0.12s; }
+.tn-item:hover { background: var(--panel); }
+.tn-item.active { background: var(--lime-bg); }
+.tn-name { font-size: 12px; color: var(--ink); font-weight: 500; }
+.tn-item.active .tn-name { color: var(--lime-dk); font-weight: 600; }
+.tn-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.tn-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* COMMODITY TABLE */
+.tm-list { background: var(--bg); }
+
+/* CATEGORY SECTION */
+.tm-cat-section { margin-bottom: 2px; }
+.tm-cat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: calc(90px + 152px + 41px);
+  z-index: 7;
+}
+.tm-cat-left { display: flex; align-items: center; gap: 10px; }
+.tm-cat-icon { font-size: 16px; }
+.tm-cat-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--dim);
+}
+.tm-cat-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.tm-cat-right { display: flex; align-items: center; gap: 8px; }
+.tm-cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.tm-cat-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--white); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
+
+/* TABLE HEADER */
+.tm-table-head {
+  display: grid;
+  grid-template-columns: 48px 1fr 120px 160px 140px 100px 40px;
+  padding: 0 24px;
+  background: var(--white);
+  border-bottom: 2px solid var(--border);
+}
+.tm-th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); padding: 8px 0;
+}
+.tm-th.r { text-align: right; }
+.tm-th.c { text-align: center; }
+
+/* COMMODITY ROW */
+.tm-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 120px 160px 140px 100px 40px;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 64px;
+  background: var(--white);
+  border-bottom: 1px solid #eeecea;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tm-row:hover { background: #fdfcf8; }
+.tm-row:hover .tm-row-arrow { opacity: 1; }
+.tm-row:last-child { border-bottom: none; }
+
+/* emoji cell */
+.tm-row-emoji {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  transition: background 0.1s;
+}
+.tm-row:hover .tm-row-emoji { background: var(--white); }
+
+/* name cell */
+.tm-row-name-block {}
+.tm-row-name { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.tm-row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* condition cell */
+.tm-row-cond {}
+
+/* price cell */
+.tm-row-price { }
+.tm-row-price-main { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--ink); display: block; }
+.tm-row-price-sub { font-size: 10px; margin-top: 2px; display: block; }
+.tps-fine { color: var(--lime-dk); font-weight: 600; }
+.tps-hold { color: var(--amber); font-weight: 600; }
+.tps-muted { color: var(--muted); }
+
+/* origins cell */
+.tm-row-origins { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+/* trend cell */
+.tm-row-trend { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.tm-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 22px; }
+.tm-spark-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
+.tm-spark-bar.hi { background: var(--lime); }
+.tm-spark-bar.lo { background: #f5c0b8; }
+.tm-spark-bar.now { background: var(--ink); }
+.tm-row-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
+
+/* arrow */
+.tm-row-arrow { font-size: 16px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
+
+/* ORGANIC ROW TINT */
+.tm-row.organic-row { background: #fafff4; }
+.tm-row.organic-row:hover { background: #f4ffe8; }
+
+/* ORGANIC BAND */
+.tm-organic-band {
+  padding: 9px 24px; background: var(--lime-bg);
+  border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890;
+  display: flex; align-items: center; gap: 8px;
+}
+.tm-organic-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
+
+/* EMPTY */
+.tm-empty { padding: 64px 24px; text-align: center; background: var(--white); }
+.tm-empty p { font-size: 13px; color: var(--muted); }
+
+/* ERROR */
+.tm-error { background: var(--red-bg); border: 1px solid #f0c0b8; border-radius: 8px; padding: 12px 16px; margin: 16px 24px; font-size: 13px; color: var(--red); display: none; }
+.tm-error.show { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .tm-table-head { grid-template-columns: 40px 1fr 100px 130px 110px 40px; }
+  .tm-table-head .tm-th:nth-child(5) { display: none; }
+  .tm-row { grid-template-columns: 40px 1fr 100px 130px 110px 40px; }
+  .tm-row > div:nth-child(5) { display: none; }
+  .tm-controls { padding: 10px 24px; }
+  .tm-header { padding: 16px 24px 0; }
+  .tm-type-tabs { margin: 0 -24px; padding: 0 24px; }
+  .market-switcher { padding: 0 24px; }
+}
+
+@media (max-width: 768px) {
+  .tm-layout { grid-template-columns: 1fr; }
+  .tm-leftnav { display: none; }
+  .tm-table-head { grid-template-columns: 36px 1fr 110px 36px; padding: 0 16px; }
+  .tm-table-head .tm-th:nth-child(3) { display: none; }
+  .tm-table-head .tm-th:nth-child(4) { display: none; }
+  .tm-table-head .tm-th:nth-child(5) { display: none; }
+  .tm-table-head .tm-th:nth-child(6) { display: none; }
+  .tm-row { grid-template-columns: 36px 1fr 110px 36px; min-height: 56px; padding: 0 16px; }
+  .tm-row > div:nth-child(3) { display: none; }
+  .tm-row > div:nth-child(4) { display: none; }
+  .tm-row > div:nth-child(5) { display: none; }
+  .tm-row > div:nth-child(6) { display: none; }
+  .tm-row-emoji { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
+  .tm-cat-header { padding: 10px 16px 8px; }
+  .tm-organic-band { padding: 8px 16px; }
+  .tm-controls { padding: 9px 16px; top: calc(86px + 148px + 38px); }
+  .tm-header { top: 86px; padding: 14px 16px 0; }
+  .tm-type-tabs { margin: 0 -16px; padding: 0 16px; overflow-x: auto; }
+  .tm-type-tab { padding: 9px 12px; font-size: 10px; }
+  .market-switcher { padding: 0 16px; }
+  .mkt-tab { padding: 12px 14px; font-size: 12px; }
+  .tm-cat-header { top: calc(86px + 148px + 38px + 41px); }
+}
+
 </style>
 </head>
 <body>
@@ -932,67 +1222,99 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 <!-- ═══════════════════════ MARKETS PAGE ═══════════════════════ -->
-<div id="page-markets" class="page markets-page">
-  <div class="page-header">
-    <div class="ph-top">
-      <div>
-        <div class="ph-breadcrumb">Dashboard › <span>Terminal Markets</span></div>
-        <div class="ph-title">Terminal Markets</div>
-        <div class="ph-meta">
-          <span><span class="ph-live-dot"></span>Live</span>
-          <span class="ph-sep"></span>
+<div id="page-markets" class="page" style="padding-top:90px;">
+
+  <!-- HEADER: title + meta -->
+  <div class="tm-header">
+    <div class="tm-header-top">
+      <div class="tm-title-block">
+        <div class="tm-breadcrumb">Dashboard › Terminal Markets</div>
+        <div class="tm-title">Terminal Markets</div>
+        <div class="tm-meta">
+          <span><span class="tm-live-dot"></span>Live</span>
+          <span class="tm-sep"></span>
           <span id="markets-date">Loading…</span>
-          <span class="ph-sep"></span>
+          <span class="tm-sep"></span>
           <span>USDA AMS</span>
+          <span class="tm-sep"></span>
+          <span id="tm-total-count" style="color:var(--dim);font-weight:500;">—</span>
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;padding-top:24px;">
-        <select class="market-select" id="market-filter" onchange="filterAndRender()">
-          <option value="">All Markets</option>
-        </select>
-      </div>
     </div>
-    <div class="ph-tabs">
-      <button class="ph-tab active" id="tab-all" onclick="setTab('all')"><span class="ph-tab-dot" style="background:var(--ink)"></span>All</button>
-      <button class="ph-tab" id="tab-fruits" onclick="setTab('fruits')"><span class="ph-tab-dot" style="background:var(--red)"></span>Fruit</button>
-      <button class="ph-tab" id="tab-vegetables" onclick="setTab('vegetables')"><span class="ph-tab-dot" style="background:var(--blue)"></span>Vegetables</button>
-      <button class="ph-tab" id="tab-onions_potatoes" onclick="setTab('onions_potatoes')"><span class="ph-tab-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes</button>
-      <button class="ph-tab" id="tab-nuts" onclick="setTab('nuts')"><span class="ph-tab-dot" style="background:var(--purple)"></span>Nuts</button>
-    </div>
-  </div>
-
-  <div class="control-bar">
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input class="search-input" type="text" placeholder="Search commodities, origins…" id="search-input" oninput="filterAndRender()">
-    </div>
-    <button class="filter-btn active" id="filter-all" onclick="setOrganic('all')">All</button>
-    <button class="filter-btn" id="filter-organic" onclick="setOrganic('organic')">Organic only</button>
-    <div class="ctrl-right">
-      <span class="results-count"><strong id="row-count">—</strong> commodities</span>
+    <!-- TYPE TABS -->
+    <div class="tm-type-tabs">
+      <button class="tm-type-tab active" id="tmtab-all" onclick="tmSetType('all')">
+        <span class="tm-type-dot" style="background:var(--ink)"></span>All
+      </button>
+      <button class="tm-type-tab" id="tmtab-fruits" onclick="tmSetType('fruits')">
+        <span class="tm-type-dot" style="background:var(--red)"></span>Fruits
+      </button>
+      <button class="tm-type-tab" id="tmtab-vegetables" onclick="tmSetType('vegetables')">
+        <span class="tm-type-dot" style="background:var(--blue)"></span>Vegetables
+      </button>
+      <button class="tm-type-tab" id="tmtab-onions_potatoes" onclick="tmSetType('onions_potatoes')">
+        <span class="tm-type-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes
+      </button>
+      <button class="tm-type-tab" id="tmtab-nuts" onclick="tmSetType('nuts')">
+        <span class="tm-type-dot" style="background:var(--purple)"></span>Nuts
+      </button>
     </div>
   </div>
 
-  <div class="error-banner" id="markets-error">Unable to load data. Check that the backend is running at <code>produce-iq-production.up.railway.app</code></div>
+  <!-- MARKET SWITCHER -->
+  <div class="market-switcher" id="market-switcher">
+    <button class="mkt-tab active" id="mkt-tab-all" onclick="tmSetMarket('')">
+      All Markets <span class="mkt-tab-count" id="mkt-count-all">—</span>
+    </button>
+  </div>
 
-  <div class="main-layout">
-    <div class="sidebar" id="sidebar">
-      <div class="sb-section-label">Categories</div>
-      <div id="sidebar-cats"></div>
-      <div class="sb-divider"></div>
-      <div class="sb-section-label">Markets</div>
-      <div id="sidebar-markets"></div>
+  <!-- CONTROLS -->
+  <div class="tm-controls">
+    <div class="tm-search-wrap">
+      <span class="tm-search-icon">⌕</span>
+      <input class="tm-search-input" type="text" id="tm-search" placeholder="Search commodities, origins…" oninput="tmRender()">
     </div>
-    <div class="commodity-list" id="commodity-list">
-      <div class="table-header">
-        <div class="th-cell">Commodity</div>
-        <div class="th-cell">Condition</div>
-        <div class="th-cell">Price range</div>
-        <div class="th-cell">Origins</div>
-        <div class="th-cell">Trend</div>
-        <div class="th-cell"></div>
+    <button class="tm-filter active" id="tmf-all" onclick="tmSetOrganic('all')">All</button>
+    <button class="tm-filter" id="tmf-organic" onclick="tmSetOrganic('organic')">🌿 Organic</button>
+    <div class="tm-ctrl-right">
+      <div class="tm-sort-tabs">
+        <button class="tm-sort-btn active" id="tms-az" onclick="tmSetSort('az')">A–Z</button>
+        <button class="tm-sort-btn" id="tms-price-high" onclick="tmSetSort('price-high')">Price ↓</button>
+        <button class="tm-sort-btn" id="tms-price-low" onclick="tmSetSort('price-low')">Price ↑</button>
+        <button class="tm-sort-btn" id="tms-movers" onclick="tmSetSort('movers')">Movers</button>
       </div>
-      <div class="loading-row" id="list-loading"><p><span class="spinner"></span> &nbsp;Loading market data…</p></div>
+      <span class="tm-count"><strong id="tm-count">—</strong> commodities</span>
+    </div>
+  </div>
+
+  <div class="tm-error" id="tm-error">Unable to load data — backend offline.</div>
+
+  <!-- TWO ZONE -->
+  <div class="tm-layout">
+    <!-- LEFT NAV -->
+    <div class="tm-leftnav" id="tm-leftnav">
+      <div class="tn-label">Categories</div>
+      <div id="tn-cats"></div>
+      <div class="tn-divider"></div>
+      <div class="tn-label">Origins</div>
+      <div id="tn-origins"></div>
+    </div>
+
+    <!-- MAIN LIST -->
+    <div class="tm-list" id="tm-list">
+      <!-- TABLE HEADER -->
+      <div class="tm-table-head" id="tm-table-head">
+        <div class="tm-th"></div>
+        <div class="tm-th">Commodity</div>
+        <div class="tm-th">Condition</div>
+        <div class="tm-th">Price range</div>
+        <div class="tm-th">Origins</div>
+        <div class="tm-th">Trend</div>
+        <div class="tm-th"></div>
+      </div>
+      <div style="padding:48px;text-align:center;background:var(--white);" id="tm-loading">
+        <span class="spinner"></span> &nbsp;Loading market data…
+      </div>
     </div>
   </div>
 </div>
@@ -1199,19 +1521,53 @@ function showPage(page, tab) {
   }
 }
 
-// ── TAB + FILTER ─────────────────────────────────────────────────
-function setTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.ph-tab').forEach(t => t.classList.remove('active'));
-  const el = document.getElementById('tab-' + tab);
+// ── OLD TAB STUBS (kept for compat) ─────────────────────────────
+function setTab(tab) { tmSetType(tab); }
+function setOrganic(val) { tmSetOrganic(val); }
+
+// ── TERMINAL MARKETS STATE ───────────────────────────────────────
+let tmType    = 'all';
+let tmMarket  = '';
+let tmOrganic = 'all';
+let tmSort    = 'az';
+let tmOriginFilter = '';
+
+function tmSetType(t) {
+  tmType = t;
+  activeTab = t; // keep compat
+  document.querySelectorAll('.tm-type-tab').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tmtab-' + t);
   if (el) el.classList.add('active');
-  filterAndRender();
+  tmRender();
 }
-function setOrganic(val) {
+function tmSetMarket(m) {
+  tmMarket = m;
+  activeMarket = m;
+  document.querySelectorAll('.mkt-tab').forEach(el => el.classList.remove('active'));
+  const id = m ? 'mkt-tab-' + m.replace(/\s+/g,'_') : 'mkt-tab-all';
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  tmRender();
+}
+function tmSetOrganic(val) {
+  tmOrganic = val;
   activeOrganic = val;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('filter-' + val).classList.add('active');
-  filterAndRender();
+  document.querySelectorAll('.tm-filter').forEach(b => b.classList.remove('active'));
+  document.getElementById('tmf-' + val).classList.add('active');
+  tmRender();
+}
+function tmSetSort(s) {
+  tmSort = s;
+  document.querySelectorAll('.tm-sort-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tms-' + s).classList.add('active');
+  tmRender();
+}
+function tmSetOrigin(o) {
+  tmOriginFilter = tmOriginFilter === o ? '' : o;
+  document.querySelectorAll('.tn-item[data-origin]').forEach(el => {
+    el.classList.toggle('active', el.dataset.origin === tmOriginFilter);
+  });
+  tmRender();
 }
 
 // ── FETCH ────────────────────────────────────────────────────────
@@ -1238,21 +1594,24 @@ async function boot() {
     document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
     // Load all rows for latest date
     allRows = await apiFetch('/commodities/by-date/' + latestDate);
-    // Populate market filter
+    // Populate market switcher + old sidebar
     populateMarkets();
+    buildMarketSwitcher();
     // Build ticker
     buildTicker();
     // Render home snapshot
     renderSnapshot();
     // Render hero movers
     renderHeroMovers();
-    // Render markets list
-    filterAndRender();
+    // Render markets list with new renderer
+    tmRender();
   } catch(e) {
     console.error('Boot failed:', e);
     document.getElementById('nav-date').textContent = 'Offline';
-    document.getElementById('markets-error').classList.add('show');
-    document.getElementById('list-loading').innerHTML = '<p style="color:var(--red)">Backend offline — ' + e.message + '</p>';
+    const tmErr = document.getElementById('tm-error');
+    if (tmErr) tmErr.classList.add('show');
+    const tmLoad = document.getElementById('tm-loading');
+    if (tmLoad) tmLoad.innerHTML = '<p style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</p>';
   }
 }
 
@@ -1374,115 +1733,208 @@ function groupByCommodity(rows) {
   return Object.values(map).sort((a,b) => a.commodity.localeCompare(b.commodity));
 }
 
-// ── MAIN RENDER ──────────────────────────────────────────────────
-function filterAndRender() {
-  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
-  activeMarket = document.getElementById('market-filter')?.value || '';
+// ── TERMINAL MARKETS RENDER ──────────────────────────────────────
+function filterAndRender() { tmRender(); } // compat alias
+
+const CAT_LABELS = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
+const CAT_ICONS  = { fruits:'🍎', vegetables:'🥦', onions_potatoes:'🧅', nuts:'🥜', other:'🌿' };
+const CAT_CODES  = { fruits:'FV010', vegetables:'FV020', onions_potatoes:'FV030', nuts:'FV040', other:'—' };
+const CAT_COLORS = { fruits:'var(--red)', vegetables:'var(--blue)', onions_potatoes:'var(--amber)', nuts:'var(--purple)', other:'var(--muted)' };
+const TYPE_ORDER = ['fruits','vegetables','onions_potatoes','nuts','other'];
+
+function buildMarketSwitcher() {
+  if (!allRows.length) return;
+  const seen = {};
+  allRows.forEach(r => { if (r.market) seen[r.market] = (seen[r.market]||0)+1; });
+  const switcher = document.getElementById('market-switcher');
+  const allCount = document.getElementById('mkt-count-all');
+  const grouped = groupByCommodity(allRows);
+  if (allCount) allCount.textContent = grouped.length;
+
+  Object.entries(seen).sort((a,b) => b[1]-a[1]).forEach(([mkt, cnt]) => {
+    const id = 'mkt-tab-' + mkt.replace(/\s+/g,'_');
+    if (document.getElementById(id)) return;
+    const btn = document.createElement('button');
+    btn.className = 'mkt-tab';
+    btn.id = id;
+    btn.innerHTML = mkt + ` <span class="mkt-tab-count">${cnt}</span>`;
+    btn.onclick = () => tmSetMarket(mkt);
+    switcher.appendChild(btn);
+  });
+}
+
+function tmRender() {
+  const q = (document.getElementById('tm-search')?.value || '').toLowerCase();
 
   let filtered = allRows;
-  if (activeTab !== 'all') filtered = filtered.filter(r => r.commodity_type === activeTab);
-  if (activeOrganic === 'organic') filtered = filtered.filter(r => r.organic);
-  if (activeMarket) filtered = filtered.filter(r => r.market === activeMarket);
+  if (tmType !== 'all') filtered = filtered.filter(r => r.commodity_type === tmType);
+  if (tmOrganic === 'organic') filtered = filtered.filter(r => r.organic);
+  if (tmMarket) filtered = filtered.filter(r => r.market === tmMarket);
+  if (tmOriginFilter) filtered = filtered.filter(r => (r.origin||'').toLowerCase().includes(tmOriginFilter.toLowerCase()));
   if (q) filtered = filtered.filter(r =>
     (r.commodity||'').toLowerCase().includes(q) ||
     (r.origin||'').toLowerCase().includes(q) ||
     (r.variety||'').toLowerCase().includes(q)
   );
 
-  const grouped = groupByCommodity(filtered);
-  document.getElementById('row-count').textContent = grouped.length;
+  let grouped = groupByCommodity(filtered);
 
-  // Build sidebar categories
-  const catMap = {};
-  grouped.forEach(g => {
-    const ct = g.commodity_type || 'other';
-    if (!catMap[ct]) catMap[ct] = 0;
-    catMap[ct]++;
-  });
-  const catLabels = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
-  document.getElementById('sidebar-cats').innerHTML = Object.entries(catMap).map(([k,v]) =>
-    `<div class="sb-item ${activeTab===k?'active':''}" onclick="setTab('${k}')">
-      <span class="sb-name">${catLabels[k]||k}</span>
-      <span class="sb-count">${v}</span>
+  // Sort
+  if (tmSort === 'price-high') grouped.sort((a,b) => (b.price_low||0) - (a.price_low||0));
+  else if (tmSort === 'price-low') grouped.sort((a,b) => (a.price_low||0) - (b.price_low||0));
+  else if (tmSort === 'movers') {
+    grouped.sort((a,b) => {
+      const score = g => { const m=(g.movement||'').toLowerCase(); return m.includes('higher')?2:m.includes('lower')?1:0; };
+      return score(b)-score(a);
+    });
+  } else {
+    grouped.sort((a,b) => a.commodity.localeCompare(b.commodity));
+  }
+
+  document.getElementById('tm-count').textContent = grouped.length;
+  document.getElementById('tm-total-count').textContent = grouped.length + ' commodities';
+
+  // Build left nav origins
+  const originMap = {};
+  filtered.forEach(r => { if (r.origin) originMap[r.origin] = (originMap[r.origin]||0)+1; });
+  const topOrigins = Object.entries(originMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  document.getElementById('tn-origins').innerHTML = topOrigins.map(([o,c]) =>
+    `<div class="tn-item ${tmOriginFilter===o?'active':''}" data-origin="${o}" onclick="tmSetOrigin('${esc(o)}')">
+      <span class="tn-name">${o}</span>
+      <span class="tn-count">${c}</span>
     </div>`
   ).join('');
 
-  // Render rows by commodity type group
-  const typeOrder = ['fruits','vegetables','onions_potatoes','nuts','other'];
-  const byType = {};
-  grouped.forEach(g => {
-    const ct = g.commodity_type || 'other';
-    if (!byType[ct]) byType[ct] = [];
-    byType[ct].push(g);
-  });
+  // Build left nav categories
+  const catMap = {};
+  grouped.forEach(g => { const ct = g.commodity_type||'other'; catMap[ct]=(catMap[ct]||0)+1; });
+  document.getElementById('tn-cats').innerHTML = [['all', 'All', grouped.length], ...Object.entries(catMap).map(([k,v])=>[k,CAT_LABELS[k]||k,v])].map(([k,label,cnt]) =>
+    `<div class="tn-item ${tmType===k?'active':''}" onclick="tmSetType('${k}')">
+      <span class="tn-name">${label}</span>
+      <span class="tn-count">${cnt}</span>
+    </div>`
+  ).join('');
 
-  let html = '';
-  typeOrder.forEach(ct => {
-    const grp = byType[ct];
-    if (!grp || !grp.length) return;
+  // Group by type for section rendering
+  if (tmSort !== 'az' || q) {
+    // flat list, no section headers when searching/sorting
+    let html = grouped.map(g => tmRowHtml(g)).join('');
+    if (!html) html = '<div class="tm-empty"><p>No commodities match your filters.</p></div>';
+    document.getElementById('tm-list').innerHTML = tmTableHead() + html;
+  } else {
+    // grouped by category
+    const byType = {};
+    grouped.forEach(g => { const ct=g.commodity_type||'other'; if(!byType[ct])byType[ct]=[]; byType[ct].push(g); });
+    let html = '';
+    TYPE_ORDER.forEach(ct => {
+      const grp = byType[ct];
+      if (!grp || !grp.length) return;
+      const conv = grp.filter(g => !g.rows.every(r=>r.organic));
+      const org  = grp.filter(g => g.rows.every(r=>r.organic));
+      if (conv.length) {
+        html += tmCatHeader(ct, conv.length);
+        html += conv.map(g => tmRowHtml(g)).join('');
+      }
+      if (org.length) {
+        html += `<div class="tm-organic-band"><span class="tm-organic-label">Organic · ${CAT_LABELS[ct]||ct}</span></div>`;
+        html += org.map(g => tmRowHtml(g, true)).join('');
+      }
+    });
+    if (!html) html = '<div class="tm-empty"><p>No commodities match your filters.</p></div>';
+    document.getElementById('tm-list').innerHTML = tmTableHead() + html;
+  }
 
-    // Organic separator within each group
-    const conv = grp.filter(g => !g.rows.every(r=>r.organic));
-    const org  = grp.filter(g => g.rows.every(r=>r.organic));
-
-    if (conv.length) {
-      html += `<div class="cat-header"><span class="cat-title">${catLabels[ct]||ct} <span class="cat-count">${grp.length} commodities</span></span></div>`;
-      html += conv.map(g => rowHtml(g)).join('');
-    }
-    if (org.length) {
-      html += `<div class="organic-band"><span class="ob-label">Organic · ${catLabels[ct]||ct}</span></div>`;
-      html += org.map(g => rowHtml(g, true)).join('');
-    }
-  });
-
-  if (!html) html = `<div class="empty-row"><p>No commodities match your filters.</p></div>`;
-
-  const list = document.getElementById('commodity-list');
-  list.innerHTML = `<div class="table-header">
-    <div class="th-cell">Commodity</div>
-    <div class="th-cell">Condition</div>
-    <div class="th-cell">Price range</div>
-    <div class="th-cell">Origins</div>
-    <div class="th-cell">Trend</div>
-    <div class="th-cell"></div>
-  </div>` + html;
-
-  document.getElementById('list-loading').style.display = 'none';
+  document.getElementById('tm-loading').style.display = 'none';
 }
 
-function rowHtml(g, organic) {
+function tmTableHead() {
+  return `<div class="tm-table-head">
+    <div class="tm-th"></div>
+    <div class="tm-th">Commodity</div>
+    <div class="tm-th">Condition</div>
+    <div class="tm-th">Price range</div>
+    <div class="tm-th">Origins</div>
+    <div class="tm-th">Trend</div>
+    <div class="tm-th"></div>
+  </div>`;
+}
+
+function tmCatHeader(ct, count) {
+  const color = CAT_COLORS[ct] || 'var(--muted)';
+  return `<div class="tm-cat-header">
+    <div class="tm-cat-left">
+      <span class="tm-cat-icon">${CAT_ICONS[ct]||'🌿'}</span>
+      <span class="tm-cat-name">${CAT_LABELS[ct]||ct}</span>
+      <span class="tm-cat-badge" style="background:${color}20;color:${color};border:1px solid ${color}50">${CAT_CODES[ct]||''}</span>
+    </div>
+    <div class="tm-cat-right">
+      <span class="tm-cat-count">${count} commodities</span>
+      <span class="tm-cat-code">${CAT_CODES[ct]||''}</span>
+    </div>
+  </div>`;
+}
+
+function tmRowHtml(g, organic) {
+  const emoji = emojiFor(g.commodity);
   const price = fmtRange(g.price_low, g.price_high);
   const mv = g.movement || '';
   const cc = condClass(mv + ' ' + (g.supply_note||''));
   const cl = condLabel(mv, g.supply_note);
   const pips = g.origins.slice(0,3).map(o => originPip(o)).join('');
-  const emoji = emojiFor(g.commodity);
   const pkg = [...g.packages][0] || '';
-  const orgTag = organic ? `<span style="font-size:10px;color:var(--lime-dk);font-weight:700;margin-left:4px;">ORG</span>` : '';
-  // mini spark — static for now, would need history
-  const bars = [8,10,11,12,11,13,14].map((h,i) => `<div class="spark-bar${i===6?' now':''}" style="height:${h}px"></div>`).join('');
-  let wowCls = 'wow-flat', wowTxt = '— Steady';
-  if (mv.toLowerCase().includes('higher')) { wowCls = 'wow-up'; wowTxt = '▲ ' + mv; }
-  else if (mv.toLowerCase().includes('lower')) { wowCls = 'wow-down'; wowTxt = '▼ ' + mv; }
 
-  return `<div class="commodity-row" onclick="openDetail('${esc(g.commodity)}')" style="${organic?'background:var(--lime-bg)':''}">
-    <div class="cr-name-col">
-      <span class="cr-emoji">${emoji}</span>
-      <div><div class="cr-name">${g.commodity}${orgTag}</div><div class="cr-sub">${pkg}</div></div>
+  // price sub-line — fine appearance tier
+  const fineRow = g.rows.find(r => r.quality_note === 'fine appearance' && r.price_low);
+  const holdRow = g.rows.find(r => (r.quality_note||'').includes('holdover') && r.price_low);
+  let priceSub = '';
+  if (fineRow) priceSub = `<span class="tm-row-price-sub tps-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</span>`;
+  else if (holdRow) priceSub = `<span class="tm-row-price-sub tps-hold">Holdovers ${fmtRange(holdRow.price_low, holdRow.price_high)}</span>`;
+  else if (g.origins.length > 1) priceSub = `<span class="tm-row-price-sub tps-muted">${g.origins.length} origins</span>`;
+
+  // trend
+  let wowCls = 'wow-flat', wowTxt = '— Steady';
+  if (mv.toLowerCase().includes('much higher'))   { wowCls = 'wow-up';   wowTxt = '▲▲ ' + mv; }
+  else if (mv.toLowerCase().includes('higher'))   { wowCls = 'wow-up';   wowTxt = '▲ ' + mv; }
+  else if (mv.toLowerCase().includes('much lower')){ wowCls = 'wow-down'; wowTxt = '▼▼ ' + mv; }
+  else if (mv.toLowerCase().includes('lower'))    { wowCls = 'wow-down'; wowTxt = '▼ ' + mv; }
+
+  // spark bars — shape varies based on movement signal
+  const isUp   = mv.toLowerCase().includes('higher');
+  const isDown = mv.toLowerCase().includes('lower');
+  const heights = isUp   ? [7,8,9,10,11,13,14] :
+                  isDown ? [14,13,12,11,10,9,8]  :
+                           [10,11,10,12,11,12,12];
+  const bars = heights.map((h,i) => {
+    const cls = i===6 ? 'now' : (isUp && i>3) ? 'hi' : (isDown && i<3) ? 'lo' : '';
+    return `<div class="tm-spark-bar${cls?' '+cls:''}" style="height:${h}px"></div>`;
+  }).join('');
+
+  const orgTag = organic ? `<span style="font-size:9px;color:var(--lime-dk);font-weight:700;margin-left:4px;vertical-align:middle;">ORG</span>` : '';
+  const rowBg = organic ? 'background:#fafff4;' : '';
+
+  return `<div class="tm-row${organic?' organic-row':''}" onclick="openDetail('${esc(g.commodity)}')" style="${rowBg}">
+    <div>
+      <div class="tm-row-emoji">${emoji}</div>
     </div>
-    <div><span class="cond-badge ${cc}">${cl}</span></div>
-    <div class="cr-price-col">
-      <span class="cr-price">${price}</span>
-      <span class="cr-price-sub">${g.origins.length} origin${g.origins.length!==1?'s':''}</span>
+    <div class="tm-row-name-block">
+      <div class="tm-row-name">${g.commodity}${orgTag}</div>
+      <div class="tm-row-sub">${pkg}</div>
     </div>
-    <div class="cr-origins">${pips}</div>
-    <div class="cr-trend-col">
-      <div class="mini-spark">${bars}</div>
-      <span class="cr-wow ${wowCls}">${wowTxt}</span>
+    <div class="tm-row-cond"><span class="cond-badge ${cc}">${cl}</span></div>
+    <div>
+      <span class="tm-row-price-main">${price}</span>
+      ${priceSub}
     </div>
-    <div class="cr-arrow">›</div>
+    <div class="tm-row-origins">${pips}</div>
+    <div class="tm-row-trend">
+      <div class="tm-sparkline">${bars}</div>
+      <span class="tm-row-wow ${wowCls}">${wowTxt}</span>
+    </div>
+    <div class="tm-row-arrow">›</div>
   </div>`;
 }
+
+function rowHtml(g, organic) { return tmRowHtml(g, organic); } // compat
 
 function esc(s) { return (s||'').replace(/'/g, "\\'"); }
 
