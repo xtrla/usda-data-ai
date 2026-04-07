@@ -395,6 +395,192 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 .hero-sub      { animation: fadeUp 0.5s 0.14s ease both; }
 .hero-actions  { animation: fadeUp 0.5s 0.20s ease both; }
 .hero-stats    { animation: fadeUp 0.5s 0.26s ease both; }
+
+/* ── HAMBURGER ── */
+.nav-hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; cursor: pointer; border: none; background: transparent; padding: 4px;
+}
+.nav-hamburger span { display: block; height: 2px; background: var(--ink); border-radius: 2px; transition: all 0.2s; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* mobile nav drawer */
+.mobile-nav {
+  display: none; position: fixed; top: 56px; left: 0; right: 0; z-index: 198;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  flex-direction: column; padding: 8px 0 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav-link {
+  font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--muted); padding: 12px 24px; cursor: pointer; transition: all 0.15s;
+  border-bottom: 1px solid var(--border);
+}
+.mobile-nav-link:last-child { border-bottom: none; }
+.mobile-nav-link:hover, .mobile-nav-link.active { color: var(--ink); background: var(--panel); }
+.mobile-nav-link.cta { color: var(--white); background: var(--ink); margin: 12px 24px 0; border-radius: 6px; text-align: center; border-bottom: none; }
+
+/* ══════════════════════════════════════
+   TABLET  ≤ 1024px
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  nav { padding: 0 24px; }
+  .nav-links { gap: 20px; }
+  .nav-date { display: none; }
+  .section-wrap { padding: 48px 32px; }
+  .hero-left { padding: 56px 40px; }
+  .hero-headline { font-size: 52px; }
+  .hero-right { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-sub { max-width: 100%; }
+  .market-grid { grid-template-columns: 1fr; }
+  .market-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .market-col:last-child { border-bottom: none; }
+  .reports-grid { grid-template-columns: 1fr 1fr; }
+  .report-card:nth-child(2) { border-right: none; }
+  .report-card:nth-child(3) { border-top: 1px solid var(--border); }
+  .report-card:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+  .cta-section { flex-direction: column; gap: 40px; padding: 60px 32px; }
+  .cta-box { width: 100%; }
+  .main-layout { grid-template-columns: 180px 1fr; }
+  .detail-panel { width: 90vw; }
+  footer { padding: 24px 32px; }
+}
+
+/* ══════════════════════════════════════
+   MOBILE  ≤ 768px
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* nav */
+  nav { padding: 0 20px; height: 52px; }
+  .nav-links { display: none; }
+  .nav-cta { display: none; }
+  .nav-date { display: none; }
+  .nav-hamburger { display: flex; }
+
+  /* ticker */
+  .ticker-bar { top: 52px; }
+
+  /* hero */
+  .hero-wrap { padding-top: 86px; }
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 40px 20px 48px; }
+  .hero-headline { font-size: 42px; letter-spacing: -1.5px; margin-bottom: 18px; }
+  .hero-sub { font-size: 15px; margin-bottom: 28px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 36px; }
+  .btn-primary { width: 100%; text-align: center; padding: 14px 20px; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .stat-cell:nth-child(1), .stat-cell:nth-child(2) { border-bottom: 1px solid var(--border); }
+  .hero-right { display: none; }
+
+  /* marquee */
+  .marquee-band { padding: 9px 0; }
+
+  /* sections */
+  .section-wrap { padding: 36px 20px; }
+  .section-title { font-size: 28px; margin-bottom: 24px; }
+
+  /* market snapshot */
+  .market-grid { grid-template-columns: 1fr; border-radius: 10px; }
+  .market-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .market-col:last-child { border-bottom: none; }
+
+  /* report cards */
+  .reports-grid { grid-template-columns: 1fr; border-radius: 10px; }
+  .report-card { border-right: none; border-bottom: 1px solid var(--border); }
+  .report-card:last-child { border-bottom: none; }
+  .report-card:nth-child(3) { border-top: none; }
+  .report-card:nth-child(4) { border-top: none; }
+
+  /* cta */
+  .cta-section { padding: 48px 20px; flex-direction: column; gap: 32px; }
+  .cta-box { width: 100%; }
+  .cta-headline { font-size: 32px; }
+
+  /* footer */
+  footer { flex-direction: column; gap: 8px; padding: 20px; text-align: center; }
+
+  /* markets page */
+  .markets-page { padding-top: 86px; }
+  .page-header { padding: 18px 20px 0; }
+  .ph-title { font-size: 24px; }
+  .ph-meta { font-size: 11px; gap: 8px; flex-wrap: wrap; }
+  .ph-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ph-tab { white-space: nowrap; padding: 10px 14px; font-size: 11px; }
+
+  /* control bar */
+  .control-bar { padding: 10px 16px; gap: 8px; flex-wrap: wrap; top: 86px; }
+  .search-wrap { max-width: 100%; flex: 1 1 100%; }
+  .filter-btn { font-size: 10px; padding: 6px 10px; }
+
+  /* hide sidebar on mobile */
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+
+  /* commodity table — simplified 3-col layout */
+  .table-header { grid-template-columns: 1fr 100px 80px; padding: 0 16px; }
+  .th-cell:nth-child(2), .th-cell:nth-child(4), .th-cell:nth-child(5) { display: none; }
+  .commodity-row { grid-template-columns: 1fr 100px 80px; padding: 0 16px; min-height: 52px; }
+  .cr-name-col { gap: 8px; padding: 10px 0; }
+  .cr-emoji { font-size: 16px; width: 22px; }
+  .cr-name { font-size: 13px; }
+  .commodity-row > div:nth-child(2) { display: none; } /* condition */
+  .commodity-row > div:nth-child(4) { display: none; } /* origins */
+  .commodity-row > div:nth-child(5) { display: none; } /* sparkline */
+  .cat-header { padding: 12px 16px 6px; }
+  .organic-band { padding: 8px 16px; }
+
+  /* detail panel — full screen bottom sheet on mobile */
+  .detail-panel {
+    width: 100vw;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 92vh;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  .detail-panel.open { transform: translateY(0); }
+
+  /* drag handle on mobile panel */
+  .detail-panel::before {
+    content: '';
+    display: block;
+    width: 36px; height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  .dp-header { padding: 16px 20px 14px; }
+  .dp-price-strip { grid-template-columns: 1fr 1fr; }
+  .phc:last-child { grid-column: 1 / -1; border-right: none; }
+  .dp-section { padding: 16px 20px; }
+
+  /* page header market selector */
+  .ph-top { flex-direction: column; gap: 12px; }
+  .ph-top > div:last-child { padding-top: 0; }
+  .market-select { width: 100%; }
+}
+
+/* ══════════════════════════════════════
+   SMALL MOBILE  ≤ 380px
+══════════════════════════════════════ */
+@media (max-width: 380px) {
+  .hero-headline { font-size: 36px; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .stat-num { font-size: 22px; }
+  .ph-tabs { gap: 0; }
+  .ph-tab { padding: 9px 10px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
@@ -411,8 +597,19 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   <div class="nav-right">
     <span class="nav-date" id="nav-date">Loading…</span>
     <button class="nav-cta" onclick="showPage('markets')">View Markets</button>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <span class="mobile-nav-link active" onclick="mobileNav('home')">Dashboard</span>
+  <span class="mobile-nav-link" onclick="mobileNav('markets')">Terminal Markets</span>
+  <span class="mobile-nav-link" onclick="mobileNav('fob')">FOB Origins</span>
+  <span class="mobile-nav-link" onclick="mobileNav('reports')">Reports</span>
+  <span class="mobile-nav-link cta" onclick="mobileNav('markets')">View Markets →</span>
+</div>
 
 <!-- TICKER -->
 <div class="ticker-bar">
@@ -1180,6 +1377,28 @@ function closeDetail() {
 function titleCase(s) {
   return (s||'').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase());
 }
+
+
+// ── MOBILE NAV ───────────────────────────────────────────────────
+function toggleMobileNav() {
+  const nav = document.getElementById('mobile-nav');
+  const btn = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function mobileNav(page) {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  showPage(page);
+}
+document.addEventListener('click', function(e) {
+  const nav = document.getElementById('mobile-nav');
+  const btn = document.getElementById('hamburger');
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+    nav.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
 
 // ── START ────────────────────────────────────────────────────────
 boot();
