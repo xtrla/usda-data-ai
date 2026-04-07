@@ -250,7 +250,10 @@ nav {
 .hph-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
 .hero-panel-row { padding: 13px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.12s; }
 .hero-panel-row:hover { background: var(--white); }
-.hpr-left { display: flex; flex-direction: column; gap: 1px; }
+.hpr-left { display: grid; grid-template-columns: 22px 1fr; grid-template-rows: auto auto; align-items: center; gap: 0 8px; }
+.hpr-emoji { font-size: 18px; line-height: 1; grid-row: 1 / 3; display: flex; align-items: center; }
+.hpr-name { grid-column: 2; font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.2; }
+.hpr-spec { grid-column: 2; font-size: 10px; color: var(--muted); line-height: 1.2; }
 .hpr-name { font-size: 13px; font-weight: 500; color: var(--ink); }
 .hpr-spec { font-size: 10px; color: var(--muted); }
 .hpr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
@@ -1338,17 +1341,14 @@ function renderHeroMovers() {
     let cls = 'd-flat', sym = '— Steady';
     if (mv.toLowerCase().includes('higher')) { cls = 'd-up'; sym = '▲ ' + mv; }
     else if (mv.toLowerCase().includes('lower')) { cls = 'd-down'; sym = '▼ ' + mv; }
-    // spec: show top origins, not variety
-    const origins = g.origins.slice(0, 2).join(' · ');
-    const spec = origins || g.rows[0]?.commodity_type || '';
+    const origins = g.origins.filter(Boolean).slice(0,2).join(' · ');
+    const spec = origins || '—';
     const emoji = emojiFor(g.commodity);
     return `<div class="hero-panel-row" onclick="openDetail('${esc(g.commodity)}'); showPage('markets')">
-      <div class="hpr-left" style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:20px;line-height:1;flex-shrink:0;">${emoji}</span>
-        <div>
-          <span class="hpr-name">${g.commodity}</span>
-          <span class="hpr-spec" style="display:block;">${spec}</span>
-        </div>
+      <div class="hpr-left">
+        <span class="hpr-emoji">${emoji}</span>
+        <span class="hpr-name">${g.commodity}</span>
+        <span class="hpr-spec">${spec}</span>
       </div>
       <div class="hpr-right"><span class="hpr-price">${price}</span><span class="hpr-delta ${cls}">${sym}</span></div>
     </div>`;
