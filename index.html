@@ -1338,9 +1338,18 @@ function renderHeroMovers() {
     let cls = 'd-flat', sym = '— Steady';
     if (mv.toLowerCase().includes('higher')) { cls = 'd-up'; sym = '▲ ' + mv; }
     else if (mv.toLowerCase().includes('lower')) { cls = 'd-down'; sym = '▼ ' + mv; }
-    const spec = [g.variety, g.origins[0]].filter(Boolean).join(' · ');
+    // spec: show top origins, not variety
+    const origins = g.origins.slice(0, 2).join(' · ');
+    const spec = origins || g.rows[0]?.commodity_type || '';
+    const emoji = emojiFor(g.commodity);
     return `<div class="hero-panel-row" onclick="openDetail('${esc(g.commodity)}'); showPage('markets')">
-      <div class="hpr-left"><span class="hpr-name">${g.commodity}</span><span class="hpr-spec">${spec}</span></div>
+      <div class="hpr-left" style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;line-height:1;flex-shrink:0;">${emoji}</span>
+        <div>
+          <span class="hpr-name">${g.commodity}</span>
+          <span class="hpr-spec" style="display:block;">${spec}</span>
+        </div>
+      </div>
       <div class="hpr-right"><span class="hpr-price">${price}</span><span class="hpr-delta ${cls}">${sym}</span></div>
     </div>`;
   }).join('');
