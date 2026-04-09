@@ -1208,30 +1208,30 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 .tm2-th {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--muted); padding: 8px 0;
+  color: var(--muted); padding: 7px 0;
 }
 
 /* CATEGORY SECTION HEADER */
 .tm2-cat-hdr {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 24px 8px;
+  padding: 10px 24px 8px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: calc(90px + 44px + 109px + 41px + 33px); z-index: 77;
+  border-top: 2px solid var(--border);
 }
+.tm2-cat-hdr:first-child { border-top: none; }
 .tm2-ch-left { display: flex; align-items: center; gap: 8px; }
-.tm2-ch-icon { font-size: 15px; }
+.tm2-ch-icon { font-size: 14px; }
 .tm2-ch-name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--dim);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dim);
 }
 .tm2-ch-badge {
   font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
   letter-spacing: 0.5px; text-transform: uppercase;
 }
 .tm2-ch-right { display: flex; align-items: center; gap: 8px; }
-.tm2-ch-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.tm2-ch-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
 
 /* COMMODITY ROW */
 .tm2-row {
@@ -1623,23 +1623,12 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
         Backend offline — check Railway deployment.
       </div>
 
-      <!-- TABLE HEADER -->
-      <div class="tm2-thead">
-        <div class="tm2-th"></div>
-        <div class="tm2-th">Commodity</div>
-        <div class="tm2-th">Condition</div>
-        <div class="tm2-th">Price range</div>
-        <div class="tm2-th">Origins</div>
-        <div class="tm2-th">Trend</div>
-        <div class="tm2-th"></div>
+      <!-- LOADING (outside list so JS render doesn't wipe it) -->
+      <div id="tm2-loading" style="padding:60px;text-align:center;font-size:13px;color:var(--muted);background:var(--white);">
+        <span class="spinner"></span>&nbsp; Loading market data…
       </div>
-
       <!-- LIST -->
-      <div id="tm2-list">
-        <div class="tm2-loading" id="tm2-loading">
-          <span class="spinner"></span>&nbsp; Loading market data…
-        </div>
-      </div>
+      <div id="tm2-list"></div>
 
     </div><!-- /tm2-main -->
   </div><!-- /tm2-wrap -->
@@ -1868,19 +1857,19 @@ async function boot() {
     document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
     allRows = await apiFetch('/commodities/by-date/' + latestDate);
     populateMarkets();
-    buildTm2Sidebar();
-    buildPulse();
     buildTicker();
     renderSnapshot();
     renderHeroMovers();
-    tm2Render();
+    buildTm2Sidebar();  // builds sidebar without rendering
+    buildPulse();
+    tm2Render();        // single render call
   } catch(e) {
     console.error('Boot failed:', e);
     document.getElementById('nav-date').textContent = 'Offline';
     const tm2Err = document.getElementById('tm2-error');
     if (tm2Err) tm2Err.style.display = 'block';
     const tm2Load = document.getElementById('tm2-loading');
-    if (tm2Load) tm2Load.innerHTML = '<span style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</span>';
+    if (tm2Load) { tm2Load.style.display = 'block'; tm2Load.innerHTML = '<span style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</span>'; }
     const pulseLoad = document.getElementById('pulse-loading');
     if (pulseLoad) pulseLoad.textContent = 'Backend offline';
   }
@@ -1978,9 +1967,17 @@ function groupByCommodity(rows) {
       map[key] = { commodity:r.commodity, commodity_type:r.commodity_type, price_low:null, price_high:null, movement:r.movement, supply_note:r.supply_note, trading_activity:r.trading_activity, source_report:r.source_report, origins:[], packages:new Set(), rows:[] };
     }
     const g = map[key];
-    if (r.price_low  && (!g.price_low  || r.price_low  < g.price_low))  g.price_low  = r.price_low;
-    if (r.price_high && (!g.price_high || r.price_high > g.price_high)) g.price_high = r.price_high;
-    if (r.origin  && !g.origins.includes(r.origin))  g.origins.push(r.origin);
+    // Use standard-grade rows only for the headline price range (skip fine/fair/holdover)
+    const isStd = !r.quality_note || r.quality_note === '' || r.quality_note === 'standard';
+    if (r.price_low && isStd) {
+      if (!g.price_low  || r.price_low  < g.price_low)  g.price_low  = r.price_low;
+      if (r.price_high && (!g.price_high || r.price_high > g.price_high)) g.price_high = r.price_high;
+    } else if (r.price_low && !g.price_low) {
+      // fallback if no standard rows
+      g.price_low  = r.price_low;
+      g.price_high = r.price_high;
+    }
+    if (r.origin && r.origin !== 'N/A' && r.origin !== 'null' && !g.origins.includes(r.origin)) g.origins.push(r.origin);
     if (r.package) g.packages.add(r.package);
     if (!g.movement && r.movement) g.movement = r.movement;
     g.rows.push(r);
@@ -2056,7 +2053,7 @@ function tm2SetOriginFilter(o) {
 // Build sidebar markets list
 function buildTm2Sidebar() {
   if (!allRows.length) return;
-  // Markets
+  // Get unique markets sorted by commodity count
   const mktMap = {};
   allRows.forEach(r => { if (r.market) mktMap[r.market] = (mktMap[r.market]||0)+1; });
   const sorted = Object.entries(mktMap).sort((a,b)=>b[1]-a[1]);
@@ -2064,9 +2061,12 @@ function buildTm2Sidebar() {
   const allCountEl = document.getElementById('ts-mkt-count-all');
   if (allCountEl) allCountEl.textContent = allGrouped.length;
   const container = document.getElementById('ts-markets');
-  sorted.forEach(([mkt, cnt]) => {
+  // Clear existing (except all-markets button)
+  container.querySelectorAll('[id^="ts-mkt-"]:not(#ts-mkt-all)').forEach(el => el.remove());
+  sorted.forEach(([mkt]) => {
     const id = 'ts-mkt-' + mkt.replace(/\s+/g,'_');
     if (document.getElementById(id)) return;
+    // Use commodity count not row count
     const g = groupByCommodity(allRows.filter(r => r.market === mkt));
     const div = document.createElement('div');
     div.className = 'ts-market';
@@ -2229,6 +2229,7 @@ function tm2Render() {
 
   listEl.innerHTML = tm2TableHead() + html;
 
+  // Hide loading spinner
   const loadEl = document.getElementById('tm2-loading');
   if (loadEl) loadEl.style.display = 'none';
 }
