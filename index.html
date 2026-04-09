@@ -1022,6 +1022,305 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .tm-cat-header { top: calc(86px + 148px + 38px + 41px); }
 }
 
+
+/* ══════════════════════════════════════
+   TERMINAL MARKETS — REBUILT v2
+══════════════════════════════════════ */
+
+/* PULSE STRIP */
+.pulse-strip {
+  background: var(--ink);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 0;
+  display: flex; align-items: stretch;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  height: 44px;
+}
+.pulse-strip::-webkit-scrollbar { display: none; }
+.pulse-label {
+  flex-shrink: 0;
+  padding: 0 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; gap: 6px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.pulse-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); animation: pulse 1.5s infinite; }
+.pulse-item {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 20px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; transition: background 0.12s;
+}
+.pulse-item:hover { background: rgba(255,255,255,0.05); }
+.pulse-emoji { font-size: 15px; }
+.pulse-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); white-space: nowrap; }
+.pulse-price { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.5); }
+.pulse-delta { font-size: 10px; font-weight: 700; }
+.pulse-up   { color: var(--lime); }
+.pulse-down { color: #f08070; }
+.pulse-flat { color: rgba(255,255,255,0.3); }
+.pulse-empty { padding: 0 20px; font-size: 12px; color: rgba(255,255,255,0.3); display: flex; align-items: center; }
+
+/* THREE-PANE LAYOUT */
+.tm2-wrap {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: calc(100vh - 90px - 44px);
+}
+
+/* LEFT SIDEBAR */
+.tm2-sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky;
+  top: 90px;
+  height: calc(100vh - 90px - 44px);
+  overflow-y: auto;
+}
+.tm2-sidebar::-webkit-scrollbar { width: 4px; }
+.tm2-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* sidebar section */
+.ts-section { padding: 16px 0 8px; border-bottom: 1px solid var(--border); }
+.ts-section:last-child { border-bottom: none; }
+.ts-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); padding: 0 16px 6px;
+}
+
+/* MARKET ITEMS */
+.ts-market {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 16px; cursor: pointer; transition: background 0.12s;
+  border-left: 3px solid transparent;
+}
+.ts-market:hover { background: var(--panel); }
+.ts-market.active { background: var(--lime-bg); border-left-color: var(--lime); }
+.ts-market-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
+.ts-market.active .ts-market-dot { background: var(--lime); box-shadow: 0 0 5px var(--lime); }
+.ts-market-name { font-size: 13px; font-weight: 500; color: var(--ink); flex: 1; }
+.ts-market.active .ts-market-name { color: var(--lime-dk); font-weight: 600; }
+.ts-market-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+
+/* CATEGORY ITEMS */
+.ts-cat {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px; cursor: pointer; transition: background 0.12s;
+  border-left: 3px solid transparent;
+}
+.ts-cat:hover { background: var(--panel); }
+.ts-cat.active { background: var(--panel); border-left-color: var(--border2); }
+.ts-cat-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+.ts-cat-name { font-size: 12px; font-weight: 500; color: var(--dim); flex: 1; }
+.ts-cat.active .ts-cat-name { color: var(--ink); font-weight: 600; }
+.ts-cat-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+
+/* ORIGIN ITEMS */
+.ts-origin {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px; cursor: pointer; transition: background 0.12s;
+}
+.ts-origin:hover { background: var(--panel); }
+.ts-origin.active { background: var(--lime-bg); }
+.ts-origin-name { font-size: 11px; color: var(--dim); flex: 1; }
+.ts-origin.active .ts-origin-name { color: var(--lime-dk); font-weight: 600; }
+.ts-origin-bar-wrap { width: 48px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.ts-origin-bar { height: 100%; background: var(--lime-dk); border-radius: 2px; }
+
+/* MAIN CONTENT */
+.tm2-main { background: var(--bg); display: flex; flex-direction: column; min-height: 0; }
+
+/* MAIN HEADER */
+.tm2-main-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px 0;
+  position: sticky; top: calc(90px + 44px); z-index: 80;
+}
+.tm2-mh-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.tm2-market-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1;
+}
+.tm2-market-meta { font-size: 11px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+.tm2-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 4px var(--lime); display: inline-block; animation: pulse 1.5s infinite; }
+.tm2-mh-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* TYPE TABS in main header */
+.tm2-type-tabs { display: flex; gap: 0; margin: 0 -28px; padding: 0 28px; border-top: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tm2-type-tabs::-webkit-scrollbar { display: none; }
+.tm2-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 10px 16px; cursor: pointer; border: none; background: transparent;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  margin-bottom: -1px;
+}
+.tm2-tab:hover { color: var(--ink); }
+.tm2-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.tm2-tab-dot { width: 5px; height: 5px; border-radius: 50%; }
+.tm2-tab-n { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.tm2-tab.active .tm2-tab-n { color: var(--dim); }
+
+/* CONTROLS */
+.tm2-controls {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 28px;
+  display: flex; align-items: center; gap: 8px;
+  position: sticky; top: calc(90px + 44px + 109px); z-index: 79;
+}
+.tm2-search-wrap { position: relative; flex: 1; max-width: 280px; }
+.tm2-si { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
+.tm2-search {
+  width: 100%; font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--ink);
+  background: var(--white); border: 1px solid var(--border);
+  padding: 6px 10px 6px 28px; border-radius: 6px; outline: none;
+}
+.tm2-search::placeholder { color: var(--muted); }
+.tm2-search:focus { border-color: var(--border2); }
+.tm2-fbtn { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--dim); padding: 6px 11px; border-radius: 5px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.tm2-fbtn:hover { border-color: var(--border2); color: var(--ink); }
+.tm2-fbtn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.tm2-ctrl-r { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.tm2-sort { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--muted); padding: 5px 9px; border-radius: 5px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.tm2-sort:hover { color: var(--ink); border-color: var(--border2); }
+.tm2-sort.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.tm2-count-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.tm2-count-label strong { color: var(--dim); }
+
+/* TABLE HEADER */
+.tm2-thead {
+  display: grid;
+  grid-template-columns: 44px 1fr 120px 170px 160px 110px 32px;
+  padding: 0 24px;
+  background: var(--white);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: calc(90px + 44px + 109px + 41px); z-index: 78;
+}
+.tm2-th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); padding: 8px 0;
+}
+
+/* CATEGORY SECTION HEADER */
+.tm2-cat-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 8px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: calc(90px + 44px + 109px + 41px + 33px); z-index: 77;
+}
+.tm2-ch-left { display: flex; align-items: center; gap: 8px; }
+.tm2-ch-icon { font-size: 15px; }
+.tm2-ch-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--dim);
+}
+.tm2-ch-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.tm2-ch-right { display: flex; align-items: center; gap: 8px; }
+.tm2-ch-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+/* COMMODITY ROW */
+.tm2-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 120px 170px 160px 110px 32px;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 62px;
+  background: var(--white);
+  border-bottom: 1px solid #eeecea;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tm2-row:hover { background: #fdfcf8; }
+.tm2-row:hover .tm2-row-arr { opacity: 1; }
+.tm2-row.org-row { background: #fafff4; }
+.tm2-row.org-row:hover { background: #f3fce8; }
+
+/* emoji box */
+.tm2-row-box {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; transition: background 0.1s;
+}
+.tm2-row:hover .tm2-row-box { background: var(--white); }
+
+/* name */
+.tm2-row-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.tm2-row-sub  { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* price */
+.tm2-row-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
+.tm2-row-psub  { font-size: 10px; display: block; margin-top: 2px; }
+.tps-fine { color: var(--lime-dk); font-weight: 600; }
+.tps-hold { color: var(--amber); font-weight: 600; }
+
+/* origins */
+.tm2-row-origins { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+/* trend */
+.tm2-trend { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.tm2-spark { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
+.tm2-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
+.tm2-bar.hi { background: var(--lime); }
+.tm2-bar.lo { background: #f5c0b8; }
+.tm2-bar.nw { background: var(--ink); }
+.tm2-row-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
+
+/* arrow */
+.tm2-row-arr { font-size: 14px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
+
+/* organic band */
+.tm2-org-band { padding: 8px 24px; background: var(--lime-bg); border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890; }
+.tm2-org-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
+
+/* empty / loading */
+.tm2-empty { padding: 60px 24px; text-align: center; background: var(--white); }
+.tm2-empty p { font-size: 13px; color: var(--muted); }
+.tm2-loading { padding: 60px; text-align: center; font-size: 13px; color: var(--muted); background: var(--white); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .tm2-thead { grid-template-columns: 40px 1fr 110px 150px 140px 32px; }
+  .tm2-thead .tm2-th:nth-child(5) { display: none; }
+  .tm2-row  { grid-template-columns: 40px 1fr 110px 150px 140px 32px; }
+  .tm2-row > div:nth-child(5) { display: none; }
+}
+@media (max-width: 860px) {
+  .tm2-wrap { grid-template-columns: 1fr; }
+  .tm2-sidebar { display: none; }
+  .tm2-thead { grid-template-columns: 36px 1fr 100px 32px; padding: 0 16px; }
+  .tm2-thead .tm2-th:nth-child(3),
+  .tm2-thead .tm2-th:nth-child(4),
+  .tm2-thead .tm2-th:nth-child(5),
+  .tm2-thead .tm2-th:nth-child(6) { display: none; }
+  .tm2-row { grid-template-columns: 36px 1fr 100px 32px; padding: 0 16px; min-height: 54px; }
+  .tm2-row > div:nth-child(3),
+  .tm2-row > div:nth-child(4),
+  .tm2-row > div:nth-child(5),
+  .tm2-row > div:nth-child(6) { display: none; }
+  .tm2-row-box { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
+  .tm2-main-header { padding: 16px 16px 0; position: relative; top: 0; }
+  .tm2-controls { padding: 9px 16px; position: relative; top: 0; }
+  .tm2-cat-hdr { padding: 10px 16px 7px; position: relative; top: 0; }
+  .tm2-thead { position: relative; top: 0; }
+  .pulse-strip { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -1224,99 +1523,126 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 <!-- ═══════════════════════ MARKETS PAGE ═══════════════════════ -->
 <div id="page-markets" class="page" style="padding-top:90px;">
 
-  <!-- HEADER: title + meta -->
-  <div class="tm-header">
-    <div class="tm-header-top">
-      <div class="tm-title-block">
-        <div class="tm-breadcrumb">Dashboard › Terminal Markets</div>
-        <div class="tm-title">Terminal Markets</div>
-        <div class="tm-meta">
-          <span><span class="tm-live-dot"></span>Live</span>
-          <span class="tm-sep"></span>
-          <span id="markets-date">Loading…</span>
-          <span class="tm-sep"></span>
-          <span>USDA AMS</span>
-          <span class="tm-sep"></span>
-          <span id="tm-total-count" style="color:var(--dim);font-weight:500;">—</span>
+  <!-- PULSE STRIP -->
+  <div class="pulse-strip" id="pulse-strip">
+    <div class="pulse-label"><span class="pulse-dot"></span>Today</div>
+    <div class="pulse-empty" id="pulse-loading">Loading market pulse…</div>
+  </div>
+
+  <!-- THREE-PANE -->
+  <div class="tm2-wrap">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="tm2-sidebar">
+      <!-- MARKETS -->
+      <div class="ts-section">
+        <div class="ts-heading">Markets</div>
+        <div id="ts-markets">
+          <div class="ts-market active" id="ts-mkt-all" onclick="tm2SetMarket('')">
+            <span class="ts-market-dot"></span>
+            <span class="ts-market-name">All Markets</span>
+            <span class="ts-market-count" id="ts-mkt-count-all">—</span>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- TYPE TABS -->
-    <div class="tm-type-tabs">
-      <button class="tm-type-tab active" id="tmtab-all" onclick="tmSetType('all')">
-        <span class="tm-type-dot" style="background:var(--ink)"></span>All
-      </button>
-      <button class="tm-type-tab" id="tmtab-fruits" onclick="tmSetType('fruits')">
-        <span class="tm-type-dot" style="background:var(--red)"></span>Fruits
-      </button>
-      <button class="tm-type-tab" id="tmtab-vegetables" onclick="tmSetType('vegetables')">
-        <span class="tm-type-dot" style="background:var(--blue)"></span>Vegetables
-      </button>
-      <button class="tm-type-tab" id="tmtab-onions_potatoes" onclick="tmSetType('onions_potatoes')">
-        <span class="tm-type-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes
-      </button>
-      <button class="tm-type-tab" id="tmtab-nuts" onclick="tmSetType('nuts')">
-        <span class="tm-type-dot" style="background:var(--purple)"></span>Nuts
-      </button>
-    </div>
-  </div>
-
-  <!-- MARKET SWITCHER -->
-  <div class="market-switcher" id="market-switcher">
-    <button class="mkt-tab active" id="mkt-tab-all" onclick="tmSetMarket('')">
-      All Markets <span class="mkt-tab-count" id="mkt-count-all">—</span>
-    </button>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="tm-controls">
-    <div class="tm-search-wrap">
-      <span class="tm-search-icon">⌕</span>
-      <input class="tm-search-input" type="text" id="tm-search" placeholder="Search commodities, origins…" oninput="tmRender()">
-    </div>
-    <button class="tm-filter active" id="tmf-all" onclick="tmSetOrganic('all')">All</button>
-    <button class="tm-filter" id="tmf-organic" onclick="tmSetOrganic('organic')">🌿 Organic</button>
-    <div class="tm-ctrl-right">
-      <div class="tm-sort-tabs">
-        <button class="tm-sort-btn active" id="tms-az" onclick="tmSetSort('az')">A–Z</button>
-        <button class="tm-sort-btn" id="tms-price-high" onclick="tmSetSort('price-high')">Price ↓</button>
-        <button class="tm-sort-btn" id="tms-price-low" onclick="tmSetSort('price-low')">Price ↑</button>
-        <button class="tm-sort-btn" id="tms-movers" onclick="tmSetSort('movers')">Movers</button>
+      <!-- CATEGORIES -->
+      <div class="ts-section">
+        <div class="ts-heading">Categories</div>
+        <div id="ts-cats"></div>
       </div>
-      <span class="tm-count"><strong id="tm-count">—</strong> commodities</span>
-    </div>
-  </div>
-
-  <div class="tm-error" id="tm-error">Unable to load data — backend offline.</div>
-
-  <!-- TWO ZONE -->
-  <div class="tm-layout">
-    <!-- LEFT NAV -->
-    <div class="tm-leftnav" id="tm-leftnav">
-      <div class="tn-label">Categories</div>
-      <div id="tn-cats"></div>
-      <div class="tn-divider"></div>
-      <div class="tn-label">Origins</div>
-      <div id="tn-origins"></div>
+      <!-- TOP ORIGINS -->
+      <div class="ts-section">
+        <div class="ts-heading">Origins</div>
+        <div id="ts-origins"></div>
+      </div>
     </div>
 
-    <!-- MAIN LIST -->
-    <div class="tm-list" id="tm-list">
+    <!-- MAIN -->
+    <div class="tm2-main">
+
+      <!-- MAIN HEADER -->
+      <div class="tm2-main-header">
+        <div class="tm2-mh-top">
+          <div>
+            <div class="tm2-market-title" id="tm2-market-title">All Markets</div>
+            <div class="tm2-market-meta">
+              <span class="tm2-live-dot"></span>
+              <span id="tm2-date">Loading…</span>
+              <span style="color:var(--border2)">·</span>
+              <span>USDA AMS</span>
+            </div>
+          </div>
+          <div class="tm2-mh-right">
+            <span style="font-size:11px;color:var(--muted)" id="tm2-report-code"></span>
+          </div>
+        </div>
+        <!-- TYPE TABS -->
+        <div class="tm2-type-tabs">
+          <button class="tm2-tab active" id="tm2tab-all" onclick="tm2SetType('all')">
+            <span class="tm2-tab-dot" style="background:var(--ink)"></span>All
+            <span class="tm2-tab-n" id="tm2tn-all"></span>
+          </button>
+          <button class="tm2-tab" id="tm2tab-fruits" onclick="tm2SetType('fruits')">
+            <span class="tm2-tab-dot" style="background:var(--red)"></span>Fruits
+            <span class="tm2-tab-n" id="tm2tn-fruits"></span>
+          </button>
+          <button class="tm2-tab" id="tm2tab-vegetables" onclick="tm2SetType('vegetables')">
+            <span class="tm2-tab-dot" style="background:var(--blue)"></span>Vegetables
+            <span class="tm2-tab-n" id="tm2tn-vegetables"></span>
+          </button>
+          <button class="tm2-tab" id="tm2tab-onions_potatoes" onclick="tm2SetType('onions_potatoes')">
+            <span class="tm2-tab-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes
+            <span class="tm2-tab-n" id="tm2tn-onions_potatoes"></span>
+          </button>
+          <button class="tm2-tab" id="tm2tab-nuts" onclick="tm2SetType('nuts')">
+            <span class="tm2-tab-dot" style="background:var(--purple)"></span>Nuts
+            <span class="tm2-tab-n" id="tm2tn-nuts"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="tm2-controls">
+        <div class="tm2-search-wrap">
+          <span class="tm2-si">⌕</span>
+          <input class="tm2-search" type="text" id="tm2-search" placeholder="Search…" oninput="tm2Render()">
+        </div>
+        <button class="tm2-fbtn active" id="tm2f-all" onclick="tm2SetOrganic('all')">All</button>
+        <button class="tm2-fbtn" id="tm2f-organic" onclick="tm2SetOrganic('organic')">🌿 Organic</button>
+        <div class="tm2-ctrl-r">
+          <button class="tm2-sort active" id="tm2s-az" onclick="tm2SetSort('az')">A–Z</button>
+          <button class="tm2-sort" id="tm2s-ph" onclick="tm2SetSort('price-high')">Price ↓</button>
+          <button class="tm2-sort" id="tm2s-pl" onclick="tm2SetSort('price-low')">Price ↑</button>
+          <button class="tm2-sort" id="tm2s-mv" onclick="tm2SetSort('movers')">Movers</button>
+          <span class="tm2-count-label"><strong id="tm2-count">—</strong> commodities</span>
+        </div>
+      </div>
+
+      <!-- ERROR -->
+      <div style="display:none;background:var(--red-bg);border:1px solid #f0c0b8;border-radius:8px;padding:12px 20px;margin:12px 24px;font-size:13px;color:var(--red);" id="tm2-error">
+        Backend offline — check Railway deployment.
+      </div>
+
       <!-- TABLE HEADER -->
-      <div class="tm-table-head" id="tm-table-head">
-        <div class="tm-th"></div>
-        <div class="tm-th">Commodity</div>
-        <div class="tm-th">Condition</div>
-        <div class="tm-th">Price range</div>
-        <div class="tm-th">Origins</div>
-        <div class="tm-th">Trend</div>
-        <div class="tm-th"></div>
+      <div class="tm2-thead">
+        <div class="tm2-th"></div>
+        <div class="tm2-th">Commodity</div>
+        <div class="tm2-th">Condition</div>
+        <div class="tm2-th">Price range</div>
+        <div class="tm2-th">Origins</div>
+        <div class="tm2-th">Trend</div>
+        <div class="tm2-th"></div>
       </div>
-      <div style="padding:48px;text-align:center;background:var(--white);" id="tm-loading">
-        <span class="spinner"></span> &nbsp;Loading market data…
+
+      <!-- LIST -->
+      <div id="tm2-list">
+        <div class="tm2-loading" id="tm2-loading">
+          <span class="spinner"></span>&nbsp; Loading market data…
+        </div>
       </div>
-    </div>
-  </div>
+
+    </div><!-- /tm2-main -->
+  </div><!-- /tm2-wrap -->
 </div>
 
 <!-- ═══════════════════════ FOB PAGE (stub) ═══════════════════════ -->
@@ -1521,256 +1847,138 @@ function showPage(page, tab) {
   }
 }
 
-// ── OLD TAB STUBS (kept for compat) ─────────────────────────────
-function setTab(tab) { tmSetType(tab); }
-function setOrganic(val) { tmSetOrganic(val); }
+// ── TERMINAL MARKETS v2 STATE ───────────────────────────────────
+let tm2Market  = '';
+let tm2Type    = 'all';
+let tm2Organic = 'all';
+let tm2Sort    = 'az';
+let tm2Origin  = '';
 
-// ── TERMINAL MARKETS STATE ───────────────────────────────────────
-let tmType    = 'all';
-let tmMarket  = '';
-let tmOrganic = 'all';
-let tmSort    = 'az';
-let tmOriginFilter = '';
+// compat aliases
+function setTab(t)     { tm2SetType(t); }
+function setOrganic(v) { tm2SetOrganic(v); }
+function filterAndRender() { tm2Render(); }
 
-function tmSetType(t) {
-  tmType = t;
-  activeTab = t; // keep compat
-  document.querySelectorAll('.tm-type-tab').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('tmtab-' + t);
-  if (el) el.classList.add('active');
-  tmRender();
-}
-function tmSetMarket(m) {
-  tmMarket = m;
-  activeMarket = m;
-  document.querySelectorAll('.mkt-tab').forEach(el => el.classList.remove('active'));
-  const id = m ? 'mkt-tab-' + m.replace(/\s+/g,'_') : 'mkt-tab-all';
+const TM2_CAT_LABELS = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
+const TM2_CAT_ICONS  = { fruits:'🍎', vegetables:'🥦', onions_potatoes:'🧅', nuts:'🥜', other:'🌿' };
+const TM2_CAT_CODES  = { fruits:'FV010', vegetables:'FV020', onions_potatoes:'FV030', nuts:'FV040', other:'—' };
+const TM2_CAT_COLORS = { fruits:'var(--red)', vegetables:'var(--blue)', onions_potatoes:'var(--amber)', nuts:'var(--purple)', other:'var(--muted)' };
+const TM2_TYPE_ORDER = ['fruits','vegetables','onions_potatoes','nuts','other'];
+
+function tm2SetMarket(m) {
+  tm2Market = m; activeMarket = m;
+  document.querySelectorAll('[id^="ts-mkt-"]').forEach(el => el.classList.remove('active'));
+  const id = m ? 'ts-mkt-' + m.replace(/\s+/g,'_') : 'ts-mkt-all';
   const el = document.getElementById(id);
   if (el) el.classList.add('active');
-  tmRender();
+  const title = document.getElementById('tm2-market-title');
+  if (title) title.textContent = m || 'All Markets';
+  // update report code
+  const codeEl = document.getElementById('tm2-report-code');
+  if (codeEl && m) {
+    const mktRows = allRows.filter(r => r.market === m);
+    const codes = [...new Set(mktRows.map(r => (r.source_report||'').replace(/_FV\d+/,'')+'_FV…'))].slice(0,2);
+    codeEl.textContent = codes[0] || '';
+  } else if (codeEl) { codeEl.textContent = ''; }
+  tm2Render();
 }
-function tmSetOrganic(val) {
-  tmOrganic = val;
-  activeOrganic = val;
-  document.querySelectorAll('.tm-filter').forEach(b => b.classList.remove('active'));
-  document.getElementById('tmf-' + val).classList.add('active');
-  tmRender();
+function tm2SetType(t) {
+  tm2Type = t; activeTab = t;
+  document.querySelectorAll('[id^="tm2tab-"]').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tm2tab-' + t);
+  if (el) el.classList.add('active');
+  tm2Render();
 }
-function tmSetSort(s) {
-  tmSort = s;
-  document.querySelectorAll('.tm-sort-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tms-' + s).classList.add('active');
-  tmRender();
+function tm2SetOrganic(v) {
+  tm2Organic = v; activeOrganic = v;
+  document.querySelectorAll('.tm2-fbtn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('tm2f-' + v);
+  if (el) el.classList.add('active');
+  tm2Render();
 }
-function tmSetOrigin(o) {
-  tmOriginFilter = tmOriginFilter === o ? '' : o;
-  document.querySelectorAll('.tn-item[data-origin]').forEach(el => {
-    el.classList.toggle('active', el.dataset.origin === tmOriginFilter);
+function tm2SetSort(s) {
+  tm2Sort = s;
+  document.querySelectorAll('.tm2-sort').forEach(b => b.classList.remove('active'));
+  const ids = {az:'tm2s-az','price-high':'tm2s-ph','price-low':'tm2s-pl',movers:'tm2s-mv'};
+  const el = document.getElementById(ids[s]);
+  if (el) el.classList.add('active');
+  tm2Render();
+}
+function tm2SetOriginFilter(o) {
+  tm2Origin = tm2Origin === o ? '' : o;
+  document.querySelectorAll('.ts-origin').forEach(el => {
+    el.classList.toggle('active', el.dataset.origin === tm2Origin);
   });
-  tmRender();
+  tm2Render();
 }
 
-// ── FETCH ────────────────────────────────────────────────────────
-async function apiFetch(path) {
-  const r = await fetch(API + path, { headers: { 'Accept': 'application/json' } });
-  if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
-  return r.json();
-}
-
-// ── BOOT ────────────────────────────────────────────────────────
-async function boot() {
-  try {
-    // Load stats for homepage
-    loadStats();
-    // Get latest date
-    const dates = await apiFetch('/dates');
-    if (!dates || dates.length === 0) throw new Error('No dates available');
-    latestDate = dates[0].date;
-    // Update date displays
-    const fd = fmtDate(latestDate);
-    document.getElementById('nav-date').textContent = fd;
-    document.getElementById('markets-date').textContent = fd;
-    document.getElementById('hero-panel-date').textContent = fd;
-    document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
-    // Load all rows for latest date
-    allRows = await apiFetch('/commodities/by-date/' + latestDate);
-    // Populate market switcher + old sidebar
-    populateMarkets();
-    buildMarketSwitcher();
-    // Build ticker
-    buildTicker();
-    // Render home snapshot
-    renderSnapshot();
-    // Render hero movers
-    renderHeroMovers();
-    // Render markets list with new renderer
-    tmRender();
-  } catch(e) {
-    console.error('Boot failed:', e);
-    document.getElementById('nav-date').textContent = 'Offline';
-    const tmErr = document.getElementById('tm-error');
-    if (tmErr) tmErr.classList.add('show');
-    const tmLoad = document.getElementById('tm-loading');
-    if (tmLoad) tmLoad.innerHTML = '<p style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</p>';
-  }
-}
-
-async function loadStats() {
-  try {
-    const s = await apiFetch('/stats');
-    document.getElementById('stat-markets').textContent = s.markets || '12';
-    const rec = s.total_records;
-    document.getElementById('stat-records').innerHTML = rec > 1000
-      ? Math.round(rec/1000) + '<span>k</span>'
-      : rec;
-  } catch(e) {}
-}
-
-function populateMarkets() {
-  const seen = new Set();
-  allRows.forEach(r => { if (r.market) seen.add(r.market); });
-  const sel = document.getElementById('market-filter');
-  const sbMkts = document.getElementById('sidebar-markets');
-  const sorted = [...seen].sort();
-  markets = sorted;
-  sorted.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = m;
-    sel.appendChild(opt);
-    const div = document.createElement('div');
-    div.className = 'sb-item';
-    div.innerHTML = `<span class="sb-name">${m}</span><span class="sb-count">${allRows.filter(r=>r.market===m).length}</span>`;
-    div.onclick = () => { activeMarket = m; sel.value = m; filterAndRender(); };
-    sbMkts.appendChild(div);
-  });
-}
-
-// ── TICKER ───────────────────────────────────────────────────────
-function buildTicker() {
-  const sample = allRows
-    .filter(r => r.price_low && r.market === 'New York')
-    .slice(0, 20);
-  if (!sample.length) return;
-  let html = '';
-  const doubled = [...sample, ...sample];
-  doubled.forEach(r => {
-    const price = fmtRange(r.price_low, r.price_high);
-    const mv = r.movement || '';
-    let cls = 'tick-flat', sym = '— Steady';
-    if (mv.toLowerCase().includes('higher')) { cls = 'tick-up'; sym = '▲ Higher'; }
-    else if (mv.toLowerCase().includes('lower')) { cls = 'tick-down'; sym = '▼ Lower'; }
-    html += `<div class="tick-item"><span class="tick-name">${r.commodity}${r.variety ? ' · ' + r.variety : ''}</span><span class="tick-price">${price}</span><span class="${cls}">${sym}</span></div>`;
-  });
-  document.getElementById('ticker-track').innerHTML = html;
-}
-
-// ── HOME SNAPSHOT ────────────────────────────────────────────────
-function renderSnapshot() {
-  const nyRows = allRows.filter(r => r.market === 'New York');
-  renderSnapCol('snap-fruits', nyRows.filter(r => r.commodity_type === 'fruits'), 6);
-  renderSnapCol('snap-veg', nyRows.filter(r => r.commodity_type === 'vegetables'), 6);
-  renderSnapCol('snap-other', nyRows.filter(r => r.commodity_type === 'onions_potatoes' || r.commodity_type === 'nuts'), 6);
-}
-
-function renderSnapCol(id, rows, limit) {
-  const el = document.getElementById(id);
-  if (!rows.length) { el.innerHTML = '<div class="empty-row"><p>No data</p></div>'; return; }
-  const grouped = groupByCommodity(rows);
-  const top = grouped.slice(0, limit);
-  el.innerHTML = top.map(g => {
-    const price = fmtRange(g.price_low, g.price_high);
-    const mv = g.movement || '';
-    let cls = 'chg-flat', sym = '— Steady';
-    if (mv.toLowerCase().includes('higher')) { cls = 'chg-up'; sym = '▲ ' + mv; }
-    else if (mv.toLowerCase().includes('lower')) { cls = 'chg-down'; sym = '▼ ' + mv; }
-    const origin = g.origins.slice(0,2).join(' · ');
-    return `<div class="market-row" onclick="openDetail('${esc(g.commodity)}')">
-      <div class="mr-left"><span class="mr-name">${g.commodity}</span><span class="mr-origin">${origin}</span></div>
-      <div class="mr-right"><span class="mr-price">${price}</span><span class="mr-change ${cls}">${sym}</span></div>
-    </div>`;
-  }).join('');
-}
-
-function renderHeroMovers() {
-  const nyRows = allRows.filter(r => r.market === 'New York' && r.price_low);
-  const grouped = groupByCommodity(nyRows).slice(0, 8);
-  document.getElementById('hero-movers').innerHTML = grouped.map(g => {
-    const price = fmtRange(g.price_low, g.price_high);
-    const mv = g.movement || '';
-    let cls = 'd-flat', sym = '— Steady';
-    if (mv.toLowerCase().includes('higher')) { cls = 'd-up'; sym = '▲ ' + mv; }
-    else if (mv.toLowerCase().includes('lower')) { cls = 'd-down'; sym = '▼ ' + mv; }
-    const origins = g.origins.filter(Boolean).slice(0,2).join(' · ');
-    const spec = origins || '—';
-    const emoji = emojiFor(g.commodity);
-    return `<div class="hero-panel-row" onclick="openDetail('${esc(g.commodity)}'); showPage('markets')">
-      <div class="hpr-left">
-        <span class="hpr-emoji">${emoji}</span>
-        <span class="hpr-name">${g.commodity}</span>
-        <span class="hpr-spec">${spec}</span>
-      </div>
-      <div class="hpr-right"><span class="hpr-price">${price}</span><span class="hpr-delta ${cls}">${sym}</span></div>
-    </div>`;
-  }).join('');
-}
-
-// ── GROUP BY COMMODITY ───────────────────────────────────────────
-function groupByCommodity(rows) {
-  const map = {};
-  rows.forEach(r => {
-    const key = r.commodity;
-    if (!map[key]) {
-      map[key] = { commodity: r.commodity, commodity_type: r.commodity_type, price_low: null, price_high: null, movement: r.movement, supply_note: r.supply_note, trading_activity: r.trading_activity, source_report: r.source_report, origins: [], packages: new Set(), rows: [] };
-    }
-    const g = map[key];
-    if (r.price_low && (!g.price_low || r.price_low < g.price_low)) g.price_low = r.price_low;
-    if (r.price_high && (!g.price_high || r.price_high > g.price_high)) g.price_high = r.price_high;
-    if (r.origin && !g.origins.includes(r.origin)) g.origins.push(r.origin);
-    if (r.package) g.packages.add(r.package);
-    if (!g.movement && r.movement) g.movement = r.movement;
-    g.rows.push(r);
-  });
-  return Object.values(map).sort((a,b) => a.commodity.localeCompare(b.commodity));
-}
-
-// ── TERMINAL MARKETS RENDER ──────────────────────────────────────
-function filterAndRender() { tmRender(); } // compat alias
-
-const CAT_LABELS = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
-const CAT_ICONS  = { fruits:'🍎', vegetables:'🥦', onions_potatoes:'🧅', nuts:'🥜', other:'🌿' };
-const CAT_CODES  = { fruits:'FV010', vegetables:'FV020', onions_potatoes:'FV030', nuts:'FV040', other:'—' };
-const CAT_COLORS = { fruits:'var(--red)', vegetables:'var(--blue)', onions_potatoes:'var(--amber)', nuts:'var(--purple)', other:'var(--muted)' };
-const TYPE_ORDER = ['fruits','vegetables','onions_potatoes','nuts','other'];
-
-function buildMarketSwitcher() {
+// Build sidebar markets list
+function buildTm2Sidebar() {
   if (!allRows.length) return;
-  const seen = {};
-  allRows.forEach(r => { if (r.market) seen[r.market] = (seen[r.market]||0)+1; });
-  const switcher = document.getElementById('market-switcher');
-  const allCount = document.getElementById('mkt-count-all');
-  const grouped = groupByCommodity(allRows);
-  if (allCount) allCount.textContent = grouped.length;
-
-  Object.entries(seen).sort((a,b) => b[1]-a[1]).forEach(([mkt, cnt]) => {
-    const id = 'mkt-tab-' + mkt.replace(/\s+/g,'_');
+  // Markets
+  const mktMap = {};
+  allRows.forEach(r => { if (r.market) mktMap[r.market] = (mktMap[r.market]||0)+1; });
+  const sorted = Object.entries(mktMap).sort((a,b)=>b[1]-a[1]);
+  const allGrouped = groupByCommodity(allRows);
+  const allCountEl = document.getElementById('ts-mkt-count-all');
+  if (allCountEl) allCountEl.textContent = allGrouped.length;
+  const container = document.getElementById('ts-markets');
+  sorted.forEach(([mkt, cnt]) => {
+    const id = 'ts-mkt-' + mkt.replace(/\s+/g,'_');
     if (document.getElementById(id)) return;
-    const btn = document.createElement('button');
-    btn.className = 'mkt-tab';
-    btn.id = id;
-    btn.innerHTML = mkt + ` <span class="mkt-tab-count">${cnt}</span>`;
-    btn.onclick = () => tmSetMarket(mkt);
-    switcher.appendChild(btn);
+    const g = groupByCommodity(allRows.filter(r => r.market === mkt));
+    const div = document.createElement('div');
+    div.className = 'ts-market';
+    div.id = id;
+    div.innerHTML = `<span class="ts-market-dot"></span>
+      <span class="ts-market-name">${mkt}</span>
+      <span class="ts-market-count">${g.length}</span>`;
+    div.onclick = () => tm2SetMarket(mkt);
+    container.appendChild(div);
   });
 }
 
-function tmRender() {
-  const q = (document.getElementById('tm-search')?.value || '').toLowerCase();
+// Build pulse strip
+function buildPulse() {
+  const nyRows = allRows.filter(r => r.market === 'New York' && r.price_low);
+  const grouped = groupByCommodity(nyRows);
+  // sort by movement signal then take 12
+  const movers = grouped.filter(g => g.movement && g.movement !== 'Steady' && g.movement !== 'Unchanged');
+  const steady = grouped.filter(g => !g.movement || g.movement === 'Steady' || g.movement === 'Unchanged');
+  const items = [...movers, ...steady].slice(0, 14);
+  if (!items.length) {
+    document.getElementById('pulse-loading').textContent = 'No data today';
+    return;
+  }
+  const strip = document.getElementById('pulse-strip');
+  strip.innerHTML = '<div class="pulse-label"><span class="pulse-dot"></span>Today · NY</div>';
+  // duplicate for loop effect
+  const doubled = [...items, ...items];
+  doubled.forEach(g => {
+    const price = fmtRange(g.price_low, g.price_high);
+    const mv = g.movement || '';
+    let cls = 'pulse-flat', sym = '— ';
+    if (mv.toLowerCase().includes('higher')) { cls = 'pulse-up'; sym = '▲ '; }
+    else if (mv.toLowerCase().includes('lower')) { cls = 'pulse-down'; sym = '▼ '; }
+    const div = document.createElement('div');
+    div.className = 'pulse-item';
+    div.innerHTML = `<span class="pulse-emoji">${emojiFor(g.commodity)}</span>
+      <span class="pulse-name">${g.commodity}</span>
+      <span class="pulse-price">${price}</span>
+      <span class="pulse-delta ${cls}">${sym}${mv||'Steady'}</span>`;
+    div.onclick = () => { tm2SetMarket('New York'); openDetail(g.commodity); };
+    strip.appendChild(div);
+  });
+}
 
+// MAIN RENDER
+function tm2Render() {
+  const q = (document.getElementById('tm2-search')?.value || '').toLowerCase();
   let filtered = allRows;
-  if (tmType !== 'all') filtered = filtered.filter(r => r.commodity_type === tmType);
-  if (tmOrganic === 'organic') filtered = filtered.filter(r => r.organic);
-  if (tmMarket) filtered = filtered.filter(r => r.market === tmMarket);
-  if (tmOriginFilter) filtered = filtered.filter(r => (r.origin||'').toLowerCase().includes(tmOriginFilter.toLowerCase()));
+  if (tm2Market) filtered = filtered.filter(r => r.market === tm2Market);
+  if (tm2Type !== 'all') filtered = filtered.filter(r => r.commodity_type === tm2Type);
+  if (tm2Organic === 'organic') filtered = filtered.filter(r => r.organic);
+  if (tm2Origin) filtered = filtered.filter(r => (r.origin||'').toLowerCase().includes(tm2Origin.toLowerCase()));
   if (q) filtered = filtered.filter(r =>
     (r.commodity||'').toLowerCase().includes(q) ||
     (r.origin||'').toLowerCase().includes(q) ||
@@ -1779,162 +1987,178 @@ function tmRender() {
 
   let grouped = groupByCommodity(filtered);
 
-  // Sort
-  if (tmSort === 'price-high') grouped.sort((a,b) => (b.price_low||0) - (a.price_low||0));
-  else if (tmSort === 'price-low') grouped.sort((a,b) => (a.price_low||0) - (b.price_low||0));
-  else if (tmSort === 'movers') {
+  // sort
+  if (tm2Sort === 'price-high')  grouped.sort((a,b) => (b.price_low||0) - (a.price_low||0));
+  else if (tm2Sort === 'price-low') grouped.sort((a,b) => (a.price_low||0) - (b.price_low||0));
+  else if (tm2Sort === 'movers') {
     grouped.sort((a,b) => {
-      const score = g => { const m=(g.movement||'').toLowerCase(); return m.includes('higher')?2:m.includes('lower')?1:0; };
-      return score(b)-score(a);
+      const s = g => { const m=(g.movement||'').toLowerCase(); return m.includes('higher')?2:m.includes('lower')?1:0; };
+      return s(b)-s(a);
     });
   } else {
     grouped.sort((a,b) => a.commodity.localeCompare(b.commodity));
   }
 
-  document.getElementById('tm-count').textContent = grouped.length;
-  document.getElementById('tm-total-count').textContent = grouped.length + ' commodities';
+  // update count
+  document.getElementById('tm2-count').textContent = grouped.length;
 
-  // Build left nav origins
-  const originMap = {};
-  filtered.forEach(r => { if (r.origin) originMap[r.origin] = (originMap[r.origin]||0)+1; });
-  const topOrigins = Object.entries(originMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  document.getElementById('tn-origins').innerHTML = topOrigins.map(([o,c]) =>
-    `<div class="tn-item ${tmOriginFilter===o?'active':''}" data-origin="${o}" onclick="tmSetOrigin('${esc(o)}')">
-      <span class="tn-name">${o}</span>
-      <span class="tn-count">${c}</span>
-    </div>`
-  ).join('');
+  // update tab counts
+  const types = ['fruits','vegetables','onions_potatoes','nuts'];
+  types.forEach(t => {
+    const el = document.getElementById('tm2tn-' + t);
+    if (el) el.textContent = grouped.filter(g => g.commodity_type === t).length || '';
+  });
+  const allEl = document.getElementById('tm2tn-all');
+  if (allEl) allEl.textContent = grouped.length || '';
 
-  // Build left nav categories
+  // update sidebar cats
   const catMap = {};
   grouped.forEach(g => { const ct = g.commodity_type||'other'; catMap[ct]=(catMap[ct]||0)+1; });
-  document.getElementById('tn-cats').innerHTML = [['all', 'All', grouped.length], ...Object.entries(catMap).map(([k,v])=>[k,CAT_LABELS[k]||k,v])].map(([k,label,cnt]) =>
-    `<div class="tn-item ${tmType===k?'active':''}" onclick="tmSetType('${k}')">
-      <span class="tn-name">${label}</span>
-      <span class="tn-count">${cnt}</span>
-    </div>`
-  ).join('');
-
-  // Group by type for section rendering
-  if (tmSort !== 'az' || q) {
-    // flat list, no section headers when searching/sorting
-    let html = grouped.map(g => tmRowHtml(g)).join('');
-    if (!html) html = '<div class="tm-empty"><p>No commodities match your filters.</p></div>';
-    document.getElementById('tm-list').innerHTML = tmTableHead() + html;
-  } else {
-    // grouped by category
-    const byType = {};
-    grouped.forEach(g => { const ct=g.commodity_type||'other'; if(!byType[ct])byType[ct]=[]; byType[ct].push(g); });
-    let html = '';
-    TYPE_ORDER.forEach(ct => {
-      const grp = byType[ct];
-      if (!grp || !grp.length) return;
-      const conv = grp.filter(g => !g.rows.every(r=>r.organic));
-      const org  = grp.filter(g => g.rows.every(r=>r.organic));
-      if (conv.length) {
-        html += tmCatHeader(ct, conv.length);
-        html += conv.map(g => tmRowHtml(g)).join('');
-      }
-      if (org.length) {
-        html += `<div class="tm-organic-band"><span class="tm-organic-label">Organic · ${CAT_LABELS[ct]||ct}</span></div>`;
-        html += org.map(g => tmRowHtml(g, true)).join('');
-      }
-    });
-    if (!html) html = '<div class="tm-empty"><p>No commodities match your filters.</p></div>';
-    document.getElementById('tm-list').innerHTML = tmTableHead() + html;
+  const catContainer = document.getElementById('ts-cats');
+  if (catContainer) {
+    catContainer.innerHTML = [['all','All',grouped.length], ...Object.entries(catMap).map(([k,v])=>[k,TM2_CAT_LABELS[k]||k,v])].map(([k,label,cnt]) =>
+      `<div class="ts-cat ${tm2Type===k?'active':''}" onclick="tm2SetType('${k}')">
+        <span class="ts-cat-icon">${k==='all'?'✦':TM2_CAT_ICONS[k]||'🌿'}</span>
+        <span class="ts-cat-name">${label}</span>
+        <span class="ts-cat-count">${cnt}</span>
+      </div>`
+    ).join('');
   }
 
-  document.getElementById('tm-loading').style.display = 'none';
+  // update sidebar origins
+  const originMap = {};
+  filtered.forEach(r => { if (r.origin) originMap[r.origin]=(originMap[r.origin]||0)+1; });
+  const maxOrig = Math.max(...Object.values(originMap), 1);
+  const topOrigins = Object.entries(originMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const origContainer = document.getElementById('ts-origins');
+  if (origContainer) {
+    origContainer.innerHTML = topOrigins.map(([o,c]) =>
+      `<div class="ts-origin ${tm2Origin===o?'active':''}" data-origin="${o}" onclick="tm2SetOriginFilter('${esc(o)}')">
+        <span class="ts-origin-name">${o}</span>
+        <div class="ts-origin-bar-wrap"><div class="ts-origin-bar" style="width:${Math.round(c/maxOrig*100)}%"></div></div>
+      </div>`
+    ).join('');
+  }
+
+  // BUILD LIST HTML
+  const listEl = document.getElementById('tm2-list');
+  if (!listEl) return;
+
+  let html = '';
+
+  // Flat list when searching or sorting by price/movers
+  const useFlat = q || tm2Sort !== 'az';
+
+  if (useFlat) {
+    if (!grouped.length) {
+      html = '<div class="tm2-empty"><p>No commodities match your filters.</p></div>';
+    } else {
+      html = grouped.map(g => tm2RowHtml(g)).join('');
+    }
+  } else {
+    // Grouped by category
+    const byType = {};
+    grouped.forEach(g => { const ct=g.commodity_type||'other'; if(!byType[ct])byType[ct]=[]; byType[ct].push(g); });
+    TM2_TYPE_ORDER.forEach(ct => {
+      const grp = byType[ct];
+      if (!grp || !grp.length) return;
+      const conv = grp.filter(g => !g.rows.every(r => r.organic));
+      const org  = grp.filter(g => g.rows.every(r => r.organic));
+      const color = TM2_CAT_COLORS[ct] || 'var(--muted)';
+      if (conv.length) {
+        html += `<div class="tm2-cat-hdr">
+          <div class="tm2-ch-left">
+            <span class="tm2-ch-icon">${TM2_CAT_ICONS[ct]||'🌿'}</span>
+            <span class="tm2-ch-name">${TM2_CAT_LABELS[ct]||ct}</span>
+            <span class="tm2-ch-badge" style="background:${color}18;color:${color};border:1px solid ${color}40">${TM2_CAT_CODES[ct]||''}</span>
+          </div>
+          <div class="tm2-ch-right">
+            <span class="tm2-ch-count">${conv.length} commodities</span>
+          </div>
+        </div>`;
+        html += conv.map(g => tm2RowHtml(g)).join('');
+      }
+      if (org.length) {
+        html += `<div class="tm2-org-band"><span class="tm2-org-label">Organic · ${TM2_CAT_LABELS[ct]||ct}</span></div>`;
+        html += org.map(g => tm2RowHtml(g, true)).join('');
+      }
+    });
+    if (!html) html = '<div class="tm2-empty"><p>No commodities match your filters.</p></div>';
+  }
+
+  listEl.innerHTML = tm2TableHead() + html;
+
+  const loadEl = document.getElementById('tm2-loading');
+  if (loadEl) loadEl.style.display = 'none';
 }
 
-function tmTableHead() {
-  return `<div class="tm-table-head">
-    <div class="tm-th"></div>
-    <div class="tm-th">Commodity</div>
-    <div class="tm-th">Condition</div>
-    <div class="tm-th">Price range</div>
-    <div class="tm-th">Origins</div>
-    <div class="tm-th">Trend</div>
-    <div class="tm-th"></div>
+function tm2TableHead() {
+  return `<div class="tm2-thead">
+    <div class="tm2-th"></div>
+    <div class="tm2-th">Commodity</div>
+    <div class="tm2-th">Condition</div>
+    <div class="tm2-th">Price range</div>
+    <div class="tm2-th">Origins</div>
+    <div class="tm2-th">Trend</div>
+    <div class="tm2-th"></div>
   </div>`;
 }
 
-function tmCatHeader(ct, count) {
-  const color = CAT_COLORS[ct] || 'var(--muted)';
-  return `<div class="tm-cat-header">
-    <div class="tm-cat-left">
-      <span class="tm-cat-icon">${CAT_ICONS[ct]||'🌿'}</span>
-      <span class="tm-cat-name">${CAT_LABELS[ct]||ct}</span>
-      <span class="tm-cat-badge" style="background:${color}20;color:${color};border:1px solid ${color}50">${CAT_CODES[ct]||''}</span>
-    </div>
-    <div class="tm-cat-right">
-      <span class="tm-cat-count">${count} commodities</span>
-      <span class="tm-cat-code">${CAT_CODES[ct]||''}</span>
-    </div>
-  </div>`;
-}
+function tm2RowHtml(g, organic) {
+  const emoji  = emojiFor(g.commodity);
+  const price  = fmtRange(g.price_low, g.price_high);
+  const mv     = g.movement || '';
+  const cc     = condClass(mv + ' ' + (g.supply_note||''));
+  const cl     = condLabel(mv, g.supply_note);
+  const pips   = g.origins.slice(0,3).map(o => originPip(o)).join('');
+  const pkg    = [...g.packages][0] || '';
 
-function tmRowHtml(g, organic) {
-  const emoji = emojiFor(g.commodity);
-  const price = fmtRange(g.price_low, g.price_high);
-  const mv = g.movement || '';
-  const cc = condClass(mv + ' ' + (g.supply_note||''));
-  const cl = condLabel(mv, g.supply_note);
-  const pips = g.origins.slice(0,3).map(o => originPip(o)).join('');
-  const pkg = [...g.packages][0] || '';
-
-  // price sub-line — fine appearance tier
-  const fineRow = g.rows.find(r => r.quality_note === 'fine appearance' && r.price_low);
+  // price sub-line
+  const fineRow = g.rows.find(r => (r.quality_note||'').includes('fine') && r.price_low);
   const holdRow = g.rows.find(r => (r.quality_note||'').includes('holdover') && r.price_low);
-  let priceSub = '';
-  if (fineRow) priceSub = `<span class="tm-row-price-sub tps-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</span>`;
-  else if (holdRow) priceSub = `<span class="tm-row-price-sub tps-hold">Holdovers ${fmtRange(holdRow.price_low, holdRow.price_high)}</span>`;
-  else if (g.origins.length > 1) priceSub = `<span class="tm-row-price-sub tps-muted">${g.origins.length} origins</span>`;
+  let psub = '';
+  if (fineRow) psub = `<span class="tm2-row-psub tps-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</span>`;
+  else if (holdRow) psub = `<span class="tm2-row-psub tps-hold">Holdover ${fmtRange(holdRow.price_low, holdRow.price_high)}</span>`;
 
-  // trend
-  let wowCls = 'wow-flat', wowTxt = '— Steady';
-  if (mv.toLowerCase().includes('much higher'))   { wowCls = 'wow-up';   wowTxt = '▲▲ ' + mv; }
-  else if (mv.toLowerCase().includes('higher'))   { wowCls = 'wow-up';   wowTxt = '▲ ' + mv; }
-  else if (mv.toLowerCase().includes('much lower')){ wowCls = 'wow-down'; wowTxt = '▼▼ ' + mv; }
-  else if (mv.toLowerCase().includes('lower'))    { wowCls = 'wow-down'; wowTxt = '▼ ' + mv; }
-
-  // spark bars — shape varies based on movement signal
+  // sparkline
   const isUp   = mv.toLowerCase().includes('higher');
   const isDown = mv.toLowerCase().includes('lower');
-  const heights = isUp   ? [7,8,9,10,11,13,14] :
-                  isDown ? [14,13,12,11,10,9,8]  :
-                           [10,11,10,12,11,12,12];
-  const bars = heights.map((h,i) => {
-    const cls = i===6 ? 'now' : (isUp && i>3) ? 'hi' : (isDown && i<3) ? 'lo' : '';
-    return `<div class="tm-spark-bar${cls?' '+cls:''}" style="height:${h}px"></div>`;
+  const hts = isUp ? [7,8,9,10,12,13,15] : isDown ? [15,13,12,10,9,8,7] : [10,11,9,12,10,12,11];
+  const bars = hts.map((h,i) => {
+    const cls = i===6?'nw':(isUp&&i>3?'hi':(isDown&&i<3?'lo':''));
+    return `<div class="tm2-bar${cls?' '+cls:''}" style="height:${h}px"></div>`;
   }).join('');
 
-  const orgTag = organic ? `<span style="font-size:9px;color:var(--lime-dk);font-weight:700;margin-left:4px;vertical-align:middle;">ORG</span>` : '';
-  const rowBg = organic ? 'background:#fafff4;' : '';
+  // wow label
+  let wowCls = 'wow-flat', wowTxt = '— Steady';
+  if (mv.toLowerCase().includes('much higher'))    { wowCls='wow-up';   wowTxt='▲▲ '+mv; }
+  else if (mv.toLowerCase().includes('higher'))    { wowCls='wow-up';   wowTxt='▲ '+mv; }
+  else if (mv.toLowerCase().includes('much lower')){ wowCls='wow-down'; wowTxt='▼▼ '+mv; }
+  else if (mv.toLowerCase().includes('lower'))     { wowCls='wow-down'; wowTxt='▼ '+mv; }
 
-  return `<div class="tm-row${organic?' organic-row':''}" onclick="openDetail('${esc(g.commodity)}')" style="${rowBg}">
+  const orgTag = organic ? `<span style="font-size:9px;color:var(--lime-dk);font-weight:700;margin-left:4px;">ORG</span>` : '';
+
+  return `<div class="tm2-row${organic?' org-row':''}" onclick="openDetail('${esc(g.commodity)}')">
+    <div><div class="tm2-row-box">${emoji}</div></div>
     <div>
-      <div class="tm-row-emoji">${emoji}</div>
+      <div class="tm2-row-name">${g.commodity}${orgTag}</div>
+      <div class="tm2-row-sub">${pkg}</div>
     </div>
-    <div class="tm-row-name-block">
-      <div class="tm-row-name">${g.commodity}${orgTag}</div>
-      <div class="tm-row-sub">${pkg}</div>
-    </div>
-    <div class="tm-row-cond"><span class="cond-badge ${cc}">${cl}</span></div>
+    <div><span class="cond-badge ${cc}">${cl}</span></div>
     <div>
-      <span class="tm-row-price-main">${price}</span>
-      ${priceSub}
+      <span class="tm2-row-price">${price}</span>
+      ${psub}
     </div>
-    <div class="tm-row-origins">${pips}</div>
-    <div class="tm-row-trend">
-      <div class="tm-sparkline">${bars}</div>
-      <span class="tm-row-wow ${wowCls}">${wowTxt}</span>
+    <div class="tm2-row-origins">${pips}</div>
+    <div class="tm2-trend">
+      <div class="tm2-spark">${bars}</div>
+      <span class="tm2-row-wow ${wowCls}">${wowTxt}</span>
     </div>
-    <div class="tm-row-arrow">›</div>
+    <div class="tm2-row-arr">›</div>
   </div>`;
 }
 
-function rowHtml(g, organic) { return tmRowHtml(g, organic); } // compat
+function rowHtml(g, organic) { return tm2RowHtml(g, organic); }
 
 function esc(s) { return (s||'').replace(/'/g, "\\'"); }
 
