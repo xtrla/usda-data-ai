@@ -1724,22 +1724,20 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 <script>
+
 // ── CONFIG ──────────────────────────────────────────────────────
 const API = 'https://produce-iq-production.up.railway.app';
 
 // ── STATE ───────────────────────────────────────────────────────
 let allRows = [];
 let latestDate = null;
-let activeTab = 'all';
-let activeOrganic = 'all';
-let activeMarket = '';
 let markets = [];
 let currentCommodity = null;
 
 // ── UTILS ───────────────────────────────────────────────────────
 function fmt(v) {
   if (v == null) return null;
-  return '$' + parseFloat(v).toFixed(2).replace('.00', '');
+  return '$' + parseFloat(v).toFixed(2).replace('.00','');
 }
 function fmtRange(low, high) {
   if (!low) return '—';
@@ -1749,13 +1747,13 @@ function fmtRange(low, high) {
 function fmtDate(d) {
   if (!d) return '—';
   const dt = new Date(d + 'T12:00:00');
-  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return dt.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
 }
 function condClass(movement) {
   if (!movement) return 'cond-steady';
   const m = movement.toLowerCase();
   if (m.includes('higher')) return 'cond-higher';
-  if (m.includes('lower')) return 'cond-lower';
+  if (m.includes('lower'))  return 'cond-lower';
   if (m.includes('light') || m.includes('insufficient')) return 'cond-light';
   return 'cond-steady';
 }
@@ -1765,72 +1763,73 @@ function condLabel(movement, supply) {
   return 'Steady';
 }
 function emojiFor(name) {
-  const n = (name || '').toLowerCase();
-  if (n.includes('avocado')) return '🥑';
+  const n = (name||'').toLowerCase();
+  if (n.includes('avocado'))   return '🥑';
   if (n.includes('strawberr')) return '🍓';
-  if (n.includes('blueberr')) return '🫐';
+  if (n.includes('blueberr'))  return '🫐';
   if (n.includes('blackberr')) return '🫐';
-  if (n.includes('raspberr')) return '🍇';
-  if (n.includes('apple')) return '🍎';
+  if (n.includes('raspberr'))  return '🍇';
+  if (n.includes('apple pear')) return '🍐';
+  if (n.includes('apple'))     return '🍎';
   if (n.includes('orange') || n.includes('tangelo') || n.includes('tangerine') || n.includes('satsuma')) return '🍊';
   if (n.includes('lemon') || n.includes('meyer')) return '🍋';
-  if (n.includes('lime')) return '🍈';
+  if (n.includes('lime'))      return '🍈';
   if (n.includes('grapefruit')) return '🍊';
-  if (n.includes('grape')) return '🍇';
-  if (n.includes('mango')) return '🥭';
+  if (n.includes('grape'))     return '🍇';
+  if (n.includes('mango'))     return '🥭';
   if (n.includes('pineapple')) return '🍍';
   if (n.includes('watermelon')) return '🍉';
   if (n.includes('cantaloupe') || n.includes('honeydew') || n.includes('melon')) return '🍈';
   if (n.includes('banana') || n.includes('plantain')) return '🍌';
-  if (n.includes('pear')) return '🍐';
+  if (n.includes('pear'))      return '🍐';
   if (n.includes('peach') || n.includes('nectarine')) return '🍑';
-  if (n.includes('cherry') || n.includes('cherries')) return '🍒';
-  if (n.includes('plum')) return '🍑';
-  if (n.includes('fig')) return '🫐';
-  if (n.includes('coconut')) return '🥥';
-  if (n.includes('tomato')) return '🍅';
-  if (n.includes('pepper')) return '🌶️';
-  if (n.includes('broccoli')) return '🥦';
+  if (n.includes('cherr'))     return '🍒';
+  if (n.includes('plum'))      return '🍑';
+  if (n.includes('fig'))       return '🫐';
+  if (n.includes('coconut'))   return '🥥';
+  if (n.includes('tomato'))    return '🍅';
+  if (n.includes('pepper'))    return '🌶️';
+  if (n.includes('broccoli'))  return '🥦';
   if (n.includes('cauliflower')) return '🥦';
-  if (n.includes('cabbage')) return '🥬';
-  if (n.includes('lettuce')) return '🥬';
+  if (n.includes('cabbage'))   return '🥬';
+  if (n.includes('lettuce'))   return '🥬';
   if (n.includes('spinach') || n.includes('arugula')) return '🥬';
-  if (n.includes('carrot')) return '🥕';
-  if (n.includes('corn')) return '🌽';
-  if (n.includes('mushroom')) return '🍄';
-  if (n.includes('eggplant')) return '🍆';
-  if (n.includes('cucumber')) return '🥒';
-  if (n.includes('celery')) return '🌿';
-  if (n.includes('asparagus')) return '🌿';
-  if (n.includes('onion')) return '🧅';
+  if (n.includes('carrot'))    return '🥕';
+  if (n.includes('corn'))      return '🌽';
+  if (n.includes('mushroom'))  return '🍄';
+  if (n.includes('eggplant'))  return '🍆';
+  if (n.includes('cucumber'))  return '🥒';
+  if (n.includes('celery') || n.includes('asparagus') || n.includes('herb') || n.includes('basil') || n.includes('cilantro') || n.includes('parsley') || n.includes('mint') || n.includes('anise')) return '🌿';
+  if (n.includes('onion'))     return '🧅';
   if (n.includes('potato') || n.includes('yam') || n.includes('sweet potato')) return '🥔';
-  if (n.includes('garlic')) return '🧄';
+  if (n.includes('garlic'))    return '🧄';
   if (n.includes('walnut') || n.includes('pecan') || n.includes('almond') || n.includes('nut') || n.includes('peanut')) return '🥜';
-  if (n.includes('date')) return '🌴';
+  if (n.includes('date'))      return '🌴';
   if (n.includes('dragon fruit')) return '🐉';
+  if (n.includes('pomegranate')) return '🍎';
+  if (n.includes('kiwi'))      return '🥝';
   return '🌿';
 }
 function originPip(origin) {
   if (!origin) return '';
   const o = origin.trim();
-  const short = o.length > 12 ? o.substring(0,3).toUpperCase() : o.substring(0,4).toUpperCase();
-  const colors = {
-    'MEX': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
-    'CAL': 'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
-    'FLO': 'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
-    'PER': 'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
-    'CHI': 'background:#edf4e0;color:#1a5010;border-color:#a0d080',
-    'DOM': 'background:#edf4e0;color:#2e6010;border-color:#b0e090',
-    'WAS': 'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
-    'ORE': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
-    'IDA': 'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
-    'NOR': 'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
-    'GEO': 'background:#edf4e0;color:#2e6010;border-color:#b0e090',
-    'TEX': 'background:#fff8e6;color:#7a5000;border-color:#e8d090',
-  };
-  const key = short.substring(0,3).toUpperCase();
-  const style = colors[key] || 'background:var(--panel);color:var(--dim);border-color:var(--border)';
   const display = o.length > 10 ? o.substring(0,10) : o;
+  const key = o.substring(0,3).toUpperCase();
+  const colors = {
+    'MEX':'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+    'CAL':'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
+    'FLO':'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
+    'PER':'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
+    'CHI':'background:#edf4e0;color:#1a5010;border-color:#a0d080',
+    'DOM':'background:#edf4e0;color:#2e6010;border-color:#b0e090',
+    'WAS':'background:#eef4ff;color:#1a50a0;border-color:#b0ccf5',
+    'ORE':'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+    'IDA':'background:#f5f0ff;color:#5030a0;border-color:#c8b0f0',
+    'NOR':'background:#fdf0f8;color:#802050;border-color:#e0a0c0',
+    'GEO':'background:#edf4e0;color:#2e6010;border-color:#b0e090',
+    'TEX':'background:#fff8e6;color:#7a5000;border-color:#e8d090',
+  };
+  const style = colors[key] || 'background:var(--panel);color:var(--dim);border-color:var(--border)';
   return `<span class="origin-pip" style="${style}">${display}</span>`;
 }
 
@@ -1842,9 +1841,151 @@ function showPage(page, tab) {
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
   window.scrollTo(0,0);
-  if (page === 'markets' && tab) {
-    setTab(tab);
+  if (page === 'markets' && tab) tm2SetType(tab);
+}
+
+// ── FETCH ────────────────────────────────────────────────────────
+async function apiFetch(path) {
+  const r = await fetch(API + path, { headers: { 'Accept':'application/json' } });
+  if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+  return r.json();
+}
+
+// ── BOOT ────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    loadStats();
+    const dates = await apiFetch('/dates');
+    if (!dates || dates.length === 0) throw new Error('No dates available');
+    latestDate = dates[0].date;
+    const fd = fmtDate(latestDate);
+    document.getElementById('nav-date').textContent = fd;
+    const mktDateEl = document.getElementById('markets-date');
+    if (mktDateEl) mktDateEl.textContent = fd;
+    const tm2DateEl = document.getElementById('tm2-date');
+    if (tm2DateEl) tm2DateEl.textContent = fd;
+    document.getElementById('hero-panel-date').textContent = fd;
+    document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
+    allRows = await apiFetch('/commodities/by-date/' + latestDate);
+    populateMarkets();
+    buildTm2Sidebar();
+    buildPulse();
+    buildTicker();
+    renderSnapshot();
+    renderHeroMovers();
+    tm2Render();
+  } catch(e) {
+    console.error('Boot failed:', e);
+    document.getElementById('nav-date').textContent = 'Offline';
+    const tm2Err = document.getElementById('tm2-error');
+    if (tm2Err) tm2Err.style.display = 'block';
+    const tm2Load = document.getElementById('tm2-loading');
+    if (tm2Load) tm2Load.innerHTML = '<span style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</span>';
+    const pulseLoad = document.getElementById('pulse-loading');
+    if (pulseLoad) pulseLoad.textContent = 'Backend offline';
   }
+}
+
+async function loadStats() {
+  try {
+    const s = await apiFetch('/stats');
+    document.getElementById('stat-markets').textContent = s.markets || '12';
+    const rec = s.total_records;
+    document.getElementById('stat-records').innerHTML = rec > 1000
+      ? Math.round(rec/1000) + '<span>k</span>'
+      : rec;
+  } catch(e) {}
+}
+
+function populateMarkets() {
+  const seen = new Set();
+  allRows.forEach(r => { if (r.market) seen.add(r.market); });
+  markets = [...seen].sort();
+}
+
+// ── TICKER ───────────────────────────────────────────────────────
+function buildTicker() {
+  const sample = allRows.filter(r => r.price_low && r.market === 'New York').slice(0,20);
+  if (!sample.length) return;
+  const doubled = [...sample, ...sample];
+  let html = '';
+  doubled.forEach(r => {
+    const price = fmtRange(r.price_low, r.price_high);
+    const mv = r.movement || '';
+    let cls = 'tick-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'tick-up';   sym = '▲ Higher'; }
+    else if (mv.toLowerCase().includes('lower'))  { cls = 'tick-down'; sym = '▼ Lower';  }
+    html += `<div class="tick-item"><span class="tick-name">${r.commodity}${r.variety?' · '+r.variety:''}</span><span class="tick-price">${price}</span><span class="${cls}">${sym}</span></div>`;
+  });
+  document.getElementById('ticker-track').innerHTML = html;
+}
+
+// ── HOME SNAPSHOT ────────────────────────────────────────────────
+function renderSnapshot() {
+  const nyRows = allRows.filter(r => r.market === 'New York');
+  renderSnapCol('snap-fruits', nyRows.filter(r => r.commodity_type === 'fruits'), 6);
+  renderSnapCol('snap-veg',    nyRows.filter(r => r.commodity_type === 'vegetables'), 6);
+  renderSnapCol('snap-other',  nyRows.filter(r => r.commodity_type === 'onions_potatoes' || r.commodity_type === 'nuts'), 6);
+}
+
+function renderSnapCol(id, rows, limit) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (!rows.length) { el.innerHTML = '<div class="empty-row"><p>No data</p></div>'; return; }
+  const grouped = groupByCommodity(rows).slice(0, limit);
+  el.innerHTML = grouped.map(g => {
+    const price = fmtRange(g.price_low, g.price_high);
+    const mv = g.movement || '';
+    let cls = 'chg-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'chg-up';   sym = '▲ ' + mv; }
+    else if (mv.toLowerCase().includes('lower'))  { cls = 'chg-down'; sym = '▼ ' + mv; }
+    const origin = g.origins.slice(0,2).join(' · ');
+    return `<div class="market-row" onclick="openDetail('${esc(g.commodity)}')">
+      <div class="mr-left"><span class="mr-name">${g.commodity}</span><span class="mr-origin">${origin}</span></div>
+      <div class="mr-right"><span class="mr-price">${price}</span><span class="mr-change ${cls}">${sym}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHeroMovers() {
+  const nyRows = allRows.filter(r => r.market === 'New York' && r.price_low);
+  const grouped = groupByCommodity(nyRows).slice(0, 8);
+  document.getElementById('hero-movers').innerHTML = grouped.map(g => {
+    const price = fmtRange(g.price_low, g.price_high);
+    const mv = g.movement || '';
+    let cls = 'd-flat', sym = '— Steady';
+    if (mv.toLowerCase().includes('higher')) { cls = 'd-up';   sym = '▲ ' + mv; }
+    else if (mv.toLowerCase().includes('lower'))  { cls = 'd-down'; sym = '▼ ' + mv; }
+    const origins = g.origins.filter(Boolean).slice(0,2).join(' · ');
+    const emoji = emojiFor(g.commodity);
+    return `<div class="hero-panel-row" onclick="openDetail('${esc(g.commodity)}'); showPage('markets')">
+      <div class="hpr-left">
+        <span class="hpr-emoji">${emoji}</span>
+        <span class="hpr-name">${g.commodity}</span>
+        <span class="hpr-spec">${origins||'—'}</span>
+      </div>
+      <div class="hpr-right"><span class="hpr-price">${price}</span><span class="hpr-delta ${cls}">${sym}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── GROUP BY COMMODITY ───────────────────────────────────────────
+function groupByCommodity(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const key = r.commodity;
+    if (!map[key]) {
+      map[key] = { commodity:r.commodity, commodity_type:r.commodity_type, price_low:null, price_high:null, movement:r.movement, supply_note:r.supply_note, trading_activity:r.trading_activity, source_report:r.source_report, origins:[], packages:new Set(), rows:[] };
+    }
+    const g = map[key];
+    if (r.price_low  && (!g.price_low  || r.price_low  < g.price_low))  g.price_low  = r.price_low;
+    if (r.price_high && (!g.price_high || r.price_high > g.price_high)) g.price_high = r.price_high;
+    if (r.origin  && !g.origins.includes(r.origin))  g.origins.push(r.origin);
+    if (r.package) g.packages.add(r.package);
+    if (!g.movement && r.movement) g.movement = r.movement;
+    g.rows.push(r);
+  });
+  return Object.values(map).sort((a,b) => a.commodity.localeCompare(b.commodity));
 }
 
 // ── TERMINAL MARKETS v2 STATE ───────────────────────────────────
