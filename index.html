@@ -445,17 +445,30 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 .empty-row { padding: 48px 28px; text-align: center; background: var(--white); }
 .empty-row p { font-size: 13px; color: var(--muted); }
 
-/* ── DETAIL PANEL ── */
-.detail-overlay { position: fixed; inset: 0; background: rgba(15,15,10,0.25); z-index: 300; display: none; backdrop-filter: blur(2px); }
-.detail-overlay.open { display: block; }
-.detail-panel {
-  position: fixed; top: 56px; right: 0; bottom: 0; width: 660px;
-  background: var(--white); border-left: 1px solid var(--border);
-  overflow-y: auto; z-index: 301;
-  transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
-  display: flex; flex-direction: column;
+/* ── DETAIL MODAL ── */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(15,15,10,0.55);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
 }
-.detail-panel.open { transform: translateX(0); }
+.detail-overlay.open { display: flex; }
+.detail-panel {
+  position: relative;
+  width: 100%; max-width: 820px;
+  max-height: calc(100vh - 48px);
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  transform: scale(0.96) translateY(8px);
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), opacity 0.18s ease;
+  opacity: 0;
+}
+.detail-overlay.open .detail-panel { transform: scale(1) translateY(0); opacity: 1; }
 .detail-panel::-webkit-scrollbar { width: 5px; }
 .detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
@@ -684,33 +697,14 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .cat-header { padding: 12px 16px 6px; }
   .organic-band { padding: 8px 16px; }
 
-  /* detail panel — full screen bottom sheet on mobile */
+  /* modal on mobile — full screen */
+  .detail-overlay { padding: 0; align-items: flex-end; }
   .detail-panel {
-    width: 100vw;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 92vh;
-    border-left: none;
-    border-top: 1px solid var(--border);
+    max-width: 100%;
+    max-height: 94vh;
     border-radius: 16px 16px 0 0;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    border-bottom: none;
   }
-  .detail-panel.open { transform: translateY(0); }
-
-  /* drag handle on mobile panel */
-  .detail-panel::before {
-    content: '';
-    display: block;
-    width: 36px; height: 4px;
-    background: var(--border2);
-    border-radius: 2px;
-    margin: 10px auto 0;
-    flex-shrink: 0;
-  }
-
   .dp-header { padding: 16px 20px 14px; }
   .dp-price-strip { grid-template-columns: 1fr 1fr; }
   .phc:last-child { grid-column: 1 / -1; border-right: none; }
@@ -1321,6 +1315,81 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .pulse-strip { display: none; }
 }
 
+
+/* ══════════════════════════════════════
+   UNIVERSAL PRICE BREAKDOWN — MODAL
+══════════════════════════════════════ */
+.origin-block { margin-bottom: 24px; }
+.origin-block:last-child { margin-bottom: 0; }
+
+.origin-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0 10px;
+  border-bottom: 2px solid var(--border);
+}
+.origin-tag-modal {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase;
+  white-space: nowrap; border: 1px solid transparent;
+}
+.otm-mx { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
+.otm-dr { background: #edf4e0; color: #2e6010; border-color: #b0e090; }
+.otm-ca { background: #fdf0f8; color: #802050; border-color: #e0a0c0; }
+.otm-fl { background: var(--blue-bg); color: #1a50a0; border-color: #b0ccf5; }
+.otm-pe { background: #f5f0ff; color: #5030a0; border-color: #c8b0f0; }
+.otm-id { background: #f5f0ff; color: #5030a0; border-color: #c8b0f0; }
+.otm-nc { background: #fdf0f8; color: #802050; border-color: #e0a0c0; }
+.otm-wa { background: var(--blue-bg); color: #1a50a0; border-color: #b0ccf5; }
+.otm-tx { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
+.otm-or { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
+.otm-ch { background: #edf4e0; color: #1a5010; border-color: #a0d080; }
+.otm-co { background: #edf4e0; color: #1a5010; border-color: #a0d080; }
+.otm-hn { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
+.otm-other { background: var(--panel); color: var(--dim); border-color: var(--border); }
+
+.origin-variety-label { font-size: 12px; color: var(--muted); font-style: italic; }
+.origin-pack-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
+
+/* SIZE/GRADE TABLE */
+.breakdown-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
+.breakdown-table thead tr { border-bottom: 1px solid var(--border); }
+.breakdown-table thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); padding: 6px 8px; text-align: right;
+}
+.breakdown-table thead th:first-child { text-align: left; }
+.breakdown-table thead th.col-fine  { color: var(--lime-dk); }
+.breakdown-table thead th.col-hold  { color: var(--amber); }
+.breakdown-table thead th.col-fair  { color: var(--red); }
+.breakdown-table thead th.col-proc  { color: var(--blue); }
+
+.breakdown-table tbody tr { border-bottom: 1px solid #f2f0ea; transition: background 0.1s; }
+.breakdown-table tbody tr:last-child { border-bottom: none; }
+.breakdown-table tbody tr:hover { background: var(--panel); }
+.breakdown-table tbody td { padding: 9px 8px; vertical-align: middle; }
+
+.td-size-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  white-space: nowrap; min-width: 50px;
+}
+.td-size-label.descriptor {
+  font-family: 'Barlow', sans-serif; font-size: 12px;
+  font-weight: 400; font-style: italic; color: var(--dim);
+}
+
+.td-price-cell { text-align: right; white-space: nowrap; }
+.cell-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
+.cell-mostly { font-size: 10px; color: var(--lime-dk); font-weight: 600; display: block; text-align: right; margin-top: 1px; }
+.cell-fine  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--lime-dk); display: block; }
+.cell-hold  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--amber); display: block; }
+.cell-fair  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--red); display: block; }
+.cell-proc  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--blue); display: block; }
+.cell-empty { color: var(--border2); font-size: 12px; display: block; text-align: right; }
+.cell-mostly-grade { font-size: 10px; color: var(--muted); display: block; text-align: right; margin-top: 1px; }
+
 </style>
 </head>
 <body>
@@ -1662,55 +1731,52 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   <div style="padding:60px;text-align:center;color:var(--muted);font-size:14px;">Reports archive — coming soon.</div>
 </div>
 
-<!-- ═══════════════════════ DETAIL PANEL ═══════════════════════ -->
-<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
-<div class="detail-panel" id="detail-panel">
-  <div class="dp-header">
-    <div class="dp-header-top">
-      <div class="dp-title-block">
-        <span class="dp-emoji" id="dp-emoji">🌿</span>
-        <div>
-          <div class="dp-commodity" id="dp-name">—</div>
-          <div class="dp-pack" id="dp-pack">—</div>
+<!-- ═══════════════════════ DETAIL MODAL ═══════════════════════ -->
+<div class="detail-overlay" id="detail-overlay" onclick="handleModalOverlayClick(event)">
+  <div class="detail-panel" id="detail-panel">
+
+    <!-- HEADER -->
+    <div class="dp-header">
+      <div class="dp-header-top">
+        <div class="dp-title-block">
+          <span class="dp-emoji" id="dp-emoji">🌿</span>
+          <div>
+            <div class="dp-commodity" id="dp-name">—</div>
+            <div class="dp-pack" id="dp-pack">—</div>
+          </div>
         </div>
+        <div class="dp-close" onclick="closeDetail()">✕</div>
       </div>
-      <div class="dp-close" onclick="closeDetail()">✕</div>
+      <div class="dp-meta-row">
+        <span class="dp-cond cond-steady" id="dp-cond">Steady</span>
+        <span class="dp-market-tag"><span class="dp-live"></span><span id="dp-market">—</span></span>
+        <span class="dp-code" id="dp-code">—</span>
+        <span style="font-size:11px;color:var(--muted)" id="dp-date">—</span>
+      </div>
     </div>
-    <div class="dp-meta-row">
-      <span class="dp-cond cond-steady" id="dp-cond">Steady</span>
-      <span class="dp-market-tag"><span class="dp-live"></span><span id="dp-market">—</span></span>
-      <span class="dp-code" id="dp-code">—</span>
-      <span style="font-size:11px;color:var(--muted)" id="dp-date">—</span>
+
+    <!-- PRICE STRIP -->
+    <div class="dp-price-strip">
+      <div class="phc"><div class="phc-label">Standard range</div><div class="phc-value" id="dp-price-range">—</div><div class="phc-sub" id="dp-price-sub">—</div></div>
+      <div class="phc"><div class="phc-label">Top grade</div><div class="phc-value up" id="dp-fine-price">—</div><div class="phc-sub" id="dp-fine-sub">—</div></div>
+      <div class="phc"><div class="phc-label">Market signal</div><div class="phc-value" id="dp-movement">—</div><div class="phc-sub" id="dp-activity">—</div></div>
     </div>
-  </div>
 
-  <div class="dp-price-strip">
-    <div class="phc"><div class="phc-label">Price range</div><div class="phc-value" id="dp-price-range">—</div><div class="phc-sub" id="dp-price-sub">—</div></div>
-    <div class="phc"><div class="phc-label">Top grade</div><div class="phc-value up" id="dp-fine-price">—</div><div class="phc-sub" id="dp-fine-sub">—</div></div>
-    <div class="phc"><div class="phc-label">Market signal</div><div class="phc-value" id="dp-movement">—</div><div class="phc-sub" id="dp-activity">—</div></div>
-  </div>
+    <!-- UNIVERSAL BREAKDOWN -->
+    <div class="dp-section">
+      <div class="dp-section-label">Price breakdown</div>
+      <div id="dp-breakdown-universal"></div>
+    </div>
 
-  <div class="dp-section">
-    <div class="dp-section-label">Price breakdown</div>
-    <table class="bt">
-      <thead><tr><th>Origin</th><th class="c">Size</th><th>Grade / Quality</th><th class="r">Price</th></tr></thead>
-      <tbody id="dp-breakdown"></tbody>
-    </table>
-  </div>
+    <!-- FOOTER -->
+    <div class="dp-footer">
+      <span id="dp-source">USDA AMS</span>
+      <span onclick="closeDetail()" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink);">Close ✕</span>
+    </div>
 
-  <div class="dp-section">
-    <div class="dp-section-label">All records for this commodity</div>
-    <table class="ht">
-      <thead><tr><th>Market</th><th>Origin</th><th>Package</th><th class="r">Price</th></tr></thead>
-      <tbody id="dp-history"></tbody>
-    </table>
-  </div>
-
-  <div class="dp-footer">
-    <span id="dp-source">USDA AMS</span>
-    <a onclick="closeDetail()">Close panel</a>
   </div>
 </div>
+
 
 <script>
 
@@ -2304,12 +2370,184 @@ function rowHtml(g, organic) { return tm2RowHtml(g, organic); }
 
 function esc(s) { return (s||'').replace(/'/g, "\\'"); }
 
-// ── DETAIL PANEL ─────────────────────────────────────────────────
+// ── DETAIL MODAL ─────────────────────────────────────────────────
+
+function originTagClass(origin) {
+  if (!origin) return 'otm-other';
+  const o = origin.toLowerCase();
+  if (o.includes('mexico') || o.includes('mex') || o.includes('nogales') || o.includes('baja') || o.startsWith('mx')) return 'otm-mx';
+  if (o.includes('dominican') || o.includes('dom rep'))   return 'otm-dr';
+  if (o.includes('california') || o.includes('salinas') || o.includes('fresno') || o.includes('central coast') || o.startsWith('ca-')) return 'otm-ca';
+  if (o.includes('florida') || o.includes('orlando') || o.startsWith('fl'))  return 'otm-fl';
+  if (o.includes('peru') || o.startsWith('pe'))           return 'otm-pe';
+  if (o.includes('idaho') || o.startsWith('id'))          return 'otm-id';
+  if (o.includes('north carolina') || o.includes('n carolina')) return 'otm-nc';
+  if (o.includes('washington') || o.startsWith('wa'))     return 'otm-wa';
+  if (o.includes('texas') || o.startsWith('tx') || o.includes('texas crossing')) return 'otm-tx';
+  if (o.includes('oregon') || o.startsWith('or'))         return 'otm-or';
+  if (o.includes('chile') || o.startsWith('cl'))          return 'otm-ch';
+  if (o.includes('colombia') || o.startsWith('co'))       return 'otm-co';
+  if (o.includes('honduras') || o.startsWith('hn'))       return 'otm-hn';
+  if (o.includes('georgia') || o.startsWith('ga'))        return 'otm-ga';
+  return 'otm-other';
+}
+
+function cleanOriginLabel(origin) {
+  if (!origin) return '—';
+  // Shorten verbose USDA district strings
+  return origin
+    .replace(/crossings? through .*/i, '')
+    .replace(/south and central /i, 'S+C ')
+    .replace(/mexico - /i, 'Mexico ')
+    .replace(/ fob sc$/i, '')
+    .replace(/ district$/i, '')
+    .replace(/salinas-watsonville/i, 'Salinas/Watsonville')
+    .replace(/^mexico$/i, 'Mexico')
+    .replace(/^california$/i, 'California')
+    .replace(/^florida$/i, 'Florida')
+    .replace(/^peru$/i, 'Peru')
+    .trim();
+}
+
+function buildUniversalBreakdown(rows) {
+  if (!rows.length) return '<p style="color:var(--muted);font-size:13px;padding:12px 0;">No breakdown data available.</p>';
+
+  // Group by origin → variety
+  const groups = {};
+  rows.forEach(r => {
+    const origin  = cleanOriginLabel(r.origin || '—');
+    const variety = r.variety || '';
+    const key = origin + '||' + variety;
+    if (!groups[key]) groups[key] = { origin, variety, originRaw: r.origin||'', rows: [] };
+    groups[key].rows.push(r);
+  });
+
+  // Detect what grade columns exist across all rows
+  const hasSize = rows.some(r => r.size && r.size !== '');
+  const hasFine = rows.some(r => (r.quality_note||'').includes('fine'));
+  const hasHold = rows.some(r => (r.quality_note||'').includes('holdover'));
+  const hasFair = rows.some(r => (r.quality_note||'').includes('fair'));
+  const hasProc = rows.some(r => r.grade && (
+    r.grade.toLowerCase().includes('raw') ||
+    r.grade.toLowerCase().includes('roast') ||
+    r.grade.toLowerCase().includes('salt') ||
+    r.grade.toLowerCase().includes('green')
+  ));
+
+  let html = '';
+
+  Object.values(groups).forEach(grp => {
+    const tagCls = originTagClass(grp.originRaw || grp.origin);
+    const pkg    = grp.rows.find(r => r.package)?.package || '';
+
+    // Build column header
+    let colHeaders = `<th>${hasSize ? 'Size' : 'Grade / Tier'}</th>
+      <th class="r">Standard</th>`;
+    if (hasFine) colHeaders += `<th class="r col-fine">Fine app.</th>`;
+    if (hasHold) colHeaders += `<th class="r col-hold">Holdover</th>`;
+    if (hasFair) colHeaders += `<th class="r col-fair">Fair quality</th>`;
+    if (hasProc) colHeaders += `<th class="r col-proc">Process</th>`;
+
+    // Group rows by size within this origin+variety group
+    const bySize = {};
+    grp.rows.forEach(r => {
+      const sz = r.size || '__nosize__';
+      if (!bySize[sz]) bySize[sz] = { size: r.size, standard: null, fine: null, hold: null, fair: null, proc: null };
+      const qn = (r.quality_note || '').toLowerCase();
+      const gr = (r.grade || '').toLowerCase();
+
+      if (qn.includes('fine')) {
+        bySize[sz].fine = r;
+      } else if (qn.includes('fair') && qn.includes('holdover')) {
+        bySize[sz].fair = r; // fair + holdover combo
+      } else if (qn.includes('holdover')) {
+        bySize[sz].hold = r;
+      } else if (qn.includes('fair')) {
+        bySize[sz].fair = r;
+      } else if (gr.includes('raw') || gr.includes('roast') || gr.includes('salt') || gr.includes('green')) {
+        if (!bySize[sz].proc) bySize[sz].proc = {};
+        bySize[sz].proc[r.grade] = r;
+      } else {
+        bySize[sz].standard = r;
+      }
+    });
+
+    // Sort sizes numerically where possible
+    const sizeOrder = Object.keys(bySize).sort((a, b) => {
+      const na = parseInt(a); const nb = parseInt(b);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      return a.localeCompare(b);
+    });
+
+    let rows_html = '';
+    sizeOrder.forEach(sz => {
+      const s = bySize[sz];
+      const isNoSize = sz === '__nosize__';
+      const sizeLabel = isNoSize
+        ? `<td class="td-size-label descriptor">Standard</td>`
+        : `<td class="td-size-label">${s.size}</td>`;
+
+      // Standard cell
+      let stdCell = `<td class="td-price-cell"><span class="cell-empty">—</span></td>`;
+      if (s.standard) {
+        const mostly = s.standard.price_mostly_low
+          ? `<span class="cell-mostly">Mostly ${fmtRange(s.standard.price_mostly_low, s.standard.price_mostly_high)}</span>` : '';
+        stdCell = `<td class="td-price-cell"><span class="cell-price">${fmtRange(s.standard.price_low, s.standard.price_high)}</span>${mostly}</td>`;
+      }
+
+      // Fine cell
+      let fineCell = hasFine ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
+      if (hasFine && s.fine) {
+        const mostly = s.fine.price_mostly_low
+          ? `<span class="cell-mostly-grade">Mostly ${fmtRange(s.fine.price_mostly_low, s.fine.price_mostly_high)}</span>` : '';
+        fineCell = `<td class="td-price-cell"><span class="cell-fine">${fmtRange(s.fine.price_low, s.fine.price_high)}</span>${mostly}</td>`;
+      }
+
+      // Holdover cell
+      let holdCell = hasHold ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
+      if (hasHold && s.hold) {
+        holdCell = `<td class="td-price-cell"><span class="cell-hold">${fmtRange(s.hold.price_low, s.hold.price_high)}</span></td>`;
+      }
+
+      // Fair cell
+      let fairCell = hasFair ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
+      if (hasFair && s.fair) {
+        fairCell = `<td class="td-price-cell"><span class="cell-fair">${fmtRange(s.fair.price_low, s.fair.price_high)}</span></td>`;
+      }
+
+      // Process cell (nuts)
+      let procCell = hasProc ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
+      if (hasProc && s.proc) {
+        const procLines = Object.entries(s.proc)
+          .map(([g,r]) => `<span class="cell-proc" style="font-size:11px;">${g}: ${fmtRange(r.price_low, r.price_high)}</span>`)
+          .join('');
+        procCell = `<td class="td-price-cell">${procLines}</td>`;
+      }
+
+      rows_html += `<tr>${sizeLabel}${stdCell}${fineCell}${holdCell}${fairCell}${procCell}</tr>`;
+    });
+
+    html += `<div class="origin-block">
+      <div class="origin-bar">
+        <span class="origin-tag-modal ${tagCls}">${grp.origin}</span>
+        ${grp.variety ? `<span class="origin-variety-label">${grp.variety}</span>` : ''}
+        ${pkg ? `<span class="origin-pack-label">${pkg}</span>` : ''}
+      </div>
+      <table class="breakdown-table">
+        <thead><tr>${colHeaders}</tr></thead>
+        <tbody>${rows_html}</tbody>
+      </table>
+    </div>`;
+  });
+
+  return html;
+}
+
 function openDetail(commodity) {
   const rows = allRows.filter(r => r.commodity === commodity);
   if (!rows.length) return;
-
   currentCommodity = commodity;
+
   const g = groupByCommodity(rows)[0];
 
   // Header
@@ -2318,75 +2556,46 @@ function openDetail(commodity) {
   const pkg = rows.find(r => r.package)?.package || '';
   document.getElementById('dp-pack').textContent = pkg;
 
-  const mv = g.movement || '';
-  const cc = condClass(mv);
-  const cl = condLabel(mv, g.supply_note);
+  const mv  = g.movement || '';
+  const cc  = condClass(mv);
+  const cl  = condLabel(mv, g.supply_note);
   const condEl = document.getElementById('dp-cond');
   condEl.className = 'dp-cond ' + cc;
   condEl.textContent = cl;
 
-  const mkt = rows[0]?.market || '—';
-  document.getElementById('dp-market').textContent = mkt;
-  document.getElementById('dp-code').textContent = rows[0]?.source_report || '—';
-  document.getElementById('dp-date').textContent = fmtDate(latestDate);
+  document.getElementById('dp-market').textContent = rows[0]?.market || '—';
+  document.getElementById('dp-code').textContent   = rows[0]?.source_report || '—';
+  document.getElementById('dp-date').textContent   = fmtDate(latestDate);
 
-  // Price strip
-  document.getElementById('dp-price-range').textContent = fmtRange(g.price_low, g.price_high);
-  document.getElementById('dp-price-sub').textContent = g.origins.slice(0,2).join(' · ');
+  // Price strip — use standard rows only for headline
+  const stdRows = rows.filter(r => !r.quality_note || r.quality_note === '');
+  const prLow  = stdRows.length ? Math.min(...stdRows.filter(r=>r.price_low).map(r=>r.price_low))   : g.price_low;
+  const prHigh = stdRows.length ? Math.max(...stdRows.filter(r=>r.price_high).map(r=>r.price_high)) : g.price_high;
+  document.getElementById('dp-price-range').textContent = fmtRange(prLow, prHigh);
+  document.getElementById('dp-price-sub').textContent   = g.origins.filter(Boolean).slice(0,3).join(' · ') || '—';
 
-  // Fine appearance
-  const fineRow = rows.find(r => r.quality_note === 'fine appearance' && r.price_low);
-  if (fineRow) {
-    document.getElementById('dp-fine-price').textContent = fmtRange(fineRow.price_low, fineRow.price_high);
-    document.getElementById('dp-fine-sub').textContent = 'Fine appearance';
-  } else {
-    document.getElementById('dp-fine-price').textContent = '—';
-    document.getElementById('dp-fine-sub').textContent = 'No fine tier today';
-  }
+  const fineRow = rows.find(r => (r.quality_note||'').includes('fine') && r.price_low);
+  document.getElementById('dp-fine-price').textContent = fineRow ? fmtRange(fineRow.price_low, fineRow.price_high) : '—';
+  document.getElementById('dp-fine-sub').textContent   = fineRow ? 'Fine appearance premium' : 'No fine tier today';
 
   document.getElementById('dp-movement').textContent = mv || 'Steady';
   document.getElementById('dp-activity').textContent = g.trading_activity || g.supply_note || '';
 
-  // Breakdown table
-  const breakdown = rows.slice(0, 40).map(r => {
-    const qn = r.quality_note || '';
-    let gtag = `<span class="gtag g-std">Standard</span>`;
-    if (qn.includes('fine')) gtag = `<span class="gtag g-fine">Fine appearance</span>`;
-    else if (qn.includes('fair')) gtag = `<span class="gtag g-fair">${titleCase(qn)}</span>`;
-    else if (qn.includes('holdover')) gtag = `<span class="gtag g-hold">Holdover</span>`;
-    else if (r.grade) gtag = `<span class="gtag g-std">${r.grade}</span>`;
-    const mostly = r.price_mostly_low ? `<span class="pm">Mostly ${fmtRange(r.price_mostly_low, r.price_mostly_high)}</span>` : '';
-    const variety = r.variety ? `<span class="vtag">${r.variety}</span>` : '';
-    return `<tr>
-      <td><span class="otag">${r.origin || '—'}</span>${variety}</td>
-      <td class="sc">${r.size || '<span style="color:#ccc">—</span>'}</td>
-      <td>${gtag}</td>
-      <td class="pc"><span class="pr">${fmtRange(r.price_low, r.price_high)}</span>${mostly}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('dp-breakdown').innerHTML = breakdown || '<tr><td colspan="4" style="color:var(--muted);padding:12px 8px;font-size:12px;">No breakdown data</td></tr>';
+  // Universal breakdown
+  document.getElementById('dp-breakdown-universal').innerHTML = buildUniversalBreakdown(rows);
+  document.getElementById('dp-source').textContent = `USDA AMS · ${rows[0]?.source_report||''} · ${fmtDate(latestDate)}`;
 
-  // All records
-  const hist = rows.slice(0, 20).map(r =>
-    `<tr>
-      <td class="ht-cond">${r.market || '—'}</td>
-      <td class="ht-cond">${r.origin || '—'}</td>
-      <td class="ht-cond">${r.package || '—'}</td>
-      <td class="ht-price">${fmtRange(r.price_low, r.price_high)}</td>
-    </tr>`
-  ).join('');
-  document.getElementById('dp-history').innerHTML = hist;
-
-  document.getElementById('dp-source').textContent = `USDA AMS · ${rows[0]?.source_report || ''} · ${fmtDate(latestDate)}`;
-
-  // Open panel
+  // Open modal
   document.getElementById('detail-overlay').classList.add('open');
-  document.getElementById('detail-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('detail-overlay')) closeDetail();
+}
 function closeDetail() {
   document.getElementById('detail-overlay').classList.remove('open');
-  document.getElementById('detail-panel').classList.remove('open');
+  document.body.style.overflow = '';
   currentCommodity = null;
 }
 
@@ -2542,6 +2751,7 @@ document.addEventListener('keydown', function(e) {
   }
   if (e.key === 'Escape') {
     closeSearch();
+    closeDetail();
     return;
   }
   const overlay = document.getElementById('search-overlay');
