@@ -176,8 +176,8 @@ nav {
 .tick-flat { color: var(--muted); font-size: 10px; }
 
 /* ── PAGES ── */
-.page { display: none; }
-.page.active { display: block; }
+.page { display: none !important; }
+.page.active { display: block !important; }
 
 /* ── HERO (home) ── */
 .hero-wrap { padding-top: 90px; }
@@ -882,7 +882,7 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 <!-- ═══════════════════════ MARKETS PAGE ═══════════════════════ -->
-<div id="page-markets" class="page" style="padding-top:90px;display:none;">
+<div id="page-markets" class="page" style="padding-top:90px;">
   <div style="display:grid;grid-template-columns:256px 1fr;height:calc(100vh - 90px);overflow:hidden;">
 
     <!-- SIDEBAR -->
@@ -1208,13 +1208,17 @@ function originPip(origin) {
 
 // ── NAVIGATION ───────────────────────────────────────────────────
 function showPage(page, tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.removeProperty('display');
+  });
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
   window.scrollTo(0,0);
-  if (page === 'markets' && tab) tm2SetType(tab);
+  if (page === 'markets' && tab) tm3SetType(tab);
 }
 
 // ── FETCH ────────────────────────────────────────────────────────
@@ -1233,10 +1237,7 @@ async function boot() {
     latestDate = dates[0].date;
     const fd = fmtDate(latestDate);
     document.getElementById('nav-date').textContent = fd;
-    const mktDateEl = document.getElementById('markets-date');
-    if (mktDateEl) mktDateEl.textContent = fd;
-    const tm2DateEl = document.getElementById('tm2-date');
-    if (tm2DateEl) tm2DateEl.textContent = fd;
+
     document.getElementById('hero-panel-date').textContent = fd;
     document.getElementById('snapshot-date').innerHTML = `Data as of <strong>${fd} · 10:15 AM ET</strong> · USDA AMS`;
     allRows = await apiFetch('/commodities/by-date/' + latestDate);
