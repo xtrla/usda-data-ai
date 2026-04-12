@@ -682,6 +682,165 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   .dm-ps-val { font-size: 22px; }
   .dm-sr-std { font-size: 17px; }
 }
+
+/* ═══════════════════════════════════════════
+   WATCHLIST + ALERTS + COMPARE + DIGEST
+═══════════════════════════════════════════ */
+
+/* STAR BUTTON on commodity rows */
+.wl-star {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; flex-shrink: 0;
+  color: var(--border2); transition: all 0.15s;
+  background: transparent; border: none;
+}
+.wl-star:hover { color: var(--amber); transform: scale(1.15); }
+.wl-star.saved { color: var(--amber); }
+
+/* WATCHLIST PAGE */
+.wl-page { padding: 40px; max-width: 900px; margin: 0 auto; }
+.wl-hero { margin-bottom: 32px; }
+.wl-hero-title { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 400; letter-spacing: -0.8px; color: var(--ink); }
+.wl-hero-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.wl-empty-state { text-align: center; padding: 80px 32px; }
+.wl-empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.wl-empty-title { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--muted); margin-bottom: 8px; }
+.wl-empty-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 320px; margin: 0 auto 24px; }
+.wl-empty-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--ink); color: var(--white); border: none; padding: 11px 22px; border-radius: 8px; cursor: pointer; }
+
+/* watchlist grid */
+.wl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 40px; }
+.wl-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; cursor: pointer; transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 12px;
+  border-left: 3px solid transparent;
+}
+.wl-card:hover { border-color: var(--border2); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.wl-card.up   { border-left-color: var(--lime); }
+.wl-card.down { border-left-color: var(--red); }
+.wl-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.wl-card-left { display: flex; align-items: center; gap: 10px; }
+.wl-card-emoji { font-size: 22px; }
+.wl-card-name { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.wl-card-mkt  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.wl-remove { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); transition: all 0.12s; flex-shrink: 0; }
+.wl-remove:hover { background: var(--red-bg); color: var(--red); border-color: #f0c0b8; }
+.wl-card-price { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+.wl-card-fine  { font-size: 11px; color: var(--lime-dk); font-weight: 700; margin-top: 2px; }
+.wl-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+.wl-card-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px; }
+.wl-card-alert { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: color 0.12s; }
+.wl-card-alert:hover { color: var(--ink); }
+.wl-card-alert.set { color: var(--amber); }
+
+/* ALERT MODAL */
+.alert-modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(15,15,10,0.5); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.alert-modal-overlay.open { display: flex; }
+.alert-modal {
+  background: var(--white); border-radius: 16px; width: 100%; max-width: 440px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  transform: scale(0.96) translateY(8px); opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.22,1,0.36,1), opacity 0.16s ease;
+}
+.alert-modal-overlay.open .alert-modal { transform: scale(1) translateY(0); opacity: 1; }
+.am-header { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.am-title { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--ink); }
+.am-close { width: 28px; height: 28px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--dim); }
+.am-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+.am-field { display: flex; flex-direction: column; gap: 6px; }
+.am-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.am-input {
+  font-family: 'Barlow', sans-serif; font-size: 15px; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 11px 14px; border-radius: 9px; outline: none; transition: border-color 0.15s;
+  width: 100%;
+}
+.am-input:focus { border-color: var(--border2); background: var(--white); }
+.am-select { font-family: 'Barlow', sans-serif; font-size: 15px; color: var(--ink); background: var(--panel); border: 1px solid var(--border); padding: 11px 14px; border-radius: 9px; outline: none; width: 100%; cursor: pointer; }
+.am-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.am-hint { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.am-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+.am-btn-cancel { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--panel); border: 1px solid var(--border); color: var(--dim); padding: 9px 18px; border-radius: 8px; cursor: pointer; }
+.am-btn-save { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--ink); color: var(--white); border: none; padding: 9px 22px; border-radius: 8px; cursor: pointer; }
+.am-btn-save:hover { background: #2a2a20; }
+.am-success { padding: 32px 22px; text-align: center; display: none; }
+.am-success.show { display: block; }
+.am-success-icon { font-size: 36px; margin-bottom: 12px; }
+.am-success-title { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--ink); margin-bottom: 6px; }
+.am-success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* MARKET COMPARE PAGE */
+.compare-page { padding: 40px; max-width: 1000px; margin: 0 auto; }
+.compare-hero { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.compare-title { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 400; letter-spacing: -0.8px; color: var(--ink); }
+.compare-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.compare-picker { display: flex; align-items: center; gap: 10px; }
+.compare-select { font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); border: 1px solid var(--border); padding: 10px 14px; border-radius: 9px; outline: none; cursor: pointer; min-width: 220px; }
+.compare-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--white); }
+.compare-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.compare-table thead th {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--muted);
+  padding: 12px 20px; text-align: left; border-bottom: 2px solid var(--border);
+  white-space: nowrap; background: var(--panel);
+}
+.compare-table thead th.r { text-align: right; }
+.compare-table thead th.active-col { color: var(--ink); background: var(--lime-bg); }
+.compare-table tbody tr { border-bottom: 1px solid #eae8e0; transition: background 0.1s; }
+.compare-table tbody tr:last-child { border-bottom: none; }
+.compare-table tbody tr:hover { background: #fdfcf8; }
+.compare-table tbody td { padding: 14px 20px; font-size: 14px; vertical-align: middle; }
+.ct-mkt { font-weight: 600; color: var(--ink); font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.ct-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
+.ct-pip.live { background: var(--lime); box-shadow: 0 0 5px var(--lime); }
+.ct-price { font-size: 16px; font-weight: 600; color: var(--ink); text-align: right; display: block; font-variant-numeric: tabular-nums; }
+.ct-fine { font-size: 11px; color: var(--lime-dk); font-weight: 700; text-align: right; display: block; margin-top: 2px; }
+.ct-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+.ct-origins { font-size: 11px; color: var(--muted); }
+.ct-empty { color: var(--border2); font-size: 13px; text-align: center; display: block; }
+.compare-empty-state { padding: 60px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* MORNING DIGEST PAGE */
+.digest-page { padding: 40px; max-width: 960px; margin: 0 auto; }
+.digest-date-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+.digest-title { font-family: 'Instrument Serif', serif; font-size: 38px; font-weight: 400; letter-spacing: -1px; color: var(--ink); line-height: 1; }
+.digest-title em { font-style: italic; color: var(--muted); }
+.digest-date { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.digest-live { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); animation: pulse 1.5s infinite; display: inline-block; }
+.digest-section { margin-bottom: 36px; }
+.digest-section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.digest-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* digest cards row */
+.digest-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.digest-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; cursor: pointer; transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+.digest-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+.digest-card.up   { border-left-color: var(--lime); }
+.digest-card.down { border-left-color: var(--red); }
+.digest-card.light { border-left-color: var(--purple); }
+.dc-emoji { font-size: 20px; margin-bottom: 8px; display: block; }
+.dc-name  { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.dc-mkt   { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.dc-price { font-size: 18px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+.dc-signal { font-size: 11px; font-weight: 700; margin-top: 4px; }
+.dc-up   { color: var(--lime-dk); }
+.dc-down { color: var(--red); }
+.dc-light{ color: var(--purple); }
+
+/* digest watchlist section */
+.digest-wl-empty { font-size: 14px; color: var(--muted); padding: 20px 0; }
+.digest-wl-empty a { color: var(--ink); font-weight: 600; cursor: pointer; text-decoration: underline; }
+
 </style>
 </head>
 <body>
@@ -691,9 +850,10 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   <div class="nav-logo" onclick="showPage('home')">agra<span>X</span></div>
   <div class="nav-links">
     <span class="nav-link active" onclick="showPage('home')" id="nav-home">Dashboard</span>
-    <span class="nav-link" onclick="showPage('markets')" id="nav-markets">Terminal Markets</span>
-    <span class="nav-link" onclick="showPage('fob')" id="nav-fob">FOB Origins</span>
-    <span class="nav-link" onclick="showPage('reports')" id="nav-reports">Reports</span>
+    <span class="nav-link" onclick="showPage('markets')" id="nav-markets">Markets</span>
+    <span class="nav-link" onclick="showPage('watchlist')" id="nav-watchlist">Watchlist <span id="nav-wl-count" style="display:none;font-family:'DM Mono',monospace;font-size:10px;background:var(--amber);color:var(--white);padding:1px 6px;border-radius:10px;margin-left:3px;vertical-align:middle;"></span></span>
+    <span class="nav-link" onclick="showPage('digest')" id="nav-digest">Morning Digest</span>
+    <span class="nav-link" onclick="showPage('compare')" id="nav-compare">Compare</span>
   </div>
   <div class="nav-right">
     <div class="nav-search-btn" onclick="openSearch()" id="nav-search-btn">
@@ -712,8 +872,9 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 <div class="mobile-nav" id="mobile-nav">
   <span class="mobile-nav-link active" onclick="mobileNav('home')">Dashboard</span>
   <span class="mobile-nav-link" onclick="mobileNav('markets')">Terminal Markets</span>
-  <span class="mobile-nav-link" onclick="mobileNav('fob')">FOB Origins</span>
-  <span class="mobile-nav-link" onclick="mobileNav('reports')">Reports</span>
+  <span class="mobile-nav-link" onclick="mobileNav('watchlist')">Watchlist</span>
+  <span class="mobile-nav-link" onclick="mobileNav('digest')">Morning Digest</span>
+  <span class="mobile-nav-link" onclick="mobileNav('compare')">Compare</span>
   <span class="mobile-nav-link cta" onclick="mobileNav('markets')">View Markets →</span>
 </div>
 
@@ -1096,6 +1257,125 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 
+
+<!-- ═══════════════════════ WATCHLIST PAGE ═══════════════════════ -->
+<div id="page-watchlist" class="page" style="padding-top:90px;background:var(--bg);min-height:100vh;">
+  <div class="wl-page">
+    <div class="wl-hero">
+      <div class="wl-hero-title">My Watchlist</div>
+      <div class="wl-hero-sub">Your saved commodities — today's prices at a glance.</div>
+    </div>
+    <div id="wl-content">
+      <div class="wl-empty-state">
+        <div class="wl-empty-icon">⭐</div>
+        <div class="wl-empty-title">Nothing saved yet</div>
+        <p class="wl-empty-sub">Star any commodity on the Terminal Markets page to add it to your watchlist.</p>
+        <button class="wl-empty-cta" onclick="showPage('markets')">Browse Markets</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ COMPARE PAGE ═══════════════════════ -->
+<div id="page-compare" class="page" style="padding-top:90px;background:var(--bg);min-height:100vh;">
+  <div class="compare-page">
+    <div class="compare-hero">
+      <div>
+        <div class="compare-title">Market Compare</div>
+        <div class="compare-sub">See how one commodity trades across all markets today.</div>
+      </div>
+      <div class="compare-picker">
+        <select class="compare-select" id="compare-select" onchange="renderCompare()">
+          <option value="">Select a commodity…</option>
+        </select>
+      </div>
+    </div>
+    <div id="compare-content">
+      <div class="compare-empty-state">Select a commodity above to compare prices across all markets.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DIGEST PAGE ═══════════════════════ -->
+<div id="page-digest" class="page" style="padding-top:90px;background:var(--bg);min-height:100vh;">
+  <div class="digest-page">
+    <div class="digest-date-header">
+      <div>
+        <div class="digest-title">Morning <em>Digest</em></div>
+        <div class="digest-date"><span class="digest-live"></span><span id="digest-date-label">Loading…</span></div>
+      </div>
+    </div>
+
+    <!-- Watchlist section -->
+    <div class="digest-section">
+      <div class="digest-section-title">Your Watchlist</div>
+      <div id="digest-watchlist-content">
+        <div class="digest-wl-empty">No items saved. <a onclick="showPage('markets')">Browse markets</a> and star commodities to track them here.</div>
+      </div>
+    </div>
+
+    <!-- Top movers -->
+    <div class="digest-section">
+      <div class="digest-section-title">▲ Moving Higher Today</div>
+      <div class="digest-row" id="digest-higher"></div>
+    </div>
+
+    <div class="digest-section">
+      <div class="digest-section-title">▼ Moving Lower Today</div>
+      <div class="digest-row" id="digest-lower"></div>
+    </div>
+
+    <div class="digest-section">
+      <div class="digest-section-title">◎ Supply Tightening</div>
+      <div class="digest-row" id="digest-light"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ALERT MODAL ═══════════════════════ -->
+<div class="alert-modal-overlay" id="alert-overlay" onclick="alertHandleOverlay(event)">
+  <div class="alert-modal">
+    <div class="am-header">
+      <div class="am-title" id="am-title">Set Price Alert</div>
+      <div class="am-close" onclick="closeAlertModal()">✕</div>
+    </div>
+    <div class="am-body" id="am-body">
+      <div class="am-field">
+        <div class="am-label">Commodity</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);padding:4px 0;" id="am-commodity-display">—</div>
+      </div>
+      <div class="am-field">
+        <div class="am-label">Your email</div>
+        <input class="am-input" type="email" id="am-email" placeholder="you@company.com">
+      </div>
+      <div class="am-row">
+        <div class="am-field">
+          <div class="am-label">Alert when price</div>
+          <select class="am-select" id="am-condition">
+            <option value="above">Goes above</option>
+            <option value="below">Falls below</option>
+            <option value="daily">Send daily regardless</option>
+          </select>
+        </div>
+        <div class="am-field">
+          <div class="am-label">Threshold price ($)</div>
+          <input class="am-input" type="number" id="am-threshold" placeholder="e.g. 35" min="0" step="0.50">
+        </div>
+      </div>
+      <div class="am-hint" id="am-current-price-hint">—</div>
+    </div>
+    <div class="am-success" id="am-success">
+      <div class="am-success-icon">✅</div>
+      <div class="am-success-title">Alert set!</div>
+      <div class="am-success-sub" id="am-success-msg">You'll receive an email when the price condition is met.</div>
+    </div>
+    <div class="am-footer" id="am-footer">
+      <button class="am-btn-cancel" onclick="closeAlertModal()">Cancel</button>
+      <button class="am-btn-save" onclick="saveAlert()">Set Alert</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 // ── CONFIG ──────────────────────────────────────────────────────
@@ -1219,6 +1499,9 @@ function showPage(page, tab) {
   if (navEl) navEl.classList.add('active');
   window.scrollTo(0,0);
   if (page === 'markets' && tab) tm3SetType(tab);
+  if (page === 'watchlist') { setTimeout(renderWatchlist, 0); }
+  if (page === 'compare')   { setTimeout(() => { populateCompareSelect(); renderCompare(); }, 0); }
+  if (page === 'digest')    { setTimeout(renderDigest, 0); }
 }
 
 // ── FETCH ────────────────────────────────────────────────────────
@@ -1252,6 +1535,7 @@ async function boot() {
     // update date on markets page
     const tm3DateEl = document.getElementById('tm3-date');
     if (tm3DateEl) tm3DateEl.textContent = fd;
+    wlUpdateNavBadge();
   } catch(e) {
     console.error('Boot failed:', e);
     document.getElementById('nav-date').textContent = 'Offline';
@@ -1653,6 +1937,7 @@ function tm3RowHtml(g, organic) {
   const orgTag = organic ? `<span style="font-size:10px;color:var(--lime-dk);font-weight:700;margin-left:6px;vertical-align:middle;">ORG</span>` : '';
   const rowBg = organic ? 'style="background:#f8fef0"' : '';
 
+  const isWatched = wlIsWatched(g.commodity);
   return `<div class="tm3-row" onclick="openDetail('${esc(g.commodity)}')" ${rowBg}>
     <div class="tm3-row-ico">${emoji}</div>
     <div class="tm3-row-info">
@@ -1664,7 +1949,7 @@ function tm3RowHtml(g, organic) {
       <span class="tm3-row-price">${price}</span>
       ${fineHtml}
     </div>
-    <span class="tm3-row-arrow">›</span>
+    <button class="wl-star ${isWatched?'saved':''}" data-commodity="${esc(g.commodity)}" onclick="event.stopPropagation();wlToggle('${esc(g.commodity)}')" title="${isWatched?'Remove from watchlist':'Save to watchlist'}">${isWatched?'⭐':'☆'}</button>
   </div>`;
 }
 
@@ -2078,7 +2363,387 @@ document.addEventListener('click', function(e) {
 function esc(s) { return (s||'').replace(/'/g, "\'"); }
 function titleCase(s) { return (s||'').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase()); }
 
+
+// ═══════════════════════════════════════════
+// WATCHLIST
+// ═══════════════════════════════════════════
+const WL_KEY = 'agrax_watchlist_v1';
+
+function wlGet() {
+  try { return JSON.parse(localStorage.getItem(WL_KEY) || '[]'); }
+  catch { return []; }
+}
+function wlSave(list) {
+  localStorage.setItem(WL_KEY, JSON.stringify(list));
+  wlUpdateNavBadge();
+}
+function wlToggle(commodity) {
+  const list = wlGet();
+  const idx  = list.indexOf(commodity);
+  if (idx > -1) list.splice(idx, 1);
+  else list.push(commodity);
+  wlSave(list);
+  // Update all star buttons for this commodity
+  document.querySelectorAll(`.wl-star[data-commodity="${commodity}"]`).forEach(btn => {
+    btn.classList.toggle('saved', idx === -1);
+    btn.title = idx === -1 ? 'Remove from watchlist' : 'Add to watchlist';
+  });
+  // Re-render watchlist page if open
+  if (document.getElementById('page-watchlist').classList.contains('active')) renderWatchlist();
+}
+function wlIsWatched(commodity) { return wlGet().includes(commodity); }
+function wlUpdateNavBadge() {
+  const list = wlGet();
+  const badge = document.getElementById('nav-wl-count');
+  if (!badge) return;
+  if (list.length > 0) { badge.textContent = list.length; badge.style.display = 'inline'; }
+  else badge.style.display = 'none';
+}
+
+function renderWatchlist() {
+  const list   = wlGet();
+  const content = document.getElementById('wl-content');
+  if (!content) return;
+
+  if (!list.length) {
+    content.innerHTML = `<div class="wl-empty-state">
+      <div class="wl-empty-icon">⭐</div>
+      <div class="wl-empty-title">Nothing saved yet</div>
+      <p class="wl-empty-sub">Star any commodity on the Terminal Markets page to add it here.</p>
+      <button class="wl-empty-cta" onclick="showPage('markets')">Browse Markets</button>
+    </div>`;
+    return;
+  }
+
+  const alerts = alertsGet();
+  let html = '<div class="wl-grid">';
+  list.forEach(commodity => {
+    const rows = allRows.filter(r => r.commodity === commodity);
+    if (!rows.length) return;
+    const g = groupByCommodity(rows)[0];
+    const mv = g.movement || '';
+    const isUp   = mv.toLowerCase().includes('higher');
+    const isDown = mv.toLowerCase().includes('lower');
+    const cardCls = isUp ? 'up' : isDown ? 'down' : '';
+
+    let badgeCls = 'tmb-steady', badgeTxt = '— Steady';
+    if (isUp)   { badgeCls = 'tmb-higher'; badgeTxt = '▲ ' + mv; }
+    if (isDown) { badgeCls = 'tmb-lower';  badgeTxt = '▼ ' + mv; }
+
+    const fineRow = rows.find(r => (r.quality_note||'').includes('fine') && r.price_low);
+    const fineHtml = fineRow ? `<div class="wl-card-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</div>` : '';
+    const mkt = rows[0]?.market || '—';
+    const hasAlert = alerts.some(a => a.commodity === commodity);
+
+    html += `<div class="wl-card ${cardCls}" onclick="openDetail('${esc(commodity)}')">
+      <div class="wl-card-top">
+        <div class="wl-card-left">
+          <span class="wl-card-emoji">${emojiFor(commodity)}</span>
+          <div>
+            <div class="wl-card-name">${commodity}</div>
+            <div class="wl-card-mkt">${mkt}</div>
+          </div>
+        </div>
+        <div class="wl-remove" onclick="event.stopPropagation();wlToggle('${esc(commodity)}')" title="Remove">✕</div>
+      </div>
+      <div>
+        <div class="wl-card-price">${fmtRange(g.price_low, g.price_high)}</div>
+        ${fineHtml}
+      </div>
+      <div class="wl-card-footer">
+        <span class="wl-card-badge ${badgeCls}">${badgeTxt}</span>
+        <span class="wl-card-alert ${hasAlert?'set':''}" onclick="event.stopPropagation();openAlertModal('${esc(commodity)}')">
+          ${hasAlert ? '🔔 Alert set' : '+ Set alert'}
+        </span>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+// Add star button to tm3 rows — inject into existing row html
+function tm3RowHtmlWithStar(g, organic) {
+  const base = tm3RowHtml(g, organic);
+  const isWatched = wlIsWatched(g.commodity);
+  const star = `<button class="wl-star ${isWatched?'saved':''}" data-commodity="${esc(g.commodity)}" title="${isWatched?'Remove from watchlist':'Add to watchlist'}" onclick="event.stopPropagation();wlToggle('${esc(g.commodity)}')">${isWatched?'⭐':'☆'}</button>`;
+  // Insert star before closing div
+  return base.replace('</div>', star + '</div>');
+}
+
+// ═══════════════════════════════════════════
+// PRICE ALERTS
+// ═══════════════════════════════════════════
+const ALERTS_KEY = 'agrax_alerts_v1';
+let alertCommodity = null;
+
+function alertsGet() {
+  try { return JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); }
+  catch { return []; }
+}
+function alertsSave(list) { localStorage.setItem(ALERTS_KEY, JSON.stringify(list)); }
+
+function openAlertModal(commodity) {
+  alertCommodity = commodity;
+  document.getElementById('am-title').textContent = 'Set Price Alert — ' + commodity;
+  document.getElementById('am-commodity-display').textContent = emojiFor(commodity) + ' ' + commodity;
+
+  // Show current price as hint
+  const rows = allRows.filter(r => r.commodity === commodity);
+  if (rows.length) {
+    const g = groupByCommodity(rows)[0];
+    document.getElementById('am-current-price-hint').textContent =
+      'Current price: ' + fmtRange(g.price_low, g.price_high) + ' · ' + (rows[0]?.market || '');
+  }
+
+  // Pre-fill existing alert if any
+  const existing = alertsGet().find(a => a.commodity === commodity);
+  if (existing) {
+    document.getElementById('am-email').value = existing.email || '';
+    document.getElementById('am-condition').value = existing.condition || 'above';
+    document.getElementById('am-threshold').value = existing.threshold || '';
+  } else {
+    document.getElementById('am-email').value = localStorage.getItem('agrax_email') || '';
+    document.getElementById('am-condition').value = 'daily';
+    document.getElementById('am-threshold').value = '';
+  }
+
+  // Reset success state
+  document.getElementById('am-body').style.display = '';
+  document.getElementById('am-footer').style.display = '';
+  document.getElementById('am-success').classList.remove('show');
+
+  document.getElementById('alert-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('am-email').focus(), 100);
+}
+
+function closeAlertModal() {
+  document.getElementById('alert-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  alertCommodity = null;
+}
+
+function alertHandleOverlay(e) {
+  if (e.target === document.getElementById('alert-overlay')) closeAlertModal();
+}
+
+function saveAlert() {
+  const email     = document.getElementById('am-email').value.trim();
+  const condition = document.getElementById('am-condition').value;
+  const threshold = parseFloat(document.getElementById('am-threshold').value);
+
+  if (!email || !email.includes('@')) {
+    document.getElementById('am-email').style.borderColor = 'var(--red)';
+    document.getElementById('am-email').focus();
+    return;
+  }
+  document.getElementById('am-email').style.borderColor = '';
+
+  if (condition !== 'daily' && isNaN(threshold)) {
+    document.getElementById('am-threshold').style.borderColor = 'var(--red)';
+    document.getElementById('am-threshold').focus();
+    return;
+  }
+  document.getElementById('am-threshold').style.borderColor = '';
+
+  // Save email for next time
+  localStorage.setItem('agrax_email', email);
+
+  // Save alert
+  const list = alertsGet().filter(a => a.commodity !== alertCommodity);
+  list.push({
+    commodity: alertCommodity,
+    email,
+    condition,
+    threshold: isNaN(threshold) ? null : threshold,
+    createdAt: new Date().toISOString(),
+    market: allRows.find(r => r.commodity === alertCommodity)?.market || 'New York'
+  });
+  alertsSave(list);
+
+  // Show success
+  document.getElementById('am-body').style.display = 'none';
+  document.getElementById('am-footer').style.display = 'none';
+  const successMsg = condition === 'daily'
+    ? `We'll email you ${email} every morning with the current price of ${alertCommodity}.`
+    : `We'll email you at ${email} when ${alertCommodity} ${condition === 'above' ? 'goes above' : 'falls below'} $${threshold}.`;
+  document.getElementById('am-success-msg').textContent = successMsg;
+  document.getElementById('am-success').classList.add('show');
+
+  // Re-render watchlist to update alert badges
+  if (document.getElementById('page-watchlist').classList.contains('active')) renderWatchlist();
+
+  setTimeout(() => closeAlertModal(), 2800);
+}
+
+// ═══════════════════════════════════════════
+// MARKET COMPARE
+// ═══════════════════════════════════════════
+function populateCompareSelect() {
+  const sel = document.getElementById('compare-select');
+  if (!sel || sel.options.length > 1) return;
+  const commodities = [...new Set(allRows.map(r => r.commodity))].sort();
+  commodities.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = emojiFor(c) + ' ' + c;
+    sel.appendChild(opt);
+  });
+}
+
+function renderCompare() {
+  const commodity = document.getElementById('compare-select').value;
+  const container = document.getElementById('compare-content');
+  if (!commodity) {
+    container.innerHTML = '<div class="compare-empty-state">Select a commodity above to compare prices across all markets.</div>';
+    return;
+  }
+
+  const rows = allRows.filter(r => r.commodity === commodity);
+  if (!rows.length) {
+    container.innerHTML = '<div class="compare-empty-state">No data for this commodity today.</div>';
+    return;
+  }
+
+  // Get all markets that have this commodity
+  const mktMap = {};
+  rows.forEach(r => {
+    if (!r.market) return;
+    if (!mktMap[r.market]) mktMap[r.market] = [];
+    mktMap[r.market].push(r);
+  });
+
+  const markets = Object.keys(mktMap).sort();
+
+  let html = `<div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th class="r">Standard price</th>
+          <th class="r">Fine appearance</th>
+          <th>Condition</th>
+          <th>Origins</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  // Find min/max price for highlighting best deal
+  const prices = markets.map(m => {
+    const g = groupByCommodity(mktMap[m])[0];
+    return g.price_low || 0;
+  });
+  const minPrice = Math.min(...prices.filter(p => p > 0));
+  const maxPrice = Math.max(...prices);
+
+  markets.forEach(mkt => {
+    const g = groupByCommodity(mktMap[mkt])[0];
+    const mv = g.movement || '';
+    const isUp   = mv.toLowerCase().includes('higher');
+    const isDown = mv.toLowerCase().includes('lower');
+    const isSn   = (g.supply_note||'').toLowerCase().includes('light');
+
+    let badgeCls = 'tmb-steady', badgeTxt = '— Steady';
+    if (isUp)   { badgeCls = 'tmb-higher'; badgeTxt = '▲ ' + mv; }
+    if (isDown) { badgeCls = 'tmb-lower';  badgeTxt = '▼ ' + mv; }
+    if (isSn)   { badgeCls = 'tmb-light';  badgeTxt = '◎ Light'; }
+
+    const fineRow = mktMap[mkt].find(r => (r.quality_note||'').includes('fine') && r.price_low);
+    const fineHtml = fineRow
+      ? `<span class="ct-fine">${fmtRange(fineRow.price_low, fineRow.price_high)}</span>`
+      : `<span class="ct-empty">—</span>`;
+
+    const origins = g.origins.filter(Boolean).slice(0,3).join(', ');
+    const isCheapest = g.price_low === minPrice && minPrice > 0;
+    const isDearest  = g.price_low === maxPrice && maxPrice > minPrice;
+    const rowStyle = isCheapest ? 'background:var(--lime-bg)' : isDearest ? 'background:var(--red-bg)' : '';
+
+    html += `<tr style="${rowStyle}" onclick="tm3SetMarket('${esc(mkt)}');showPage('markets')">
+      <td><div class="ct-mkt"><span class="ct-pip live"></span>${mkt}${isCheapest?' <span style="font-size:10px;color:var(--lime-dk);font-weight:700;">LOWEST</span>':isDearest?' <span style="font-size:10px;color:var(--red);font-weight:700;">HIGHEST</span>':''}</div></td>
+      <td style="text-align:right"><span class="ct-price">${fmtRange(g.price_low, g.price_high)}</span></td>
+      <td style="text-align:right">${fineHtml}</td>
+      <td><span class="ct-badge ${badgeCls}">${badgeTxt}</span></td>
+      <td><span class="ct-origins">${origins || '—'}</span></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// MORNING DIGEST
+// ═══════════════════════════════════════════
+function renderDigest() {
+  // Date label
+  const dateEl = document.getElementById('digest-date-label');
+  if (dateEl) dateEl.textContent = fmtDate(latestDate) + ' · USDA AMS';
+
+  // Watchlist section
+  const wlList = wlGet();
+  const wlEl   = document.getElementById('digest-watchlist-content');
+  if (wlEl) {
+    if (!wlList.length) {
+      wlEl.innerHTML = `<div class="digest-wl-empty">No items saved. <a onclick="showPage('markets')">Browse markets</a> and star commodities to track them here.</div>`;
+    } else {
+      const wlRows = wlList.map(c => {
+        const rows = allRows.filter(r => r.commodity === c);
+        if (!rows.length) return '';
+        const g = groupByCommodity(rows)[0];
+        const mv = g.movement || '';
+        const isUp = mv.toLowerCase().includes('higher');
+        const isDown = mv.toLowerCase().includes('lower');
+        return `<div class="digest-card ${isUp?'up':isDown?'down':''}" onclick="openDetail('${esc(c)}')">
+          <span class="dc-emoji">${emojiFor(c)}</span>
+          <div class="dc-name">${c}</div>
+          <div class="dc-mkt">${rows[0]?.market||'—'}</div>
+          <div class="dc-price">${fmtRange(g.price_low, g.price_high)}</div>
+          <div class="dc-signal ${isUp?'dc-up':isDown?'dc-down':'dc-up'}">${isUp?'▲ '+mv:isDown?'▼ '+mv:'— Steady'}</div>
+        </div>`;
+      }).join('');
+      wlEl.innerHTML = '<div class="digest-row">' + wlRows + '</div>';
+    }
+  }
+
+  // Higher movers (NY Terminal, top 8)
+  const nyRows = allRows.filter(r => r.market === 'New York');
+  const grouped = groupByCommodity(nyRows);
+
+  const higher = grouped.filter(g => (g.movement||'').toLowerCase().includes('higher')).slice(0,8);
+  const lower  = grouped.filter(g => (g.movement||'').toLowerCase().includes('lower')).slice(0,8);
+  const light  = grouped.filter(g => (g.supply_note||'').toLowerCase().includes('light') || (g.movement||'').toLowerCase().includes('light')).slice(0,8);
+
+  function digestCards(items, sigClass, sigPrefix) {
+    if (!items.length) return '<div style="color:var(--muted);font-size:14px;padding:8px 0;">None today.</div>';
+    return '<div class="digest-row">' + items.map(g =>
+      `<div class="digest-card ${sigClass}" onclick="openDetail('${esc(g.commodity)}')">
+        <span class="dc-emoji">${emojiFor(g.commodity)}</span>
+        <div class="dc-name">${g.commodity}</div>
+        <div class="dc-mkt">New York</div>
+        <div class="dc-price">${fmtRange(g.price_low, g.price_high)}</div>
+        <div class="dc-signal ${sigClass === 'up' ? 'dc-up' : sigClass === 'down' ? 'dc-down' : 'dc-light'}">${sigPrefix} ${g.movement || 'Offerings Light'}</div>
+      </div>`
+    ).join('') + '</div>';
+  }
+
+  const higherEl = document.getElementById('digest-higher');
+  const lowerEl  = document.getElementById('digest-lower');
+  const lightEl  = document.getElementById('digest-light');
+  if (higherEl) higherEl.innerHTML = digestCards(higher, 'up', '▲');
+  if (lowerEl)  lowerEl.innerHTML  = digestCards(lower,  'down', '▼');
+  if (lightEl)  lightEl.innerHTML  = digestCards(light,  'light', '◎');
+}
+
+// ─── Hook into showPage to render tools on demand ─────────────
+// Tool page hooks are called directly in showPage below
+
+// Init on boot
+function initTools() {
+  wlUpdateNavBadge();
+}
+
 // ── START ────────────────────────────────────────────────────────
+initTools();
 boot();
 </script>
 </body>
