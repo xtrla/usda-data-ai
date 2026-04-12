@@ -841,6 +841,223 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 .digest-wl-empty { font-size: 14px; color: var(--muted); padding: 20px 0; }
 .digest-wl-empty a { color: var(--ink); font-weight: 600; cursor: pointer; text-decoration: underline; }
 
+
+/* ═══════════════════════════════════════════
+   SIGN IN + PERSONALIZED DASHBOARD
+═══════════════════════════════════════════ */
+
+/* SIGN IN */
+.signin-screen {
+  min-height: calc(100vh - 90px);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); padding: 32px;
+}
+.signin-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 22px; width: 100%; max-width: 400px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.1); overflow: hidden;
+}
+.sc-head { background: var(--ink); padding: 30px; text-align: center; }
+.sc-logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--white); }
+.sc-logo span { color: var(--lime); }
+.sc-tagline { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 5px; }
+.sc-body { padding: 28px; }
+.sc-h { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--ink); margin-bottom: 5px; }
+.sc-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.55; }
+.sc-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
+.sc-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.sc-inp { font-family: 'Barlow', sans-serif; font-size: 15px; color: var(--ink); background: var(--panel); border: 1px solid var(--border); padding: 11px 14px; border-radius: 10px; outline: none; width: 100%; transition: border-color 0.15s; }
+.sc-inp:focus { border-color: var(--border2); background: var(--white); }
+.sc-btn { width: 100%; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--ink); color: var(--white); border: none; padding: 13px; border-radius: 10px; cursor: pointer; margin-top: 6px; transition: background 0.15s; }
+.sc-btn:hover { background: #2a2a1a; }
+.sc-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 12px; color: var(--muted); }
+.sc-or::before, .sc-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.sc-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 11px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink); transition: background 0.15s; }
+.sc-google:hover { background: var(--panel); }
+.sc-foot { font-size: 12px; color: var(--muted); text-align: center; margin-top: 16px; }
+.sc-foot a { color: var(--ink); font-weight: 600; cursor: pointer; }
+
+/* DASHBOARD */
+.dash-greeting-bar {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.dg-name { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; letter-spacing: -0.5px; color: var(--ink); }
+.dg-name em { font-style: italic; color: var(--muted); }
+.dg-meta { font-size: 12px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+.dg-live { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); display: inline-block; animation: pulse 1.8s infinite; }
+
+/* MARKET QUICK-JUMP STRIP */
+.market-jump-strip {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 0 32px; display: flex; align-items: stretch;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.market-jump-strip::-webkit-scrollbar { display: none; }
+.mjs-label {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; padding-right: 16px;
+  border-right: 1px solid var(--border); margin-right: 12px; flex-shrink: 0;
+}
+.mjs-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 11px 16px; cursor: pointer; flex-shrink: 0;
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+  border-right: 1px solid var(--border);
+}
+.mjs-pill:hover { background: var(--panel); }
+.mjs-pill.active { border-bottom-color: var(--lime); background: var(--lime-bg); }
+.mjs-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: all 0.2s; }
+.mjs-pill.active .mjs-pip { background: var(--lime); box-shadow: 0 0 5px var(--lime); }
+.mjs-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.mjs-pill.active .mjs-name { color: var(--lime-dk); }
+.mjs-n { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.mjs-pill.active .mjs-n { color: var(--lime-dk); }
+.mjs-more { display: flex; align-items: center; gap: 6px; padding: 0 16px; cursor: pointer; font-size: 12px; color: var(--muted); font-weight: 600; flex-shrink: 0; transition: color 0.15s; }
+.mjs-more:hover { color: var(--ink); }
+
+/* DASH BODY */
+.dash-body {
+  padding: 24px 32px;
+  display: grid; grid-template-columns: 1fr 280px; gap: 24px;
+  max-width: 1280px;
+}
+.dash-section { margin-bottom: 26px; }
+.dst {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 13px; display: flex; align-items: center; gap: 10px;
+}
+.dst::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.dst a { margin-left: 4px; font-size: 11px; color: var(--dim); cursor: pointer; text-decoration: underline; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+/* WATCHLIST CARDS (dashboard variant — bigger) */
+.dash-wl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 10px; }
+.dwlc {
+  background: var(--white); border: 1px solid var(--border); border-radius: 13px;
+  padding: 15px 17px; cursor: pointer; transition: all 0.15s;
+  border-left: 3px solid transparent; display: flex; flex-direction: column; gap: 9px;
+}
+.dwlc:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.07); border-color: var(--border2); }
+.dwlc.up   { border-left-color: var(--lime); }
+.dwlc.down { border-left-color: var(--red); }
+.dwlc.warn { border-left-color: var(--purple); }
+.dwlc-top { display: flex; align-items: center; gap: 9px; }
+.dwlc-emoji { font-size: 20px; }
+.dwlc-name { font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; line-height: 1.2; }
+.dwlc-mkt  { font-size: 10px; color: var(--muted); }
+.dwlc-price { font-size: 21px; font-weight: 600; color: var(--ink); letter-spacing: -0.4px; font-variant-numeric: tabular-nums; }
+.dwlc-fine  { font-size: 10px; color: var(--lime-dk); font-weight: 700; margin-top: 1px; }
+.dwlc-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); }
+.dwlc-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.3px; }
+.db-up { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c4e890; }
+.db-dn { background: var(--red-bg);  color: var(--red);     border: 1px solid #f0bcb4; }
+.db-st { background: #eaf4dc; color: #3a7010; border: 1px solid #c4e098; }
+.db-lt { background: var(--purple-bg); color: var(--purple); border: 1px solid #d0c4f0; }
+.dwlc-alert { font-size: 10px; color: var(--muted); cursor: pointer; transition: color 0.12s; white-space: nowrap; }
+.dwlc-alert:hover { color: var(--amber); }
+.dwlc-alert.set { color: var(--amber); }
+
+/* QUICK ACCESS */
+.dash-qa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.dqa {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 14px; cursor: pointer; transition: all 0.15s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+}
+.dqa:hover { border-color: var(--border2); box-shadow: 0 4px 14px rgba(0,0,0,0.07); transform: translateY(-1px); }
+.dqa-icon  { font-size: 22px; }
+.dqa-label { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.dqa-sub   { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* DATA SOURCES */
+.dash-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ddc {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 17px; cursor: pointer; transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.ddc:hover { border-color: var(--border2); box-shadow: 0 4px 14px rgba(0,0,0,0.07); }
+.ddc.featured { background: var(--ink); border-color: var(--ink); }
+.ddc-icon  { font-size: 20px; }
+.ddc-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.ddc.featured .ddc-title { color: var(--white); }
+.ddc-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.ddc.featured .ddc-desc  { color: rgba(255,255,255,0.45); }
+.ddc-tag   { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 2px 7px; border-radius: 5px; align-self: flex-start; }
+.ddc.featured .ddc-tag { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+.ddc-arrow { font-size: 16px; color: var(--border2); align-self: flex-end; margin-top: auto; transition: transform 0.15s, color 0.15s; }
+.ddc:hover .ddc-arrow { transform: translateX(3px); color: var(--dim); }
+.ddc.featured:hover .ddc-arrow { color: var(--lime); }
+
+/* ATTENTION */
+.dash-attn-list { display: flex; flex-direction: column; gap: 7px; }
+.dattn {
+  background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: background 0.12s;
+}
+.dattn:hover { background: var(--panel); }
+.dattn-e { font-size: 18px; flex-shrink: 0; }
+.dattn-m { flex: 1; }
+.dattn-n { font-size: 14px; font-weight: 600; color: var(--ink); }
+.dattn-w { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.dattn-r { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
+.dattn-p { font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* RECENT SEARCHES */
+.dash-recent { display: flex; flex-wrap: wrap; gap: 6px; }
+.recent-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  font-size: 12px; font-weight: 500; color: var(--dim); transition: all 0.12s;
+}
+.recent-chip:hover { border-color: var(--border2); color: var(--ink); }
+
+/* RIGHT COLUMN */
+.dash-right { display: flex; flex-direction: column; gap: 18px; }
+
+/* ALERTS */
+.dash-al-list { display: flex; flex-direction: column; gap: 6px; }
+.dal {
+  background: var(--white); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 13px; display: flex; align-items: center; gap: 9px;
+}
+.dal-e { font-size: 15px; }
+.dal-m { flex: 1; }
+.dal-n { font-size: 13px; font-weight: 600; color: var(--ink); }
+.dal-c { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.dal-s { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; flex-shrink: 0; }
+.dals-w { background: var(--blue-bg); color: var(--blue); border: 1px solid #b0ccf5; }
+.dals-t { background: var(--amber-bg); color: var(--amber); border: 1px solid #e8d090; }
+.dal-x { font-size: 12px; color: var(--muted); cursor: pointer; flex-shrink: 0; transition: color 0.12s; }
+.dal-x:hover { color: var(--red); }
+.dal-add { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--dim); cursor: pointer; padding: 8px 0; display: flex; align-items: center; gap: 5px; transition: color 0.12s; }
+.dal-add:hover { color: var(--ink); }
+
+/* DATA COVERAGE card */
+.dash-coverage { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.dcov-row { padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.dcov-row:last-child { border-bottom: none; }
+.dcov-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+.dcov-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--lime-dk); font-weight: 600; }
+.dcov-val.muted { color: var(--muted); }
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  .dash-body { grid-template-columns: 1fr; padding: 16px 20px; }
+  .dash-qa-grid { grid-template-columns: 1fr 1fr; }
+  .market-jump-strip { padding: 0 20px; }
+  .dash-greeting-bar { padding: 16px 20px; }
+}
+@media (max-width: 560px) {
+  .dash-wl-grid { grid-template-columns: 1fr 1fr; }
+  .dash-data-grid { grid-template-columns: 1fr; }
+  .dg-name { font-size: 24px; }
+}
+
 </style>
 </head>
 <body>
@@ -848,11 +1065,14 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 <!-- NAV -->
 <nav>
   <div class="nav-logo" onclick="showPage('home')">agra<span>X</span></div>
-  <div class="nav-links">
+  <div class="nav-links" id="nav-links-guest">
+    <span class="nav-link active" onclick="showPage('signin')" id="nav-signin">Sign In</span>
+  </div>
+  <div class="nav-links" id="nav-links-user" style="display:none;">
     <span class="nav-link active" onclick="showPage('home')" id="nav-home">Dashboard</span>
     <span class="nav-link" onclick="showPage('markets')" id="nav-markets">Markets</span>
     <span class="nav-link" onclick="showPage('watchlist')" id="nav-watchlist">Watchlist <span id="nav-wl-count" style="display:none;font-family:'DM Mono',monospace;font-size:10px;background:var(--amber);color:var(--white);padding:1px 6px;border-radius:10px;margin-left:3px;vertical-align:middle;"></span></span>
-    <span class="nav-link" onclick="showPage('digest')" id="nav-digest">Morning Digest</span>
+    <span class="nav-link" onclick="showPage('digest')" id="nav-digest">Digest</span>
     <span class="nav-link" onclick="showPage('compare')" id="nav-compare">Compare</span>
   </div>
   <div class="nav-right">
@@ -862,7 +1082,10 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
       <span class="nav-search-kbd"><span class="kbd">⌘</span><span class="kbd">K</span></span>
     </div>
     <span class="nav-date" id="nav-date">Loading…</span>
-    <button class="nav-cta" onclick="showPage('markets')">View Markets</button>
+    <button class="nav-cta" id="nav-cta-signin" onclick="showPage('signin')">Sign In</button>
+    <div id="nav-avatar" style="display:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--lime);align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;" onclick="doSignOut()">
+      <span id="nav-avatar-initials">?</span>
+    </div>
     <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -921,124 +1144,184 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 <!-- ═══════════════════════ HOME PAGE ═══════════════════════ -->
-<div id="page-home" class="page active">
-  <div class="hero-wrap">
-    <div class="hero">
-      <div class="hero-left">
-        <img class="hero-bg-img" src="hero-bg.jpg" alt="" aria-hidden="true">
-        <div class="hero-rule"></div>
-        <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Live · Wholesale Produce Intelligence</div>
-        <h1 class="hero-headline">Every price.<br>Every market.<br><em>Every morning.</em></h1>
-        <p class="hero-sub">Terminal market prices from <strong>12 major U.S. hubs</strong> — fruits, vegetables, onions, potatoes, and nuts — pulled daily from USDA and built for the people who move produce.</p>
-        <div class="hero-actions">
-          <button class="btn-primary" onclick="showPage('markets')">View Today's Markets</button>
-          <button class="btn-ghost" onclick="showPage('reports')">See all reports</button>
-        </div>
-        <div class="hero-stats">
-          <div class="stat-cell"><div class="stat-num" id="stat-markets">—</div><div class="stat-label">Terminal Markets</div></div>
-          <div class="stat-cell"><div class="stat-num">4</div><div class="stat-label">Report Types</div></div>
-          <div class="stat-cell"><div class="stat-num">10<span>:15</span></div><div class="stat-label">Daily Update ET</div></div>
-          <div class="stat-cell"><div class="stat-num" id="stat-records">—</div><div class="stat-label">Price Records</div></div>
-        </div>
+<!-- ═══════════════════════ SIGN IN ═══════════════════════ -->
+<div id="page-signin" class="page active" style="padding-top:90px;background:var(--bg);min-height:100vh;">
+  <div class="signin-screen">
+    <div class="signin-card">
+      <div class="sc-head">
+        <div class="sc-logo">agra<span>X</span></div>
+        <div class="sc-tagline">Wholesale Produce Intelligence</div>
       </div>
-
-      <div class="hero-right">
-        <div class="hero-panel-header">
-          <span class="hph-title">NY Terminal · Top Movers</span>
-          <span class="hph-date" id="hero-panel-date">—</span>
+      <div class="sc-body">
+        <div class="sc-h">Welcome back</div>
+        <p class="sc-sub">Sign in to access your personalized dashboard, watchlist, and price alerts.</p>
+        <div class="sc-field">
+          <div class="sc-lbl">Email</div>
+          <input class="sc-inp" type="email" id="signin-email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doSignIn()">
         </div>
-        <div id="hero-movers">
-          <div class="hero-panel-row"><div class="hpr-left"><span class="hpr-name"><span class="spinner"></span></span></div></div>
+        <div class="sc-field">
+          <div class="sc-lbl">Password</div>
+          <input class="sc-inp" type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()">
         </div>
-        <div class="hero-panel-footer">
-          <span class="hpf-label">USDA AMS · NX_FV010/20/30/40</span>
-          <span class="hpf-link" onclick="showPage('markets')">All markets</span>
+        <button class="sc-btn" onclick="doSignIn()">Sign In →</button>
+        <div class="sc-or">or</div>
+        <div class="sc-google" onclick="doSignIn()">
+          <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
         </div>
+        <div class="sc-foot">No account? <a onclick="doSignIn()">Sign up free →</a></div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- MARQUEE -->
-    <div class="marquee-band">
-      <div class="marquee-inner">
-        <div class="marquee-item hi">Fruits</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Vegetables</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">Onions &amp; Potatoes</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Nuts</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">Organic</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Terminal Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">FOB Origins</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Daily USDA Data</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">12 Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Price Intelligence</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">Fruits</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Vegetables</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">Onions &amp; Potatoes</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Nuts</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">Organic</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Terminal Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">FOB Origins</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Daily USDA Data</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item hi">12 Markets</div><div class="marquee-item"><div class="marquee-sep"></div></div>
-        <div class="marquee-item">Price Intelligence</div><div class="marquee-item"><div class="marquee-sep"></div></div>
+<!-- ═══════════════════════ HOME / DASHBOARD ═══════════════════════ -->
+<div id="page-home" class="page" style="background:var(--bg);min-height:100vh;padding-top:90px;">
+
+  <!-- GREETING -->
+  <div class="dash-greeting-bar">
+    <div>
+      <div class="dg-name">Good morning, <em id="dash-username">there.</em></div>
+      <div class="dg-meta">
+        <span class="dg-live"></span>
+        <span id="dash-date-meta">Loading…</span>
+        <span style="color:var(--border2)">·</span>
+        <span id="dash-wl-count-meta">—</span>
       </div>
     </div>
+  </div>
 
-    <!-- MARKET SNAPSHOT -->
-    <section class="market-section">
-      <div class="section-wrap">
-        <div class="section-label">Live Data</div>
-        <div class="section-title">Today's <em>market snapshot</em></div>
-        <div class="market-grid" id="home-snapshot">
-          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Fruits</span><div class="mcl-badges"><span class="mcl-badge badge-fruit">FV010</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-fruits"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
-          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Vegetables</span><div class="mcl-badges"><span class="mcl-badge badge-veg">FV020</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-veg"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
-          <div class="market-col"><div class="market-col-header"><span class="mcl-title">Onions, Potatoes &amp; Nuts</span><div class="mcl-badges"><span class="mcl-badge badge-other">FV030/40</span><span class="mcl-badge badge-live">Live</span></div></div><div id="snap-other"><div class="loading-row"><p><span class="spinner"></span></p></div></div></div>
-        </div>
-        <div class="market-footer">
-          <span class="market-date" id="snapshot-date">Loading…</span>
-          <span class="view-all-link" onclick="showPage('markets')">View all commodities</span>
-        </div>
-      </div>
-    </section>
+  <!-- MARKET QUICK-JUMP -->
+  <div class="market-jump-strip">
+    <span class="mjs-label">Jump to market</span>
+    <div id="mjs-pills"></div>
+    <div class="mjs-more" id="mjs-more" style="display:none" onclick="mjs_toggleMore()">
+      <span id="mjs-more-label">+ more</span>
+    </div>
+  </div>
 
-    <!-- REPORT CARDS -->
-    <section class="reports-section">
-      <div class="section-wrap">
-        <div class="section-label">What we track</div>
-        <div class="section-title">Four reports.<br><em>One place.</em></div>
-        <div class="reports-grid">
-          <div class="report-card" onclick="showPage('markets','fruits')"><div class="rc-eyebrow" style="color:var(--red)"><div class="rc-stripe" style="background:var(--red)"></div>Fruit</div><div class="rc-name">Terminal Market Fruits</div><div class="rc-desc">Berries, citrus, melons, tropicals, stone fruit. Origin, variety, size, and grade — every price tier the USDA reports.</div><div class="rc-meta"><span class="rc-code">FV010</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
-          <div class="report-card" onclick="showPage('markets','vegetables')"><div class="rc-eyebrow" style="color:var(--blue)"><div class="rc-stripe" style="background:var(--blue)"></div>Vegetables</div><div class="rc-name">Terminal Market Vegetables</div><div class="rc-desc">Herbs, greens, brassicas, roots, specialty. Every lot, variety, and grade qualifier preserved from source.</div><div class="rc-meta"><span class="rc-code">FV020</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
-          <div class="report-card" onclick="showPage('markets','onions_potatoes')"><div class="rc-eyebrow" style="color:var(--amber)"><div class="rc-stripe" style="background:var(--amber)"></div>Onions &amp; Potatoes</div><div class="rc-name">Onions &amp; Potatoes</div><div class="rc-desc">Dry onions, green onions, russets, specialty potatoes. US grade marks and sweet designations tracked.</div><div class="rc-meta"><span class="rc-code">FV030</span><span class="rc-cadence">Daily · 12 markets</span></div></div>
-          <div class="report-card" onclick="showPage('markets','nuts')"><div class="rc-eyebrow" style="color:var(--purple)"><div class="rc-stripe" style="background:var(--purple)"></div>Nuts</div><div class="rc-name">Terminal Market Nuts</div><div class="rc-desc">Almonds, walnuts, pecans, peanuts, filberts. Process state — raw, roasted, salted, green — tracked per lot.</div><div class="rc-meta"><span class="rc-code">FV040</span><span class="rc-cadence">Daily · 10 markets</span></div></div>
+  <div class="dash-body">
+
+    <!-- LEFT -->
+    <div>
+
+      <!-- WATCHLIST -->
+      <div class="dash-section">
+        <div class="dst">My Watchlist Today <a onclick="showPage('watchlist')">Manage</a></div>
+        <div id="dash-wl-content">
+          <div class="wl-empty-state" style="padding:40px 0;">
+            <div class="wl-empty-icon">⭐</div>
+            <div class="wl-empty-title">Nothing saved yet</div>
+            <p class="wl-empty-sub">Go to Terminal Markets and star commodities to track them here.</p>
+            <button class="wl-empty-cta" onclick="showPage('markets')">Browse Markets</button>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- CTA -->
-    <div class="cta-section">
-      <div class="cta-left">
-        <div class="cta-eyebrow">Built for the trade</div>
-        <div class="cta-headline">The morning report,<br><em>rebuilt.</em></div>
-        <p class="cta-body">Buyers, distributors, and brokers have relied on USDA terminal market reports since 1915. agraX takes that data and makes it searchable, comparable, and actionable — without the PDFs.</p>
+      <!-- QUICK ACCESS -->
+      <div class="dash-section">
+        <div class="dst">Quick Access</div>
+        <div class="dash-qa-grid">
+          <div class="dqa" onclick="openSearch()">
+            <span class="dqa-icon">⌕</span>
+            <span class="dqa-label">Search Markets</span>
+            <span class="dqa-sub">Any commodity · ⌘K</span>
+          </div>
+          <div class="dqa" onclick="showPage('compare')">
+            <span class="dqa-icon">📊</span>
+            <span class="dqa-label">Compare Prices</span>
+            <span class="dqa-sub">One commodity, all markets</span>
+          </div>
+          <div class="dqa" onclick="showPage('digest')">
+            <span class="dqa-icon">🗞️</span>
+            <span class="dqa-label">Morning Digest</span>
+            <span class="dqa-sub">Today's full briefing</span>
+          </div>
+          <div class="dqa" onclick="showPage('watchlist')">
+            <span class="dqa-icon">🔔</span>
+            <span class="dqa-label">My Alerts</span>
+            <span class="dqa-sub" id="dash-alert-count">— active</span>
+          </div>
+        </div>
       </div>
+
+      <!-- DATA SOURCES -->
+      <div class="dash-section">
+        <div class="dst">Data Sources</div>
+        <div class="dash-data-grid">
+          <div class="ddc featured" onclick="showPage('markets')">
+            <span class="ddc-icon">🏪</span>
+            <div class="ddc-title">Terminal Markets</div>
+            <div class="ddc-desc">What buyers pay at 12 major U.S. hubs. Updated daily from USDA.</div>
+            <span class="ddc-tag">FV010 · FV020 · FV030 · FV040</span>
+            <span class="ddc-arrow">→</span>
+          </div>
+          <div class="ddc" onclick="showPage('fob')">
+            <span class="ddc-icon">🚛</span>
+            <div class="ddc-title">FOB Origins</div>
+            <div class="ddc-desc">Shipper prices at source — Nogales, Salinas, Fresno. Calculate your margin.</div>
+            <span class="ddc-tag">FV110 · FV120 · FV111</span>
+            <span class="ddc-arrow">→</span>
+          </div>
+          <div class="ddc" onclick="showPage('reports')">
+            <span class="ddc-icon">📦</span>
+            <div class="ddc-title">Movement &amp; Volume</div>
+            <div class="ddc-desc">Weekly arrival data — truck volume by commodity and origin.</div>
+            <span class="ddc-tag">WA_FV175</span>
+            <span class="ddc-arrow">→</span>
+          </div>
+          <div class="ddc" onclick="showPage('reports')">
+            <span class="ddc-icon">📈</span>
+            <div class="ddc-title">National Trends</div>
+            <div class="ddc-desc">Weekly price trends and supply summaries across all commodities.</div>
+            <span class="ddc-tag">FVWTRDS</span>
+            <span class="ddc-arrow">→</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEEDS ATTENTION -->
+      <div class="dash-section">
+        <div class="dst">Needs Your Attention</div>
+        <div class="dash-attn-list" id="dash-attn">
+          <div style="font-size:13px;color:var(--muted);padding:8px 0;">Loading…</div>
+        </div>
+      </div>
+
+      <!-- RECENT SEARCHES -->
+      <div class="dash-section">
+        <div class="dst">Recent Searches</div>
+        <div class="dash-recent" id="dash-recent">
+          <div style="font-size:13px;color:var(--muted);">No recent searches yet.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="dash-right">
+
+      <!-- ACTIVE ALERTS -->
       <div>
-        <div class="cta-box">
-          <div class="cta-box-label">Markets currently tracked</div>
-          <div class="cta-market-row"><span class="cmr-name">New York</span><span class="cmr-live">Live today</span></div>
-          <div class="cta-market-row"><span class="cmr-name">Los Angeles</span><span class="cmr-live">Live today</span></div>
-          <div class="cta-market-row"><span class="cmr-name">Chicago</span><span class="cmr-live">Live today</span></div>
-          <div class="cta-market-row"><span class="cmr-name">Miami</span><span class="cmr-live">Live today</span></div>
-          <div class="cta-market-row"><span class="cmr-name">Boston + 7 more</span><span class="cmr-live">Live today</span></div>
-          <button class="btn-cta" onclick="showPage('markets')">Open Dashboard</button>
+        <div class="dst">Active Alerts</div>
+        <div class="dash-al-list" id="dash-alerts-list">
+          <div style="font-size:13px;color:var(--muted);padding:4px 0;">No alerts set yet.</div>
+        </div>
+        <div class="dal-add" onclick="showPage('watchlist')">+ Add alert</div>
+      </div>
+
+      <!-- DATA COVERAGE -->
+      <div>
+        <div class="dst">Data Coverage</div>
+        <div class="dash-coverage">
+          <div class="dcov-row"><span class="dcov-label">Terminal Markets</span><span class="dcov-val" id="dcov-markets">—</span></div>
+          <div class="dcov-row"><span class="dcov-label">Commodities tracked</span><span class="dcov-val" id="dcov-commodities">—</span></div>
+          <div class="dcov-row"><span class="dcov-label">Price records today</span><span class="dcov-val" id="dcov-records">—</span></div>
+          <div class="dcov-row"><span class="dcov-label">Last updated</span><span class="dcov-val muted" id="dcov-updated">—</span></div>
         </div>
       </div>
-    </div>
 
-    <footer>
-      <div class="footer-logo">agra<span>X</span></div>
-      <div class="footer-copy">© 2026 agraX · Wholesale Produce Intelligence</div>
-      <div class="footer-source">Data: USDA Agricultural Marketing Service</div>
-    </footer>
+    </div>
   </div>
 </div>
 
@@ -1493,12 +1776,21 @@ function showPage(page, tab) {
     p.style.removeProperty('display');
   });
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  // Show correct nav set
+  if (currentUser) {
+    document.getElementById('nav-links-guest').style.display = 'none';
+    document.getElementById('nav-links-user').style.display = 'flex';
+  } else {
+    document.getElementById('nav-links-guest').style.display = 'flex';
+    document.getElementById('nav-links-user').style.display = 'none';
+  }
   const pageEl = document.getElementById('page-' + page);
   if (pageEl) pageEl.classList.add('active');
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
   window.scrollTo(0,0);
   if (page === 'markets' && tab) tm3SetType(tab);
+  if (page === 'home')      { setTimeout(renderDashboard, 0); }
   if (page === 'watchlist') { setTimeout(renderWatchlist, 0); }
   if (page === 'compare')   { setTimeout(() => { populateCompareSelect(); renderCompare(); }, 0); }
   if (page === 'digest')    { setTimeout(renderDigest, 0); }
@@ -1536,6 +1828,9 @@ async function boot() {
     const tm3DateEl = document.getElementById('tm3-date');
     if (tm3DateEl) tm3DateEl.textContent = fd;
     wlUpdateNavBadge();
+    buildMarketJumpStrip();
+    // Render dashboard if on home page
+    if (document.getElementById('page-home').classList.contains('active')) renderDashboard();
   } catch(e) {
     console.error('Boot failed:', e);
     document.getElementById('nav-date').textContent = 'Offline';
@@ -2740,7 +3035,267 @@ function renderDigest() {
 // Init on boot
 function initTools() {
   wlUpdateNavBadge();
+  // Check if already signed in
+  currentUser = getUser();
+  if (currentUser) {
+    applySignedInState();
+    // Show dashboard instead of sign-in
+    document.getElementById('page-signin').classList.remove('active');
+    document.getElementById('page-home').classList.add('active');
+    document.getElementById('nav-home').classList.add('active');
+    document.getElementById('nav-signin')?.classList.remove('active');
+  }
 }
+
+
+// ═══════════════════════════════════════════
+// AUTH + DASHBOARD
+// ═══════════════════════════════════════════
+const USER_KEY = 'agrax_user_v1';
+let currentUser = null;
+let mjsExpanded = false;
+const MJS_VISIBLE = 6;
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem(USER_KEY)); } catch { return null; }
+}
+function saveUser(u) { localStorage.setItem(USER_KEY, JSON.stringify(u)); }
+
+function doSignIn() {
+  const email = document.getElementById('signin-email')?.value?.trim() || 'user@company.com';
+  const name  = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  currentUser = { email, name, initials };
+  saveUser(currentUser);
+  applySignedInState();
+  showPage('home');
+}
+
+function doSignOut() {
+  if (!confirm('Sign out of agraX?')) return;
+  currentUser = null;
+  localStorage.removeItem(USER_KEY);
+  applySignedOutState();
+  showPage('signin');
+}
+
+function applySignedInState() {
+  if (!currentUser) return;
+  // Nav
+  document.getElementById('nav-links-guest').style.display = 'none';
+  document.getElementById('nav-links-user').style.display  = 'flex';
+  document.getElementById('nav-cta-signin').style.display  = 'none';
+  const avatar = document.getElementById('nav-avatar');
+  avatar.style.display = 'flex';
+  document.getElementById('nav-avatar-initials').textContent = currentUser.initials;
+  // Greeting
+  const un = document.getElementById('dash-username');
+  if (un) un.textContent = currentUser.name.split(' ')[0] + '.';
+}
+
+function applySignedOutState() {
+  document.getElementById('nav-links-guest').style.display = 'flex';
+  document.getElementById('nav-links-user').style.display  = 'none';
+  document.getElementById('nav-cta-signin').style.display  = 'block';
+  document.getElementById('nav-avatar').style.display      = 'none';
+}
+
+// Build market quick-jump strip from live data
+function buildMarketJumpStrip() {
+  if (!allRows.length) return;
+  const mktMap = {};
+  allRows.forEach(r => { if (r.market) mktMap[r.market] = (mktMap[r.market]||0)+1; });
+  const sorted = Object.entries(mktMap).sort((a,b)=>b[1]-a[1]);
+  const grouped_all = groupByCommodity(allRows);
+  const container = document.getElementById('mjs-pills');
+  if (!container) return;
+  container.innerHTML = '';
+
+  sorted.forEach(([mkt], idx) => {
+    const g = groupByCommodity(allRows.filter(r=>r.market===mkt));
+    const pill = document.createElement('div');
+    pill.className = 'mjs-pill' + (idx >= MJS_VISIBLE ? ' mjs-hidden' : '');
+    pill.style.cssText = idx >= MJS_VISIBLE ? 'display:none' : '';
+    pill.innerHTML = `<span class="mjs-pip"></span><span class="mjs-name">${mkt}</span><span class="mjs-n">${g.length}</span>`;
+    pill.onclick = () => {
+      document.querySelectorAll('.mjs-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      tm3SetMarket(mkt);
+      showPage('markets');
+    };
+    container.appendChild(pill);
+  });
+
+  const hidden = sorted.length - MJS_VISIBLE;
+  const moreBtn = document.getElementById('mjs-more');
+  if (moreBtn && hidden > 0) {
+    moreBtn.style.display = 'flex';
+    document.getElementById('mjs-more-label').textContent = '+ ' + hidden + ' more';
+  }
+}
+
+function mjs_toggleMore() {
+  mjsExpanded = !mjsExpanded;
+  document.querySelectorAll('.mjs-hidden').forEach(el => {
+    el.style.display = mjsExpanded ? 'flex' : 'none';
+  });
+  document.getElementById('mjs-more-label').textContent = mjsExpanded ? '− less' : '+ more';
+}
+
+// Render dashboard watchlist section
+function renderDashWatchlist() {
+  const list = wlGet();
+  const el   = document.getElementById('dash-wl-content');
+  if (!el) return;
+
+  // Update meta
+  const metaEl = document.getElementById('dash-wl-count-meta');
+  if (metaEl) metaEl.textContent = list.length ? list.length + ' item' + (list.length!==1?'s':'') + ' on watchlist' : 'Watchlist empty';
+
+  if (!list.length || !allRows.length) {
+    el.innerHTML = `<div class="wl-empty-state" style="padding:40px 0;">
+      <div class="wl-empty-icon">⭐</div>
+      <div class="wl-empty-title">Nothing saved yet</div>
+      <p class="wl-empty-sub">Go to Terminal Markets and star commodities to track them here.</p>
+      <button class="wl-empty-cta" onclick="showPage('markets')">Browse Markets</button>
+    </div>`;
+    return;
+  }
+
+  const alerts = alertsGet();
+  let html = '<div class="dash-wl-grid">';
+  list.forEach(commodity => {
+    const rows = allRows.filter(r => r.commodity === commodity);
+    if (!rows.length) return;
+    const g   = groupByCommodity(rows)[0];
+    const mv  = g.movement || '';
+    const isUp = mv.toLowerCase().includes('higher');
+    const isDn = mv.toLowerCase().includes('lower');
+    const isSn = (g.supply_note||'').toLowerCase().includes('light');
+    const cardCls = isUp ? 'up' : isDn ? 'down' : isSn ? 'warn' : '';
+    let bdgCls = 'db-st', bdgTxt = '— Steady';
+    if (isUp) { bdgCls='db-up'; bdgTxt='▲ '+mv; }
+    if (isDn) { bdgCls='db-dn'; bdgTxt='▼ '+mv; }
+    if (isSn) { bdgCls='db-lt'; bdgTxt='◎ Light'; }
+    const fineRow = rows.find(r=>(r.quality_note||'').includes('fine')&&r.price_low);
+    const fine = fineRow ? `<div class="dwlc-fine">Fine app. ${fmtRange(fineRow.price_low,fineRow.price_high)}</div>` : '';
+    const hasAlert = alerts.some(a=>a.commodity===commodity);
+    html += `<div class="dwlc ${cardCls}" onclick="openDetail('${esc(commodity)}')">
+      <div class="dwlc-top">
+        <span class="dwlc-emoji">${emojiFor(commodity)}</span>
+        <div><div class="dwlc-name">${commodity}</div><div class="dwlc-mkt">${rows[0]?.market||'—'}</div></div>
+      </div>
+      <div><div class="dwlc-price">${fmtRange(g.price_low,g.price_high)}</div>${fine}</div>
+      <div class="dwlc-foot">
+        <span class="dwlc-badge ${bdgCls}">${bdgTxt}</span>
+        <span class="dwlc-alert ${hasAlert?'set':''}" onclick="event.stopPropagation();openAlertModal('${esc(commodity)}')">${hasAlert?'🔔 Alert':'+ Alert'}</span>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// Render attention items from watchlist
+function renderDashAttention() {
+  const el = document.getElementById('dash-attn');
+  if (!el || !allRows.length) return;
+  const list = wlGet();
+  if (!list.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:4px 0;">Add items to your watchlist to see attention alerts here.</div>'; return; }
+  const items = [];
+  list.forEach(commodity => {
+    const rows = allRows.filter(r=>r.commodity===commodity);
+    if (!rows.length) return;
+    const g  = groupByCommodity(rows)[0];
+    const mv = (g.movement||'').toLowerCase();
+    const sn = (g.supply_note||'').toLowerCase();
+    let why='', sigCls='', sigTxt='';
+    if (sn.includes('light'))       { why='Supply tightening — consider buying ahead';      sigCls='sig-up';  sigTxt='◎ Offerings Light'; }
+    else if (mv.includes('higher')) { why='Price moving higher — review your position';      sigCls='sig-up';  sigTxt='▲ Higher'; }
+    else if (mv.includes('lower'))  { why='Price declining — potential buying opportunity';  sigCls='sig-dn';  sigTxt='▼ Lower'; }
+    if (why) items.push({commodity, g, why, sigCls, sigTxt});
+  });
+  if (!items.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:4px 0;">All watchlist items are steady today. ✓</div>'; return; }
+  el.innerHTML = items.slice(0,4).map(({commodity,g,why,sigCls,sigTxt}) =>
+    `<div class="dattn" onclick="openDetail('${esc(commodity)}')">
+      <span class="dattn-e">${emojiFor(commodity)}</span>
+      <div class="dattn-m"><div class="dattn-n">${commodity}</div><div class="dattn-w">${why}</div></div>
+      <div class="dattn-r"><span class="dattn-p">${fmtRange(g.price_low,g.price_high)}</span><span class="${sigCls}">${sigTxt}</span></div>
+    </div>`
+  ).join('');
+}
+
+// Render active alerts in right column
+function renderDashAlerts() {
+  const el = document.getElementById('dash-alerts-list');
+  if (!el) return;
+  const alerts = alertsGet();
+  const countEl = document.getElementById('dash-alert-count');
+  if (countEl) countEl.textContent = alerts.length ? alerts.length + ' active' : '— active';
+  if (!alerts.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:4px 0;">No alerts set yet.</div>'; return; }
+  el.innerHTML = alerts.slice(0,4).map(a => {
+    const condTxt = a.condition==='daily' ? 'Daily price email' :
+                    a.condition==='above' ? 'Alert when price > $'+a.threshold :
+                    'Alert when price < $'+a.threshold;
+    return `<div class="dal">
+      <span class="dal-e">${emojiFor(a.commodity)}</span>
+      <div class="dal-m"><div class="dal-n">${a.commodity}</div><div class="dal-c">${condTxt}</div></div>
+      <span class="dal-s dals-w">Watching</span>
+      <span class="dal-x" onclick="event.stopPropagation();removeAlert('${esc(a.commodity)}')">✕</span>
+    </div>`;
+  }).join('');
+}
+
+function removeAlert(commodity) {
+  const list = alertsGet().filter(a=>a.commodity!==commodity);
+  alertsSave(list);
+  renderDashAlerts();
+  renderDashWatchlist();
+}
+
+// Update data coverage stats
+function renderDashCoverage() {
+  const mkts = document.getElementById('dcov-markets');
+  const coms = document.getElementById('dcov-commodities');
+  const recs = document.getElementById('dcov-records');
+  const upd  = document.getElementById('dcov-updated');
+  if (mkts) mkts.textContent = markets.length + ' markets';
+  if (coms) coms.textContent = [...new Set(allRows.map(r=>r.commodity))].length;
+  if (recs) recs.textContent = allRows.length.toLocaleString();
+  if (upd)  upd.textContent  = fmtDate(latestDate);
+}
+
+// Recent searches — track via localStorage
+const SEARCHES_KEY = 'agrax_recent_v1';
+function addRecentSearch(commodity, market) {
+  const key = emojiFor(commodity) + ' ' + commodity + (market?' · '+market:'');
+  let list = JSON.parse(localStorage.getItem(SEARCHES_KEY)||'[]');
+  list = [key, ...list.filter(x=>x!==key)].slice(0,8);
+  localStorage.setItem(SEARCHES_KEY, JSON.stringify(list));
+  renderRecentSearches();
+}
+function renderRecentSearches() {
+  const el = document.getElementById('dash-recent');
+  if (!el) return;
+  const list = JSON.parse(localStorage.getItem(SEARCHES_KEY)||'[]');
+  if (!list.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);">No recent searches yet.</div>'; return; }
+  el.innerHTML = list.map(s =>
+    `<div class="recent-chip" onclick="openSearch();document.getElementById('search-cmd-input').value='${s.split('·')[0].replace(/[^a-zA-Z ]/g,'').trim()}';handleSearchInput(document.getElementById('search-cmd-input').value)">${s}</div>`
+  ).join('');
+}
+
+// Full dashboard render
+function renderDashboard() {
+  renderDashWatchlist();
+  renderDashAttention();
+  renderDashAlerts();
+  renderDashCoverage();
+  renderRecentSearches();
+  // date meta
+  const dm = document.getElementById('dash-date-meta');
+  if (dm) dm.textContent = fmtDate(latestDate) + ' · USDA AMS · ' + (tm3Market||'All Markets');
+}
+
 
 // ── START ────────────────────────────────────────────────────────
 initTools();
