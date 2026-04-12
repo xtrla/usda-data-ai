@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>agraX — Wholesale Produce Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -355,1041 +355,333 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 .footer-source { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .footer-source::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--lime); display: block; }
 
-/* ── MARKETS PAGE ── */
-.markets-page { padding-top: 90px; }
-.page-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 24px 40px 0; }
-.ph-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
-.ph-breadcrumb { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-.ph-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; letter-spacing: -1px; color: var(--ink); }
-.ph-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; font-size: 12px; color: var(--muted); }
-.ph-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); display: inline-block; margin-right: 3px; animation: pulse 1.5s infinite; }
-.ph-sep { width: 1px; height: 10px; background: var(--border); }
-.ph-tabs { display: flex; gap: 0; }
-.ph-tab { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 10px 18px; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.15s; display: flex; align-items: center; gap: 7px; margin-bottom: -1px; }
-.ph-tab:hover { color: var(--ink); }
-.ph-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-.ph-tab-dot { width: 6px; height: 6px; border-radius: 50%; }
+/* ═══════════════════════════════════════════
+   TERMINAL MARKETS — REBUILT v3
+═══════════════════════════════════════════ */
 
-/* CONTROL BAR */
-.control-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 11px 40px; display: flex; align-items: center; gap: 10px; position: sticky; top: 90px; z-index: 90; }
-.search-wrap { position: relative; flex: 1; max-width: 320px; }
-.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
-.search-input { width: 100%; font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--border); padding: 8px 12px 8px 32px; border-radius: 6px; outline: none; transition: border-color 0.15s; }
-.search-input::placeholder { color: var(--muted); }
-.search-input:focus { border-color: var(--border2); background: var(--white); }
-.filter-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--panel); border: 1px solid var(--border); color: var(--dim); padding: 7px 13px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.filter-btn:hover { border-color: var(--border2); color: var(--ink); }
-.filter-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
-.market-select { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--panel); border: 1px solid var(--border); color: var(--dim); padding: 7px 12px; border-radius: 6px; cursor: pointer; outline: none; }
-.ctrl-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.results-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.results-count strong { color: var(--dim); }
+/* SIDEBAR */
+.tm3-sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; display: flex; flex-direction: column;
+  position: sticky; top: 90px;
+  height: calc(100vh - 90px);
+}
+.tm3-sidebar::-webkit-scrollbar { width: 4px; }
+.tm3-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* MAIN LAYOUT */
-.main-layout { display: grid; grid-template-columns: 210px 1fr; min-height: 60vh; align-items: start; }
-.sidebar { border-right: 1px solid var(--border); background: var(--white); padding: 18px 0; position: sticky; top: calc(90px + 45px + 45px); max-height: calc(100vh - 180px); overflow-y: auto; }
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.sb-section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 6px 18px 3px; }
-.sb-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 18px; cursor: pointer; transition: background 0.12s; text-decoration: none; }
-.sb-item:hover { background: var(--panel); }
-.sb-item.active { background: var(--lime-bg); }
-.sb-name { font-size: 13px; color: var(--ink); font-weight: 500; }
-.sb-item.active .sb-name { color: var(--lime-dk); font-weight: 600; }
-.sb-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 1px 6px; border-radius: 10px; }
-.sb-item.active .sb-count { background: var(--lime-bg); border-color: #c0e880; color: var(--lime-dk); }
-.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.ts3-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 20px 22px 10px;
+}
+.ts3-mkt {
+  display: flex; align-items: center; gap: 13px;
+  padding: 11px 22px; cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.12s;
+}
+.ts3-mkt:hover { background: var(--panel); }
+.ts3-mkt.active { background: var(--lime-bg); border-left-color: var(--lime); }
+.ts3-pip {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.ts3-mkt.active .ts3-pip { background: var(--lime); box-shadow: 0 0 7px rgba(143,208,32,0.55); }
+.ts3-mkt-name { font-size: 15px; font-weight: 500; color: var(--ink); flex: 1; }
+.ts3-mkt.active .ts3-mkt-name { color: var(--lime-dk); font-weight: 600; }
+.ts3-mkt-n {
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 2px 8px; border-radius: 10px; transition: all 0.12s;
+}
+.ts3-mkt.active .ts3-mkt-n {
+  background: rgba(143,208,32,0.15); border-color: rgba(143,208,32,0.4); color: var(--lime-dk);
+}
+.ts3-mkt-hidden { display: none; }
+.ts3-mkt-hidden.revealed { display: flex; }
+.ts3-show-more {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 22px; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  transition: color 0.12s; user-select: none;
+  border-top: 1px solid var(--border);
+}
+.ts3-show-more:hover { color: var(--ink); }
+.ts3-show-icon {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--panel); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: all 0.15s; flex-shrink: 0;
+}
+.ts3-show-more:hover .ts3-show-icon { background: var(--border); }
 
-/* TABLE */
-.commodity-list {}
-.table-header { display: grid; grid-template-columns: 2fr 120px 170px 130px 110px 50px; padding: 0 28px; background: var(--panel); border-bottom: 2px solid var(--border); position: sticky; top: calc(90px + 45px + 45px); z-index: 8; }
-.th-cell { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 8px 0; }
-.cat-header { padding: 14px 28px 8px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-bottom: 1px solid var(--border); }
-.cat-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); }
-.cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
+.ts3-divider { height: 1px; background: var(--border); margin: 8px 0; }
 
-.commodity-row { display: grid; grid-template-columns: 2fr 120px 170px 130px 110px 50px; align-items: center; padding: 0 28px; border-bottom: 1px solid #eeecea; cursor: pointer; transition: background 0.12s; min-height: 60px; background: var(--white); text-decoration: none; color: inherit; }
-.commodity-row:hover { background: #fdfcf8; }
-.commodity-row:hover .cr-arrow { opacity: 1; }
-.cr-name-col { display: flex; align-items: center; gap: 11px; padding: 12px 0; }
-.cr-emoji { font-size: 19px; width: 26px; text-align: center; flex-shrink: 0; }
-.cr-name { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.2; }
-.cr-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
-.cond-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-.cond-steady { background: #edf4e0; color: var(--lime-dk); border: 1px solid #c0e880; }
-.cond-higher { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #b0e060; }
-.cond-lower { background: var(--red-bg); color: var(--red); border: 1px solid #f0c0b8; }
-.cond-light { background: var(--purple-bg); color: var(--purple); border: 1px solid #c8b0f0; }
-.cond-volatile { background: var(--amber-bg); color: var(--amber); border: 1px solid #e8d090; }
-.cr-price-col { display: flex; flex-direction: column; gap: 1px; }
-.cr-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); }
-.cr-price-sub { font-size: 10px; color: var(--muted); }
-.cr-price-sub.up { color: var(--lime-dk); font-weight: 600; }
-.cr-price-sub.down { color: var(--red); font-weight: 600; }
-.cr-origins { display: flex; gap: 4px; flex-wrap: wrap; }
-.origin-pip { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; background: var(--panel); color: var(--dim); border: 1px solid var(--border); white-space: nowrap; }
-.mini-spark { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
-.spark-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
-.spark-bar.hi { background: var(--lime); }
-.spark-bar.lo { background: #fcc; }
-.spark-bar.now { background: var(--ink); }
-.cr-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
-.wow-up { color: var(--lime-dk); }
-.wow-down { color: var(--red); }
-.wow-flat { color: var(--muted); }
-.cr-arrow { font-size: 16px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
-.organic-band { padding: 9px 28px; background: var(--lime-bg); border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890; display: flex; align-items: center; gap: 8px; }
-.ob-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
-.loading-row { padding: 48px 28px; text-align: center; background: var(--white); }
-.loading-row p { font-size: 13px; color: var(--muted); }
-.empty-row { padding: 48px 28px; text-align: center; background: var(--white); }
-.empty-row p { font-size: 13px; color: var(--muted); }
+/* category collapsible */
+.ts3-cat-hdr {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 22px; cursor: pointer;
+  border-left: 3px solid transparent; transition: background 0.12s;
+  user-select: none;
+}
+.ts3-cat-hdr:hover { background: var(--panel); }
+.ts3-cat-hdr.open { background: var(--panel); }
+.ts3-cat-icon { font-size: 17px; width: 24px; text-align: center; flex-shrink: 0; }
+.ts3-cat-name { font-size: 15px; font-weight: 500; color: var(--dim); flex: 1; }
+.ts3-cat-hdr.open .ts3-cat-name { color: var(--ink); font-weight: 600; }
+.ts3-cat-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.ts3-cat-chev { font-size: 10px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+.ts3-cat-hdr.open .ts3-cat-chev { transform: rotate(180deg); }
+.ts3-cat-body { display: none; background: var(--panel); border-bottom: 1px solid var(--border); padding: 6px 0; }
+.ts3-cat-body.open { display: block; }
+.ts3-cat-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 22px 8px 50px; cursor: pointer;
+  font-size: 14px; color: var(--dim); transition: color 0.12s;
+}
+.ts3-cat-item:hover { color: var(--ink); background: #eeecea; }
+.ts3-cat-item.active { color: var(--lime-dk); font-weight: 600; }
+.ts3-cat-item-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
 
-/* ── DETAIL MODAL ── */
-.detail-overlay {
+/* MARKET HEADER */
+.tm3-mkt-hdr {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 20px 32px 0; flex-shrink: 0;
+}
+.tm3-mkt-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px; font-weight: 400; letter-spacing: -0.5px; color: var(--ink); line-height: 1;
+}
+.tm3-mkt-meta { font-size: 13px; color: var(--muted); margin-top: 5px; display: flex; align-items: center; gap: 10px; }
+.tm3-live { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 6px var(--lime); display: inline-block; animation: pulse 1.8s ease-in-out infinite; }
+
+/* signal pills */
+.tm3-signals { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 12px 0 16px; }
+.tm3-sig { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+.tsig-up     { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c4e890; }
+.tsig-down   { background: var(--red-bg);  color: var(--red);     border: 1px solid #f0bcb4; }
+.tsig-steady { background: var(--panel);   color: var(--muted);   border: 1px solid var(--border); }
+.tsig-light  { background: var(--purple-bg); color: var(--purple); border: 1px solid #d0c4f0; }
+
+/* movers strip */
+.tm3-movers { display: flex; gap: 1px; margin: 0 -32px; border-top: 1px solid var(--border); background: var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tm3-movers::-webkit-scrollbar { display: none; }
+.tm3-mover { flex-shrink: 0; min-width: 148px; background: var(--white); padding: 13px 18px; cursor: pointer; transition: background 0.12s; }
+.tm3-mover:hover { background: var(--panel); }
+.tm3-mover.sel { background: var(--ink); }
+.tm3-mv-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.tm3-mv-emoji { font-size: 16px; }
+.tm3-mv-name { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm3-mover.sel .tm3-mv-name { color: var(--white); }
+.tm3-mv-price { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--dim); }
+.tm3-mover.sel .tm3-mv-price { color: rgba(255,255,255,0.55); }
+.tm3-mv-delta { font-size: 12px; font-weight: 700; }
+.tm3-mv-up   { color: var(--lime-dk); }
+.tm3-mv-down { color: var(--red); }
+.tm3-mover.sel .tm3-mv-up   { color: var(--lime); }
+.tm3-mover.sel .tm3-mv-down { color: #f08070; }
+
+/* TYPE TABS */
+.tm3-type-tabs { display: flex; background: var(--white); border-bottom: 1px solid var(--border); flex-shrink: 0; padding: 0 32px; overflow-x: auto; }
+.tm3-type-tabs::-webkit-scrollbar { display: none; }
+.tm3-tt { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; padding: 11px 18px; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; display: flex; align-items: center; gap: 7px; margin-bottom: -1px; transition: color 0.12s; }
+.tm3-tt:hover { color: var(--ink); }
+.tm3-tt.active { color: var(--ink); border-bottom-color: var(--ink); }
+.tm3-tt-dot { width: 7px; height: 7px; border-radius: 50%; }
+.tm3-tt-n { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.tm3-tt.active .tm3-tt-n { color: var(--dim); }
+
+/* CONTROLS */
+.tm3-controls { display: flex; align-items: center; gap: 9px; padding: 10px 24px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0; position: sticky; top: calc(90px + 205px); z-index: 80; }
+.tm3-search-wrap { flex: 1; max-width: 280px; display: flex; align-items: center; gap: 8px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+.tm3-search-input { border: none; outline: none; font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--ink); background: transparent; width: 100%; }
+.tm3-search-input::placeholder { color: var(--muted); }
+.tm3-fbtn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--dim); padding: 7px 13px; border-radius: 7px; cursor: pointer; white-space: nowrap; transition: all 0.12s; }
+.tm3-fbtn:hover { border-color: var(--border2); color: var(--ink); }
+.tm3-fbtn.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.tm3-ctrl-r { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.tm3-ctrl-r strong { color: var(--dim); font-weight: 600; }
+
+/* COMMODITY LIST */
+.tm3-list { flex: 1; overflow-y: auto; }
+.tm3-list::-webkit-scrollbar { width: 5px; }
+.tm3-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* category header */
+.tm3-cat-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 28px 10px; background: var(--bg);
+  border-bottom: 1px solid var(--border); border-top: 3px solid var(--border);
+  position: sticky; top: calc(90px + 205px + 43px); z-index: 4;
+}
+.tm3-cat-hdr:first-child { border-top: none; }
+.tm3-ch-left { display: flex; align-items: center; gap: 9px; }
+.tm3-ch-icon { font-size: 16px; }
+.tm3-ch-name { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dim); }
+.tm3-ch-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+.tm3-ch-count { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+
+/* COMMODITY ROW */
+.tm3-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 28px; min-height: 70px;
+  background: var(--white); border-bottom: 1px solid #eae8e0;
+  cursor: pointer; transition: background 0.1s;
+  border-left: 3px solid transparent;
+}
+.tm3-row:hover { background: #fdfcf8; }
+.tm3-row.active { background: var(--lime-bg); border-left-color: var(--lime); }
+.tm3-row:last-child { border-bottom: none; }
+.tm3-row:hover .tm3-row-arrow { color: var(--dim); transform: translateX(2px); }
+
+.tm3-row-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; transition: background 0.1s; }
+.tm3-row:hover .tm3-row-ico { background: var(--white); }
+.tm3-row.active .tm3-row-ico { background: var(--white); }
+
+.tm3-row-info { flex: 1; min-width: 0; }
+.tm3-row-name { font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm3-row-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.tm3-row-badge { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
+.tmb-higher { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c4e890; }
+.tmb-lower  { background: var(--red-bg);  color: var(--red);     border: 1px solid #f0bcb4; }
+.tmb-steady { background: #eaf4dc; color: #3a7010; border: 1px solid #c4e098; }
+.tmb-light  { background: var(--purple-bg); color: var(--purple); border: 1px solid #d0c4f0; }
+
+.tm3-row-prices { text-align: right; flex-shrink: 0; min-width: 130px; }
+.tm3-row-price { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; display: block; font-variant-numeric: tabular-nums; }
+.tm3-row-fine { font-size: 11px; color: var(--lime-dk); font-weight: 700; margin-top: 3px; display: block; }
+
+.tm3-row-arrow { font-size: 16px; color: var(--border2); flex-shrink: 0; transition: color 0.12s, transform 0.12s; }
+
+/* organic band */
+.tm3-org-band { padding: 10px 28px; background: var(--lime-bg); border-top: 1px solid #c4e890; border-bottom: 1px solid #c4e890; display: flex; align-items: center; gap: 8px; }
+.tm3-org-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
+
+/* loading / empty */
+.tm3-loading { padding: 64px 32px; text-align: center; font-size: 14px; color: var(--muted); background: var(--white); }
+.tm3-empty { padding: 64px 32px; text-align: center; font-size: 14px; color: var(--muted); background: var(--white); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .tm3-sidebar { display: none; }
+  .tm3-mkt-hdr { padding: 16px 20px 0; }
+  .tm3-type-tabs { padding: 0 20px; }
+  .tm3-controls { padding: 9px 16px; top: calc(86px + 190px + 41px); }
+  .tm3-cat-hdr { padding: 10px 20px 8px; top: calc(86px + 190px + 41px + 43px); }
+  .tm3-row { padding: 0 16px; min-height: 62px; gap: 12px; }
+  .tm3-row-ico { width: 38px; height: 38px; font-size: 18px; border-radius: 10px; }
+  .tm3-row-name { font-size: 15px; }
+  .tm3-row-badge { display: none; }
+  .tm3-row-price { font-size: 15px; }
+  .tm3-movers { margin: 0 -20px; }
+}
+
+/* ═══════════════════════════════════════════
+   DETAIL MODAL — v3
+═══════════════════════════════════════════ */
+.dm-overlay {
   position: fixed; inset: 0; z-index: 400;
-  background: rgba(15,15,10,0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(15,15,10,0.6);
+  backdrop-filter: blur(5px);
   display: none; align-items: center; justify-content: center;
   padding: 24px;
 }
-.detail-overlay.open { display: flex; }
-.detail-panel {
-  position: relative;
-  width: 100%; max-width: 820px;
+.dm-overlay.open { display: flex; }
+.dm-modal {
+  width: 100%; max-width: 540px;
   max-height: calc(100vh - 48px);
-  background: var(--white);
-  border-radius: 16px;
+  background: var(--white); border-radius: 20px;
   border: 1px solid var(--border);
   box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.1);
-  overflow-y: auto;
-  display: flex; flex-direction: column;
-  transform: scale(0.96) translateY(8px);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: scale(0.96) translateY(10px); opacity: 0;
   transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), opacity 0.18s ease;
-  opacity: 0;
 }
-.detail-overlay.open .detail-panel { transform: scale(1) translateY(0); opacity: 1; }
-.detail-panel::-webkit-scrollbar { width: 5px; }
-.detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.dm-overlay.open .dm-modal { transform: scale(1) translateY(0); opacity: 1; }
 
-/* panel header */
-.dp-header { padding: 22px 26px 18px; border-bottom: 1px solid var(--border); background: var(--white); position: sticky; top: 0; z-index: 10; }
-.dp-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-.dp-close { width: 28px; height: 28px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--dim); transition: all 0.15s; flex-shrink: 0; }
-.dp-close:hover { background: var(--border); color: var(--ink); }
-.dp-title-block { display: flex; align-items: center; gap: 12px; }
-.dp-emoji { font-size: 26px; }
-.dp-commodity { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
-.dp-pack { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
-.dp-meta-row { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
-.dp-cond { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; }
-.dp-market-tag { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-.dp-live { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); display: inline-block; animation: pulse 1.5s infinite; }
-.dp-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
+/* header */
+.dm-header { padding: 22px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.dm-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.dm-title-group { display: flex; align-items: center; gap: 14px; }
+.dm-emoji { font-size: 36px; line-height: 1; }
+.dm-name { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; letter-spacing: -0.5px; color: var(--ink); line-height: 1; }
+.dm-pack { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.dm-close { width: 32px; height: 32px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--dim); flex-shrink: 0; transition: all 0.15s; }
+.dm-close:hover { background: var(--border); color: var(--ink); }
+.dm-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dm-cond { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+.dm-mkt-tag { font-size: 13px; color: var(--muted); font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.dm-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 4px var(--lime); display: inline-block; animation: pulse 1.5s infinite; }
+.dm-code-tag { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); background: var(--panel); border: 1px solid var(--border); padding: 3px 8px; border-radius: 5px; }
 
 /* price strip */
-.dp-price-strip { display: grid; grid-template-columns: repeat(3,1fr); border-bottom: 1px solid var(--border); }
-.phc { padding: 16px 22px; border-right: 1px solid var(--border); }
-.phc:last-child { border-right: none; }
-.phc-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.phc-value { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
-.phc-value.up { color: var(--lime-dk); }
-.phc-value.down { color: var(--red); }
-.phc-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.dm-price-strip { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.dm-ps-cell { padding: 16px 22px; border-right: 1px solid var(--border); }
+.dm-ps-cell:last-child { border-right: none; }
+.dm-ps-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.dm-ps-val { font-family: 'Instrument Serif', serif; font-size: 26px; font-weight: 400; letter-spacing: -0.5px; color: var(--ink); line-height: 1; }
+.dm-ps-val.fine { color: var(--lime-dk); }
+.dm-ps-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-/* panel section */
-.dp-section { padding: 18px 26px; border-bottom: 1px solid var(--border); }
-.dp-section:last-child { border-bottom: none; }
-.dp-section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+/* scrollable body */
+.dm-body { overflow-y: auto; flex: 1; padding: 20px 24px; }
+.dm-body::-webkit-scrollbar { width: 5px; }
+.dm-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* breakdown table */
-.bt { width: 100%; border-collapse: collapse; }
-.bt thead tr { border-bottom: 2px solid var(--border); }
-.bt thead th { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 0 8px 7px; text-align: left; }
-.bt thead th.r { text-align: right; }
-.bt thead th.c { text-align: center; }
-.bt tbody tr { border-bottom: 1px solid #f0efe8; transition: background 0.12s; }
-.bt tbody tr:last-child { border-bottom: none; }
-.bt tbody tr:hover { background: var(--panel); }
-.bt tbody td { padding: 8px 8px; font-size: 12px; vertical-align: middle; }
-.otag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.6px; text-transform: uppercase; background: var(--panel); color: var(--dim); border: 1px solid var(--border); white-space: nowrap; }
-.vtag { font-size: 10px; font-style: italic; color: var(--muted); margin-left: 5px; }
-.sc { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; text-align: center; }
-.gtag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
-.g-std { background: var(--panel); color: var(--muted); border: 1px solid var(--border); }
-.g-fine { background: var(--lime-bg); color: var(--lime-dk); border: 1px solid #c0e880; }
-.g-fair { background: var(--red-bg); color: var(--red); border: 1px solid #f0c0b8; }
-.g-hold { background: var(--amber-bg); color: var(--amber); border: 1px solid #e8d090; }
-.pc { text-align: right; white-space: nowrap; }
-.pr { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
-.pm { font-size: 10px; color: var(--lime-dk); font-weight: 600; display: block; text-align: right; margin-top: 1px; }
-
-/* history table */
-.ht { width: 100%; border-collapse: collapse; }
-.ht thead th { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 0 10px 7px; text-align: left; border-bottom: 2px solid var(--border); }
-.ht thead th.r { text-align: right; }
-.ht tbody tr { border-bottom: 1px solid #f0efe8; }
-.ht tbody tr:last-child { border-bottom: none; }
-.ht tbody td { padding: 7px 10px; font-size: 12px; }
-.ht-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
-.ht-price { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); text-align: right; }
-.ht-delta { font-size: 11px; font-weight: 600; text-align: right; }
-.ht-cond { font-size: 11px; color: var(--muted); }
-
-/* panel footer */
-.dp-footer { padding: 14px 26px; background: var(--panel); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: auto; }
-.dp-footer a { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink); text-decoration: none; cursor: pointer; }
-
-/* ── LOADING SPINNER ── */
-.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.6s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── ERROR BANNER ── */
-.error-banner { background: var(--red-bg); border: 1px solid #f0c0b8; border-radius: 8px; padding: 12px 16px; margin: 16px 28px; font-size: 13px; color: var(--red); display: none; }
-.error-banner.show { display: block; }
-
-/* animations */
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.hero-eyebrow { animation: fadeUp 0.5s ease both; }
-.hero-headline { animation: fadeUp 0.5s 0.08s ease both; }
-.hero-sub      { animation: fadeUp 0.5s 0.14s ease both; }
-.hero-actions  { animation: fadeUp 0.5s 0.20s ease both; }
-.hero-stats    { animation: fadeUp 0.5s 0.26s ease both; }
-
-/* ── HAMBURGER ── */
-.nav-hamburger {
-  display: none; flex-direction: column; justify-content: center; gap: 5px;
-  width: 36px; height: 36px; cursor: pointer; border: none; background: transparent; padding: 4px;
+.dm-section-label {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
 }
-.nav-hamburger span { display: block; height: 2px; background: var(--ink); border-radius: 2px; transition: all 0.2s; }
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.dm-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* mobile nav drawer */
-.mobile-nav {
-  display: none; position: fixed; top: 56px; left: 0; right: 0; z-index: 198;
-  background: var(--white); border-bottom: 1px solid var(--border);
-  flex-direction: column; padding: 8px 0 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+/* origin card */
+.dm-origin-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+.dm-origin-card:last-child { margin-bottom: 0; }
+.dm-oc-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+.dm-oc-flag { font-size: 18px; line-height: 1; flex-shrink: 0; }
+.dm-oc-origin { font-size: 15px; font-weight: 700; color: var(--ink); }
+.dm-oc-variety { font-size: 13px; color: var(--muted); font-style: italic; }
+.dm-oc-pack { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; flex-shrink: 0; }
+
+/* size row */
+.dm-size-row { padding: 13px 16px; border-bottom: 1px solid #f0efe8; transition: background 0.1s; }
+.dm-size-row:last-child { border-bottom: none; }
+.dm-size-row:hover { background: #fdfcf8; }
+.dm-sr-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.dm-sr-size { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: var(--ink); flex-shrink: 0; min-width: 48px; }
+.dm-sr-size.desc { font-family: 'Barlow', sans-serif; font-size: 14px; font-style: italic; color: var(--dim); }
+.dm-sr-std { font-size: 19px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; text-align: right; }
+.dm-sr-std .rs { color: var(--muted); font-weight: 300; }
+.dm-sr-mostly { font-size: 12px; color: var(--lime-dk); font-weight: 600; text-align: right; margin-top: 3px; }
+.dm-sr-grades { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
+.dm-grade {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 600; padding: 5px 11px;
+  border-radius: 8px; border: 1px solid transparent;
 }
-.mobile-nav.open { display: flex; }
-.mobile-nav-link {
-  font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
-  color: var(--muted); padding: 12px 24px; cursor: pointer; transition: all 0.15s;
-  border-bottom: 1px solid var(--border);
+.dm-grade .dg-label { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.75; }
+.dm-grade .dg-price { font-weight: 700; font-size: 13px; }
+.dg-fine { background: var(--lime-bg); border-color: #c0e880; color: var(--lime-dk); }
+.dg-hold { background: var(--amber-bg); border-color: #e8d090; color: var(--amber); }
+.dg-fair { background: var(--red-bg); border-color: #f0c0b8; color: var(--red); }
+.dg-proc { background: var(--blue-bg); border-color: #b0ccf5; color: var(--blue); }
+
+/* footer */
+.dm-footer { padding: 12px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); background: var(--panel); flex-shrink: 0; }
+.dm-footer-close { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+@media (max-width: 600px) {
+  .dm-overlay { padding: 0; align-items: flex-end; }
+  .dm-modal { max-width: 100%; border-radius: 20px 20px 0 0; border-bottom: none; max-height: 92vh; }
+  .dm-name { font-size: 24px; }
+  .dm-ps-val { font-size: 22px; }
+  .dm-sr-std { font-size: 17px; }
 }
-.mobile-nav-link:last-child { border-bottom: none; }
-.mobile-nav-link:hover, .mobile-nav-link.active { color: var(--ink); background: var(--panel); }
-.mobile-nav-link.cta { color: var(--white); background: var(--ink); margin: 12px 24px 0; border-radius: 6px; text-align: center; border-bottom: none; }
-
-/* ══════════════════════════════════════
-   TABLET  ≤ 1024px
-══════════════════════════════════════ */
-@media (max-width: 1024px) {
-  nav { padding: 0 24px; }
-  .nav-links { gap: 20px; }
-  .nav-date { display: none; }
-  .nav-search-btn { min-width: 160px; }
-  .section-wrap { padding: 48px 32px; }
-  .hero-left { padding: 56px 40px; }
-  .hero-headline { font-size: 52px; }
-  .hero-right { display: none; }
-  .hero { grid-template-columns: 1fr; }
-  .hero-sub { max-width: 100%; }
-  .market-grid { grid-template-columns: 1fr; }
-  .market-col { border-right: none; border-bottom: 1px solid var(--border); }
-  .market-col:last-child { border-bottom: none; }
-  .reports-grid { grid-template-columns: 1fr 1fr; }
-  .report-card:nth-child(2) { border-right: none; }
-  .report-card:nth-child(3) { border-top: 1px solid var(--border); }
-  .report-card:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
-  .cta-section { flex-direction: column; gap: 40px; padding: 60px 32px; }
-  .cta-box { width: 100%; }
-  .main-layout { grid-template-columns: 180px 1fr; }
-  .detail-panel { width: 90vw; }
-  footer { padding: 24px 32px; }
-}
-
-/* ══════════════════════════════════════
-   MOBILE  ≤ 768px
-══════════════════════════════════════ */
-@media (max-width: 768px) {
-  /* nav */
-  nav { padding: 0 20px; height: 52px; }
-  .nav-links { display: none; }
-  .nav-cta { display: none; }
-  .nav-date { display: none; }
-  .nav-hamburger { display: flex; }
-  .nav-search-btn { min-width: 0; padding: 7px 10px; }
-  .nav-search-text { display: none; }
-  .nav-search-kbd { display: none; }
-
-  /* ticker */
-  .ticker-bar { top: 52px; }
-
-  /* hero */
-  .hero-wrap { padding-top: 86px; }
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { padding: 40px 20px 48px; }
-  .hero-headline { font-size: 42px; letter-spacing: -1.5px; margin-bottom: 18px; }
-  .hero-sub { font-size: 15px; margin-bottom: 28px; }
-  .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 36px; }
-  .btn-primary { width: 100%; text-align: center; padding: 14px 20px; }
-  .hero-stats { grid-template-columns: 1fr 1fr; }
-  .stat-cell:nth-child(1), .stat-cell:nth-child(2) { border-bottom: 1px solid var(--border); }
-  .hero-right { display: none; }
-
-  /* marquee */
-  .marquee-band { padding: 9px 0; }
-
-  /* sections */
-  .section-wrap { padding: 36px 20px; }
-  .section-title { font-size: 28px; margin-bottom: 24px; }
-
-  /* market snapshot */
-  .market-grid { grid-template-columns: 1fr; border-radius: 10px; }
-  .market-col { border-right: none; border-bottom: 1px solid var(--border); }
-  .market-col:last-child { border-bottom: none; }
-
-  /* report cards */
-  .reports-grid { grid-template-columns: 1fr; border-radius: 10px; }
-  .report-card { border-right: none; border-bottom: 1px solid var(--border); }
-  .report-card:last-child { border-bottom: none; }
-  .report-card:nth-child(3) { border-top: none; }
-  .report-card:nth-child(4) { border-top: none; }
-
-  /* cta */
-  .cta-section { padding: 48px 20px; flex-direction: column; gap: 32px; }
-  .cta-box { width: 100%; }
-  .cta-headline { font-size: 32px; }
-
-  /* footer */
-  footer { flex-direction: column; gap: 8px; padding: 20px; text-align: center; }
-
-  /* markets page */
-  .markets-page { padding-top: 86px; }
-  .page-header { padding: 18px 20px 0; }
-  .ph-title { font-size: 24px; }
-  .ph-meta { font-size: 11px; gap: 8px; flex-wrap: wrap; }
-  .ph-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .ph-tab { white-space: nowrap; padding: 10px 14px; font-size: 11px; }
-
-  /* control bar */
-  .control-bar { padding: 10px 16px; gap: 8px; flex-wrap: wrap; top: 86px; }
-  .search-wrap { max-width: 100%; flex: 1 1 100%; }
-  .filter-btn { font-size: 10px; padding: 6px 10px; }
-
-  /* hide sidebar on mobile */
-  .main-layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
-
-  /* commodity table — simplified 3-col layout */
-  .table-header { grid-template-columns: 1fr 100px 80px; padding: 0 16px; }
-  .th-cell:nth-child(2), .th-cell:nth-child(4), .th-cell:nth-child(5) { display: none; }
-  .commodity-row { grid-template-columns: 1fr 100px 80px; padding: 0 16px; min-height: 52px; }
-  .cr-name-col { gap: 8px; padding: 10px 0; }
-  .cr-emoji { font-size: 16px; width: 22px; }
-  .cr-name { font-size: 13px; }
-  .commodity-row > div:nth-child(2) { display: none; } /* condition */
-  .commodity-row > div:nth-child(4) { display: none; } /* origins */
-  .commodity-row > div:nth-child(5) { display: none; } /* sparkline */
-  .cat-header { padding: 12px 16px 6px; }
-  .organic-band { padding: 8px 16px; }
-
-  /* modal on mobile — full screen */
-  .detail-overlay { padding: 0; align-items: flex-end; }
-  .detail-panel {
-    max-width: 100%;
-    max-height: 94vh;
-    border-radius: 16px 16px 0 0;
-    border-bottom: none;
-  }
-  .dp-header { padding: 16px 20px 14px; }
-  .dp-price-strip { grid-template-columns: 1fr 1fr; }
-  .phc:last-child { grid-column: 1 / -1; border-right: none; }
-  .dp-section { padding: 16px 20px; }
-
-  /* page header market selector */
-  .ph-top { flex-direction: column; gap: 12px; }
-  .ph-top > div:last-child { padding-top: 0; }
-  .market-select { width: 100%; }
-}
-
-/* ══════════════════════════════════════
-   SMALL MOBILE  ≤ 380px
-══════════════════════════════════════ */
-@media (max-width: 380px) {
-  .hero-headline { font-size: 36px; }
-  .hero-stats { grid-template-columns: 1fr 1fr; }
-  .stat-num { font-size: 22px; }
-  .ph-tabs { gap: 0; }
-  .ph-tab { padding: 9px 10px; font-size: 10px; }
-}
-
-/* ══════════════════════════════════════
-   REBUILT TERMINAL MARKETS PAGE
-══════════════════════════════════════ */
-
-/* MARKET SWITCHER BAR */
-.market-switcher {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 0 40px;
-  display: flex; align-items: center; gap: 0;
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-}
-.market-switcher::-webkit-scrollbar { display: none; }
-.mkt-tab {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
-  padding: 14px 20px; cursor: pointer; border: none; background: transparent;
-  color: var(--muted); border-bottom: 2px solid transparent;
-  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
-  margin-bottom: -1px;
-}
-.mkt-tab:hover { color: var(--ink); }
-.mkt-tab.active { color: var(--ink); border-bottom-color: var(--lime); }
-.mkt-tab-count {
-  font-size: 10px; font-weight: 500; color: var(--muted);
-  background: var(--panel); border: 1px solid var(--border);
-  padding: 1px 6px; border-radius: 10px; font-family: 'DM Mono', monospace;
-}
-.mkt-tab.active .mkt-tab-count { background: var(--lime-bg); border-color: #c0e880; color: var(--lime-dk); }
-
-/* MARKETS PAGE HEADER - rebuilt */
-.tm-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 40px 0;
-  position: sticky; top: 90px; z-index: 95;
-}
-.tm-header-top {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 0; padding-bottom: 16px;
-}
-.tm-title-block {}
-.tm-breadcrumb { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-.tm-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 26px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1;
-}
-.tm-meta {
-  display: flex; align-items: center; gap: 10px; margin-top: 5px;
-  font-size: 11px; color: var(--muted);
-}
-.tm-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 5px var(--lime); display: inline-block; animation: pulse 1.5s infinite; margin-right: 3px; }
-.tm-sep { width: 1px; height: 10px; background: var(--border); }
-
-/* TYPE TABS */
-.tm-type-tabs {
-  display: flex; gap: 0; border-top: 1px solid var(--border); margin: 0 -40px; padding: 0 40px;
-}
-.tm-type-tab {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-  padding: 10px 16px; cursor: pointer; border: none; background: transparent;
-  color: var(--muted); border-bottom: 2px solid transparent;
-  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
-  margin-bottom: -1px;
-}
-.tm-type-tab:hover { color: var(--ink); }
-.tm-type-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-.tm-type-dot { width: 6px; height: 6px; border-radius: 50%; }
-
-/* CONTROL ROW */
-.tm-controls {
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 40px;
-  display: flex; align-items: center; gap: 8px;
-  position: sticky; top: calc(90px + 152px); z-index: 94;
-}
-.tm-search-wrap { position: relative; flex: 1; max-width: 300px; }
-.tm-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
-.tm-search-input {
-  width: 100%; font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--ink);
-  background: var(--white); border: 1px solid var(--border);
-  padding: 7px 12px 7px 30px; border-radius: 6px; outline: none;
-  transition: border-color 0.15s;
-}
-.tm-search-input::placeholder { color: var(--muted); }
-.tm-search-input:focus { border-color: var(--border2); }
-.tm-filter { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--dim); padding: 7px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.tm-filter:hover { border-color: var(--border2); color: var(--ink); }
-.tm-filter.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
-.tm-ctrl-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.tm-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.tm-count strong { color: var(--dim); }
-
-/* SORT TABS */
-.tm-sort-tabs { display: flex; gap: 4px; }
-.tm-sort-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--muted); padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.tm-sort-btn:hover { color: var(--ink); border-color: var(--border2); }
-.tm-sort-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
-
-/* TWO ZONE LAYOUT */
-.tm-layout {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  min-height: calc(100vh - 300px);
-  align-items: start;
-}
-
-/* LEFT NAV */
-.tm-leftnav {
-  border-right: 1px solid var(--border);
-  background: var(--white);
-  padding: 16px 0;
-  position: sticky;
-  top: calc(90px + 152px + 41px);
-  max-height: calc(100vh - 283px);
-  overflow-y: auto;
-}
-.tm-leftnav::-webkit-scrollbar { width: 4px; }
-.tm-leftnav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.tn-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 6px 16px 3px; }
-.tn-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; cursor: pointer; transition: background 0.12s; }
-.tn-item:hover { background: var(--panel); }
-.tn-item.active { background: var(--lime-bg); }
-.tn-name { font-size: 12px; color: var(--ink); font-weight: 500; }
-.tn-item.active .tn-name { color: var(--lime-dk); font-weight: 600; }
-.tn-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-.tn-divider { height: 1px; background: var(--border); margin: 8px 0; }
-
-/* COMMODITY TABLE */
-.tm-list { background: var(--bg); }
-
-/* CATEGORY SECTION */
-.tm-cat-section { margin-bottom: 2px; }
-.tm-cat-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 24px 10px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: calc(90px + 152px + 41px);
-  z-index: 7;
-}
-.tm-cat-left { display: flex; align-items: center; gap: 10px; }
-.tm-cat-icon { font-size: 16px; }
-.tm-cat-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--dim);
-}
-.tm-cat-badge {
-  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-.tm-cat-right { display: flex; align-items: center; gap: 8px; }
-.tm-cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
-.tm-cat-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); background: var(--white); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; }
-
-/* TABLE HEADER */
-.tm-table-head {
-  display: grid;
-  grid-template-columns: 48px 1fr 120px 160px 140px 100px 40px;
-  padding: 0 24px;
-  background: var(--white);
-  border-bottom: 2px solid var(--border);
-}
-.tm-th {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--muted); padding: 8px 0;
-}
-.tm-th.r { text-align: right; }
-.tm-th.c { text-align: center; }
-
-/* COMMODITY ROW */
-.tm-row {
-  display: grid;
-  grid-template-columns: 48px 1fr 120px 160px 140px 100px 40px;
-  align-items: center;
-  padding: 0 24px;
-  min-height: 64px;
-  background: var(--white);
-  border-bottom: 1px solid #eeecea;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.tm-row:hover { background: #fdfcf8; }
-.tm-row:hover .tm-row-arrow { opacity: 1; }
-.tm-row:last-child { border-bottom: none; }
-
-/* emoji cell */
-.tm-row-emoji {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--panel); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
-  transition: background 0.1s;
-}
-.tm-row:hover .tm-row-emoji { background: var(--white); }
-
-/* name cell */
-.tm-row-name-block {}
-.tm-row-name { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.2; }
-.tm-row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-/* condition cell */
-.tm-row-cond {}
-
-/* price cell */
-.tm-row-price { }
-.tm-row-price-main { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--ink); display: block; }
-.tm-row-price-sub { font-size: 10px; margin-top: 2px; display: block; }
-.tps-fine { color: var(--lime-dk); font-weight: 600; }
-.tps-hold { color: var(--amber); font-weight: 600; }
-.tps-muted { color: var(--muted); }
-
-/* origins cell */
-.tm-row-origins { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-
-/* trend cell */
-.tm-row-trend { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-.tm-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 22px; }
-.tm-spark-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
-.tm-spark-bar.hi { background: var(--lime); }
-.tm-spark-bar.lo { background: #f5c0b8; }
-.tm-spark-bar.now { background: var(--ink); }
-.tm-row-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
-
-/* arrow */
-.tm-row-arrow { font-size: 16px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
-
-/* ORGANIC ROW TINT */
-.tm-row.organic-row { background: #fafff4; }
-.tm-row.organic-row:hover { background: #f4ffe8; }
-
-/* ORGANIC BAND */
-.tm-organic-band {
-  padding: 9px 24px; background: var(--lime-bg);
-  border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890;
-  display: flex; align-items: center; gap: 8px;
-}
-.tm-organic-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
-
-/* EMPTY */
-.tm-empty { padding: 64px 24px; text-align: center; background: var(--white); }
-.tm-empty p { font-size: 13px; color: var(--muted); }
-
-/* ERROR */
-.tm-error { background: var(--red-bg); border: 1px solid #f0c0b8; border-radius: 8px; padding: 12px 16px; margin: 16px 24px; font-size: 13px; color: var(--red); display: none; }
-.tm-error.show { display: block; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .tm-table-head { grid-template-columns: 40px 1fr 100px 130px 110px 40px; }
-  .tm-table-head .tm-th:nth-child(5) { display: none; }
-  .tm-row { grid-template-columns: 40px 1fr 100px 130px 110px 40px; }
-  .tm-row > div:nth-child(5) { display: none; }
-  .tm-controls { padding: 10px 24px; }
-  .tm-header { padding: 16px 24px 0; }
-  .tm-type-tabs { margin: 0 -24px; padding: 0 24px; }
-  .market-switcher { padding: 0 24px; }
-}
-
-@media (max-width: 768px) {
-  .tm-layout { grid-template-columns: 1fr; }
-  .tm-leftnav { display: none; }
-  .tm-table-head { grid-template-columns: 36px 1fr 110px 36px; padding: 0 16px; }
-  .tm-table-head .tm-th:nth-child(3) { display: none; }
-  .tm-table-head .tm-th:nth-child(4) { display: none; }
-  .tm-table-head .tm-th:nth-child(5) { display: none; }
-  .tm-table-head .tm-th:nth-child(6) { display: none; }
-  .tm-row { grid-template-columns: 36px 1fr 110px 36px; min-height: 56px; padding: 0 16px; }
-  .tm-row > div:nth-child(3) { display: none; }
-  .tm-row > div:nth-child(4) { display: none; }
-  .tm-row > div:nth-child(5) { display: none; }
-  .tm-row > div:nth-child(6) { display: none; }
-  .tm-row-emoji { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
-  .tm-cat-header { padding: 10px 16px 8px; }
-  .tm-organic-band { padding: 8px 16px; }
-  .tm-controls { padding: 9px 16px; top: calc(86px + 148px + 38px); }
-  .tm-header { top: 86px; padding: 14px 16px 0; }
-  .tm-type-tabs { margin: 0 -16px; padding: 0 16px; overflow-x: auto; }
-  .tm-type-tab { padding: 9px 12px; font-size: 10px; }
-  .market-switcher { padding: 0 16px; }
-  .mkt-tab { padding: 12px 14px; font-size: 12px; }
-  .tm-cat-header { top: calc(86px + 148px + 38px + 41px); }
-}
-
-
-/* ══════════════════════════════════════
-   TERMINAL MARKETS — REBUILT v2
-══════════════════════════════════════ */
-
-/* PULSE STRIP */
-.pulse-strip {
-  background: var(--ink);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding: 0 0;
-  display: flex; align-items: stretch;
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-  height: 44px;
-}
-.pulse-strip::-webkit-scrollbar { display: none; }
-.pulse-label {
-  flex-shrink: 0;
-  padding: 0 16px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  display: flex; align-items: center; gap: 6px;
-  border-right: 1px solid rgba(255,255,255,0.08);
-}
-.pulse-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); animation: pulse 1.5s infinite; }
-.pulse-item {
-  flex-shrink: 0;
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 20px;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  cursor: pointer; transition: background 0.12s;
-}
-.pulse-item:hover { background: rgba(255,255,255,0.05); }
-.pulse-emoji { font-size: 15px; }
-.pulse-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); white-space: nowrap; }
-.pulse-price { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.5); }
-.pulse-delta { font-size: 10px; font-weight: 700; }
-.pulse-up   { color: var(--lime); }
-.pulse-down { color: #f08070; }
-.pulse-flat { color: rgba(255,255,255,0.3); }
-.pulse-empty { padding: 0 20px; font-size: 12px; color: rgba(255,255,255,0.3); display: flex; align-items: center; }
-
-/* THREE-PANE LAYOUT */
-.tm2-wrap {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  min-height: calc(100vh - 90px - 44px);
-}
-
-/* LEFT SIDEBAR */
-.tm2-sidebar {
-  background: var(--white);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  position: sticky;
-  top: 90px;
-  height: calc(100vh - 90px - 44px);
-  overflow-y: auto;
-}
-.tm2-sidebar::-webkit-scrollbar { width: 4px; }
-.tm2-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* sidebar section */
-.ts-section { padding: 16px 0 8px; border-bottom: 1px solid var(--border); }
-.ts-section:last-child { border-bottom: none; }
-.ts-heading {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--muted); padding: 0 16px 6px;
-}
-
-/* MARKET ITEMS */
-.ts-market {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 16px; cursor: pointer; transition: background 0.12s;
-  border-left: 3px solid transparent;
-}
-.ts-market:hover { background: var(--panel); }
-.ts-market.active { background: var(--lime-bg); border-left-color: var(--lime); }
-.ts-market-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
-.ts-market.active .ts-market-dot { background: var(--lime); box-shadow: 0 0 5px var(--lime); }
-.ts-market-name { font-size: 13px; font-weight: 500; color: var(--ink); flex: 1; }
-.ts-market.active .ts-market-name { color: var(--lime-dk); font-weight: 600; }
-.ts-market-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-
-/* CATEGORY ITEMS */
-.ts-cat {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 16px; cursor: pointer; transition: background 0.12s;
-  border-left: 3px solid transparent;
-}
-.ts-cat:hover { background: var(--panel); }
-.ts-cat.active { background: var(--panel); border-left-color: var(--border2); }
-.ts-cat-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
-.ts-cat-name { font-size: 12px; font-weight: 500; color: var(--dim); flex: 1; }
-.ts-cat.active .ts-cat-name { color: var(--ink); font-weight: 600; }
-.ts-cat-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-
-/* ORIGIN ITEMS */
-.ts-origin {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 16px; cursor: pointer; transition: background 0.12s;
-}
-.ts-origin:hover { background: var(--panel); }
-.ts-origin.active { background: var(--lime-bg); }
-.ts-origin-name { font-size: 11px; color: var(--dim); flex: 1; }
-.ts-origin.active .ts-origin-name { color: var(--lime-dk); font-weight: 600; }
-.ts-origin-bar-wrap { width: 48px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-.ts-origin-bar { height: 100%; background: var(--lime-dk); border-radius: 2px; }
-
-/* MAIN CONTENT */
-.tm2-main { background: var(--bg); display: flex; flex-direction: column; min-height: 0; }
-
-/* MAIN HEADER */
-.tm2-main-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 28px 0;
-  position: sticky; top: calc(90px + 44px); z-index: 80;
-}
-.tm2-mh-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-.tm2-market-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 24px; font-weight: 700; letter-spacing: -0.8px; color: var(--ink); line-height: 1;
-}
-.tm2-market-meta { font-size: 11px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; }
-.tm2-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 4px var(--lime); display: inline-block; animation: pulse 1.5s infinite; }
-.tm2-mh-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-
-/* TYPE TABS in main header */
-.tm2-type-tabs { display: flex; gap: 0; margin: 0 -28px; padding: 0 28px; border-top: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.tm2-type-tabs::-webkit-scrollbar { display: none; }
-.tm2-tab {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-  padding: 10px 16px; cursor: pointer; border: none; background: transparent;
-  color: var(--muted); border-bottom: 2px solid transparent;
-  transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
-  margin-bottom: -1px;
-}
-.tm2-tab:hover { color: var(--ink); }
-.tm2-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-.tm2-tab-dot { width: 5px; height: 5px; border-radius: 50%; }
-.tm2-tab-n { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.tm2-tab.active .tm2-tab-n { color: var(--dim); }
-
-/* CONTROLS */
-.tm2-controls {
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  padding: 9px 28px;
-  display: flex; align-items: center; gap: 8px;
-  position: sticky; top: calc(90px + 44px + 109px); z-index: 79;
-}
-.tm2-search-wrap { position: relative; flex: 1; max-width: 280px; }
-.tm2-si { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
-.tm2-search {
-  width: 100%; font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--ink);
-  background: var(--white); border: 1px solid var(--border);
-  padding: 6px 10px 6px 28px; border-radius: 6px; outline: none;
-}
-.tm2-search::placeholder { color: var(--muted); }
-.tm2-search:focus { border-color: var(--border2); }
-.tm2-fbtn { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--dim); padding: 6px 11px; border-radius: 5px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.tm2-fbtn:hover { border-color: var(--border2); color: var(--ink); }
-.tm2-fbtn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
-.tm2-ctrl-r { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-.tm2-sort { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--white); border: 1px solid var(--border); color: var(--muted); padding: 5px 9px; border-radius: 5px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.tm2-sort:hover { color: var(--ink); border-color: var(--border2); }
-.tm2-sort.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
-.tm2-count-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
-.tm2-count-label strong { color: var(--dim); }
-
-/* TABLE HEADER */
-.tm2-thead {
-  display: grid;
-  grid-template-columns: 44px 1fr 120px 170px 160px 110px 32px;
-  padding: 0 24px;
-  background: var(--white);
-  border-bottom: 2px solid var(--border);
-  position: sticky;
-  top: calc(90px + 44px + 109px + 41px); z-index: 78;
-}
-.tm2-th {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--muted); padding: 7px 0;
-}
-
-/* CATEGORY SECTION HEADER */
-.tm2-cat-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 24px 8px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  border-top: 2px solid var(--border);
-}
-.tm2-cat-hdr:first-child { border-top: none; }
-.tm2-ch-left { display: flex; align-items: center; gap: 8px; }
-.tm2-ch-icon { font-size: 14px; }
-.tm2-ch-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dim);
-}
-.tm2-ch-badge {
-  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-.tm2-ch-right { display: flex; align-items: center; gap: 8px; }
-.tm2-ch-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-
-/* COMMODITY ROW */
-.tm2-row {
-  display: grid;
-  grid-template-columns: 44px 1fr 120px 170px 160px 110px 32px;
-  align-items: center;
-  padding: 0 24px;
-  min-height: 62px;
-  background: var(--white);
-  border-bottom: 1px solid #eeecea;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.tm2-row:hover { background: #fdfcf8; }
-.tm2-row:hover .tm2-row-arr { opacity: 1; }
-.tm2-row.org-row { background: #fafff4; }
-.tm2-row.org-row:hover { background: #f3fce8; }
-
-/* emoji box */
-.tm2-row-box {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--panel); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0; transition: background 0.1s;
-}
-.tm2-row:hover .tm2-row-box { background: var(--white); }
-
-/* name */
-.tm2-row-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.2; }
-.tm2-row-sub  { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-/* price */
-.tm2-row-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
-.tm2-row-psub  { font-size: 10px; display: block; margin-top: 2px; }
-.tps-fine { color: var(--lime-dk); font-weight: 600; }
-.tps-hold { color: var(--amber); font-weight: 600; }
-
-/* origins */
-.tm2-row-origins { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-
-/* trend */
-.tm2-trend { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-.tm2-spark { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
-.tm2-bar { width: 5px; border-radius: 2px 2px 0 0; background: var(--border); }
-.tm2-bar.hi { background: var(--lime); }
-.tm2-bar.lo { background: #f5c0b8; }
-.tm2-bar.nw { background: var(--ink); }
-.tm2-row-wow { font-size: 10px; font-weight: 600; white-space: nowrap; }
-
-/* arrow */
-.tm2-row-arr { font-size: 14px; color: var(--border2); opacity: 0; transition: opacity 0.15s; text-align: right; }
-
-/* organic band */
-.tm2-org-band { padding: 8px 24px; background: var(--lime-bg); border-top: 1px solid #c8e890; border-bottom: 1px solid #c8e890; }
-.tm2-org-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--lime-dk); }
-
-/* empty / loading */
-.tm2-empty { padding: 60px 24px; text-align: center; background: var(--white); }
-.tm2-empty p { font-size: 13px; color: var(--muted); }
-.tm2-loading { padding: 60px; text-align: center; font-size: 13px; color: var(--muted); background: var(--white); }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1100px) {
-  .tm2-thead { grid-template-columns: 40px 1fr 110px 150px 140px 32px; }
-  .tm2-thead .tm2-th:nth-child(5) { display: none; }
-  .tm2-row  { grid-template-columns: 40px 1fr 110px 150px 140px 32px; }
-  .tm2-row > div:nth-child(5) { display: none; }
-}
-@media (max-width: 860px) {
-  .tm2-wrap { grid-template-columns: 1fr; }
-  .tm2-sidebar { display: none; }
-  .tm2-thead { grid-template-columns: 36px 1fr 100px 32px; padding: 0 16px; }
-  .tm2-thead .tm2-th:nth-child(3),
-  .tm2-thead .tm2-th:nth-child(4),
-  .tm2-thead .tm2-th:nth-child(5),
-  .tm2-thead .tm2-th:nth-child(6) { display: none; }
-  .tm2-row { grid-template-columns: 36px 1fr 100px 32px; padding: 0 16px; min-height: 54px; }
-  .tm2-row > div:nth-child(3),
-  .tm2-row > div:nth-child(4),
-  .tm2-row > div:nth-child(5),
-  .tm2-row > div:nth-child(6) { display: none; }
-  .tm2-row-box { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
-  .tm2-main-header { padding: 16px 16px 0; position: relative; top: 0; }
-  .tm2-controls { padding: 9px 16px; position: relative; top: 0; }
-  .tm2-cat-hdr { padding: 10px 16px 7px; position: relative; top: 0; }
-  .tm2-thead { position: relative; top: 0; }
-  .pulse-strip { display: none; }
-}
-
-
-/* ══════════════════════════════════════
-   UNIVERSAL PRICE BREAKDOWN — MODAL
-══════════════════════════════════════ */
-.origin-block { margin-bottom: 24px; }
-.origin-block:last-child { margin-bottom: 0; }
-
-.origin-bar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0 10px;
-  border-bottom: 2px solid var(--border);
-}
-.origin-tag-modal {
-  display: inline-flex; align-items: center;
-  font-size: 11px; font-weight: 700; padding: 4px 12px;
-  border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase;
-  white-space: nowrap; border: 1px solid transparent;
-}
-.otm-mx { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
-.otm-dr { background: #edf4e0; color: #2e6010; border-color: #b0e090; }
-.otm-ca { background: #fdf0f8; color: #802050; border-color: #e0a0c0; }
-.otm-fl { background: var(--blue-bg); color: #1a50a0; border-color: #b0ccf5; }
-.otm-pe { background: #f5f0ff; color: #5030a0; border-color: #c8b0f0; }
-.otm-id { background: #f5f0ff; color: #5030a0; border-color: #c8b0f0; }
-.otm-nc { background: #fdf0f8; color: #802050; border-color: #e0a0c0; }
-.otm-wa { background: var(--blue-bg); color: #1a50a0; border-color: #b0ccf5; }
-.otm-tx { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
-.otm-or { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
-.otm-ch { background: #edf4e0; color: #1a5010; border-color: #a0d080; }
-.otm-co { background: #edf4e0; color: #1a5010; border-color: #a0d080; }
-.otm-hn { background: #fff8e6; color: #7a5000; border-color: #e8d090; }
-.otm-other { background: var(--panel); color: var(--dim); border-color: var(--border); }
-
-.origin-variety-label { font-size: 12px; color: var(--muted); font-style: italic; }
-.origin-pack-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
-
-/* SIZE/GRADE TABLE */
-.breakdown-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
-.breakdown-table thead tr { border-bottom: 1px solid var(--border); }
-.breakdown-table thead th {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--muted); padding: 6px 8px; text-align: right;
-}
-.breakdown-table thead th:first-child { text-align: left; }
-.breakdown-table thead th.col-fine  { color: var(--lime-dk); }
-.breakdown-table thead th.col-hold  { color: var(--amber); }
-.breakdown-table thead th.col-fair  { color: var(--red); }
-.breakdown-table thead th.col-proc  { color: var(--blue); }
-
-.breakdown-table tbody tr { border-bottom: 1px solid #f2f0ea; transition: background 0.1s; }
-.breakdown-table tbody tr:last-child { border-bottom: none; }
-.breakdown-table tbody tr:hover { background: var(--panel); }
-.breakdown-table tbody td { padding: 9px 8px; vertical-align: middle; }
-
-.td-size-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px; font-weight: 500; color: var(--ink);
-  white-space: nowrap; min-width: 50px;
-}
-.td-size-label.descriptor {
-  font-family: 'Barlow', sans-serif; font-size: 12px;
-  font-weight: 400; font-style: italic; color: var(--dim);
-}
-
-.td-price-cell { text-align: right; white-space: nowrap; }
-.cell-price { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
-.cell-mostly { font-size: 10px; color: var(--lime-dk); font-weight: 600; display: block; text-align: right; margin-top: 1px; }
-.cell-fine  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--lime-dk); display: block; }
-.cell-hold  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--amber); display: block; }
-.cell-fair  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--red); display: block; }
-.cell-proc  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--blue); display: block; }
-.cell-empty { color: var(--border2); font-size: 12px; display: block; text-align: right; }
-.cell-mostly-grade { font-size: 10px; color: var(--muted); display: block; text-align: right; margin-top: 1px; }
-
 </style>
 </head>
 <body>
@@ -1590,117 +882,140 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
 </div>
 
 <!-- ═══════════════════════ MARKETS PAGE ═══════════════════════ -->
-<div id="page-markets" class="page" style="padding-top:90px;">
+<div id="page-markets" class="page" style="padding-top:90px;display:none;">
+  <div style="display:grid;grid-template-columns:256px 1fr;height:calc(100vh - 90px);overflow:hidden;">
 
-  <!-- PULSE STRIP -->
-  <div class="pulse-strip" id="pulse-strip">
-    <div class="pulse-label"><span class="pulse-dot"></span>Today</div>
-    <div class="pulse-empty" id="pulse-loading">Loading market pulse…</div>
-  </div>
+    <!-- SIDEBAR -->
+    <div class="tm3-sidebar">
+      <div class="ts3-label">Markets</div>
 
-  <!-- THREE-PANE -->
-  <div class="tm2-wrap">
+      <!-- Always visible -->
+      <div class="ts3-mkt active" id="ts3-mkt-all" onclick="tm3SetMarket('')">
+        <span class="ts3-pip"></span>
+        <span class="ts3-mkt-name">All Markets</span>
+        <span class="ts3-mkt-n" id="ts3-n-all">—</span>
+      </div>
+      <div id="ts3-market-list"></div>
 
-    <!-- LEFT SIDEBAR -->
-    <div class="tm2-sidebar">
-      <!-- MARKETS -->
-      <div class="ts-section">
-        <div class="ts-heading">Markets</div>
-        <div id="ts-markets">
-          <div class="ts-market active" id="ts-mkt-all" onclick="tm2SetMarket('')">
-            <span class="ts-market-dot"></span>
-            <span class="ts-market-name">All Markets</span>
-            <span class="ts-market-count" id="ts-mkt-count-all">—</span>
-          </div>
+      <!-- Show more -->
+      <div class="ts3-show-more" id="ts3-show-more" onclick="ts3ToggleMarkets()" style="display:none;">
+        <span class="ts3-show-icon" id="ts3-show-icon">+</span>
+        <span id="ts3-show-label">More markets</span>
+      </div>
+
+      <div class="ts3-divider"></div>
+      <div class="ts3-label" style="padding-top:4px;">Categories</div>
+
+      <div>
+        <div class="ts3-cat-hdr" id="ts3-cat-all" onclick="tm3SetType('all')" style="border-left:3px solid var(--lime);background:var(--lime-bg);">
+          <span class="ts3-cat-icon">✦</span>
+          <span class="ts3-cat-name" style="color:var(--lime-dk);font-weight:600;">All</span>
+          <span class="ts3-cat-n" id="ts3-cn-all">—</span>
         </div>
-      </div>
-      <!-- CATEGORIES -->
-      <div class="ts-section">
-        <div class="ts-heading">Categories</div>
-        <div id="ts-cats"></div>
-      </div>
-      <!-- TOP ORIGINS -->
-      <div class="ts-section">
-        <div class="ts-heading">Origins</div>
-        <div id="ts-origins"></div>
+        <div class="ts3-cat-hdr" id="ts3-cat-fruits" onclick="ts3ToggleCat(this,'fruits')">
+          <span class="ts3-cat-icon">🍎</span>
+          <span class="ts3-cat-name">Fruits</span>
+          <span class="ts3-cat-n" id="ts3-cn-fruits">—</span>
+          <span class="ts3-cat-chev">▾</span>
+        </div>
+        <div class="ts3-cat-body" id="ts3-cb-fruits">
+          <div class="ts3-cat-item" onclick="tm3SetType('fruits')">All Fruits <span class="ts3-cat-item-n" id="ts3-cn-fruits-all">—</span></div>
+        </div>
+        <div class="ts3-cat-hdr" id="ts3-cat-vegetables" onclick="ts3ToggleCat(this,'vegetables')">
+          <span class="ts3-cat-icon">🥦</span>
+          <span class="ts3-cat-name">Vegetables</span>
+          <span class="ts3-cat-n" id="ts3-cn-vegetables">—</span>
+          <span class="ts3-cat-chev">▾</span>
+        </div>
+        <div class="ts3-cat-body" id="ts3-cb-vegetables">
+          <div class="ts3-cat-item" onclick="tm3SetType('vegetables')">All Vegetables <span class="ts3-cat-item-n" id="ts3-cn-veg-all">—</span></div>
+        </div>
+        <div class="ts3-cat-hdr" id="ts3-cat-onions_potatoes" onclick="tm3SetType('onions_potatoes')" style="cursor:pointer;">
+          <span class="ts3-cat-icon">🧅</span>
+          <span class="ts3-cat-name">Onions &amp; Potatoes</span>
+          <span class="ts3-cat-n" id="ts3-cn-onions_potatoes">—</span>
+        </div>
+        <div class="ts3-cat-hdr" id="ts3-cat-nuts" onclick="tm3SetType('nuts')" style="cursor:pointer;">
+          <span class="ts3-cat-icon">🥜</span>
+          <span class="ts3-cat-name">Nuts</span>
+          <span class="ts3-cat-n" id="ts3-cn-nuts">—</span>
+        </div>
       </div>
     </div>
 
     <!-- MAIN -->
-    <div class="tm2-main">
+    <div style="display:flex;flex-direction:column;overflow:hidden;">
 
-      <!-- MAIN HEADER -->
-      <div class="tm2-main-header">
-        <div class="tm2-mh-top">
+      <!-- MARKET HEADER -->
+      <div class="tm3-mkt-hdr">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
           <div>
-            <div class="tm2-market-title" id="tm2-market-title">All Markets</div>
-            <div class="tm2-market-meta">
-              <span class="tm2-live-dot"></span>
-              <span id="tm2-date">Loading…</span>
+            <div class="tm3-mkt-name" id="tm3-mkt-name">All Markets</div>
+            <div class="tm3-mkt-meta">
+              <span class="tm3-live"></span>
+              <span id="tm3-date">Loading…</span>
               <span style="color:var(--border2)">·</span>
               <span>USDA AMS</span>
             </div>
           </div>
-          <div class="tm2-mh-right">
-            <span style="font-size:11px;color:var(--muted)" id="tm2-report-code"></span>
-          </div>
         </div>
-        <!-- TYPE TABS -->
-        <div class="tm2-type-tabs">
-          <button class="tm2-tab active" id="tm2tab-all" onclick="tm2SetType('all')">
-            <span class="tm2-tab-dot" style="background:var(--ink)"></span>All
-            <span class="tm2-tab-n" id="tm2tn-all"></span>
-          </button>
-          <button class="tm2-tab" id="tm2tab-fruits" onclick="tm2SetType('fruits')">
-            <span class="tm2-tab-dot" style="background:var(--red)"></span>Fruits
-            <span class="tm2-tab-n" id="tm2tn-fruits"></span>
-          </button>
-          <button class="tm2-tab" id="tm2tab-vegetables" onclick="tm2SetType('vegetables')">
-            <span class="tm2-tab-dot" style="background:var(--blue)"></span>Vegetables
-            <span class="tm2-tab-n" id="tm2tn-vegetables"></span>
-          </button>
-          <button class="tm2-tab" id="tm2tab-onions_potatoes" onclick="tm2SetType('onions_potatoes')">
-            <span class="tm2-tab-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes
-            <span class="tm2-tab-n" id="tm2tn-onions_potatoes"></span>
-          </button>
-          <button class="tm2-tab" id="tm2tab-nuts" onclick="tm2SetType('nuts')">
-            <span class="tm2-tab-dot" style="background:var(--purple)"></span>Nuts
-            <span class="tm2-tab-n" id="tm2tn-nuts"></span>
-          </button>
+        <div class="tm3-signals" id="tm3-signals">
+          <span class="tm3-sig tsig-steady">Loading…</span>
         </div>
+        <div class="tm3-movers" id="tm3-movers-strip">
+          <div style="padding:13px 20px;font-size:13px;color:var(--muted);background:var(--white);">Loading movers…</div>
+        </div>
+      </div>
+
+      <!-- TYPE TABS -->
+      <div class="tm3-type-tabs">
+        <button class="tm3-tt active" id="tm3tab-all" onclick="tm3SetType('all')">
+          <span class="tm3-tt-dot" style="background:var(--ink)"></span>All
+          <span class="tm3-tt-n" id="tm3tn-all"></span>
+        </button>
+        <button class="tm3-tt" id="tm3tab-fruits" onclick="tm3SetType('fruits')">
+          <span class="tm3-tt-dot" style="background:var(--red)"></span>Fruits
+          <span class="tm3-tt-n" id="tm3tn-fruits"></span>
+        </button>
+        <button class="tm3-tt" id="tm3tab-vegetables" onclick="tm3SetType('vegetables')">
+          <span class="tm3-tt-dot" style="background:var(--blue)"></span>Vegetables
+          <span class="tm3-tt-n" id="tm3tn-vegetables"></span>
+        </button>
+        <button class="tm3-tt" id="tm3tab-onions_potatoes" onclick="tm3SetType('onions_potatoes')">
+          <span class="tm3-tt-dot" style="background:var(--amber)"></span>Onions &amp; Potatoes
+          <span class="tm3-tt-n" id="tm3tn-onions_potatoes"></span>
+        </button>
+        <button class="tm3-tt" id="tm3tab-nuts" onclick="tm3SetType('nuts')">
+          <span class="tm3-tt-dot" style="background:var(--purple)"></span>Nuts
+          <span class="tm3-tt-n" id="tm3tn-nuts"></span>
+        </button>
       </div>
 
       <!-- CONTROLS -->
-      <div class="tm2-controls">
-        <div class="tm2-search-wrap">
-          <span class="tm2-si">⌕</span>
-          <input class="tm2-search" type="text" id="tm2-search" placeholder="Search…" oninput="tm2Render()">
+      <div class="tm3-controls">
+        <div class="tm3-search-wrap">
+          <span style="font-size:14px;color:var(--muted)">⌕</span>
+          <input class="tm3-search-input" type="text" id="tm3-search" placeholder="Search commodities, origins…" oninput="tm3Render()">
         </div>
-        <button class="tm2-fbtn active" id="tm2f-all" onclick="tm2SetOrganic('all')">All</button>
-        <button class="tm2-fbtn" id="tm2f-organic" onclick="tm2SetOrganic('organic')">🌿 Organic</button>
-        <div class="tm2-ctrl-r">
-          <button class="tm2-sort active" id="tm2s-az" onclick="tm2SetSort('az')">A–Z</button>
-          <button class="tm2-sort" id="tm2s-ph" onclick="tm2SetSort('price-high')">Price ↓</button>
-          <button class="tm2-sort" id="tm2s-pl" onclick="tm2SetSort('price-low')">Price ↑</button>
-          <button class="tm2-sort" id="tm2s-mv" onclick="tm2SetSort('movers')">Movers</button>
-          <span class="tm2-count-label"><strong id="tm2-count">—</strong> commodities</span>
+        <button class="tm3-fbtn on" id="tm3f-all" onclick="tm3SetOrganic('all')">All</button>
+        <button class="tm3-fbtn" id="tm3f-organic" onclick="tm3SetOrganic('organic')">🌿 Organic</button>
+        <div style="display:flex;gap:5px;">
+          <button class="tm3-fbtn on" id="tm3s-az" onclick="tm3SetSort('az')">A–Z</button>
+          <button class="tm3-fbtn" id="tm3s-ph" onclick="tm3SetSort('price-high')">Price ↓</button>
+          <button class="tm3-fbtn" id="tm3s-mv" onclick="tm3SetSort('movers')">Movers</button>
         </div>
+        <div class="tm3-ctrl-r"><strong id="tm3-count">—</strong> commodities</div>
       </div>
 
-      <!-- ERROR -->
-      <div style="display:none;background:var(--red-bg);border:1px solid #f0c0b8;border-radius:8px;padding:12px 20px;margin:12px 24px;font-size:13px;color:var(--red);" id="tm2-error">
-        Backend offline — check Railway deployment.
-      </div>
-
-      <!-- LOADING (outside list so JS render doesn't wipe it) -->
-      <div id="tm2-loading" style="padding:60px;text-align:center;font-size:13px;color:var(--muted);background:var(--white);">
-        <span class="spinner"></span>&nbsp; Loading market data…
-      </div>
       <!-- LIST -->
-      <div id="tm2-list"></div>
+      <div class="tm3-list" id="tm3-list">
+        <div class="tm3-loading" id="tm3-loading">
+          <span class="spinner"></span>&nbsp; Loading market data…
+        </div>
+      </div>
 
-    </div><!-- /tm2-main -->
-  </div><!-- /tm2-wrap -->
+    </div>
+  </div>
 </div>
 
 <!-- ═══════════════════════ FOB PAGE (stub) ═══════════════════════ -->
@@ -1731,47 +1046,50 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 26
   <div style="padding:60px;text-align:center;color:var(--muted);font-size:14px;">Reports archive — coming soon.</div>
 </div>
 
-<!-- ═══════════════════════ DETAIL MODAL ═══════════════════════ -->
-<div class="detail-overlay" id="detail-overlay" onclick="handleModalOverlayClick(event)">
-  <div class="detail-panel" id="detail-panel">
+<!-- ═══════════════════════ DETAIL MODAL v3 ═══════════════════════ -->
+<div class="dm-overlay" id="dm-overlay" onclick="dmHandleOverlay(event)">
+  <div class="dm-modal" id="dm-modal">
 
-    <!-- HEADER -->
-    <div class="dp-header">
-      <div class="dp-header-top">
-        <div class="dp-title-block">
-          <span class="dp-emoji" id="dp-emoji">🌿</span>
+    <div class="dm-header">
+      <div class="dm-header-top">
+        <div class="dm-title-group">
+          <span class="dm-emoji" id="dm-emoji">🌿</span>
           <div>
-            <div class="dp-commodity" id="dp-name">—</div>
-            <div class="dp-pack" id="dp-pack">—</div>
+            <div class="dm-name" id="dm-name">—</div>
+            <div class="dm-pack" id="dm-pack">—</div>
           </div>
         </div>
-        <div class="dp-close" onclick="closeDetail()">✕</div>
+        <div class="dm-close" onclick="dmClose()">✕</div>
       </div>
-      <div class="dp-meta-row">
-        <span class="dp-cond cond-steady" id="dp-cond">Steady</span>
-        <span class="dp-market-tag"><span class="dp-live"></span><span id="dp-market">—</span></span>
-        <span class="dp-code" id="dp-code">—</span>
-        <span style="font-size:11px;color:var(--muted)" id="dp-date">—</span>
+      <div class="dm-tags">
+        <span class="dm-cond cond-steady" id="dm-cond">Steady</span>
+        <span class="dm-mkt-tag"><span class="dm-live-dot"></span><span id="dm-market">—</span></span>
+        <span class="dm-code-tag" id="dm-code">—</span>
+        <span style="font-size:12px;color:var(--muted)" id="dm-date">—</span>
       </div>
     </div>
 
-    <!-- PRICE STRIP -->
-    <div class="dp-price-strip">
-      <div class="phc"><div class="phc-label">Standard range</div><div class="phc-value" id="dp-price-range">—</div><div class="phc-sub" id="dp-price-sub">—</div></div>
-      <div class="phc"><div class="phc-label">Top grade</div><div class="phc-value up" id="dp-fine-price">—</div><div class="phc-sub" id="dp-fine-sub">—</div></div>
-      <div class="phc"><div class="phc-label">Market signal</div><div class="phc-value" id="dp-movement">—</div><div class="phc-sub" id="dp-activity">—</div></div>
+    <div class="dm-price-strip">
+      <div class="dm-ps-cell">
+        <div class="dm-ps-label">Standard range</div>
+        <div class="dm-ps-val" id="dm-std-price">—</div>
+        <div class="dm-ps-sub" id="dm-std-sub">—</div>
+      </div>
+      <div class="dm-ps-cell">
+        <div class="dm-ps-label">Fine appearance</div>
+        <div class="dm-ps-val fine" id="dm-fine-price">—</div>
+        <div class="dm-ps-sub" id="dm-fine-sub">—</div>
+      </div>
     </div>
 
-    <!-- UNIVERSAL BREAKDOWN -->
-    <div class="dp-section">
-      <div class="dp-section-label">Price breakdown</div>
-      <div id="dp-breakdown-universal"></div>
+    <div class="dm-body">
+      <div class="dm-section-label">Price by origin &amp; size</div>
+      <div id="dm-breakdown"></div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="dp-footer">
-      <span id="dp-source">USDA AMS</span>
-      <span onclick="closeDetail()" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink);">Close ✕</span>
+    <div class="dm-footer">
+      <span id="dm-source" style="font-family:'DM Mono',monospace;font-size:11px;">USDA AMS</span>
+      <span class="dm-footer-close" onclick="dmClose()">Close ✕</span>
     </div>
 
   </div>
@@ -1926,18 +1244,18 @@ async function boot() {
     buildTicker();
     renderSnapshot();
     renderHeroMovers();
-    buildTm2Sidebar();  // builds sidebar without rendering
-    buildPulse();
-    tm2Render();        // single render call
+    tm3BuildSidebar();
+    tm3BuildSignals();
+    tm3BuildMovers();
+    tm3Render();
+    // update date on markets page
+    const tm3DateEl = document.getElementById('tm3-date');
+    if (tm3DateEl) tm3DateEl.textContent = fd;
   } catch(e) {
     console.error('Boot failed:', e);
     document.getElementById('nav-date').textContent = 'Offline';
-    const tm2Err = document.getElementById('tm2-error');
-    if (tm2Err) tm2Err.style.display = 'block';
-    const tm2Load = document.getElementById('tm2-loading');
-    if (tm2Load) { tm2Load.style.display = 'block'; tm2Load.innerHTML = '<span style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</span>'; }
-    const pulseLoad = document.getElementById('pulse-loading');
-    if (pulseLoad) pulseLoad.textContent = 'Backend offline';
+    const tm3Load = document.getElementById('tm3-loading');
+    if (tm3Load) tm3Load.innerHTML = '<span style="color:var(--red);font-size:13px;">Backend offline — ' + e.message + '</span>';
   }
 }
 
@@ -2051,141 +1369,200 @@ function groupByCommodity(rows) {
   return Object.values(map).sort((a,b) => a.commodity.localeCompare(b.commodity));
 }
 
-// ── TERMINAL MARKETS v2 STATE ───────────────────────────────────
-let tm2Market  = '';
-let tm2Type    = 'all';
-let tm2Organic = 'all';
-let tm2Sort    = 'az';
-let tm2Origin  = '';
+// ═══════════════════════════════════════════
+// TERMINAL MARKETS v3
+// ═══════════════════════════════════════════
+let tm3Market  = '';
+let tm3Type    = 'all';
+let tm3Organic = 'all';
+let tm3Sort    = 'az';
+let tm3MarketsExpanded = false;
+const TM3_VISIBLE_MARKETS = 5; // how many to show before "show more"
 
-// compat aliases
-function setTab(t)     { tm2SetType(t); }
-function setOrganic(v) { tm2SetOrganic(v); }
-function filterAndRender() { tm2Render(); }
+// compat aliases kept for homepage
+function setTab(t)     { tm3SetType(t); }
+function setOrganic(v) { tm3SetOrganic(v); }
+function filterAndRender() { tm3Render(); }
 
-const TM2_CAT_LABELS = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
-const TM2_CAT_ICONS  = { fruits:'🍎', vegetables:'🥦', onions_potatoes:'🧅', nuts:'🥜', other:'🌿' };
-const TM2_CAT_CODES  = { fruits:'FV010', vegetables:'FV020', onions_potatoes:'FV030', nuts:'FV040', other:'—' };
-const TM2_CAT_COLORS = { fruits:'var(--red)', vegetables:'var(--blue)', onions_potatoes:'var(--amber)', nuts:'var(--purple)', other:'var(--muted)' };
-const TM2_TYPE_ORDER = ['fruits','vegetables','onions_potatoes','nuts','other'];
+const TM3_CAT_LABELS = { fruits:'Fruits', vegetables:'Vegetables', onions_potatoes:'Onions & Potatoes', nuts:'Nuts', other:'Other' };
+const TM3_CAT_ICONS  = { fruits:'🍎', vegetables:'🥦', onions_potatoes:'🧅', nuts:'🥜', other:'🌿' };
+const TM3_CAT_CODES  = { fruits:'FV010', vegetables:'FV020', onions_potatoes:'FV030', nuts:'FV040', other:'—' };
+const TM3_CAT_COLORS = { fruits:'var(--red)', vegetables:'var(--blue)', onions_potatoes:'var(--amber)', nuts:'var(--purple)', other:'var(--muted)' };
+const TM3_TYPE_ORDER = ['fruits','vegetables','onions_potatoes','nuts','other'];
 
-function tm2SetMarket(m) {
-  tm2Market = m; activeMarket = m;
-  document.querySelectorAll('[id^="ts-mkt-"]').forEach(el => el.classList.remove('active'));
-  const id = m ? 'ts-mkt-' + m.replace(/\s+/g,'_') : 'ts-mkt-all';
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
-  const title = document.getElementById('tm2-market-title');
-  if (title) title.textContent = m || 'All Markets';
-  // update report code
-  const codeEl = document.getElementById('tm2-report-code');
-  if (codeEl && m) {
-    const mktRows = allRows.filter(r => r.market === m);
-    const codes = [...new Set(mktRows.map(r => (r.source_report||'').replace(/_FV\d+/,'')+'_FV…'))].slice(0,2);
-    codeEl.textContent = codes[0] || '';
-  } else if (codeEl) { codeEl.textContent = ''; }
-  tm2Render();
+function tm3SetMarket(m) {
+  tm3Market = m; activeMarket = m;
+  // update sidebar
+  document.querySelectorAll('[id^="ts3-mkt-"]').forEach(el => el.classList.remove('active'));
+  const safeId = m ? 'ts3-mkt-' + m.replace(/[^a-zA-Z0-9]/g,'_') : 'ts3-mkt-all';
+  const el = document.getElementById(safeId);
+  if (el) {
+    el.classList.add('active');
+    // auto-expand if hidden
+    if (el.classList.contains('ts3-mkt-hidden') && !tm3MarketsExpanded) ts3ToggleMarkets();
+  }
+  // update title
+  const titleEl = document.getElementById('tm3-mkt-name');
+  if (titleEl) titleEl.textContent = m || 'All Markets';
+  tm3Render();
+  tm3BuildSignals();
+  tm3BuildMovers();
 }
-function tm2SetType(t) {
-  tm2Type = t; activeTab = t;
-  document.querySelectorAll('[id^="tm2tab-"]').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('tm2tab-' + t);
+
+function tm3SetType(t) {
+  tm3Type = t; activeTab = t;
+  document.querySelectorAll('[id^="tm3tab-"]').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tm3tab-' + t);
   if (el) el.classList.add('active');
-  tm2Render();
+  // update sidebar cat active state
+  document.querySelectorAll('[id^="ts3-cat-"]').forEach(el => el.style.background = '');
+  document.querySelectorAll('[id^="ts3-cat-"]').forEach(el => { el.style.borderLeft = '3px solid transparent'; el.querySelector('.ts3-cat-name').style.color = ''; el.querySelector('.ts3-cat-name').style.fontWeight = ''; });
+  const catEl = document.getElementById('ts3-cat-' + t);
+  if (catEl) { catEl.style.background = t === 'all' ? 'var(--lime-bg)' : 'var(--panel)'; catEl.style.borderLeft = '3px solid ' + (t === 'all' ? 'var(--lime)' : 'var(--border2)'); catEl.querySelector('.ts3-cat-name').style.color = t === 'all' ? 'var(--lime-dk)' : 'var(--ink)'; catEl.querySelector('.ts3-cat-name').style.fontWeight = '600'; }
+  tm3Render();
 }
-function tm2SetOrganic(v) {
-  tm2Organic = v; activeOrganic = v;
-  document.querySelectorAll('.tm2-fbtn').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById('tm2f-' + v);
-  if (el) el.classList.add('active');
-  tm2Render();
+
+function tm3SetOrganic(v) {
+  tm3Organic = v; activeOrganic = v;
+  document.querySelectorAll('.tm3-fbtn[id^="tm3f"]').forEach(b => b.classList.remove('on'));
+  const el = document.getElementById('tm3f-' + v);
+  if (el) el.classList.add('on');
+  tm3Render();
 }
-function tm2SetSort(s) {
-  tm2Sort = s;
-  document.querySelectorAll('.tm2-sort').forEach(b => b.classList.remove('active'));
-  const ids = {az:'tm2s-az','price-high':'tm2s-ph','price-low':'tm2s-pl',movers:'tm2s-mv'};
-  const el = document.getElementById(ids[s]);
-  if (el) el.classList.add('active');
-  tm2Render();
+
+function tm3SetSort(s) {
+  tm3Sort = s;
+  ['tm3s-az','tm3s-ph','tm3s-mv'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('on'); });
+  const map = {az:'tm3s-az','price-high':'tm3s-ph',movers:'tm3s-mv'};
+  const el = document.getElementById(map[s]);
+  if (el) el.classList.add('on');
+  tm3Render();
 }
-function tm2SetOriginFilter(o) {
-  tm2Origin = tm2Origin === o ? '' : o;
-  document.querySelectorAll('.ts-origin').forEach(el => {
-    el.classList.toggle('active', el.dataset.origin === tm2Origin);
+
+function ts3ToggleCat(el, type) {
+  const body = document.getElementById('ts3-cb-' + type);
+  if (!body) { tm3SetType(type); return; }
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.ts3-cat-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.ts3-cat-hdr').forEach(h => h.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); el.classList.add('open'); }
+}
+
+function ts3ToggleMarkets() {
+  tm3MarketsExpanded = !tm3MarketsExpanded;
+  document.querySelectorAll('.ts3-mkt-hidden').forEach(el => {
+    el.classList.toggle('revealed', tm3MarketsExpanded);
   });
-  tm2Render();
+  const icon = document.getElementById('ts3-show-icon');
+  const label = document.getElementById('ts3-show-label');
+  if (icon) icon.textContent = tm3MarketsExpanded ? '−' : '+';
+  if (label) {
+    const hidden = document.querySelectorAll('.ts3-mkt-hidden').length;
+    label.textContent = tm3MarketsExpanded ? 'Show fewer' : hidden + ' more markets';
+  }
 }
 
-// Build sidebar markets list
-function buildTm2Sidebar() {
+// Build sidebar market list from live data
+function tm3BuildSidebar() {
   if (!allRows.length) return;
-  // Get unique markets sorted by commodity count
   const mktMap = {};
   allRows.forEach(r => { if (r.market) mktMap[r.market] = (mktMap[r.market]||0)+1; });
-  const sorted = Object.entries(mktMap).sort((a,b)=>b[1]-a[1]);
+  const sorted = Object.entries(mktMap).sort((a,b) => b[1]-a[1]);
+
+  // Update all-markets count
   const allGrouped = groupByCommodity(allRows);
-  const allCountEl = document.getElementById('ts-mkt-count-all');
-  if (allCountEl) allCountEl.textContent = allGrouped.length;
-  const container = document.getElementById('ts-markets');
-  // Clear existing (except all-markets button)
-  container.querySelectorAll('[id^="ts-mkt-"]:not(#ts-mkt-all)').forEach(el => el.remove());
-  sorted.forEach(([mkt]) => {
-    const id = 'ts-mkt-' + mkt.replace(/\s+/g,'_');
-    if (document.getElementById(id)) return;
-    // Use commodity count not row count
+  const allNEl = document.getElementById('ts3-n-all');
+  if (allNEl) allNEl.textContent = allGrouped.length;
+
+  const container = document.getElementById('ts3-market-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  sorted.forEach(([mkt], idx) => {
     const g = groupByCommodity(allRows.filter(r => r.market === mkt));
+    const safeId = 'ts3-mkt-' + mkt.replace(/[^a-zA-Z0-9]/g,'_');
     const div = document.createElement('div');
-    div.className = 'ts-market';
-    div.id = id;
-    div.innerHTML = `<span class="ts-market-dot"></span>
-      <span class="ts-market-name">${mkt}</span>
-      <span class="ts-market-count">${g.length}</span>`;
-    div.onclick = () => tm2SetMarket(mkt);
+    const isHidden = idx >= TM3_VISIBLE_MARKETS;
+    div.className = 'ts3-mkt' + (isHidden ? ' ts3-mkt-hidden' : '');
+    div.id = safeId;
+    div.innerHTML = `<span class="ts3-pip"></span><span class="ts3-mkt-name">${mkt}</span><span class="ts3-mkt-n">${g.length}</span>`;
+    div.onclick = () => tm3SetMarket(mkt);
     container.appendChild(div);
   });
+
+  // Show the "more" button if needed
+  const showMore = document.getElementById('ts3-show-more');
+  const hidden = sorted.length - TM3_VISIBLE_MARKETS;
+  if (showMore && hidden > 0) {
+    showMore.style.display = 'flex';
+    document.getElementById('ts3-show-label').textContent = hidden + ' more markets';
+  }
+
+  // Update category counts
+  const types = ['fruits','vegetables','onions_potatoes','nuts'];
+  types.forEach(t => {
+    const cnt = groupByCommodity(allRows.filter(r => r.commodity_type === t)).length;
+    const el = document.getElementById('ts3-cn-' + t);
+    if (el) el.textContent = cnt;
+    const elAll = document.getElementById('ts3-cn-' + t + '-all');
+    if (elAll) elAll.textContent = cnt;
+  });
+  const allCnEl = document.getElementById('ts3-cn-all');
+  if (allCnEl) allCnEl.textContent = allGrouped.length;
 }
 
-// Build pulse strip
-function buildPulse() {
-  const nyRows = allRows.filter(r => r.market === 'New York' && r.price_low);
-  const grouped = groupByCommodity(nyRows);
-  // sort by movement signal then take 12
-  const movers = grouped.filter(g => g.movement && g.movement !== 'Steady' && g.movement !== 'Unchanged');
-  const steady = grouped.filter(g => !g.movement || g.movement === 'Steady' || g.movement === 'Unchanged');
-  const items = [...movers, ...steady].slice(0, 14);
-  if (!items.length) {
-    document.getElementById('pulse-loading').textContent = 'No data today';
-    return;
-  }
-  const strip = document.getElementById('pulse-strip');
-  strip.innerHTML = '<div class="pulse-label"><span class="pulse-dot"></span>Today · NY</div>';
-  // duplicate for loop effect
-  const doubled = [...items, ...items];
-  doubled.forEach(g => {
-    const price = fmtRange(g.price_low, g.price_high);
-    const mv = g.movement || '';
-    let cls = 'pulse-flat', sym = '— ';
-    if (mv.toLowerCase().includes('higher')) { cls = 'pulse-up'; sym = '▲ '; }
-    else if (mv.toLowerCase().includes('lower')) { cls = 'pulse-down'; sym = '▼ '; }
-    const div = document.createElement('div');
-    div.className = 'pulse-item';
-    div.innerHTML = `<span class="pulse-emoji">${emojiFor(g.commodity)}</span>
-      <span class="pulse-name">${g.commodity}</span>
-      <span class="pulse-price">${price}</span>
-      <span class="pulse-delta ${cls}">${sym}${mv||'Steady'}</span>`;
-    div.onclick = () => { tm2SetMarket('New York'); openDetail(g.commodity); };
-    strip.appendChild(div);
+// Build signal summary pills
+function tm3BuildSignals() {
+  const rows = tm3Market ? allRows.filter(r => r.market === tm3Market) : allRows;
+  const grouped = groupByCommodity(rows);
+  let higher = 0, lower = 0, light = 0, steady = 0;
+  grouped.forEach(g => {
+    const mv = (g.movement||'').toLowerCase();
+    const sn = (g.supply_note||'').toLowerCase();
+    if (mv.includes('higher')) higher++;
+    else if (mv.includes('lower')) lower++;
+    else if (sn.includes('light') || mv.includes('light')) light++;
+    else steady++;
   });
+  const el = document.getElementById('tm3-signals');
+  if (!el) return;
+  let html = '';
+  if (higher) html += `<span class="tm3-sig tsig-up">▲ ${higher} Higher</span>`;
+  if (lower)  html += `<span class="tm3-sig tsig-down">▼ ${lower} Lower</span>`;
+  if (light)  html += `<span class="tm3-sig tsig-light">◎ ${light} Offerings Light</span>`;
+  if (steady) html += `<span class="tm3-sig tsig-steady">— ${steady} Steady</span>`;
+  el.innerHTML = html || '<span class="tm3-sig tsig-steady">—</span>';
+}
+
+// Build movers strip
+function tm3BuildMovers() {
+  const mktRows = tm3Market ? allRows.filter(r => r.market === tm3Market) : allRows.filter(r => r.market === 'New York');
+  const grouped = groupByCommodity(mktRows);
+  const movers = grouped.filter(g => g.movement && !['Steady','Unchanged',''].includes(g.movement));
+  const items = [...movers, ...grouped.filter(g => !g.movement || g.movement === 'Steady')].slice(0,12);
+  const strip = document.getElementById('tm3-movers-strip');
+  if (!strip || !items.length) return;
+  strip.innerHTML = items.map((g, i) => {
+    const mv = g.movement || '';
+    const isUp = mv.toLowerCase().includes('higher');
+    const isDown = mv.toLowerCase().includes('lower');
+    const deltaClass = isUp ? 'tm3-mv-up' : isDown ? 'tm3-mv-down' : 'tm3-mv-up';
+    const deltaText = isUp ? '▲ ' + mv : isDown ? '▼ ' + mv : '— Steady';
+    return `<div class="tm3-mover${i===0?' sel':''}" onclick="this.parentElement.querySelectorAll('.tm3-mover').forEach(m=>m.classList.remove('sel'));this.classList.add('sel');openDetail('${esc(g.commodity)}')">
+      <div class="tm3-mv-top"><span class="tm3-mv-emoji">${emojiFor(g.commodity)}</span><span class="tm3-mv-name">${g.commodity}</span></div>
+      <div class="tm3-mv-price">${fmtRange(g.price_low, g.price_high)}</div>
+      <div class="tm3-mv-delta ${deltaClass}">${deltaText}</div>
+    </div>`;
+  }).join('');
 }
 
 // MAIN RENDER
-function tm2Render() {
-  const q = (document.getElementById('tm2-search')?.value || '').toLowerCase();
+function tm3Render() {
+  const q = (document.getElementById('tm3-search')?.value || '').toLowerCase();
   let filtered = allRows;
-  if (tm2Market) filtered = filtered.filter(r => r.market === tm2Market);
-  if (tm2Type !== 'all') filtered = filtered.filter(r => r.commodity_type === tm2Type);
-  if (tm2Organic === 'organic') filtered = filtered.filter(r => r.organic);
-  if (tm2Origin) filtered = filtered.filter(r => (r.origin||'').toLowerCase().includes(tm2Origin.toLowerCase()));
+  if (tm3Market)  filtered = filtered.filter(r => r.market === tm3Market);
+  if (tm3Type !== 'all') filtered = filtered.filter(r => r.commodity_type === tm3Type);
+  if (tm3Organic === 'organic') filtered = filtered.filter(r => r.organic);
   if (q) filtered = filtered.filter(r =>
     (r.commodity||'').toLowerCase().includes(q) ||
     (r.origin||'').toLowerCase().includes(q) ||
@@ -2194,10 +1571,8 @@ function tm2Render() {
 
   let grouped = groupByCommodity(filtered);
 
-  // sort
-  if (tm2Sort === 'price-high')  grouped.sort((a,b) => (b.price_low||0) - (a.price_low||0));
-  else if (tm2Sort === 'price-low') grouped.sort((a,b) => (a.price_low||0) - (b.price_low||0));
-  else if (tm2Sort === 'movers') {
+  if (tm3Sort === 'price-high') grouped.sort((a,b) => (b.price_low||0)-(a.price_low||0));
+  else if (tm3Sort === 'movers') {
     grouped.sort((a,b) => {
       const s = g => { const m=(g.movement||'').toLowerCase(); return m.includes('higher')?2:m.includes('lower')?1:0; };
       return s(b)-s(a);
@@ -2206,341 +1581,240 @@ function tm2Render() {
     grouped.sort((a,b) => a.commodity.localeCompare(b.commodity));
   }
 
-  // update count
-  document.getElementById('tm2-count').textContent = grouped.length;
-
-  // update tab counts
-  const types = ['fruits','vegetables','onions_potatoes','nuts'];
-  types.forEach(t => {
-    const el = document.getElementById('tm2tn-' + t);
-    if (el) el.textContent = grouped.filter(g => g.commodity_type === t).length || '';
+  // Update counts
+  const countEl = document.getElementById('tm3-count');
+  if (countEl) countEl.textContent = grouped.length;
+  ['fruits','vegetables','onions_potatoes','nuts'].forEach(t => {
+    const el = document.getElementById('tm3tn-' + t);
+    if (el) el.textContent = grouped.filter(g=>g.commodity_type===t).length || '';
   });
-  const allEl = document.getElementById('tm2tn-all');
-  if (allEl) allEl.textContent = grouped.length || '';
+  const allN = document.getElementById('tm3tn-all');
+  if (allN) allN.textContent = grouped.length || '';
 
-  // update sidebar cats
-  const catMap = {};
-  grouped.forEach(g => { const ct = g.commodity_type||'other'; catMap[ct]=(catMap[ct]||0)+1; });
-  const catContainer = document.getElementById('ts-cats');
-  if (catContainer) {
-    catContainer.innerHTML = [['all','All',grouped.length], ...Object.entries(catMap).map(([k,v])=>[k,TM2_CAT_LABELS[k]||k,v])].map(([k,label,cnt]) =>
-      `<div class="ts-cat ${tm2Type===k?'active':''}" onclick="tm2SetType('${k}')">
-        <span class="ts-cat-icon">${k==='all'?'✦':TM2_CAT_ICONS[k]||'🌿'}</span>
-        <span class="ts-cat-name">${label}</span>
-        <span class="ts-cat-count">${cnt}</span>
-      </div>`
-    ).join('');
-  }
-
-  // update sidebar origins
-  const originMap = {};
-  filtered.forEach(r => { if (r.origin) originMap[r.origin]=(originMap[r.origin]||0)+1; });
-  const maxOrig = Math.max(...Object.values(originMap), 1);
-  const topOrigins = Object.entries(originMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const origContainer = document.getElementById('ts-origins');
-  if (origContainer) {
-    origContainer.innerHTML = topOrigins.map(([o,c]) =>
-      `<div class="ts-origin ${tm2Origin===o?'active':''}" data-origin="${o}" onclick="tm2SetOriginFilter('${esc(o)}')">
-        <span class="ts-origin-name">${o}</span>
-        <div class="ts-origin-bar-wrap"><div class="ts-origin-bar" style="width:${Math.round(c/maxOrig*100)}%"></div></div>
-      </div>`
-    ).join('');
-  }
-
-  // BUILD LIST HTML
-  const listEl = document.getElementById('tm2-list');
+  const listEl = document.getElementById('tm3-list');
   if (!listEl) return;
 
   let html = '';
-
-  // Flat list when searching or sorting by price/movers
-  const useFlat = q || tm2Sort !== 'az';
+  const useFlat = q || tm3Sort !== 'az';
 
   if (useFlat) {
-    if (!grouped.length) {
-      html = '<div class="tm2-empty"><p>No commodities match your filters.</p></div>';
-    } else {
-      html = grouped.map(g => tm2RowHtml(g)).join('');
-    }
+    html = grouped.length ? grouped.map(g => tm3RowHtml(g)).join('') : '<div class="tm3-empty">No commodities match your filters.</div>';
   } else {
-    // Grouped by category
     const byType = {};
     grouped.forEach(g => { const ct=g.commodity_type||'other'; if(!byType[ct])byType[ct]=[]; byType[ct].push(g); });
-    TM2_TYPE_ORDER.forEach(ct => {
-      const grp = byType[ct];
-      if (!grp || !grp.length) return;
-      const conv = grp.filter(g => !g.rows.every(r => r.organic));
-      const org  = grp.filter(g => g.rows.every(r => r.organic));
-      const color = TM2_CAT_COLORS[ct] || 'var(--muted)';
+    TM3_TYPE_ORDER.forEach(ct => {
+      const grp = byType[ct]; if (!grp?.length) return;
+      const conv = grp.filter(g => !g.rows.every(r=>r.organic));
+      const org  = grp.filter(g => g.rows.every(r=>r.organic));
+      const color = TM3_CAT_COLORS[ct]||'var(--muted)';
       if (conv.length) {
-        html += `<div class="tm2-cat-hdr">
-          <div class="tm2-ch-left">
-            <span class="tm2-ch-icon">${TM2_CAT_ICONS[ct]||'🌿'}</span>
-            <span class="tm2-ch-name">${TM2_CAT_LABELS[ct]||ct}</span>
-            <span class="tm2-ch-badge" style="background:${color}18;color:${color};border:1px solid ${color}40">${TM2_CAT_CODES[ct]||''}</span>
+        html += `<div class="tm3-cat-hdr">
+          <div class="tm3-ch-left">
+            <span class="tm3-ch-icon">${TM3_CAT_ICONS[ct]||'🌿'}</span>
+            <span class="tm3-ch-name">${TM3_CAT_LABELS[ct]||ct}</span>
+            <span class="tm3-ch-badge" style="background:${color}18;color:${color};border:1px solid ${color}50">${TM3_CAT_CODES[ct]||''}</span>
           </div>
-          <div class="tm2-ch-right">
-            <span class="tm2-ch-count">${conv.length} commodities</span>
-          </div>
+          <span class="tm3-ch-count">${conv.length} commodities</span>
         </div>`;
-        html += conv.map(g => tm2RowHtml(g)).join('');
+        html += conv.map(g => tm3RowHtml(g)).join('');
       }
       if (org.length) {
-        html += `<div class="tm2-org-band"><span class="tm2-org-label">Organic · ${TM2_CAT_LABELS[ct]||ct}</span></div>`;
-        html += org.map(g => tm2RowHtml(g, true)).join('');
+        html += `<div class="tm3-org-band"><span style="font-size:14px">🌿</span><span class="tm3-org-label">Organic · ${TM3_CAT_LABELS[ct]||ct}</span></div>`;
+        html += org.map(g => tm3RowHtml(g, true)).join('');
       }
     });
-    if (!html) html = '<div class="tm2-empty"><p>No commodities match your filters.</p></div>';
+    if (!html) html = '<div class="tm3-empty">No commodities match your filters.</div>';
   }
 
-  listEl.innerHTML = tm2TableHead() + html;
-
-  // Hide loading spinner
-  const loadEl = document.getElementById('tm2-loading');
+  listEl.innerHTML = html;
+  const loadEl = document.getElementById('tm3-loading');
   if (loadEl) loadEl.style.display = 'none';
 }
 
-function tm2TableHead() {
-  return `<div class="tm2-thead">
-    <div class="tm2-th"></div>
-    <div class="tm2-th">Commodity</div>
-    <div class="tm2-th">Condition</div>
-    <div class="tm2-th">Price range</div>
-    <div class="tm2-th">Origins</div>
-    <div class="tm2-th">Trend</div>
-    <div class="tm2-th"></div>
-  </div>`;
-}
+function tm3RowHtml(g, organic) {
+  const emoji = emojiFor(g.commodity);
+  const price = fmtRange(g.price_low, g.price_high);
+  const mv = g.movement || '';
+  const sn = g.supply_note || '';
 
-function tm2RowHtml(g, organic) {
-  const emoji  = emojiFor(g.commodity);
-  const price  = fmtRange(g.price_low, g.price_high);
-  const mv     = g.movement || '';
-  const cc     = condClass(mv + ' ' + (g.supply_note||''));
-  const cl     = condLabel(mv, g.supply_note);
-  const pips   = g.origins.slice(0,3).map(o => originPip(o)).join('');
-  const pkg    = [...g.packages][0] || '';
+  let badgeCls = 'tmb-steady', badgeTxt = '— Steady';
+  if (mv.toLowerCase().includes('higher'))          { badgeCls='tmb-higher'; badgeTxt='▲ '+mv; }
+  else if (mv.toLowerCase().includes('lower'))      { badgeCls='tmb-lower';  badgeTxt='▼ '+mv; }
+  else if (sn.toLowerCase().includes('light') || mv.toLowerCase().includes('light')) { badgeCls='tmb-light'; badgeTxt='◎ Offerings Light'; }
 
-  // price sub-line
   const fineRow = g.rows.find(r => (r.quality_note||'').includes('fine') && r.price_low);
-  const holdRow = g.rows.find(r => (r.quality_note||'').includes('holdover') && r.price_low);
-  let psub = '';
-  if (fineRow) psub = `<span class="tm2-row-psub tps-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</span>`;
-  else if (holdRow) psub = `<span class="tm2-row-psub tps-hold">Holdover ${fmtRange(holdRow.price_low, holdRow.price_high)}</span>`;
+  const fineHtml = fineRow ? `<span class="tm3-row-fine">Fine app. ${fmtRange(fineRow.price_low, fineRow.price_high)}</span>` : '';
 
-  // sparkline
-  const isUp   = mv.toLowerCase().includes('higher');
-  const isDown = mv.toLowerCase().includes('lower');
-  const hts = isUp ? [7,8,9,10,12,13,15] : isDown ? [15,13,12,10,9,8,7] : [10,11,9,12,10,12,11];
-  const bars = hts.map((h,i) => {
-    const cls = i===6?'nw':(isUp&&i>3?'hi':(isDown&&i<3?'lo':''));
-    return `<div class="tm2-bar${cls?' '+cls:''}" style="height:${h}px"></div>`;
-  }).join('');
+  const pkg = [...g.packages][0] || '';
+  const origins = g.origins.filter(Boolean).slice(0,3).join(' · ');
+  const sub = [pkg, origins].filter(Boolean).join(' · ');
 
-  // wow label
-  let wowCls = 'wow-flat', wowTxt = '— Steady';
-  if (mv.toLowerCase().includes('much higher'))    { wowCls='wow-up';   wowTxt='▲▲ '+mv; }
-  else if (mv.toLowerCase().includes('higher'))    { wowCls='wow-up';   wowTxt='▲ '+mv; }
-  else if (mv.toLowerCase().includes('much lower')){ wowCls='wow-down'; wowTxt='▼▼ '+mv; }
-  else if (mv.toLowerCase().includes('lower'))     { wowCls='wow-down'; wowTxt='▼ '+mv; }
+  const orgTag = organic ? `<span style="font-size:10px;color:var(--lime-dk);font-weight:700;margin-left:6px;vertical-align:middle;">ORG</span>` : '';
+  const rowBg = organic ? 'style="background:#f8fef0"' : '';
 
-  const orgTag = organic ? `<span style="font-size:9px;color:var(--lime-dk);font-weight:700;margin-left:4px;">ORG</span>` : '';
-
-  return `<div class="tm2-row${organic?' org-row':''}" onclick="openDetail('${esc(g.commodity)}')">
-    <div><div class="tm2-row-box">${emoji}</div></div>
-    <div>
-      <div class="tm2-row-name">${g.commodity}${orgTag}</div>
-      <div class="tm2-row-sub">${pkg}</div>
+  return `<div class="tm3-row" onclick="openDetail('${esc(g.commodity)}')" ${rowBg}>
+    <div class="tm3-row-ico">${emoji}</div>
+    <div class="tm3-row-info">
+      <div class="tm3-row-name">${g.commodity}${orgTag}</div>
+      <div class="tm3-row-sub">${sub}</div>
     </div>
-    <div><span class="cond-badge ${cc}">${cl}</span></div>
-    <div>
-      <span class="tm2-row-price">${price}</span>
-      ${psub}
+    <span class="tm3-row-badge ${badgeCls}">${badgeTxt}</span>
+    <div class="tm3-row-prices">
+      <span class="tm3-row-price">${price}</span>
+      ${fineHtml}
     </div>
-    <div class="tm2-row-origins">${pips}</div>
-    <div class="tm2-trend">
-      <div class="tm2-spark">${bars}</div>
-      <span class="tm2-row-wow ${wowCls}">${wowTxt}</span>
-    </div>
-    <div class="tm2-row-arr">›</div>
+    <span class="tm3-row-arrow">›</span>
   </div>`;
 }
 
-function rowHtml(g, organic) { return tm2RowHtml(g, organic); }
+function rowHtml(g, organic) { return tm3RowHtml(g, organic); }
 
-function esc(s) { return (s||'').replace(/'/g, "\\'"); }
-
-// ── DETAIL MODAL ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// DETAIL MODAL v3
+// ═══════════════════════════════════════════
 
 function originTagClass(origin) {
-  if (!origin) return 'otm-other';
+  if (!origin) return '';
   const o = origin.toLowerCase();
-  if (o.includes('mexico') || o.includes('mex') || o.includes('nogales') || o.includes('baja') || o.startsWith('mx')) return 'otm-mx';
-  if (o.includes('dominican') || o.includes('dom rep'))   return 'otm-dr';
-  if (o.includes('california') || o.includes('salinas') || o.includes('fresno') || o.includes('central coast') || o.startsWith('ca-')) return 'otm-ca';
-  if (o.includes('florida') || o.includes('orlando') || o.startsWith('fl'))  return 'otm-fl';
-  if (o.includes('peru') || o.startsWith('pe'))           return 'otm-pe';
-  if (o.includes('idaho') || o.startsWith('id'))          return 'otm-id';
-  if (o.includes('north carolina') || o.includes('n carolina')) return 'otm-nc';
-  if (o.includes('washington') || o.startsWith('wa'))     return 'otm-wa';
-  if (o.includes('texas') || o.startsWith('tx') || o.includes('texas crossing')) return 'otm-tx';
-  if (o.includes('oregon') || o.startsWith('or'))         return 'otm-or';
-  if (o.includes('chile') || o.startsWith('cl'))          return 'otm-ch';
-  if (o.includes('colombia') || o.startsWith('co'))       return 'otm-co';
-  if (o.includes('honduras') || o.startsWith('hn'))       return 'otm-hn';
-  if (o.includes('georgia') || o.startsWith('ga'))        return 'otm-ga';
-  return 'otm-other';
+  if (o.includes('mexico') || o.includes('nogales') || o.includes('baja')) return 'dg-mx';
+  if (o.includes('california') || o.includes('salinas') || o.includes('fresno') || o.includes('central coast') || o.includes('san joaquin')) return 'dg-ca';
+  if (o.includes('florida') || o.includes('orlando')) return 'dg-fl';
+  if (o.includes('peru')) return 'dg-pe';
+  if (o.includes('dominican') || o.includes('dom rep')) return 'dg-dr';
+  if (o.includes('chile')) return 'dg-cl';
+  if (o.includes('colombia')) return 'dg-co';
+  if (o.includes('honduras')) return 'dg-hn';
+  if (o.includes('washington')) return 'dg-wa';
+  if (o.includes('idaho')) return 'dg-id';
+  if (o.includes('georgia')) return 'dg-ga';
+  return 'dg-xx';
+}
+
+function originFlag(origin) {
+  if (!origin) return '🌐';
+  const o = origin.toLowerCase();
+  if (o.includes('mexico') || o.includes('nogales') || o.includes('baja') || o.includes('texas crossing') || o.includes('mexico/texas')) return '🇲🇽';
+  if (o.includes('california') || o.includes('salinas') || o.includes('fresno') || o.includes('san joaquin') || o.includes('imperial') || o.includes('coachella') || o.includes('oxnard') || o.includes('central coast') || o.includes('washington') || o.includes('oregon') || o.includes('idaho') || o.includes('florida') || o.includes('georgia') || o.includes('north carolina') || o.includes('arizona') || o.includes('texas') || o.includes('colorado') || o.includes('maine') || o.includes('virginia') || o.includes('louisiana') || o.includes('new england') || o.includes('appalachian') || o.includes('nova scoti') || o.includes('us ') || o.includes('u.s.') || o.startsWith('s+c') || o.startsWith('south')) return '🇺🇸';
+  if (o.includes('peru')) return '🇵🇪';
+  if (o.includes('dominican')) return '🇩🇴';
+  if (o.includes('chile')) return '🇨🇱';
+  if (o.includes('colombia')) return '🇨🇴';
+  if (o.includes('honduras')) return '🇭🇳';
+  if (o.includes('guatemala')) return '🇬🇹';
+  if (o.includes('costa rica')) return '🇨🇷';
+  if (o.includes('ecuador')) return '🇪🇨';
+  if (o.includes('brazil')) return '🇧🇷';
+  if (o.includes('argentina')) return '🇦🇷';
+  if (o.includes('south africa')) return '🇿🇦';
+  if (o.includes('israel')) return '🇮🇱';
+  if (o.includes('morocco')) return '🇲🇦';
+  if (o.includes('spain')) return '🇪🇸';
+  if (o.includes('italy')) return '🇮🇹';
+  if (o.includes('canada') || o.includes('nova scoti') || o.includes('ontario') || o.includes('british col')) return '🇨🇦';
+  return '🌐';
 }
 
 function cleanOriginLabel(origin) {
-  if (!origin) return '—';
-  // Shorten verbose USDA district strings
+  if (!origin || origin === 'N/A') return '—';
   return origin
-    .replace(/crossings? through .*/i, '')
-    .replace(/south and central /i, 'S+C ')
-    .replace(/mexico - /i, 'Mexico ')
-    .replace(/ fob sc$/i, '')
-    .replace(/ district$/i, '')
-    .replace(/salinas-watsonville/i, 'Salinas/Watsonville')
-    .replace(/^mexico$/i, 'Mexico')
-    .replace(/^california$/i, 'California')
-    .replace(/^florida$/i, 'Florida')
-    .replace(/^peru$/i, 'Peru')
-    .trim();
+    .replace(/crossings? through .*/i, '').replace(/south and central /i, 'S+C ')
+    .replace(/mexico - /i, 'Mexico ').replace(/ fob sc$/i, '').replace(/ district$/i, '')
+    .replace(/salinas-watsonville/i, 'Salinas').replace(/mexico\/texas/i, 'Mexico/Texas')
+    .replace(/^mexico$/i, 'Mexico').replace(/^california$/i, 'California')
+    .replace(/^florida$/i, 'Florida').replace(/^peru$/i, 'Peru')
+    .replace(/^dominican republic$/i, 'Dominican Republic').trim() || '—';
 }
 
-function buildUniversalBreakdown(rows) {
-  if (!rows.length) return '<p style="color:var(--muted);font-size:13px;padding:12px 0;">No breakdown data available.</p>';
+function buildDetailBreakdown(rows) {
+  if (!rows.length) return '<p style="color:var(--muted);font-size:14px;padding:12px 0;">No breakdown data.</p>';
 
   // Group by origin → variety
   const groups = {};
   rows.forEach(r => {
-    const origin  = cleanOriginLabel(r.origin || '—');
+    const origin  = cleanOriginLabel(r.origin);
     const variety = r.variety || '';
-    const key = origin + '||' + variety;
+    const key     = origin + '||' + variety;
     if (!groups[key]) groups[key] = { origin, variety, originRaw: r.origin||'', rows: [] };
     groups[key].rows.push(r);
   });
 
-  // Detect what grade columns exist across all rows
-  const hasSize = rows.some(r => r.size && r.size !== '');
-  const hasFine = rows.some(r => (r.quality_note||'').includes('fine'));
-  const hasHold = rows.some(r => (r.quality_note||'').includes('holdover'));
-  const hasFair = rows.some(r => (r.quality_note||'').includes('fair'));
-  const hasProc = rows.some(r => r.grade && (
-    r.grade.toLowerCase().includes('raw') ||
-    r.grade.toLowerCase().includes('roast') ||
-    r.grade.toLowerCase().includes('salt') ||
-    r.grade.toLowerCase().includes('green')
-  ));
+  // Detect grade columns present
+  const hasFine = rows.some(r => (r.quality_note||'').toLowerCase().includes('fine'));
+  const hasHold = rows.some(r => (r.quality_note||'').toLowerCase().includes('holdover'));
+  const hasFair = rows.some(r => (r.quality_note||'').toLowerCase().includes('fair'));
 
   let html = '';
-
   Object.values(groups).forEach(grp => {
-    const tagCls = originTagClass(grp.originRaw || grp.origin);
-    const pkg    = grp.rows.find(r => r.package)?.package || '';
+    if (grp.origin === '—') return; // skip null origin groups
 
-    // Build column header
-    let colHeaders = `<th>${hasSize ? 'Size' : 'Grade / Tier'}</th>
-      <th class="r">Standard</th>`;
-    if (hasFine) colHeaders += `<th class="r col-fine">Fine app.</th>`;
-    if (hasHold) colHeaders += `<th class="r col-hold">Holdover</th>`;
-    if (hasFair) colHeaders += `<th class="r col-fair">Fair quality</th>`;
-    if (hasProc) colHeaders += `<th class="r col-proc">Process</th>`;
+    const flag = originFlag(grp.originRaw || grp.origin);
+    const pkg  = grp.rows.find(r => r.package)?.package || '';
 
-    // Group rows by size within this origin+variety group
+    // Group rows by size
     const bySize = {};
     grp.rows.forEach(r => {
       const sz = r.size || '__nosize__';
-      if (!bySize[sz]) bySize[sz] = { size: r.size, standard: null, fine: null, hold: null, fair: null, proc: null };
-      const qn = (r.quality_note || '').toLowerCase();
-      const gr = (r.grade || '').toLowerCase();
-
-      if (qn.includes('fine')) {
-        bySize[sz].fine = r;
-      } else if (qn.includes('fair') && qn.includes('holdover')) {
-        bySize[sz].fair = r; // fair + holdover combo
-      } else if (qn.includes('holdover')) {
-        bySize[sz].hold = r;
-      } else if (qn.includes('fair')) {
-        bySize[sz].fair = r;
-      } else if (gr.includes('raw') || gr.includes('roast') || gr.includes('salt') || gr.includes('green')) {
-        if (!bySize[sz].proc) bySize[sz].proc = {};
-        bySize[sz].proc[r.grade] = r;
-      } else {
-        bySize[sz].standard = r;
-      }
+      if (!bySize[sz]) bySize[sz] = { size: r.size, std: null, fine: null, hold: null, fair: null };
+      const qn = (r.quality_note||'').toLowerCase();
+      if      (qn.includes('fine'))     bySize[sz].fine = r;
+      else if (qn.includes('holdover')) bySize[sz].hold = r;
+      else if (qn.includes('fair'))     bySize[sz].fair = r;
+      else                              bySize[sz].std  = r;
     });
 
-    // Sort sizes numerically where possible
-    const sizeOrder = Object.keys(bySize).sort((a, b) => {
-      const na = parseInt(a); const nb = parseInt(b);
-      if (!isNaN(na) && !isNaN(nb)) return na - nb;
-      return a.localeCompare(b);
+    // Sort sizes numerically
+    const sizeOrder = Object.keys(bySize).sort((a,b) => {
+      if (a === '__nosize__') return -1;
+      const na = parseInt(a), nb = parseInt(b);
+      return (!isNaN(na) && !isNaN(nb)) ? na-nb : a.localeCompare(b);
     });
 
-    let rows_html = '';
+    let rowsHtml = '';
     sizeOrder.forEach(sz => {
       const s = bySize[sz];
       const isNoSize = sz === '__nosize__';
       const sizeLabel = isNoSize
-        ? `<td class="td-size-label descriptor">Standard</td>`
-        : `<td class="td-size-label">${s.size}</td>`;
+        ? `<span class="dm-sr-size desc">Standard</span>`
+        : `<span class="dm-sr-size">${s.size}</span>`;
 
-      // Standard cell
-      let stdCell = `<td class="td-price-cell"><span class="cell-empty">—</span></td>`;
-      if (s.standard) {
-        const mostly = s.standard.price_mostly_low
-          ? `<span class="cell-mostly">Mostly ${fmtRange(s.standard.price_mostly_low, s.standard.price_mostly_high)}</span>` : '';
-        stdCell = `<td class="td-price-cell"><span class="cell-price">${fmtRange(s.standard.price_low, s.standard.price_high)}</span>${mostly}</td>`;
+      // Standard price
+      let stdHtml = '<span style="color:var(--muted);font-size:14px;">—</span>';
+      if (s.std) {
+        const mostly = s.std.price_mostly_low
+          ? `<div class="dm-sr-mostly">Mostly ${fmtRange(s.std.price_mostly_low, s.std.price_mostly_high)}</div>` : '';
+        stdHtml = `<span class="dm-sr-std">${fmtRange(s.std.price_low, s.std.price_high).replace(' – ', ' <span class="rs">–</span> ')}</span>${mostly}`;
       }
 
-      // Fine cell
-      let fineCell = hasFine ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
+      // Grade badges
+      let gradeHtml = '';
       if (hasFine && s.fine) {
-        const mostly = s.fine.price_mostly_low
-          ? `<span class="cell-mostly-grade">Mostly ${fmtRange(s.fine.price_mostly_low, s.fine.price_mostly_high)}</span>` : '';
-        fineCell = `<td class="td-price-cell"><span class="cell-fine">${fmtRange(s.fine.price_low, s.fine.price_high)}</span>${mostly}</td>`;
+        gradeHtml += `<span class="dm-grade dg-fine"><span class="dg-label">Fine app.</span><span class="dg-price">${fmtRange(s.fine.price_low, s.fine.price_high)}</span></span>`;
       }
-
-      // Holdover cell
-      let holdCell = hasHold ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
       if (hasHold && s.hold) {
-        holdCell = `<td class="td-price-cell"><span class="cell-hold">${fmtRange(s.hold.price_low, s.hold.price_high)}</span></td>`;
+        gradeHtml += `<span class="dm-grade dg-hold"><span class="dg-label">Holdover</span><span class="dg-price">${fmtRange(s.hold.price_low, s.hold.price_high)}</span></span>`;
       }
-
-      // Fair cell
-      let fairCell = hasFair ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
       if (hasFair && s.fair) {
-        fairCell = `<td class="td-price-cell"><span class="cell-fair">${fmtRange(s.fair.price_low, s.fair.price_high)}</span></td>`;
+        gradeHtml += `<span class="dm-grade dg-fair"><span class="dg-label">Fair quality</span><span class="dg-price">${fmtRange(s.fair.price_low, s.fair.price_high)}</span></span>`;
       }
 
-      // Process cell (nuts)
-      let procCell = hasProc ? `<td class="td-price-cell"><span class="cell-empty">—</span></td>` : '';
-      if (hasProc && s.proc) {
-        const procLines = Object.entries(s.proc)
-          .map(([g,r]) => `<span class="cell-proc" style="font-size:11px;">${g}: ${fmtRange(r.price_low, r.price_high)}</span>`)
-          .join('');
-        procCell = `<td class="td-price-cell">${procLines}</td>`;
-      }
-
-      rows_html += `<tr>${sizeLabel}${stdCell}${fineCell}${holdCell}${fairCell}${procCell}</tr>`;
+      rowsHtml += `<div class="dm-size-row">
+        <div class="dm-sr-top">${sizeLabel}<div style="text-align:right">${stdHtml}</div></div>
+        ${gradeHtml ? `<div class="dm-sr-grades">${gradeHtml}</div>` : ''}
+      </div>`;
     });
 
-    html += `<div class="origin-block">
-      <div class="origin-bar">
-        <span class="origin-tag-modal ${tagCls}">${grp.origin}</span>
-        ${grp.variety ? `<span class="origin-variety-label">${grp.variety}</span>` : ''}
-        ${pkg ? `<span class="origin-pack-label">${pkg}</span>` : ''}
+    html += `<div class="dm-origin-card">
+      <div class="dm-oc-header">
+        <span class="dm-oc-flag">${flag}</span>
+        <span class="dm-oc-origin">${grp.origin}</span>
+        ${grp.variety ? `<span class="dm-oc-variety">${grp.variety}</span>` : ''}
+        ${pkg ? `<span class="dm-oc-pack">${pkg}</span>` : ''}
       </div>
-      <table class="breakdown-table">
-        <thead><tr>${colHeaders}</tr></thead>
-        <tbody>${rows_html}</tbody>
-      </table>
+      ${rowsHtml}
     </div>`;
   });
 
-  return html;
+  return html || '<p style="color:var(--muted);font-size:14px;padding:12px 0;">No origin data available.</p>';
 }
 
 function openDetail(commodity) {
@@ -2549,61 +1823,59 @@ function openDetail(commodity) {
   currentCommodity = commodity;
 
   const g = groupByCommodity(rows)[0];
+  const mv = g.movement || '';
 
   // Header
-  document.getElementById('dp-emoji').textContent = emojiFor(commodity);
-  document.getElementById('dp-name').textContent = commodity;
-  const pkg = rows.find(r => r.package)?.package || '';
-  document.getElementById('dp-pack').textContent = pkg;
+  document.getElementById('dm-emoji').textContent = emojiFor(commodity);
+  document.getElementById('dm-name').textContent   = commodity;
+  document.getElementById('dm-pack').textContent   = rows.find(r=>r.package)?.package || '';
+  document.getElementById('dm-market').textContent = rows[0]?.market || '—';
+  document.getElementById('dm-code').textContent   = rows[0]?.source_report || '—';
+  document.getElementById('dm-date').textContent   = fmtDate(latestDate);
 
-  const mv  = g.movement || '';
-  const cc  = condClass(mv);
-  const cl  = condLabel(mv, g.supply_note);
-  const condEl = document.getElementById('dp-cond');
-  condEl.className = 'dp-cond ' + cc;
-  condEl.textContent = cl;
+  const condEl = document.getElementById('dm-cond');
+  condEl.className = 'dm-cond ' + condClass(mv);
+  condEl.textContent = condLabel(mv, g.supply_note);
 
-  document.getElementById('dp-market').textContent = rows[0]?.market || '—';
-  document.getElementById('dp-code').textContent   = rows[0]?.source_report || '—';
-  document.getElementById('dp-date').textContent   = fmtDate(latestDate);
-
-  // Price strip — use standard rows only for headline
+  // Price strip — standard rows only
   const stdRows = rows.filter(r => !r.quality_note || r.quality_note === '');
   const prLow  = stdRows.length ? Math.min(...stdRows.filter(r=>r.price_low).map(r=>r.price_low))   : g.price_low;
   const prHigh = stdRows.length ? Math.max(...stdRows.filter(r=>r.price_high).map(r=>r.price_high)) : g.price_high;
-  document.getElementById('dp-price-range').textContent = fmtRange(prLow, prHigh);
-  document.getElementById('dp-price-sub').textContent   = g.origins.filter(Boolean).slice(0,3).join(' · ') || '—';
+  document.getElementById('dm-std-price').textContent = fmtRange(prLow, prHigh);
+  document.getElementById('dm-std-sub').textContent   = g.origins.filter(Boolean).slice(0,3).join(' · ') || '—';
 
-  const fineRow = rows.find(r => (r.quality_note||'').includes('fine') && r.price_low);
-  document.getElementById('dp-fine-price').textContent = fineRow ? fmtRange(fineRow.price_low, fineRow.price_high) : '—';
-  document.getElementById('dp-fine-sub').textContent   = fineRow ? 'Fine appearance premium' : 'No fine tier today';
+  const fineRows = rows.filter(r => (r.quality_note||'').includes('fine') && r.price_low);
+  if (fineRows.length) {
+    const fLow  = Math.min(...fineRows.map(r=>r.price_low));
+    const fHigh = Math.max(...fineRows.filter(r=>r.price_high).map(r=>r.price_high));
+    document.getElementById('dm-fine-price').textContent = fmtRange(fLow, fHigh);
+    document.getElementById('dm-fine-sub').textContent   = '+' + (fLow - (prLow||fLow) > 0 ? '$' + Math.round(fLow-(prLow||fLow)) + '–' : '') + ' over standard';
+  } else {
+    document.getElementById('dm-fine-price').textContent = '—';
+    document.getElementById('dm-fine-sub').textContent   = 'No fine tier today';
+  }
 
-  document.getElementById('dp-movement').textContent = mv || 'Steady';
-  document.getElementById('dp-activity').textContent = g.trading_activity || g.supply_note || '';
+  // Breakdown
+  document.getElementById('dm-breakdown').innerHTML = buildDetailBreakdown(rows);
+  document.getElementById('dm-source').textContent  = `USDA AMS · ${rows[0]?.source_report||''} · ${fmtDate(latestDate)}`;
 
-  // Universal breakdown
-  document.getElementById('dp-breakdown-universal').innerHTML = buildUniversalBreakdown(rows);
-  document.getElementById('dp-source').textContent = `USDA AMS · ${rows[0]?.source_report||''} · ${fmtDate(latestDate)}`;
-
-  // Open modal
-  document.getElementById('detail-overlay').classList.add('open');
+  // Open
+  document.getElementById('dm-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function handleModalOverlayClick(e) {
-  if (e.target === document.getElementById('detail-overlay')) closeDetail();
-}
-function closeDetail() {
-  document.getElementById('detail-overlay').classList.remove('open');
+function dmClose() {
+  document.getElementById('dm-overlay').classList.remove('open');
   document.body.style.overflow = '';
   currentCommodity = null;
 }
 
-function titleCase(s) {
-  return (s||'').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase());
+function dmHandleOverlay(e) {
+  if (e.target === document.getElementById('dm-overlay')) dmClose();
 }
 
-
+// backward compat alias
+function closeDetail() { dmClose(); }
 
 // ── SEARCH ───────────────────────────────────────────────────────
 let searchFilter = 'all';
@@ -2751,7 +2023,7 @@ document.addEventListener('keydown', function(e) {
   }
   if (e.key === 'Escape') {
     closeSearch();
-    closeDetail();
+    dmClose();
     return;
   }
   const overlay = document.getElementById('search-overlay');
