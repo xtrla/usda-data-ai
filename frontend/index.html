@@ -1576,9 +1576,6 @@ function loadCdDetail(commodity){
   },80);
 }
 
-  document.getElementById('cd-title').textContent=commodity;
-  document.getElementById('cd-stats').textContent=`${[...new Set(items.map(i=>i.market))].length} markets · ${items.length} listings`;
-
 // ── COMPARE ──────────────────────────────
 function populateComparePage(){
   const comms=[...new Set(allData.map(i=>i.commodity))].sort();
