@@ -610,6 +610,76 @@ img{max-width:100%;height:auto;display:block;}
   .hero-h1{font-size:30px;}
 }
 
+/* ── DATE BAR ──────────────────────── */
+.date-bar{
+  background:var(--surf);border-bottom:1px solid var(--border);
+  padding:12px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.date-bar-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.date-bar-dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0;}
+.date-bar-main{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;}
+.date-bar-sub{font-size:12px;color:var(--text-4);font-family:var(--mono);margin-top:1px;}
+.date-bar-stats{display:flex;gap:0;flex-shrink:0;}
+.dbs{padding:0 18px;text-align:right;border-left:1px solid var(--border);}
+.dbs:first-child{border-left:none;}
+.dbs-v{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);line-height:1;}
+.dbs-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-4);margin-top:3px;}
+@media(max-width:900px){.date-bar-stats{display:none;}}
+@media(max-width:768px){.date-bar{padding:12px 16px;}}
+
+/* ── SLIM HOME TABLE ───────────────── */
+.slim-tbl{width:100%;border-collapse:collapse;}
+.slim-tbl thead tr{background:var(--surf-2);border-bottom:1px solid var(--border);}
+.slim-tbl thead th{
+  padding:10px 16px;font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-4);
+  white-space:nowrap;text-align:left;
+}
+.slim-tbl thead th.r{text-align:right;}
+.slim-tbl tbody tr{border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .07s;}
+.slim-tbl tbody tr:last-child{border-bottom:none;}
+.slim-tbl tbody tr:hover{background:var(--surf-2);}
+.slim-tbl tbody td{padding:14px 16px;vertical-align:middle;}
+.slim-name{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px;}
+.slim-sub{font-size:12px;color:var(--text-4);margin-top:3px;}
+.slim-price{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--text);text-align:right;line-height:1;}
+.slim-price-sub{font-size:11px;color:var(--text-4);text-align:right;font-family:var(--mono);margin-top:4px;}
+
+/* ── COMMODITY DETAIL — Concept B ──── */
+.cd-b-hero{
+  padding:24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.cd-b-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.cd-b-price{font-family:var(--mono);font-size:clamp(36px,6vw,52px);font-weight:600;color:var(--text);line-height:1;}
+.cd-b-meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.cd-b-chg{font-family:var(--mono);font-size:15px;font-weight:600;padding:5px 12px;border-radius:6px;}
+.cd-b-mkts{font-size:13px;color:var(--text-3);}
+.cd-b-ts{font-size:12px;color:var(--text-4);font-family:var(--mono);display:flex;align-items:center;gap:5px;margin-top:4px;}
+/* history list */
+.hist-section{border-bottom:1px solid var(--border);}
+.hist-section:last-child{border-bottom:none;}
+.hist-head{padding:10px 16px;background:var(--surf-2);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);}
+.hist-row{display:grid;grid-template-columns:1fr auto auto;padding:12px 16px;border-bottom:1px solid #f1f5f9;align-items:center;gap:12px;}
+.hist-row:last-child{border-bottom:none;}
+.hist-d{font-size:13px;color:var(--text-2);}
+.hist-p{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);text-align:right;}
+.hist-c{font-family:var(--mono);font-size:12px;text-align:right;min-width:54px;}
+
+/* mobile card for slim table */
+.slim-mob-card{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  cursor:pointer;gap:12px;transition:background .08s;
+  -webkit-tap-highlight-color:transparent;
+}
+.slim-mob-card:last-child{border-bottom:none;}
+.slim-mob-card:active{background:var(--surf-2);}
+.slim-mob-right{text-align:right;flex-shrink:0;}
+.slim-mob-price{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);line-height:1;}
+.slim-mob-date{font-size:11px;color:var(--text-4);font-family:var(--mono);margin-top:3px;}
+
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--surf-2);}
@@ -661,10 +731,26 @@ img{max-width:100%;height:auto;display:block;}
         </div>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-val" id="stat-records">--</div><div class="hero-stat-lbl">Price records</div></div>
-        <div class="hero-stat"><div class="hero-stat-val" id="stat-markets">--</div><div class="hero-stat-lbl">Markets</div></div>
-        <div class="hero-stat"><div class="hero-stat-val" id="stat-avgprice">--</div><div class="hero-stat-lbl">Natl avg</div></div>
+        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-records">--</div><div class="hero-stat-lbl">Price records</div></div>
+        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-markets">--</div><div class="hero-stat-lbl">Markets</div></div>
+        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-avgprice">--</div><div class="hero-stat-lbl">Natl avg</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- DATE BAR — today's date headline -->
+  <div class="date-bar">
+    <div class="date-bar-left">
+      <div class="date-bar-dot"></div>
+      <div>
+        <div class="date-bar-main" id="date-bar-main">Today's Prices</div>
+        <div class="date-bar-sub" id="date-bar-sub">USDA AMS · Updated 3× daily</div>
+      </div>
+    </div>
+    <div class="date-bar-stats">
+      <div class="dbs"><div class="dbs-v" id="stat-records">--</div><div class="dbs-l">Records</div></div>
+      <div class="dbs"><div class="dbs-v" id="stat-markets">--</div><div class="dbs-l">Markets</div></div>
+      <div class="dbs"><div class="dbs-v" id="stat-avgprice">--</div><div class="dbs-l">Natl avg</div></div>
     </div>
   </div>
 
@@ -713,13 +799,11 @@ img{max-width:100%;height:auto;display:block;}
         </div>
       </div><!-- /col-main-inner -->
       <div class="data-wrap">
-        <div class="desk-tbl"><div class="tbl-scroll"><table class="data-tbl">
+        <div class="desk-tbl"><div class="tbl-scroll"><table class="slim-tbl">
           <thead><tr>
             <th>Commodity · Origin</th>
-            <th class="r">FOB</th>
-            <th class="r">Terminal avg</th>
-            <th class="r">Spread</th>
-            <th class="r">WoW</th>
+            <th class="r">Today's price</th>
+            <th class="r">vs last week</th>
           </tr></thead>
           <tbody id="home-tbody"></tbody>
         </table></div></div>
@@ -836,22 +920,22 @@ img{max-width:100%;height:auto;display:block;}
     </div>
   </div>
   <div class="page-body">
-    <!-- TODAY PRICE HERO — biggest thing on the page -->
-    <div class="cd-today-hero">
+    <!-- TODAY PRICE HERO -->
+    <div class="cd-b-hero">
       <div>
-        <div class="cd-today-label">
-          <span class="fresh-dot today" style="width:8px;height:8px;"></span>
+        <div class="cd-b-label">
+          <span class="fresh-dot today" style="width:7px;height:7px;"></span>
           Today's price
         </div>
-        <div class="cd-today-price" id="cd-today-price">—</div>
-        <div class="cd-today-meta">
-          <span class="cd-today-chg" id="cd-today-chg"></span>
-          <span class="cd-today-mkt" id="cd-today-mkt"></span>
+        <div class="cd-b-price" id="cd-today-price">—</div>
+        <div class="cd-b-meta">
+          <span class="cd-b-chg" id="cd-today-chg"></span>
+          <span class="cd-b-mkts" id="cd-today-mkt"></span>
         </div>
+        <div class="cd-b-ts" id="cd-today-ts"></div>
       </div>
-      <div class="cd-today-ts" id="cd-today-ts"></div>
     </div>
-    <!-- LOW / AVG / HIGH grid -->
+    <!-- LOW / AVG / HIGH -->
     <div class="cd-grid">
       <div class="cd-block">
         <div class="cd-block-lbl">Best price</div>
@@ -869,25 +953,25 @@ img{max-width:100%;height:auto;display:block;}
         <div class="cd-block-sub" id="cd-high-mkt"></div>
       </div>
     </div>
-    <!-- PRICES BY MARKET first, chart below -->
+    <!-- MARKETS TODAY + HISTORY side by side, stacks on mobile -->
     <div class="cd-cols">
       <div>
         <div class="data-wrap">
-          <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
-            <span class="rc-label" style="margin-bottom:0;">Prices by market · today</span>
-          </div>
-          <div class="tbl-scroll"><table class="data-tbl">
-            <thead><tr><th>Market</th><th>Origin</th><th>Variety</th><th class="r">Price</th></tr></thead>
+          <div class="hist-head">By market · today</div>
+          <div class="tbl-scroll"><table class="slim-tbl">
+            <thead><tr><th>Market</th><th>Origin</th><th class="r">Price</th></tr></thead>
             <tbody id="cd-tbody"></tbody>
-          </table>
-        </div></div>
+          </table></div>
+        </div>
       </div>
       <div>
-        <div class="data-wrap" style="margin-bottom:0;">
-          <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
-            <span class="rc-label" style="margin-bottom:0;">7-day price trend</span>
+        <div class="data-wrap">
+          <div class="hist-head">Price history</div>
+          <div id="cd-history"></div>
+          <div style="padding:14px 16px;border-top:1px solid var(--border);">
+            <span class="rc-label" style="margin-bottom:10px;display:block;">7-day trend</span>
+            <canvas id="commodityChart" height="120"></canvas>
           </div>
-          <div style="padding:16px;"><canvas id="commodityChart" height="160"></canvas></div>
         </div>
       </div>
     </div>
@@ -1040,7 +1124,15 @@ async function init(){
   try{
     dates=await(await fetch(`${API}/dates`)).json();
     if(!dates.length)return;
-    document.getElementById('headerDate').textContent=new Date(dates[0].date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const latestDate=new Date(dates[0].date+'T12:00:00');
+    const dateStr=latestDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    const shortDate=latestDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    document.getElementById('headerDate').textContent=shortDate;
+    // Date bar
+    const dbMain=document.getElementById('date-bar-main');
+    const dbSub=document.getElementById('date-bar-sub');
+    if(dbMain)dbMain.textContent=dateStr;
+    if(dbSub)dbSub.textContent='USDA AMS · Updated 3× daily · Mon–Fri';
     datesData[dates[0].date]=await(await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
     allData=datesData[dates[0].date];
     for(let i=1;i<=6&&i<dates.length;i++){
@@ -1052,11 +1144,19 @@ async function init(){
     buildTodayStrip();
     populateComparePage();
     populateSearchFilters();
-    // stats
+    // stats — populate both hero and date bar
     const prices=allData.map(i=>parseFloat(i.price_low)).filter(p=>!isNaN(p));
-    document.getElementById('stat-records').textContent=allData.length.toLocaleString();
-    document.getElementById('stat-markets').textContent=[...new Set(allData.map(i=>i.market))].length;
-    document.getElementById('stat-avgprice').textContent='$'+(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2);
+    const recordsVal=allData.length.toLocaleString();
+    const marketsVal=[...new Set(allData.map(i=>i.market))].length;
+    const avgVal='$'+(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2);
+    document.getElementById('stat-records').textContent=recordsVal;
+    document.getElementById('stat-markets').textContent=marketsVal;
+    document.getElementById('stat-avgprice').textContent=avgVal;
+    // also update hero stats if visible
+    ['hero-stat-records','hero-stat-markets','hero-stat-avgprice'].forEach((id,i)=>{
+      const el=document.getElementById(id);
+      if(el)el.textContent=[recordsVal,marketsVal,avgVal][i];
+    });
   }catch(e){console.error(e);}
 }
 
@@ -1147,50 +1247,54 @@ function renderHomeTable(){
   allData.filter(i=>i.market_type==='shipping_point'&&i.price_low!=null).forEach(r=>{
     if(!fobByComm[r.commodity]||parseFloat(r.price_low)<fobByComm[r.commodity])fobByComm[r.commodity]=parseFloat(r.price_low);
   });
-  // Desktop rows
+  // ── Desktop slim rows — 3 columns ──────────────────────────────
   document.getElementById('home-tbody').innerHTML=items.map(r=>{
     const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
-    const fob=fobByComm[r.commodity];
     const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null);
     const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
-    const spread=(fob&&termAvg)?termAvg-fob:null;
-    return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
-      <td>
-        <div style="font-weight:600;color:var(--text);">${r.commodity}</div>
-        <div style="font-size:12px;color:var(--text-4);margin-top:2px;">${[r.origin,r.market,new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})].filter(Boolean).join(' · ')}</div>
-      </td>
-      <td class="r mono">${fob?'$'+fob.toFixed(2):'—'}</td>
-      <td class="r mono">${termAvg?'$'+termAvg.toFixed(2):'—'}</td>
-      <td class="r" style="color:var(--green);font-family:var(--mono);font-weight:500;">${spread?'+$'+spread.toFixed(2):'—'}</td>
-      <td class="r"><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span></td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-4);">No results</td></tr>';
-  // Mobile cards — large, finger-friendly for warehouse/field use
-  const cardsEl=document.getElementById('home-cards');
-  if(cardsEl){cardsEl.innerHTML=items.map(r=>{
-    const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
     const fob=fobByComm[r.commodity];
-    const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null);
-    const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
-    const spread=(fob&&termAvg)?termAvg-fob:null;
-    const chgC=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
-    const chgBg=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
     const displayPrice=termAvg?'$'+termAvg.toFixed(2):(fob?'$'+fob.toFixed(2):'—');
     const isToday=r.report_date===todayStr;
     const dateLabel=new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return`<div class="mob-card" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+    return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+      <td>
+        <div class="slim-name">
+          <span class="fresh-dot ${isToday?'today':'old'}"></span>
+          ${r.commodity}
+        </div>
+        <div class="slim-sub">${[r.origin,r.market].filter(Boolean).join(' · ')}</div>
+      </td>
+      <td>
+        <div class="slim-price">${displayPrice}</div>
+        <div class="slim-price-sub">${isToday?'Today':dateLabel}</div>
+      </td>
+      <td><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="3" style="padding:40px;text-align:center;color:var(--text-4);">No results</td></tr>';
+  // ── Mobile cards — large, finger-friendly ──────────────────────
+  const cardsEl=document.getElementById('home-cards');
+  if(cardsEl){cardsEl.innerHTML=items.map(r=>{
+    const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
+    const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null);
+    const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
+    const fob=fobByComm[r.commodity];
+    const displayPrice=termAvg?'$'+termAvg.toFixed(2):(fob?'$'+fob.toFixed(2):'—');
+    const chgC=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
+    const chgBg=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
+    const isToday=r.report_date===todayStr;
+    const dateLabel=new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return`<div class="slim-mob-card" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
       <div style="flex:1;min-width:0;">
         <div style="display:flex;align-items:center;gap:7px;">
           <span class="fresh-dot ${isToday?'today':'old'}"></span>
-          <span class="mob-card-name">${r.commodity}</span>
+          <span style="font-size:16px;font-weight:600;color:var(--text);">${r.commodity}</span>
         </div>
-        <div class="mob-card-sub" style="padding-left:14px;">${[r.origin||r.market,isToday?'Today':dateLabel].filter(Boolean).join(' · ')}</div>
-        ${spread?`<div style="font-family:var(--mono);font-size:13px;color:var(--green);margin-top:5px;font-weight:500;padding-left:14px;">Spread +$${spread.toFixed(2)}</div>`:''}
+        <div style="font-size:12px;color:var(--text-4);margin-top:3px;padding-left:14px;">${[r.origin||r.market,isToday?'Today':dateLabel].filter(Boolean).join(' · ')}</div>
       </div>
-      <div class="mob-card-right">
-        <div class="mob-card-price" style="font-size:24px;">${displayPrice}</div>
-        <div style="font-size:12px;color:var(--text-4);font-family:var(--mono);margin-top:2px;">${isToday?'Today':dateLabel}</div>
-        <div style="font-family:var(--mono);font-size:14px;font-weight:600;color:${chgC};background:${chgBg};padding:4px 10px;border-radius:5px;display:inline-block;margin-top:6px;">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</div>
+      <div class="slim-mob-right">
+        <div class="slim-mob-price">${displayPrice}</div>
+        <div class="slim-mob-date">${isToday?'Today':dateLabel}</div>
+        <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${chgC};background:${chgBg};padding:3px 9px;border-radius:4px;display:inline-block;margin-top:5px;">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</div>
       </div>
     </div>`;
   }).join('')||'<div style="padding:48px;text-align:center;color:var(--text-4);font-size:16px;">No results</div>';}
@@ -1357,53 +1461,90 @@ function loadCdDetail(commodity){
   const chg=getTrend(commodity);const iU=chg>0.5,iD=chg<-0.5;
   const todayStr=dates[0]?.date||'';
   const isToday=items.some(i=>i.report_date===todayStr);
-  const dateLabel=items[0]?.report_date?new Date(items[0].report_date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'';
+  const dateLabel=items[0]?.report_date?new Date(items[0].report_date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}):'';
+  const mktCount=[...new Set(items.map(i=>i.market))].length;
+
   document.getElementById('cd-title').textContent=commodity;
-  document.getElementById('cd-stats').textContent=`${[...new Set(items.map(i=>i.market))].length} markets · ${items.length} listings`;
-  // TODAY HERO — the big price
+  document.getElementById('cd-stats').textContent=`${mktCount} markets · ${items.length} listings`;
+
+  // ── TODAY HERO ─────────────────────────────────────────────────
   document.getElementById('cd-today-price').textContent='$'+avg.toFixed(2);
   const chgEl=document.getElementById('cd-today-chg');
-  chgEl.textContent=`${iU?'↑ +':iD?'↓ ':''}${chg.toFixed(1)}% vs last week`;
-  chgEl.style.background=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
-  chgEl.style.color=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
-  document.getElementById('cd-today-mkt').textContent=`${[...new Set(items.map(i=>i.market))].length} markets reporting`;
-  document.getElementById('cd-today-ts').innerHTML=`<span class="fresh-dot ${isToday?'today':'old'}"></span>${isToday?'Updated today':'Last updated '+dateLabel}`;
-  // price grid
+  if(chgEl){
+    chgEl.textContent=`${iU?'↑ +':iD?'↓ ':'— '}${chg.toFixed(1)}% vs last week`;
+    chgEl.className='cd-b-chg';
+    chgEl.style.background=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
+    chgEl.style.color=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
+  }
+  const mktEl=document.getElementById('cd-today-mkt');
+  if(mktEl)mktEl.textContent=`${mktCount} market${mktCount!==1?'s':''} reporting`;
+  const tsEl=document.getElementById('cd-today-ts');
+  if(tsEl)tsEl.innerHTML=`<span class="fresh-dot ${isToday?'today':'old'}" style="width:7px;height:7px;"></span>${isToday?'Updated today · '+new Date(todayStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}):'Last updated '+dateLabel}`;
+
+  // ── LOW / AVG / HIGH ───────────────────────────────────────────
   document.getElementById('cd-low').textContent='$'+Math.min(...prices).toFixed(2);
   document.getElementById('cd-low-mkt').textContent=sorted[0]?.market||'';
   document.getElementById('cd-avg').textContent='$'+avg.toFixed(2);
   document.getElementById('cd-avg-chg').innerHTML=`<span style="color:${iU?'var(--green-dk)':iD?'var(--dn-txt)':'var(--text-4)'}">${iU?'↑ +':iD?'↓ ':''}${chg.toFixed(1)}% vs last week</span>`;
   document.getElementById('cd-high').textContent='$'+Math.max(...prices).toFixed(2);
   document.getElementById('cd-high-mkt').textContent=sorted[sorted.length-1]?.market||'';
+
+  // ── PRICES BY MARKET · TODAY ───────────────────────────────────
   document.getElementById('cd-tbody').innerHTML=sorted.map((item,i)=>`
     <tr style="${i===0?'background:var(--green-lt);':''}">
-      <td style="font-weight:${i===0?'600':'400'};color:${i===0?'var(--green-dk)':'var(--text)'};">${item.market}${i===0?' <span style="font-size:10px;color:var(--green-dk);font-weight:400;">best</span>':''}</td>
-      <td style="color:var(--text-3);">${item.origin||'—'}</td>
-      <td style="color:var(--text-3);">${item.variety||'—'}</td>
-      <td class="r mono" style="color:${i===0?'var(--green-dk)':'var(--text)'};">$${parseFloat(item.price_low).toFixed(2)}</td>
+      <td style="font-weight:${i===0?'600':'500'};color:${i===0?'var(--green-dk)':'var(--text)'};">
+        ${item.market}${i===0?' <span style="font-size:11px;font-weight:500;color:var(--green-dk);margin-left:4px;">best</span>':''}
+      </td>
+      <td style="color:var(--text-3);font-size:13px;">${item.origin||'—'}</td>
+      <td style="font-family:var(--mono);font-size:15px;font-weight:600;text-align:right;color:${i===0?'var(--green-dk)':'var(--text)'};">$${parseFloat(item.price_low).toFixed(2)}</td>
     </tr>`).join('');
-  // chart
+
+  // ── PRICE HISTORY LIST ─────────────────────────────────────────
   const history=[];
   for(let i=Math.min(6,dates.length-1);i>=0;i--){
     const d=dates[i].date;
-    const dayItems=datesData[d]?.filter(x=>x.commodity===commodity)||[];
-    if(dayItems.length)history.push({date:d,price:dayItems.reduce((s,x)=>s+parseFloat(x.price_low),0)/dayItems.length});
+    const dayItems=datesData[d]?.filter(x=>x.commodity===commodity&&x.price_low!=null)||[];
+    if(dayItems.length){
+      const dayAvg=dayItems.reduce((s,x)=>s+parseFloat(x.price_low),0)/dayItems.length;
+      history.push({date:d,price:dayAvg,isLatest:i===0});
+    }
   }
+  const histEl=document.getElementById('cd-history');
+  if(histEl){
+    histEl.innerHTML=history.map((h,idx)=>{
+      const prevPrice=history[idx+1]?.price;
+      const dayChg=prevPrice?((h.price-prevPrice)/prevPrice)*100:null;
+      const iU2=dayChg&&dayChg>0.2,iD2=dayChg&&dayChg<-0.2;
+      const chgColor=iU2?'var(--up-txt)':iD2?'var(--dn-txt)':'var(--text-4)';
+      const dateStr=new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      return`<div class="hist-row" style="${h.isLatest?'background:var(--green-lt);':''}">
+        <span class="hist-d" style="${h.isLatest?'font-weight:600;color:var(--green-dk);':''}">${dateStr}${h.isLatest?' <span style="font-size:11px;font-weight:500;">Today</span>':''}</span>
+        <span class="hist-p" style="${h.isLatest?'color:var(--green-dk);':''}">\$${h.price.toFixed(2)}</span>
+        <span class="hist-c" style="color:${chgColor};">${dayChg?`${iU2?'↑':iD2?'↓':'—'} ${Math.abs(dayChg).toFixed(1)}%`:'—'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── 7-DAY CHART ────────────────────────────────────────────────
   setTimeout(()=>{
     const canvas=document.getElementById('commodityChart');
     if(canvas&&history.length){
       if(canvas._chart)canvas._chart.destroy();
+      const rev=[...history].reverse();
       canvas._chart=new Chart(canvas,{
         type:'line',
         data:{
-          labels:history.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
-          datasets:[{data:history.map(h=>h.price),borderColor:'#0a7c4e',backgroundColor:'rgba(10,124,78,.06)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#0a7c4e'}]
+          labels:rev.map(h=>new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),
+          datasets:[{data:rev.map(h=>h.price),borderColor:'#0a7c4e',backgroundColor:'rgba(10,124,78,.06)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#0a7c4e'}]
         },
         options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{ticks:{callback:v=>'$'+v.toFixed(0),font:{size:11}},grid:{color:'#f1f5f9'}}}}
       });
     }
   },80);
 }
+
+  document.getElementById('cd-title').textContent=commodity;
+  document.getElementById('cd-stats').textContent=`${[...new Set(items.map(i=>i.market))].length} markets · ${items.length} listings`;
 
 // ── COMPARE ──────────────────────────────
 function populateComparePage(){
