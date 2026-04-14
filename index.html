@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>agraX — Wholesale Produce Price Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5f5f0;--white:#ffffff;--border:#e5e5e0;
+  --muted:#9a9a94;--dim:#6b6b65;--ink:#1a1a14;
+  --green:#2d7a3a;--green-lt:#e8f5ea;--green-mid:#3a9a4a;
+  --red:#c0392b;--red-lt:#fdecea;--amber:#b8620a;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;color:var(--ink);background:var(--white);line-height:1.5;overflow-x:hidden;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:52px;
+  background:rgba(255,255,255,0.97);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+}
+.nav-logo{font-size:18px;font-weight:700;letter-spacing:-0.5px;color:var(--ink);cursor:pointer;}
+.nav-logo span{color:var(--green-mid);}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-link{font-size:14px;font-weight:500;color:var(--dim);cursor:pointer;transition:color 0.15s;}
+.nav-link:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.btn-signin{font-size:14px;font-weight:500;color:var(--dim);background:none;border:none;cursor:pointer;padding:6px 0;transition:color 0.15s;font-family:'Inter',sans-serif;}
+.btn-signin:hover{color:var(--ink);}
+.btn-get-started{font-size:14px;font-weight:600;background:var(--green);color:var(--white);border:none;border-radius:6px;padding:8px 18px;cursor:pointer;transition:background 0.15s;font-family:'Inter',sans-serif;}
+.btn-get-started:hover{background:#256632;}
+.nav-user{display:none;align-items:center;gap:10px;}
+.nav-user.visible{display:flex;}
+.nav-user-name{font-size:13px;color:var(--dim);}
+.nav-avatar{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
+
+/* ── TICKER ── */
+.ticker{
+  position:fixed;top:52px;left:0;right:0;z-index:99;height:32px;
+  background:var(--ink);display:flex;align-items:center;overflow:hidden;
+}
+.ticker-live{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;
+  padding:0 16px;border-right:1px solid rgba(255,255,255,0.12);
+  font-size:11px;font-weight:600;letter-spacing:0.5px;color:rgba(255,255,255,0.5);
+  white-space:nowrap;
+}
+.ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--green-mid);box-shadow:0 0 5px var(--green-mid);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.ticker-track{display:flex;white-space:nowrap;animation:scroll-ticker 50s linear infinite;}
+@keyframes scroll-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:8px;padding:0 24px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.7);border-right:1px solid rgba(255,255,255,0.08);}
+.ticker-item .ti-name{color:rgba(255,255,255,0.45);font-size:11px;}
+.ticker-item .ti-price{font-family:'DM Mono',monospace;color:rgba(255,255,255,0.85);}
+.ticker-item .ti-up{font-size:11px;font-weight:700;color:#5dc86a;}
+.ticker-item .ti-dn{font-size:11px;font-weight:700;color:#f07070;}
+
+/* ── HOMEPAGE ── */
+.homepage{padding-top:84px;}
+.hero{padding:72px 40px 64px;max-width:760px;margin:0 auto;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:var(--green-lt);border:1px solid #c0e0c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--green);margin-bottom:24px;}
+.hero-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--green-mid);}
+.hero-h1{font-size:clamp(34px,4.5vw,54px);font-weight:700;letter-spacing:-1.5px;line-height:1.08;color:var(--ink);margin-bottom:20px;}
+.hero-h1 .hl{color:var(--green-mid);}
+.hero-sub{font-size:17px;color:var(--dim);line-height:1.65;max-width:560px;margin-bottom:36px;}
+.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.btn-primary{font-size:14px;font-weight:600;color:var(--ink);background:var(--white);border:1.5px solid var(--ink);border-radius:6px;padding:11px 22px;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'Inter',sans-serif;}
+.btn-primary:hover{background:var(--ink);color:var(--white);}
+.btn-ghost{font-size:14px;font-weight:500;color:var(--dim);background:none;border:1.5px solid var(--border);border-radius:6px;padding:11px 22px;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'Inter',sans-serif;}
+.btn-ghost:hover{border-color:var(--dim);color:var(--ink);}
+.hero-fine{font-size:12px;color:var(--muted);}
+
+/* MOCKUP */
+.mockup-wrap{padding:0 40px 80px;max-width:800px;margin:0 auto;}
+.mockup{background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 32px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);overflow:hidden;}
+.mockup-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px;}
+.mockup-dots{display:flex;gap:5px;}
+.mockup-dot{width:10px;height:10px;border-radius:50%;}
+.mockup-url{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;background:var(--white);border:1px solid var(--border);border-radius:4px;padding:3px 10px;flex:1;max-width:320px;}
+.wt{width:100%;border-collapse:collapse;}
+.wt thead tr{background:var(--bg);border-bottom:1px solid var(--border);}
+.wt thead th{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);padding:10px 16px;text-align:left;}
+.wt thead th.r{text-align:right;}
+.wt tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+.wt tbody tr:last-child{border-bottom:none;}
+.wt tbody tr:hover{background:#fafaf8;}
+.wt tbody td{padding:14px 16px;font-size:14px;}
+.wt-name{font-weight:600;color:var(--ink);}
+.wt-spec{font-size:12px;color:var(--muted);margin-top:1px;}
+.wt-price{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--ink);text-align:right;}
+.wt-na{text-align:right;color:var(--muted);}
+.chg-pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:12px;font-weight:600;}
+.chg-up{background:var(--green-lt);color:var(--green);}
+.chg-dn{background:var(--red-lt);color:var(--red);}
+.chg-fl{background:#f0f0ec;color:var(--muted);}
+
+/* FEATURES */
+.features-section{background:var(--bg);border-top:1px solid var(--border);padding:72px 40px;}
+.features-inner{max-width:760px;margin:0 auto;}
+.section-eyebrow{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.section-title{font-size:clamp(26px,3.5vw,38px);font-weight:700;letter-spacing:-0.8px;color:var(--ink);margin-bottom:40px;line-height:1.15;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.feat{background:var(--white);padding:24px;}
+.feat-icon{width:32px;height:32px;border-radius:7px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:16px;}
+.feat-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px;line-height:1.3;}
+.feat-desc{font-size:13px;color:var(--dim);line-height:1.6;}
+
+/* WHO USES */
+.users-section{padding:72px 40px;max-width:760px;margin:0 auto;}
+.users-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;}
+.user-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:24px;}
+.user-role{font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;}
+.user-quote{font-size:14px;color:var(--dim);line-height:1.65;}
+
+/* CTA */
+.cta-section{background:var(--bg);border-top:1px solid var(--border);padding:72px 40px;text-align:center;}
+.cta-inner{max-width:500px;margin:0 auto;}
+.cta-pill{display:inline-flex;align-items:center;gap:6px;background:var(--green-lt);border:1px solid #c0e0c8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--green);margin-bottom:20px;}
+.cta-title{font-size:30px;font-weight:700;letter-spacing:-0.8px;color:var(--ink);margin-bottom:12px;}
+.cta-sub{font-size:15px;color:var(--dim);margin-bottom:28px;line-height:1.6;}
+.cta-fine{font-size:12px;color:var(--muted);margin-top:12px;}
+
+/* FOOTER */
+.site-footer{border-top:1px solid var(--border);padding:24px 40px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);}
+.footer-logo{font-weight:700;color:var(--ink);font-size:15px;}
+.footer-logo span{color:var(--green-mid);}
+
+/* ── SIGN IN ── */
+.signin-page{padding-top:84px;min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:120px 20px 60px;}
+.signin-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:40px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
+.signin-title{font-size:22px;font-weight:700;letter-spacing:-0.4px;color:var(--ink);margin-bottom:6px;}
+.signin-sub{font-size:14px;color:var(--dim);margin-bottom:28px;}
+.f-field{margin-bottom:16px;}
+.f-label{font-size:13px;font-weight:500;color:var(--ink);display:block;margin-bottom:6px;}
+.f-input{width:100%;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 13px;outline:none;transition:border-color 0.15s;font-family:'Inter',sans-serif;}
+.f-input:focus{border-color:var(--green-mid);background:var(--white);}
+.f-btn{width:100%;font-size:14px;font-weight:600;background:var(--green);color:var(--white);border:none;border-radius:7px;padding:12px;cursor:pointer;transition:background 0.15s;font-family:'Inter',sans-serif;}
+.f-btn:hover{background:#256632;}
+.f-or{display:flex;align-items:center;gap:12px;margin:20px 0;font-size:12px;color:var(--muted);}
+.f-or::before,.f-or::after{content:'';flex:1;height:1px;background:var(--border);}
+.f-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--white);border:1px solid var(--border);border-radius:7px;padding:11px;cursor:pointer;font-size:14px;font-weight:500;color:var(--ink);transition:background 0.15s;font-family:'Inter',sans-serif;}
+.f-google:hover{background:var(--bg);}
+.f-foot{font-size:13px;color:var(--muted);text-align:center;margin-top:20px;}
+.f-foot a{color:var(--ink);font-weight:600;cursor:pointer;}
+
+/* ── DASHBOARD ── */
+.dashboard-page{padding-top:84px;background:var(--bg);min-height:100vh;}
+.dash-top{background:var(--white);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;}
+.dash-greeting{font-size:20px;font-weight:600;color:var(--ink);}
+.dash-meta{font-size:13px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:8px;}
+.dash-live{width:6px;height:6px;border-radius:50%;background:var(--green-mid);box-shadow:0 0 5px var(--green-mid);display:inline-block;animation:blink 1.8s infinite;}
+.dash-add{font-size:13px;font-weight:600;color:var(--green);background:var(--green-lt);border:1px solid #c0e0c8;border-radius:6px;padding:7px 14px;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.dash-add:hover{background:#d4eeda;}
+.dash-body{padding:28px 40px;max-width:1100px;}
+.dash-section-hdr{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.dash-section-hdr a{font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:color 0.15s;}
+.dash-section-hdr a:hover{color:var(--ink);}
+
+/* THE KEY TABLE — multi-market per row */
+.wl-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:32px;}
+.wl-table{width:100%;border-collapse:collapse;}
+.wl-table thead tr{border-bottom:2px solid var(--border);background:#fafaf8;}
+.wl-table thead th{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);padding:11px 16px;text-align:left;}
+.wl-table thead th.r{text-align:right;}
+.wl-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+.wl-table tbody tr:last-child{border-bottom:none;}
+.wl-table tbody tr:hover{background:#fafaf8;}
+.wl-table tbody td{padding:15px 16px;font-size:14px;vertical-align:middle;}
+.wl-commodity{display:flex;align-items:center;gap:10px;}
+.wl-emoji{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
+.wl-name{font-size:14px;font-weight:600;color:var(--ink);}
+.wl-spec{font-size:12px;color:var(--muted);margin-top:1px;}
+.wl-mkt-price{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--ink);display:block;text-align:right;}
+.wl-mkt-na{color:var(--muted);display:block;text-align:right;font-size:13px;}
+.wl-vs{text-align:right;}
+.wl-spark{display:flex;align-items:flex-end;gap:2px;height:22px;justify-content:flex-end;}
+.spark-b{width:4px;border-radius:2px 2px 0 0;background:var(--border);}
+.spark-b.hi{background:var(--green-mid);}
+.spark-b.lo{background:#f0a0a0;}
+.spark-b.now{background:var(--ink);}
+.spark-b.now.hi{background:var(--green-mid);}
+.spark-b.now.lo{background:var(--red);}
+
+/* ALERTS */
+.alerts-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:32px;}
+.al-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+.al-row:last-child{border-bottom:none;}
+.al-row:hover{background:#fafaf8;}
+.al-emoji{font-size:16px;flex-shrink:0;}
+.al-main{flex:1;}
+.al-name{font-size:14px;font-weight:600;color:var(--ink);}
+.al-cond{font-size:12px;color:var(--muted);margin-top:1px;}
+.al-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;flex-shrink:0;}
+.als-watch{background:#e8f0fc;color:#1860b8;}
+.als-sent{background:var(--green-lt);color:var(--green);}
+.al-del{font-size:14px;color:var(--muted);cursor:pointer;flex-shrink:0;transition:color 0.12s;background:none;border:none;}
+.al-del:hover{color:var(--red);}
+
+/* BOTTOM GRID */
+.dash-grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.dash-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.dc-hdr{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:space-between;}
+.dc-hdr a{font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;}
+.dc-hdr a:hover{color:var(--ink);}
+.dc-row{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:13px;cursor:pointer;transition:background 0.1s;}
+.dc-row:last-child{border-bottom:none;}
+.dc-row:hover{background:#fafaf8;}
+.dcr-lbl{color:var(--ink);font-weight:500;display:flex;align-items:center;gap:8px;}
+.dcr-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--ink);}
+.dcr-green{color:var(--green-mid);}
+.dcr-red{color:var(--red);}
+
+/* ── MARKETS PAGE ── */
+.markets-page{padding-top:84px;background:var(--white);min-height:100vh;}
+.mkts-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px 0;}
+.mkts-title{font-size:22px;font-weight:700;letter-spacing:-0.4px;color:var(--ink);margin-bottom:4px;}
+.mkts-meta{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.mkts-tabs{display:flex;overflow-x:auto;}
+.mkts-tabs::-webkit-scrollbar{display:none;}
+.mtab{font-size:13px;font-weight:500;padding:10px 18px;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;margin-bottom:-1px;font-family:'Inter',sans-serif;}
+.mtab:hover{color:var(--ink);}
+.mtab.active{color:var(--ink);border-bottom-color:var(--ink);font-weight:600;}
+.mkts-controls{background:#fafaf8;border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.mkts-search-wrap{position:relative;flex:1;max-width:260px;}
+.mkts-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+.mkts-search{width:100%;font-size:13px;color:var(--ink);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 11px 7px 30px;outline:none;font-family:'Inter',sans-serif;transition:border-color 0.15s;}
+.mkts-search:focus{border-color:var(--green-mid);}
+.mkts-search::placeholder{color:var(--muted);}
+.mkt-sel{font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 11px;cursor:pointer;outline:none;}
+.mfbtn{font-size:12px;font-weight:500;background:var(--white);border:1px solid var(--border);color:var(--dim);padding:7px 12px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.mfbtn.on{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.mkts-count{margin-left:auto;font-size:13px;color:var(--muted);}
+.mkt-cat-hdr{padding:10px 40px 8px;background:#fafaf8;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mkt-cat-name{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);}
+.mkt-cat-count{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;}
+.mkt-row{display:flex;align-items:center;gap:14px;padding:14px 40px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--white);transition:background 0.1s;}
+.mkt-row:hover{background:#fafaf8;}
+.mkt-row:last-child{border-bottom:none;}
+.mkt-emoji{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
+.mkt-info{flex:1;}
+.mkt-name{font-size:14px;font-weight:600;color:var(--ink);}
+.mkt-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.mkt-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.mb-up{background:var(--green-lt);color:var(--green);}
+.mb-dn{background:var(--red-lt);color:var(--red);}
+.mb-st{background:#f0f0ec;color:var(--muted);}
+.mb-lt{background:#f0ecfc;color:#6840b8;}
+.mkt-prices{text-align:right;flex-shrink:0;min-width:110px;}
+.mkt-price{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--ink);display:block;}
+.mkt-fine{font-size:11px;color:var(--green);font-weight:600;margin-top:2px;display:block;}
+.mkt-star{font-size:16px;color:var(--border);cursor:pointer;flex-shrink:0;transition:all 0.15s;background:none;border:none;}
+.mkt-star:hover{color:var(--amber);transform:scale(1.1);}
+.mkt-star.saved{color:var(--amber);}
+.mkt-arr{font-size:14px;color:var(--border);flex-shrink:0;}
+
+/* ── COMPARE PAGE ── */
+.compare-page{padding-top:84px;background:var(--bg);min-height:100vh;}
+.compare-body{padding:32px 40px;max-width:960px;}
+.compare-hdr{margin-bottom:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.compare-title{font-size:22px;font-weight:700;letter-spacing:-0.4px;color:var(--ink);}
+.compare-sel{font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--white);border:1px solid var(--border);border-radius:7px;padding:9px 13px;outline:none;cursor:pointer;min-width:240px;}
+.compare-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.comp-table{width:100%;border-collapse:collapse;}
+.comp-table thead th{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);padding:11px 16px;text-align:left;border-bottom:2px solid var(--border);background:#fafaf8;}
+.comp-table thead th.r{text-align:right;}
+.comp-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+.comp-table tbody tr:last-child{border-bottom:none;}
+.comp-table tbody tr:hover{background:#fafaf8;}
+.comp-table tbody tr.best{background:var(--green-lt);}
+.comp-table tbody td{padding:14px 16px;font-size:14px;vertical-align:middle;}
+.ct-mkt{font-weight:600;color:var(--ink);display:flex;align-items:center;gap:7px;}
+.ct-dot{width:7px;height:7px;border-radius:50%;background:var(--green-mid);flex-shrink:0;}
+.ct-price{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;text-align:right;display:block;}
+.ct-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;}
+.ct-up{background:var(--green-lt);color:var(--green);}
+.ct-dn{background:var(--red-lt);color:var(--red);}
+.ct-st{background:#f0f0ec;color:var(--muted);}
+.ct-best-tag{font-size:11px;font-weight:700;background:var(--green-lt);color:var(--green);padding:2px 7px;border-radius:3px;margin-left:6px;}
+.ct-high-tag{font-size:11px;font-weight:700;background:var(--red-lt);color:var(--red);padding:2px 7px;border-radius:3px;margin-left:6px;}
+
+/* ── DETAIL MODAL ── */
+.dm-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.4);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;}
+.dm-overlay.open{display:flex;}
+.dm-modal{background:var(--white);border:1px solid var(--border);border-radius:14px;width:100%;max-width:520px;max-height:calc(100vh - 40px);box-shadow:0 20px 60px rgba(0,0,0,0.15);display:flex;flex-direction:column;overflow:hidden;transform:scale(0.97) translateY(8px);opacity:0;transition:transform 0.2s cubic-bezier(0.22,1,0.36,1),opacity 0.16s;}
+.dm-overlay.open .dm-modal{transform:scale(1) translateY(0);opacity:1;}
+.dm-head{padding:20px 22px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.dm-head-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.dm-title-group{display:flex;align-items:center;gap:11px;}
+.dm-emoji{font-size:28px;}
+.dm-name{font-size:22px;font-weight:700;letter-spacing:-0.4px;color:var(--ink);line-height:1;}
+.dm-pack{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px;}
+.dm-close-btn{background:var(--bg);border:1px solid var(--border);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--dim);flex-shrink:0;transition:all 0.12s;}
+.dm-close-btn:hover{background:var(--border);color:var(--ink);}
+.dm-tags{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.dm-cond-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:0.3px;}
+.dm-mkt-tag{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.dm-mkt-dot{width:5px;height:5px;border-radius:50%;background:var(--green-mid);display:inline-block;}
+.dm-code{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);background:var(--bg);border:1px solid var(--border);padding:2px 7px;border-radius:4px;}
+.dm-price-strip{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);flex-shrink:0;}
+.dm-pc{padding:14px 18px;border-right:1px solid var(--border);}
+.dm-pc:last-child{border-right:none;}
+.dm-pc-lbl{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.dm-pc-val{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-0.5px;line-height:1;}
+.dm-pc-val.fine{color:var(--green);}
+.dm-pc-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.dm-body{overflow-y:auto;flex:1;padding:18px 22px;}
+.dm-body::-webkit-scrollbar{width:4px;}
+.dm-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.dm-sec-lbl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.dm-sec-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.origin-card{border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:12px;}
+.origin-card:last-child{margin-bottom:0;}
+.oc-head{background:#fafaf8;border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.oc-flag{font-size:16px;}
+.oc-origin{font-size:14px;font-weight:600;color:var(--ink);}
+.oc-variety{font-size:12px;color:var(--muted);font-style:italic;}
+.oc-pack{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-left:auto;flex-shrink:0;}
+.size-row{padding:11px 14px;border-bottom:1px solid #f4f4f0;transition:background 0.1s;}
+.size-row:last-child{border-bottom:none;}
+.size-row:hover{background:#fafaf8;}
+.sr-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.sr-size{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--ink);flex-shrink:0;min-width:44px;}
+.sr-size.desc{font-family:'Inter',sans-serif;font-size:13px;font-weight:400;font-style:italic;color:var(--dim);}
+.sr-std{font-size:17px;font-weight:600;color:var(--ink);text-align:right;}
+.sr-std .rs{color:var(--muted);font-weight:300;}
+.sr-mostly{font-size:11px;color:var(--green);font-weight:600;text-align:right;margin-top:2px;}
+.sr-grades{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.gb{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px solid transparent;}
+.gb .gb-lbl{font-size:10px;font-weight:700;letter-spacing:0.4px;text-transform:uppercase;opacity:0.7;}
+.gb .gb-p{font-weight:700;font-size:13px;}
+.gb-fine{background:var(--green-lt);border-color:#c0e0c8;color:var(--green);}
+.gb-hold{background:#fdf4e0;border-color:#e8d090;color:var(--amber);}
+.gb-fair{background:var(--red-lt);border-color:#f0c0b8;color:var(--red);}
+.dm-foot{padding:11px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);background:#fafaf8;flex-shrink:0;}
+.dm-foot-close{font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;}
+
+/* ALERT MODAL */
+.am-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.35);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;}
+.am-overlay.open{display:flex;}
+.am-modal{background:var(--white);border:1px solid var(--border);border-radius:12px;width:100%;max-width:400px;box-shadow:0 16px 48px rgba(0,0,0,0.12);transform:scale(0.97) translateY(6px);opacity:0;transition:transform 0.2s,opacity 0.15s;}
+.am-overlay.open .am-modal{transform:scale(1) translateY(0);opacity:1;}
+.am-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.am-title{font-size:16px;font-weight:600;color:var(--ink);}
+.am-close{font-size:16px;color:var(--muted);cursor:pointer;background:none;border:none;}
+.am-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.am-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+.am-cancel{font-size:13px;font-weight:500;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 16px;cursor:pointer;color:var(--dim);font-family:'Inter',sans-serif;}
+.am-save{font-size:13px;font-weight:600;background:var(--green);color:var(--white);border:none;border-radius:6px;padding:8px 18px;cursor:pointer;font-family:'Inter',sans-serif;}
+.am-save:hover{background:#256632;}
+.am-success{padding:32px 20px;text-align:center;display:none;}
+.am-success.show{display:block;}
+.am-success-icon{font-size:32px;margin-bottom:10px;}
+.am-success-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.am-success-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* LOADING */
+.loading-row{padding:40px;text-align:center;font-size:14px;color:var(--muted);}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--ink);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero{padding:48px 20px 56px;}
+  .mockup-wrap{padding:0 20px 56px;}
+  .features-grid{grid-template-columns:1fr;}
+  .users-grid{grid-template-columns:1fr;}
+  .features-section,.cta-section{padding:48px 20px;}
+  .users-section{padding:48px 20px;}
+  .site-footer{padding:20px;flex-direction:column;gap:8px;text-align:center;}
+  .dash-body{padding:20px;}
+  .dash-top{padding:16px 20px;}
+  .compare-body{padding:20px;}
+  .mkts-header{padding:14px 20px 0;}
+  .mkts-controls{padding:9px 20px;}
+  .mkt-row{padding:12px 20px;}
+  .mkt-cat-hdr{padding:9px 20px;}
+  .dash-grid2{grid-template-columns:1fr;}
+  .wl-table th:nth-child(n+3):nth-child(-n+5),
+  .wl-table td:nth-child(n+3):nth-child(-n+5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" onclick="goHome()">agra<span>X</span></div>
+  <div class="nav-links">
+    <span class="nav-link" onclick="showPage('markets')">Markets</span>
+    <span class="nav-link" onclick="showPage('dashboard')">Alerts</span>
+    <span class="nav-link" onclick="showPage('compare')">Compare</span>
+    <span class="nav-link">Pricing</span>
+  </div>
+  <div class="nav-right">
+    <div id="nav-guest" style="display:flex;align-items:center;gap:12px;">
+      <button class="btn-signin" onclick="showPage('signin')">Sign in</button>
+      <button class="btn-get-started" onclick="showPage('signin')">Get started</button>
+    </div>
+    <div class="nav-user" id="nav-user">
+      <span class="nav-user-name" id="nav-uname"></span>
+      <div class="nav-avatar" id="nav-avatar" onclick="doSignOut()">?</div>
+    </div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-live"><span class="ticker-dot"></span>LIVE · <span id="ticker-date">APR 12</span></div>
+  <div class="ticker-track" id="ticker-track">
+    <div class="ticker-item"><span class="ti-name">Loading…</span></div>
+  </div>
+</div>
+
+<!-- ════ HOME ════ -->
+<div id="page-home" class="page active">
+  <div class="homepage">
+    <div class="hero">
+      <div class="hero-pill"><span class="hero-pill-dot"></span><span id="hero-pill-txt">USDA data · updated daily by 10:30 AM ET</span></div>
+      <h1 class="hero-h1">Wholesale produce prices,<br>rebuilt for <span class="hl">buyers who move product</span></h1>
+      <p class="hero-sub">The USDA morning report — without the PDFs, without the government portal. Searchable, comparable across markets, and personalized to what you actually buy.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('signin')">Start free — see today's markets</button>
+        <button class="btn-ghost">See how it works</button>
+      </div>
+      <div class="hero-fine">No credit card · market data updates daily by 10:30 AM ET</div>
+    </div>
+
+    <div class="mockup-wrap">
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots"><div class="mockup-dot" style="background:#f5a623"></div><div class="mockup-dot" style="background:#7ed321"></div><div class="mockup-dot" style="background:#4a90e2"></div></div>
+          <div class="mockup-url">app.agrax.com · my watchlist · <span id="mockup-date">Apr 12, 2026</span></div>
+        </div>
+        <table class="wt">
+          <thead><tr>
+            <th>Commodity</th><th class="r">NY</th><th class="r">LA</th><th class="r">CHI</th><th class="r">FOB Origin</th><th class="r">vs. Yesterday</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><div class="wt-name">Avocados 48ct</div><div class="wt-spec">Hass · Mexico</div></td><td><div class="wt-price">$38.50</div></td><td><div class="wt-price">$36.00</div></td><td><div class="wt-price">$37.25</div></td><td><div class="wt-price">$28.40</div></td><td style="text-align:right"><span class="chg-pill chg-up">+8.2%</span></td></tr>
+            <tr><td><div class="wt-name">Roma tomatoes</div><div class="wt-spec">25 lb · FJMX</div></td><td><div class="wt-price">$14.20</div></td><td><div class="wt-price">$13.80</div></td><td><div class="wt-price">$14.00</div></td><td><div class="wt-price">$9.60</div></td><td style="text-align:right"><span class="chg-pill chg-dn">-3.1%</span></td></tr>
+            <tr><td><div class="wt-name">Persian limes</div><div class="wt-spec">40 lb · Mexico</div></td><td><div class="wt-price">$18.00</div></td><td class="wt-na">—</td><td class="wt-na">—</td><td><div class="wt-price">$11.20</div></td><td style="text-align:right"><span class="chg-pill chg-fl">-0.5%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <div class="features-inner">
+        <div class="section-eyebrow">What agraX does</div>
+        <div class="section-title">Everything the USDA publishes,<br>actually usable</div>
+        <div class="features-grid">
+          <div class="feat"><div class="feat-icon">⌕</div><div class="feat-title">Search any commodity</div><div class="feat-desc">Find what avocados are trading at across every terminal market in seconds — no PDF, no portal.</div></div>
+          <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Compare markets side by side</div><div class="feat-desc">NY vs LA vs Chicago vs FOB origin — see the spread that determines your margin.</div></div>
+          <div class="feat"><div class="feat-icon">🔔</div><div class="feat-title">Price alerts before you buy</div><div class="feat-desc">Set a threshold and get notified when a commodity crosses it — or when a market spread opens up.</div></div>
+          <div class="feat"><div class="feat-icon">⭐</div><div class="feat-title">Your watchlist, not everything</div><div class="feat-desc">Track only the 8–20 items you actually buy. Your morning view is scoped to what matters to you.</div></div>
+          <div class="feat"><div class="feat-icon">📦</div><div class="feat-title">Volume &amp; movement data</div><div class="feat-desc">WA_FV175 movement reports tell you not just price but how much is moving — and from where.</div></div>
+          <div class="feat"><div class="feat-icon">🚛</div><div class="feat-title">FOB-to-terminal margin tool</div><div class="feat-desc">Enter your freight cost, see your landed margin against any terminal market price — instantly.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="users-section">
+      <div class="section-eyebrow">Who uses agraX</div>
+      <div class="section-title">Built for the people who<br>actually move produce</div>
+      <div class="users-grid">
+        <div class="user-card"><div class="user-role" style="color:var(--green-mid)">Grocery Buyer</div><div class="user-quote">"I track 14 SKUs every morning. Before agraX I was downloading four PDFs and manually comparing columns. Now I'm done in 3 minutes."</div></div>
+        <div class="user-card"><div class="user-role" style="color:#1860b8">Produce Broker</div><div class="user-quote">"The NY/LA spread on stone fruit is the first thing I look at. Having it in one row instead of two reports is the whole value prop for me."</div></div>
+        <div class="user-card"><div class="user-role" style="color:var(--amber)">Distributor</div><div class="user-quote">"We use the FOB-to-terminal tool to price our trucks. Takes something that used to be a spreadsheet and makes it a 10-second check."</div></div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-inner">
+        <div class="cta-pill">📅 Today's USDA data is already in</div>
+        <div class="cta-title">Start checking prices in 60 seconds</div>
+        <p class="cta-sub">Create a free account, build your watchlist, and see what your commodities are trading at across every major terminal market this morning.</p>
+        <button class="btn-primary" style="width:100%;padding:13px;" onclick="showPage('signin')">Start free — see today's markets</button>
+        <div class="cta-fine">No credit card required · Cancel anytime</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-logo">agra<span>X</span></div>
+      <div>© 2026 agraX · Wholesale Produce Intelligence</div>
+      <div>Data: USDA Agricultural Marketing Service</div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════ SIGN IN ════ -->
+<div id="page-signin" class="page">
+  <div class="signin-page">
+    <div class="signin-card">
+      <div class="signin-title">Sign in to agraX</div>
+      <div class="signin-sub">Access your watchlist and today's market data.</div>
+      <div class="f-field"><label class="f-label">Email</label><input class="f-input" type="email" id="si-email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <div class="f-field"><label class="f-label">Password</label><input class="f-input" type="password" id="si-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <button class="f-btn" onclick="doSignIn()">Sign in</button>
+      <div class="f-or">or</div>
+      <div class="f-google" onclick="doSignIn()">
+        <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </div>
+      <div class="f-foot">No account? <a onclick="doSignIn()">Sign up free</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DASHBOARD ════ -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard-page">
+    <div class="dash-top">
+      <div>
+        <div class="dash-greeting" id="dash-greeting">Good morning.</div>
+        <div class="dash-meta"><span class="dash-live"></span><span id="dash-date">Loading…</span></div>
+      </div>
+      <button class="dash-add" onclick="openAlertModal(null)">+ Add alert</button>
+    </div>
+    <div class="dash-body">
+      <div class="dash-section-hdr">My watchlist <a onclick="showPage('markets')">Browse all markets →</a></div>
+      <div class="wl-wrap">
+        <table class="wl-table">
+          <thead><tr>
+            <th>Commodity</th>
+            <th class="r">NY</th>
+            <th class="r">LA</th>
+            <th class="r">CHI</th>
+            <th class="r">FOB Origin</th>
+            <th class="r">vs. Yesterday</th>
+            <th class="r">Week</th>
+          </tr></thead>
+          <tbody id="wl-tbody"><tr><td colspan="7" class="loading-row"><span class="spinner"></span>Loading…</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="dash-section-hdr" style="margin-top:4px;">Alerts <a onclick="openAlertModal(null)">+ Add alert</a></div>
+      <div class="alerts-wrap" id="alerts-wrap"><div class="loading-row">No alerts set.</div></div>
+
+      <div class="dash-grid2" style="margin-top:20px;">
+        <div class="dash-card">
+          <div class="dc-hdr">Today's movers <a onclick="showPage('markets')">All markets →</a></div>
+          <div id="dash-movers"><div class="loading-row"><span class="spinner"></span></div></div>
+        </div>
+        <div class="dash-card">
+          <div class="dc-hdr">Coverage</div>
+          <div class="dc-row"><span class="dcr-lbl">Markets tracked</span><span class="dcr-val" id="dcov-m">—</span></div>
+          <div class="dc-row"><span class="dcr-lbl">Commodities</span><span class="dcr-val" id="dcov-c">—</span></div>
+          <div class="dc-row"><span class="dcr-lbl">Records today</span><span class="dcr-val" id="dcov-r">—</span></div>
+          <div class="dc-row"><span class="dcr-lbl">Last updated</span><span class="dcr-val" id="dcov-u">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MARKETS ════ -->
+<div id="page-markets" class="page">
+  <div class="markets-page">
+    <div class="mkts-header">
+      <div class="mkts-title">Terminal Markets</div>
+      <div class="mkts-meta"><span class="dash-live"></span><span id="mkts-date">Loading…</span> · USDA AMS</div>
+      <div class="mkts-tabs">
+        <button class="mtab active" id="mtab-all" onclick="mktSetType('all')">All</button>
+        <button class="mtab" id="mtab-fruits" onclick="mktSetType('fruits')">Fruits</button>
+        <button class="mtab" id="mtab-vegetables" onclick="mktSetType('vegetables')">Vegetables</button>
+        <button class="mtab" id="mtab-onions_potatoes" onclick="mktSetType('onions_potatoes')">Onions &amp; Potatoes</button>
+        <button class="mtab" id="mtab-nuts" onclick="mktSetType('nuts')">Nuts</button>
+      </div>
+    </div>
+    <div class="mkts-controls">
+      <div class="mkts-search-wrap">
+        <span class="mkts-search-icon">⌕</span>
+        <input class="mkts-search" type="text" id="mkt-q" placeholder="Search commodities, origins…" oninput="mktRender()">
+      </div>
+      <select class="mkt-sel" id="mkt-mkt" onchange="mktRender()"><option value="">All Markets</option></select>
+      <button class="mfbtn" id="mfbtn-org" onclick="this.classList.toggle('on');mktRender()">Organic</button>
+      <button class="mfbtn on" id="mfbtn-az" onclick="mktSort='az';setMktSortBtns();mktRender()">A–Z</button>
+      <button class="mfbtn" id="mfbtn-price" onclick="mktSort='price';setMktSortBtns();mktRender()">Price ↓</button>
+      <button class="mfbtn" id="mfbtn-movers" onclick="mktSort='movers';setMktSortBtns();mktRender()">Movers</button>
+      <span class="mkts-count"><strong id="mkt-count">—</strong> commodities</span>
+    </div>
+    <div id="mkts-list"><div class="loading-row"><span class="spinner"></span>Loading market data…</div></div>
+  </div>
+</div>
+
+<!-- ════ COMPARE ════ -->
+<div id="page-compare" class="page">
+  <div class="compare-page">
+    <div class="compare-body">
+      <div class="compare-hdr">
+        <div class="compare-title">Compare Markets</div>
+        <select class="compare-sel" id="compare-sel" onchange="renderCompare()"><option value="">Select a commodity…</option></select>
+      </div>
+      <div id="compare-content"><div class="loading-row" style="background:var(--white);border:1px solid var(--border);border-radius:10px;">Select a commodity above to compare prices across all markets.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="dm-overlay" id="dm-overlay" onclick="if(event.target===this)closeDetail()">
+  <div class="dm-modal">
+    <div class="dm-head">
+      <div class="dm-head-top">
+        <div class="dm-title-group"><span class="dm-emoji" id="dm-emoji">🌿</span><div><div class="dm-name" id="dm-name">—</div><div class="dm-pack" id="dm-pack">—</div></div></div>
+        <button class="dm-close-btn" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="dm-tags">
+        <span class="dm-cond-badge" id="dm-cond">Steady</span>
+        <span class="dm-mkt-tag"><span class="dm-mkt-dot"></span><span id="dm-mkt">—</span></span>
+        <span class="dm-code" id="dm-code">—</span>
+        <span style="font-size:11px;color:var(--muted)" id="dm-dt">—</span>
+      </div>
+    </div>
+    <div class="dm-price-strip">
+      <div class="dm-pc"><div class="dm-pc-lbl">Standard range</div><div class="dm-pc-val" id="dm-std">—</div><div class="dm-pc-sub" id="dm-std-sub">—</div></div>
+      <div class="dm-pc"><div class="dm-pc-lbl">Fine appearance</div><div class="dm-pc-val fine" id="dm-fine">—</div><div class="dm-pc-sub" id="dm-fine-sub">—</div></div>
+    </div>
+    <div class="dm-body"><div class="dm-sec-lbl">Price by origin &amp; size</div><div id="dm-breakdown"></div></div>
+    <div class="dm-foot"><span id="dm-src" style="font-family:'DM Mono',monospace;font-size:11px;">USDA AMS</span><span class="dm-foot-close" onclick="closeDetail()">Close ✕</span></div>
+  </div>
+</div>
+
+<!-- ALERT MODAL -->
+<div class="am-overlay" id="am-overlay" onclick="if(event.target===this)closeAlertModal()">
+  <div class="am-modal">
+    <div class="am-head"><div class="am-title" id="am-title">Set Price Alert</div><button class="am-close" onclick="closeAlertModal()">✕</button></div>
+    <div class="am-body" id="am-body">
+      <div style="font-size:14px;font-weight:600;color:var(--ink)" id="am-commodity">—</div>
+      <div class="f-field" style="margin-bottom:0"><label class="f-label">Your email</label><input class="f-input" type="email" id="am-email" placeholder="you@company.com"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="f-field" style="margin-bottom:0"><label class="f-label">Condition</label><select class="f-input" id="am-cond"><option value="daily">Send daily</option><option value="above">Goes above</option><option value="below">Falls below</option></select></div>
+        <div class="f-field" style="margin-bottom:0"><label class="f-label">Threshold ($)</label><input class="f-input" type="number" id="am-thresh" placeholder="e.g. 35"></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)" id="am-hint"></div>
+    </div>
+    <div class="am-success" id="am-success"><div class="am-success-icon">✅</div><div class="am-success-title">Alert set!</div><div class="am-success-sub" id="am-success-msg"></div></div>
+    <div class="am-foot" id="am-foot"><button class="am-cancel" onclick="closeAlertModal()">Cancel</button><button class="am-save" onclick="saveAlert()">Save alert</button></div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────
+const API = 'https://produce-iq-production.up.railway.app';
+
+// ─── STATE ────────────────────────────────────────────────────────
+let allRows = [], latestDate = null, currentUser = null;
+let mktType = 'all', mktSort = 'az', alertCommodity = null;
+const WL_KEY = 'agrax_wl_v1', ALERTS_KEY = 'agrax_alerts_v1', USER_KEY = 'agrax_user_v1';
+
+// ─── UTILS ────────────────────────────────────────────────────────
+const esc = s => (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+const fmt = v => v==null?null:'$'+parseFloat(v).toFixed(2).replace(/\.00$/,'');
+function fmtRange(lo,hi){if(!lo)return'—';if(!hi||hi===lo)return fmt(lo);return fmt(lo)+' – '+fmt(hi);}
+function fmtDate(d){if(!d)return'—';return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function emojiFor(n){
+  n=(n||'').toLowerCase();
+  if(n.includes('avocado'))return'🥑';if(n.includes('strawberr'))return'🍓';
+  if(n.includes('blueberr')||n.includes('blackberr'))return'🫐';
+  if(n.includes('raspberr'))return'🍇';if(n.includes('grape'))return'🍇';
+  if(n.includes('apple'))return'🍎';if(n.includes('pear'))return'🍐';
+  if(n.includes('orange')||n.includes('tangelo')||n.includes('tangerine'))return'🍊';
+  if(n.includes('lemon')||n.includes('meyer'))return'🍋';
+  if(n.includes('lime'))return'🍈';if(n.includes('grapefruit'))return'🍊';
+  if(n.includes('mango'))return'🥭';if(n.includes('pineapple'))return'🍍';
+  if(n.includes('watermelon'))return'🍉';if(n.includes('melon')||n.includes('cantaloupe')||n.includes('honeydew'))return'🍈';
+  if(n.includes('banana')||n.includes('plantain'))return'🍌';
+  if(n.includes('peach')||n.includes('nectarine'))return'🍑';
+  if(n.includes('cherr'))return'🍒';if(n.includes('plum'))return'🍑';
+  if(n.includes('coconut'))return'🥥';if(n.includes('kiwi'))return'🥝';
+  if(n.includes('tomato'))return'🍅';if(n.includes('pepper'))return'🌶️';
+  if(n.includes('broccoli')||n.includes('cauliflower'))return'🥦';
+  if(n.includes('cabbage')||n.includes('lettuce')||n.includes('spinach')||n.includes('arugula'))return'🥬';
+  if(n.includes('carrot'))return'🥕';if(n.includes('corn'))return'🌽';
+  if(n.includes('mushroom'))return'🍄';if(n.includes('eggplant'))return'🍆';
+  if(n.includes('cucumber'))return'🥒';if(n.includes('onion'))return'🧅';
+  if(n.includes('potato')||n.includes('yam'))return'🥔';if(n.includes('garlic'))return'🧄';
+  if(n.includes('nut')||n.includes('almond')||n.includes('walnut')||n.includes('pecan')||n.includes('peanut'))return'🥜';
+  if(n.includes('celery'))return'🌿';if(n.includes('asparagus'))return'🌿';
+  return'🌿';
+}
+function originFlag(o){
+  o=(o||'').toLowerCase();
+  if(o.includes('mexico')||o.includes('nogales')||o.includes('baja'))return'🇲🇽';
+  if(o.includes('california')||o.includes('salinas')||o.includes('fresno')||o.includes('florida')||o.includes('georgia')||o.includes('washington')||o.includes('oregon')||o.includes('idaho')||o.includes('arizona')||o.includes('texas')||o.includes('colorado')||o.includes('nova scoti')||o.includes('us '))return'🇺🇸';
+  if(o.includes('peru'))return'🇵🇪';if(o.includes('dominican'))return'🇩🇴';
+  if(o.includes('chile'))return'🇨🇱';if(o.includes('colombia'))return'🇨🇴';
+  if(o.includes('honduras'))return'🇭🇳';if(o.includes('guatemala'))return'🇬🇹';
+  if(o.includes('costa rica'))return'🇨🇷';if(o.includes('ecuador'))return'🇪🇨';
+  if(o.includes('brazil'))return'🇧🇷';if(o.includes('south africa'))return'🇿🇦';
+  return'🌐';
+}
+function cleanOrigin(o){
+  if(!o||o==='N/A')return'—';
+  return o.replace(/crossings? through .*/i,'').replace(/south and central /i,'S+C ')
+    .replace(/mexico - /i,'Mexico ').replace(/ fob sc$/i,'').replace(/ district$/i,'')
+    .replace(/salinas-watsonville/i,'Salinas').trim()||'—';
+}
+function condCls(mv,sn){
+  const m=(mv||'').toLowerCase(),s=(sn||'').toLowerCase();
+  if(m.includes('higher'))return'mb-up';
+  if(m.includes('lower'))return'mb-dn';
+  if(s.includes('light')||m.includes('light'))return'mb-lt';
+  return'mb-st';
+}
+function condTxt(mv,sn){
+  if(mv&&mv!=='Steady'&&mv!=='Unchanged')return mv;
+  if((sn||'').toLowerCase().includes('light'))return'Offerings Light';
+  return'Steady';
+}
+
+// ─── API ──────────────────────────────────────────────────────────
+async function apiFetch(path){
+  const r=await fetch(API+path,{headers:{'Accept':'application/json'}});
+  if(!r.ok)throw new Error(r.status);
+  return r.json();
+}
+
+// ─── GROUP ────────────────────────────────────────────────────────
+function groupBy(rows){
+  const map={};
+  rows.forEach(r=>{
+    const k=r.commodity;
+    if(!map[k])map[k]={commodity:r.commodity,commodity_type:r.commodity_type,price_low:null,price_high:null,movement:r.movement,supply_note:r.supply_note,origins:[],packages:new Set(),rows:[]};
+    const g=map[k];
+    const std=!r.quality_note||r.quality_note==='';
+    if(r.price_low&&std){if(!g.price_low||r.price_low<g.price_low)g.price_low=r.price_low;if(r.price_high&&(!g.price_high||r.price_high>g.price_high))g.price_high=r.price_high;}
+    else if(r.price_low&&!g.price_low){g.price_low=r.price_low;g.price_high=r.price_high;}
+    if(r.origin&&r.origin!=='N/A'&&!g.origins.includes(r.origin))g.origins.push(r.origin);
+    if(r.package)g.packages.add(r.package);
+    if(!g.movement&&r.movement)g.movement=r.movement;
+    g.rows.push(r);
+  });
+  return Object.values(map).sort((a,b)=>a.commodity.localeCompare(b.commodity));
+}
+
+// ─── ROUTING ──────────────────────────────────────────────────────
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  const pg=document.getElementById('page-'+p);
+  if(pg)pg.classList.add('active');
+  window.scrollTo(0,0);
+  if(p==='dashboard')renderDashboard();
+  if(p==='markets')mktRender();
+  if(p==='compare'){populateCompareSelect();renderCompare();}
+}
+function goHome(){showPage(currentUser?'dashboard':'home');}
+
+// ─── BOOT ─────────────────────────────────────────────────────────
+async function boot(){
+  try{currentUser=JSON.parse(localStorage.getItem(USER_KEY));}catch{}
+  if(currentUser){applySignedIn();showPage('dashboard');}
+
+  try{
+    const dates=await apiFetch('/dates');
+    if(!dates||!dates.length)throw new Error('No dates');
+    latestDate=dates[0].date;
+    const fd=fmtDate(latestDate);
+    const d=new Date(latestDate+'T12:00:00');
+
+    document.getElementById('dash-date').textContent=fd+' · USDA AMS';
+    document.getElementById('mkts-date').textContent=fd;
+    document.getElementById('mockup-date').textContent=fd;
+    document.getElementById('ticker-date').textContent=d.toLocaleDateString('en-US',{month:'short',day:'numeric'}).toUpperCase();
+    document.getElementById('hero-pill-txt').textContent='USDA data · updated '+d.toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
+
+    allRows=await apiFetch('/commodities/by-date/'+latestDate);
+
+    // Markets select
+    const mkts=[...new Set(allRows.map(r=>r.market).filter(Boolean))].sort();
+    const sel=document.getElementById('mkt-mkt');
+    mkts.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});
+
+    // Coverage
+    document.getElementById('dcov-m').textContent=mkts.length+' markets';
+    document.getElementById('dcov-c').textContent=[...new Set(allRows.map(r=>r.commodity))].length;
+    document.getElementById('dcov-r').textContent=allRows.length.toLocaleString();
+    document.getElementById('dcov-u').textContent=fd;
+
+    buildTicker();
+    populateCompareSelect();
+
+    if(document.getElementById('page-dashboard').classList.contains('active'))renderDashboard();
+    if(document.getElementById('page-markets').classList.contains('active'))mktRender();
+  }catch(e){
+    console.error('Boot failed:',e);
+    document.getElementById('dash-date').textContent='Offline — '+e.message;
+  }
+}
+
+// ─── TICKER ───────────────────────────────────────────────────────
+function buildTicker(){
+  const sample=allRows.filter(r=>r.price_low&&r.market==='New York').slice(0,16);
+  if(!sample.length)return;
+  const doubled=[...sample,...sample];
+  document.getElementById('ticker-track').innerHTML=doubled.map(r=>{
+    const mv=(r.movement||'').toLowerCase();
+    const isUp=mv.includes('higher'),isDn=mv.includes('lower');
+    return`<div class="ticker-item"><span class="ti-name">${r.commodity} NY</span><span class="ti-price">${fmtRange(r.price_low,r.price_high)}</span>${isUp?'<span class="ti-up">▲</span>':isDn?'<span class="ti-dn">▼</span>':''}</div>`;
+  }).join('');
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────
+function doSignIn(){
+  const email=(document.getElementById('si-email').value||'user@agrax.com').trim();
+  const name=email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  currentUser={email,name,initials};
+  localStorage.setItem(USER_KEY,JSON.stringify(currentUser));
+  applySignedIn();
+  showPage('dashboard');
+}
+function doSignOut(){
+  if(!confirm('Sign out?'))return;
+  currentUser=null;localStorage.removeItem(USER_KEY);
+  document.getElementById('nav-guest').style.display='flex';
+  document.getElementById('nav-user').classList.remove('visible');
+  showPage('home');
+}
+function applySignedIn(){
+  document.getElementById('nav-guest').style.display='none';
+  document.getElementById('nav-user').classList.add('visible');
+  document.getElementById('nav-avatar').textContent=currentUser.initials;
+  document.getElementById('nav-uname').textContent=currentUser.name.split(' ')[0];
+  const h=new Date().getHours();
+  const g=document.getElementById('dash-greeting');
+  if(g)g.textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+currentUser.name.split(' ')[0]+'.';
+}
+
+// ─── WATCHLIST ────────────────────────────────────────────────────
+function wlGet(){try{return JSON.parse(localStorage.getItem(WL_KEY)||'[]');}catch{return[];}}
+function wlSave(l){localStorage.setItem(WL_KEY,JSON.stringify(l));}
+function wlToggle(commodity){
+  const l=wlGet(),i=l.indexOf(commodity);
+  if(i>-1)l.splice(i,1);else l.push(commodity);
+  wlSave(l);
+  document.querySelectorAll(`.mkt-star[data-c="${commodity}"]`).forEach(b=>{b.classList.toggle('saved',i===-1);b.textContent=i===-1?'⭐':'☆';});
+  if(document.getElementById('page-dashboard').classList.contains('active'))renderDashWL();
+}
+function wlIsWatched(c){return wlGet().includes(c);}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────
+function renderDashboard(){renderDashWL();renderDashAlerts();renderDashMovers();}
+
+const DASH_MKTS=['New York','Los Angeles','Chicago'];
+
+function renderDashWL(){
+  const list=wlGet();
+  const tbody=document.getElementById('wl-tbody');
+  if(!tbody)return;
+  if(!list.length){
+    tbody.innerHTML=`<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--muted);font-size:14px;">Your watchlist is empty. <span style="color:var(--green-mid);cursor:pointer;font-weight:600;" onclick="showPage('markets')">Browse markets to add items →</span></td></tr>`;
+    return;
+  }
+  if(!allRows.length){tbody.innerHTML=`<tr><td colspan="7" class="loading-row"><span class="spinner"></span>Loading…</td></tr>`;return;}
+
+  tbody.innerHTML=list.map(commodity=>{
+    const rows=allRows.filter(r=>r.commodity===commodity);
+    if(!rows.length)return'';
+    const g=groupBy(rows)[0];
+    const mv=g.movement||'';
+
+    // Per-market prices
+    const mktCells=DASH_MKTS.map(mkt=>{
+      const mr=rows.filter(r=>r.market===mkt);
+      if(!mr.length)return`<td style="text-align:right"><span class="wl-mkt-na">—</span></td>`;
+      const mg=groupBy(mr)[0];
+      return`<td style="text-align:right"><span class="wl-mkt-price">${fmtRange(mg.price_low,mg.price_high)}</span></td>`;
+    }).join('');
+
+    // FOB
+    const fobRows=rows.filter(r=>r.market_type==='shipping_point'||['Nogales','Fresno','Orlando','Phoenix'].includes(r.market));
+    const fobCell=fobRows.length?(()=>{const fg=groupBy(fobRows)[0];return`<td style="text-align:right"><span class="wl-mkt-price">${fmtRange(fg.price_low,fg.price_high)}</span></td>`;})():`<td style="text-align:right"><span class="wl-mkt-na">—</span></td>`;
+
+    // vs yesterday badge
+    const isUp=mv.toLowerCase().includes('higher'),isDn=mv.toLowerCase().includes('lower');
+    const cls=isUp?'chg-up':isDn?'chg-dn':'chg-fl';
+    const txt=isUp?'Higher':isDn?'Lower':'Steady';
+    const vsCell=`<td class="wl-vs"><span class="chg-pill ${cls}">${isUp?'▲':isDn?'▼':'—'} ${txt}</span></td>`;
+
+    // sparkline
+    const heights=isUp?[7,8,9,10,11,13,15]:isDn?[15,13,11,10,9,8,7]:[10,12,9,11,10,12,11];
+    const spark=heights.map((h,i)=>{
+      const isNow=i===6;
+      const cls2=isNow?(isUp?'hi':isDn?'lo':'now'):isUp&&i>3?'hi':isDn&&i<3?'lo':'';
+      return`<div class="spark-b ${cls2}${isNow?' now':''}" style="height:${h}px"></div>`;
+    }).join('');
+
+    return`<tr onclick="openDetail('${esc(commodity)}')">
+      <td><div class="wl-commodity"><span class="wl-emoji">${emojiFor(commodity)}</span><div><div class="wl-name">${commodity}</div><div class="wl-spec">${[...g.packages][0]||''}</div></div></div></td>
+      ${mktCells}${fobCell}${vsCell}
+      <td><div class="wl-spark">${spark}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDashAlerts(){
+  const alerts=alertsGet();
+  const el=document.getElementById('alerts-wrap');
+  if(!el)return;
+  if(!alerts.length){el.innerHTML='<div class="loading-row">No alerts set. <span style="color:var(--green-mid);cursor:pointer;font-weight:600;" onclick="openAlertModal(null)">+ Add one</span></div>';return;}
+  el.innerHTML=alerts.map(a=>{
+    const cond=a.condition==='daily'?'Daily price email':a.condition==='above'?`Alert when price > $${a.threshold}`:`Alert when price < $${a.threshold}`;
+    return`<div class="al-row" onclick="openAlertModal('${esc(a.commodity)}')">
+      <span class="al-emoji">${emojiFor(a.commodity)}</span>
+      <div class="al-main"><div class="al-name">${a.commodity}</div><div class="al-cond">${cond} · ${a.email}</div></div>
+      <span class="al-status als-watch">Watching</span>
+      <button class="al-del" onclick="event.stopPropagation();removeAlert('${esc(a.commodity)}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderDashMovers(){
+  const el=document.getElementById('dash-movers');
+  if(!el||!allRows.length)return;
+  const ny=allRows.filter(r=>r.market==='New York');
+  const grouped=groupBy(ny);
+  const movers=[...grouped.filter(g=>(g.movement||'').toLowerCase().includes('higher')).slice(0,3),...grouped.filter(g=>(g.movement||'').toLowerCase().includes('lower')).slice(0,3)];
+  if(!movers.length){el.innerHTML='<div class="loading-row">No movers data.</div>';return;}
+  el.innerHTML=movers.map(g=>{
+    const isUp=(g.movement||'').toLowerCase().includes('higher');
+    return`<div class="dc-row" onclick="openDetail('${esc(g.commodity)}')">
+      <span class="dcr-lbl"><span style="font-size:15px">${emojiFor(g.commodity)}</span>${g.commodity}</span>
+      <div style="display:flex;align-items:center;gap:8px;"><span class="dcr-val">${fmtRange(g.price_low,g.price_high)}</span><span class="${isUp?'dcr-green':'dcr-red'}">${isUp?'▲':'▼'}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ─── MARKETS ──────────────────────────────────────────────────────
+const CAT_ORDER=['fruits','vegetables','onions_potatoes','nuts','other'];
+const CAT_LABELS={fruits:'Fruits',vegetables:'Vegetables',onions_potatoes:'Onions & Potatoes',nuts:'Nuts',other:'Other'};
+
+function mktSetType(t){
+  mktType=t;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('mtab-'+t);if(el)el.classList.add('active');
+  mktRender();
+}
+function setMktSortBtns(){
+  ['az','price','movers'].forEach(s=>{const e=document.getElementById('mfbtn-'+s);if(e)e.classList.toggle('on',s===mktSort);});
+}
+
+function mktRender(){
+  const q=(document.getElementById('mkt-q')?.value||'').toLowerCase();
+  const mkt=document.getElementById('mkt-mkt')?.value||'';
+  const org=document.getElementById('mfbtn-org')?.classList.contains('on');
+
+  let filtered=allRows;
+  if(mkt)filtered=filtered.filter(r=>r.market===mkt);
+  if(mktType!=='all')filtered=filtered.filter(r=>r.commodity_type===mktType);
+  if(org)filtered=filtered.filter(r=>r.organic);
+  if(q)filtered=filtered.filter(r=>(r.commodity||'').toLowerCase().includes(q)||(r.origin||'').toLowerCase().includes(q)||(r.variety||'').toLowerCase().includes(q));
+
+  let grouped=groupBy(filtered);
+  if(mktSort==='price')grouped.sort((a,b)=>(b.price_low||0)-(a.price_low||0));
+  else if(mktSort==='movers')grouped.sort((a,b)=>{const s=g=>{const m=(g.movement||'').toLowerCase();return m.includes('higher')?2:m.includes('lower')?1:0;};return s(b)-s(a);});
+
+  const countEl=document.getElementById('mkt-count');
+  if(countEl)countEl.textContent=grouped.length;
+
+  const listEl=document.getElementById('mkts-list');
+  if(!listEl)return;
+
+  let html='';
+  if(mktSort!=='az'||q){
+    html=grouped.map(g=>mktRowHtml(g)).join('');
+  } else {
+    const byType={};
+    grouped.forEach(g=>{const ct=g.commodity_type||'other';if(!byType[ct])byType[ct]=[];byType[ct].push(g);});
+    CAT_ORDER.forEach(ct=>{
+      const grp=byType[ct];if(!grp?.length)return;
+      html+=`<div class="mkt-cat-hdr"><span class="mkt-cat-name">${CAT_LABELS[ct]||ct}</span><span class="mkt-cat-count">${grp.length}</span></div>`;
+      html+=grp.map(g=>mktRowHtml(g)).join('');
+    });
+  }
+  listEl.innerHTML=html||'<div class="loading-row">No commodities match your filters.</div>';
+}
+
+function mktRowHtml(g){
+  const mv=g.movement||'',sn=g.supply_note||'';
+  const bc=condCls(mv,sn),bl=condTxt(mv,sn);
+  const fine=g.rows.find(r=>(r.quality_note||'').includes('fine')&&r.price_low);
+  const fineHtml=fine?`<span class="mkt-fine">Fine app. ${fmtRange(fine.price_low,fine.price_high)}</span>`:'';
+  const pkg=[...g.packages][0]||'';
+  const origins=g.origins.filter(Boolean).slice(0,3).join(' · ');
+  const isW=wlIsWatched(g.commodity);
+  return`<div class="mkt-row" onclick="openDetail('${esc(g.commodity)}')">
+    <span class="mkt-emoji">${emojiFor(g.commodity)}</span>
+    <div class="mkt-info"><div class="mkt-name">${g.commodity}</div><div class="mkt-sub">${[pkg,origins].filter(Boolean).join(' · ')}</div></div>
+    <span class="mkt-badge ${bc}">${bl}</span>
+    <div class="mkt-prices"><span class="mkt-price">${fmtRange(g.price_low,g.price_high)}</span>${fineHtml}</div>
+    <button class="mkt-star ${isW?'saved':''}" data-c="${esc(g.commodity)}" onclick="event.stopPropagation();wlToggle('${esc(g.commodity)}')">${isW?'⭐':'☆'}</button>
+    <span class="mkt-arr">›</span>
+  </div>`;
+}
+
+// ─── COMPARE ──────────────────────────────────────────────────────
+function populateCompareSelect(){
+  const sel=document.getElementById('compare-sel');
+  if(!sel||sel.options.length>1||!allRows.length)return;
+  [...new Set(allRows.map(r=>r.commodity))].sort().forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=emojiFor(c)+' '+c;sel.appendChild(o);});
+}
+function renderCompare(){
+  const commodity=document.getElementById('compare-sel').value;
+  const el=document.getElementById('compare-content');
+  if(!commodity){el.innerHTML='<div class="loading-row" style="background:var(--white);border:1px solid var(--border);border-radius:10px;">Select a commodity to compare prices across all markets.</div>';return;}
+  const rows=allRows.filter(r=>r.commodity===commodity);
+  if(!rows.length){el.innerHTML='<div class="loading-row" style="background:var(--white);border:1px solid var(--border);border-radius:10px;">No data for this commodity today.</div>';return;}
+  const mktMap={};
+  rows.forEach(r=>{if(!r.market)return;if(!mktMap[r.market])mktMap[r.market]=[];mktMap[r.market].push(r);});
+  const mkts=Object.keys(mktMap).sort();
+  const prices=mkts.map(m=>{const g=groupBy(mktMap[m])[0];return g.price_low||0;});
+  const minP=Math.min(...prices.filter(p=>p>0)),maxP=Math.max(...prices);
+  el.innerHTML=`<div class="compare-wrap"><table class="comp-table">
+    <thead><tr><th>Market</th><th class="r">Standard price</th><th class="r">Fine appearance</th><th>Condition</th><th>Origins</th></tr></thead>
+    <tbody>${mkts.map(mkt=>{
+      const g=groupBy(mktMap[mkt])[0];
+      const mv=g.movement||'';
+      const bc=condCls(mv,g.supply_note),bl=condTxt(mv,g.supply_note);
+      const fine=mktMap[mkt].find(r=>(r.quality_note||'').includes('fine')&&r.price_low);
+      const isBest=g.price_low===minP&&minP>0,isHigh=g.price_low===maxP&&maxP>minP;
+      const badgeCls=mv.toLowerCase().includes('higher')?'ct-up':mv.toLowerCase().includes('lower')?'ct-dn':'ct-st';
+      return`<tr class="${isBest?'best':''}" onclick="(function(){const s=document.getElementById('mkt-mkt');if(s)s.value='${esc(mkt)}';showPage('markets');})()">
+        <td><div class="ct-mkt"><span class="ct-dot"></span>${mkt}${isBest?'<span class="ct-best-tag">LOWEST</span>':isHigh?'<span class="ct-high-tag">HIGHEST</span>':''}</div></td>
+        <td><span class="ct-price">${fmtRange(g.price_low,g.price_high)}</span></td>
+        <td><span class="ct-price">${fine?fmtRange(fine.price_low,fine.price_high):'—'}</span></td>
+        <td><span class="ct-badge ${badgeCls}">${bl}</span></td>
+        <td style="font-size:12px;color:var(--muted)">${g.origins.filter(Boolean).slice(0,3).join(', ')||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+// ─── DETAIL MODAL ─────────────────────────────────────────────────
+function openDetail(commodity){
+  const rows=allRows.filter(r=>r.commodity===commodity);
+  if(!rows.length)return;
+  const g=groupBy(rows)[0];const mv=g.movement||'';
+
+  document.getElementById('dm-emoji').textContent=emojiFor(commodity);
+  document.getElementById('dm-name').textContent=commodity;
+  document.getElementById('dm-pack').textContent=rows.find(r=>r.package)?.package||'';
+  document.getElementById('dm-mkt').textContent=rows[0]?.market||'—';
+  document.getElementById('dm-code').textContent=rows[0]?.source_report||'—';
+  document.getElementById('dm-dt').textContent=fmtDate(latestDate);
+
+  const ce=document.getElementById('dm-cond');
+  ce.textContent=condTxt(mv,g.supply_note);
+  const cc=condCls(mv,g.supply_note);
+  ce.style.cssText=cc==='mb-up'?'background:var(--green-lt);color:var(--green);padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;':cc==='mb-dn'?'background:var(--red-lt);color:var(--red);padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;':'background:#f0f0ec;color:var(--muted);padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;';
+
+  const stdRows=rows.filter(r=>!r.quality_note||r.quality_note==='');
+  const prLo=stdRows.length?Math.min(...stdRows.filter(r=>r.price_low).map(r=>r.price_low)):g.price_low;
+  const prHi=stdRows.length?Math.max(...stdRows.filter(r=>r.price_high).map(r=>r.price_high)):g.price_high;
+  document.getElementById('dm-std').textContent=fmtRange(prLo,prHi);
+  document.getElementById('dm-std-sub').textContent=g.origins.filter(Boolean).slice(0,3).join(' · ')||'—';
+
+  const fineRows=rows.filter(r=>(r.quality_note||'').includes('fine')&&r.price_low);
+  if(fineRows.length){
+    const fLo=Math.min(...fineRows.map(r=>r.price_low));
+    const fHi=Math.max(...fineRows.filter(r=>r.price_high).map(r=>r.price_high));
+    document.getElementById('dm-fine').textContent=fmtRange(fLo,fHi);
+    document.getElementById('dm-fine-sub').textContent='Fine appearance premium';
+  } else {
+    document.getElementById('dm-fine').textContent='—';
+    document.getElementById('dm-fine-sub').textContent='No fine tier today';
+  }
+
+  const grps={};
+  rows.forEach(r=>{const o=cleanOrigin(r.origin),v=r.variety||'',k=o+'||'+v;if(!grps[k])grps[k]={origin:o,variety:v,originRaw:r.origin||'',rows:[]};grps[k].rows.push(r);});
+  const hasFine=rows.some(r=>(r.quality_note||'').includes('fine'));
+  const hasHold=rows.some(r=>(r.quality_note||'').includes('holdover'));
+  const hasFair=rows.some(r=>(r.quality_note||'').includes('fair'));
+
+  let brkHtml='';
+  Object.values(grps).forEach(grp=>{
+    if(grp.origin==='—')return;
+    const pkg=grp.rows.find(r=>r.package)?.package||'';
+    const bySize={};
+    grp.rows.forEach(r=>{const sz=r.size||'__ns__';if(!bySize[sz])bySize[sz]={size:r.size,std:null,fine:null,hold:null,fair:null};const qn=(r.quality_note||'').toLowerCase();if(qn.includes('fine'))bySize[sz].fine=r;else if(qn.includes('holdover'))bySize[sz].hold=r;else if(qn.includes('fair'))bySize[sz].fair=r;else bySize[sz].std=r;});
+    const sizes=Object.keys(bySize).sort((a,b)=>{if(a==='__ns__')return-1;const na=parseInt(a),nb=parseInt(b);return(!isNaN(na)&&!isNaN(nb))?na-nb:a.localeCompare(b);});
+    let rowsHtml='';
+    sizes.forEach(sz=>{
+      const s=bySize[sz],isNs=sz==='__ns__';
+      const szLbl=isNs?`<span class="sr-size desc">Standard</span>`:`<span class="sr-size">${s.size}</span>`;
+      let stdHtml='<span style="color:var(--muted);font-size:13px;">—</span>';
+      if(s.std){const mostly=s.std.price_mostly_low?`<div class="sr-mostly">Mostly ${fmtRange(s.std.price_mostly_low,s.std.price_mostly_high)}</div>`:'';stdHtml=`<span class="sr-std">${fmtRange(s.std.price_low,s.std.price_high).replace(' – ',' <span class="rs">–</span> ')}</span>${mostly}`;}
+      let grades='';
+      if(hasFine&&s.fine)grades+=`<span class="gb gb-fine"><span class="gb-lbl">Fine</span><span class="gb-p">${fmtRange(s.fine.price_low,s.fine.price_high)}</span></span>`;
+      if(hasHold&&s.hold)grades+=`<span class="gb gb-hold"><span class="gb-lbl">Holdover</span><span class="gb-p">${fmtRange(s.hold.price_low,s.hold.price_high)}</span></span>`;
+      if(hasFair&&s.fair)grades+=`<span class="gb gb-fair"><span class="gb-lbl">Fair</span><span class="gb-p">${fmtRange(s.fair.price_low,s.fair.price_high)}</span></span>`;
+      rowsHtml+=`<div class="size-row"><div class="sr-top">${szLbl}<div style="text-align:right">${stdHtml}</div></div>${grades?`<div class="sr-grades">${grades}</div>`:''}</div>`;
+    });
+    brkHtml+=`<div class="origin-card"><div class="oc-head"><span class="oc-flag">${originFlag(grp.originRaw)}</span><span class="oc-origin">${grp.origin}</span>${grp.variety?`<span class="oc-variety">${grp.variety}</span>`:''}${pkg?`<span class="oc-pack">${pkg}</span>`:''}</div>${rowsHtml}</div>`;
+  });
+  document.getElementById('dm-breakdown').innerHTML=brkHtml||'<p style="color:var(--muted);font-size:13px;padding:8px 0;">No breakdown data.</p>';
+  document.getElementById('dm-src').textContent=`USDA AMS · ${rows[0]?.source_report||''} · ${fmtDate(latestDate)}`;
+  document.getElementById('dm-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDetail(){document.getElementById('dm-overlay').classList.remove('open');document.body.style.overflow='';}
+
+// ─── ALERTS ───────────────────────────────────────────────────────
+function alertsGet(){try{return JSON.parse(localStorage.getItem(ALERTS_KEY)||'[]');}catch{return[];}}
+function alertsSave(l){localStorage.setItem(ALERTS_KEY,JSON.stringify(l));}
+function removeAlert(commodity){alertsSave(alertsGet().filter(a=>a.commodity!==commodity));renderDashAlerts();}
+
+function openAlertModal(commodity){
+  alertCommodity=commodity;
+  document.getElementById('am-title').textContent=commodity?'Set price alert — '+commodity:'New price alert';
+  document.getElementById('am-commodity').textContent=commodity?emojiFor(commodity)+' '+commodity:'Choose from your watchlist';
+  const hint=document.getElementById('am-hint');
+  if(commodity){const rows=allRows.filter(r=>r.commodity===commodity);if(rows.length){const g=groupBy(rows)[0];hint.textContent='Current: '+fmtRange(g.price_low,g.price_high)+' · '+(rows[0]?.market||'');}}
+  else{hint.textContent='';}
+  const existing=alertsGet().find(a=>a.commodity===commodity);
+  document.getElementById('am-email').value=existing?.email||localStorage.getItem('agrax_email')||'';
+  document.getElementById('am-cond').value=existing?.condition||'daily';
+  document.getElementById('am-thresh').value=existing?.threshold||'';
+  document.getElementById('am-body').style.display='';
+  document.getElementById('am-foot').style.display='';
+  document.getElementById('am-success').classList.remove('show');
+  document.getElementById('am-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('am-email').focus(),60);
+}
+function closeAlertModal(){document.getElementById('am-overlay').classList.remove('open');document.body.style.overflow='';alertCommodity=null;}
+function saveAlert(){
+  const email=document.getElementById('am-email').value.trim();
+  const cond=document.getElementById('am-cond').value;
+  const thresh=parseFloat(document.getElementById('am-thresh').value);
+  if(!email||!email.includes('@')){document.getElementById('am-email').style.borderColor='var(--red)';document.getElementById('am-email').focus();return;}
+  document.getElementById('am-email').style.borderColor='';
+  if(cond!=='daily'&&isNaN(thresh)){document.getElementById('am-thresh').style.borderColor='var(--red)';document.getElementById('am-thresh').focus();return;}
+  document.getElementById('am-thresh').style.borderColor='';
+  localStorage.setItem('agrax_email',email);
+  const commodity=alertCommodity||'(unspecified)';
+  const list=alertsGet().filter(a=>a.commodity!==commodity);
+  list.push({commodity,email,condition:cond,threshold:isNaN(thresh)?null:thresh,createdAt:new Date().toISOString()});
+  alertsSave(list);
+  const msg=cond==='daily'?`We'll email ${email} each morning with ${commodity}'s price.`:`We'll email ${email} when ${commodity} ${cond==='above'?'goes above':'falls below'} $${thresh}.`;
+  document.getElementById('am-success-msg').textContent=msg;
+  document.getElementById('am-body').style.display='none';
+  document.getElementById('am-foot').style.display='none';
+  document.getElementById('am-success').classList.add('show');
+  if(document.getElementById('page-dashboard').classList.contains('active'))renderDashAlerts();
+  setTimeout(closeAlertModal,2600);
+}
+
+// ─── KEYBOARD ─────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDetail();closeAlertModal();}});
+
+// ─── START ────────────────────────────────────────────────────────
+boot();
+</script>
+</body>
+</html>
