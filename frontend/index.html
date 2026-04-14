@@ -731,11 +731,7 @@ img{max-width:100%;height:auto;display:block;}
           <button class="hero-search-btn" onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();">Search</button>
         </div>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-records">--</div><div class="hero-stat-lbl">Price records</div></div>
-        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-markets">--</div><div class="hero-stat-lbl">Markets</div></div>
-        <div class="hero-stat"><div class="hero-stat-val" id="hero-stat-avgprice">--</div><div class="hero-stat-lbl">Natl avg</div></div>
-      </div>
+
     </div>
   </div>
 
@@ -1079,6 +1075,7 @@ img{max-width:100%;height:auto;display:block;}
 <script>
 const API='https://produce-iq-production.up.railway.app';
 let allData=[],datesData={},dates=[];
+let todayStr='';
 let searchPage=1,searchResults=[];
 const PAGE_SIZE=25;
 let activeMkt='All',activeCat='Popular',homeFilt=[],homePg=1;
@@ -1148,6 +1145,7 @@ async function init(){
       if(tbody)tbody.innerHTML='<tr><td colspan="3" style="padding:48px;text-align:center;color:var(--text-4);font-size:14px;">No data available</td></tr>';
       return;
     }
+    todayStr=dates[0].date;
     const latestDate=new Date(dates[0].date+'T12:00:00');
     const dateStr=latestDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
     const shortDate=latestDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
@@ -1337,7 +1335,7 @@ function tNext(){homePg++;renderHomeTable();window.scrollTo(0,200);}
 
 // ── TODAY STRIP (mobile) ─────────────────
 function buildTodayStrip(){
-  const todayStr=dates[0]?.date||'';
+
   const el=document.getElementById('today-strip');
   const dateEl=document.getElementById('today-strip-date-txt');
   const chipsEl=document.getElementById('today-chips');
@@ -1492,7 +1490,7 @@ function loadCdDetail(commodity){
   const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
   const sorted=[...items].sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
   const chg=getTrend(commodity);const iU=chg>0.5,iD=chg<-0.5;
-  const todayStr=dates[0]?.date||'';
+
   const isToday=items.some(i=>i.report_date===todayStr);
   const dateLabel=items[0]?.report_date?new Date(items[0].report_date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}):'';
   const mktCount=[...new Set(items.map(i=>i.market))].length;
