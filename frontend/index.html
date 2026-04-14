@@ -681,6 +681,7 @@ img{max-width:100%;height:auto;display:block;}
 .slim-mob-date{font-size:11px;color:var(--text-4);font-family:var(--mono);margin-top:3px;}
 
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes spin{to{transform:rotate(360deg)}}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--surf-2);}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px;}
@@ -1121,14 +1122,36 @@ function navigate(page,param){
 
 // ── INIT ─────────────────────────────────
 async function init(){
+  // Show loading state immediately
+  const loadingRow=`<tr><td colspan="3" style="padding:48px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:10px;color:var(--text-4);">
+      <svg style="animation:spin 1s linear infinite;width:18px;height:18px;flex-shrink:0;" fill="none" viewBox="0 0 24 24">
+        <circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+        <path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+      </svg>
+      <span style="font-size:14px;">Loading latest prices…</span>
+    </div>
+  </td></tr>`;
+  const tbody=document.getElementById('home-tbody');
+  const cards=document.getElementById('home-cards');
+  if(tbody)tbody.innerHTML=loadingRow;
+  if(cards)cards.innerHTML=`<div style="padding:48px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text-4);">
+    <svg style="animation:spin 1s linear infinite;width:20px;height:20px;flex-shrink:0;" fill="none" viewBox="0 0 24 24">
+      <circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+      <path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+    </svg>
+    <span style="font-size:15px;">Loading latest prices…</span>
+  </div>`;
   try{
     dates=await(await fetch(`${API}/dates`)).json();
-    if(!dates.length)return;
+    if(!dates.length){
+      if(tbody)tbody.innerHTML='<tr><td colspan="3" style="padding:48px;text-align:center;color:var(--text-4);font-size:14px;">No data available</td></tr>';
+      return;
+    }
     const latestDate=new Date(dates[0].date+'T12:00:00');
     const dateStr=latestDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
     const shortDate=latestDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
     document.getElementById('headerDate').textContent=shortDate;
-    // Date bar
     const dbMain=document.getElementById('date-bar-main');
     const dbSub=document.getElementById('date-bar-sub');
     if(dbMain)dbMain.textContent=dateStr;
@@ -1144,7 +1167,6 @@ async function init(){
     buildTodayStrip();
     populateComparePage();
     populateSearchFilters();
-    // stats — populate both hero and date bar
     const prices=allData.map(i=>parseFloat(i.price_low)).filter(p=>!isNaN(p));
     const recordsVal=allData.length.toLocaleString();
     const marketsVal=[...new Set(allData.map(i=>i.market))].length;
@@ -1152,12 +1174,23 @@ async function init(){
     document.getElementById('stat-records').textContent=recordsVal;
     document.getElementById('stat-markets').textContent=marketsVal;
     document.getElementById('stat-avgprice').textContent=avgVal;
-    // also update hero stats if visible
     ['hero-stat-records','hero-stat-markets','hero-stat-avgprice'].forEach((id,i)=>{
       const el=document.getElementById(id);
       if(el)el.textContent=[recordsVal,marketsVal,avgVal][i];
     });
-  }catch(e){console.error(e);}
+  }catch(e){
+    console.error(e);
+    const errHtml=`<tr><td colspan="3" style="padding:48px;text-align:center;">
+      <div style="color:var(--text-4);font-size:14px;line-height:1.8;">
+        <div style="font-size:18px;margin-bottom:8px;">⚠</div>
+        Unable to load price data.<br>
+        <span style="font-size:12px;">Check your connection or try again in a moment.</span><br><br>
+        <button onclick="init()" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">Retry</button>
+      </div>
+    </td></tr>`;
+    if(tbody)tbody.innerHTML=errHtml;
+    if(cards)cards.innerHTML=errHtml.replace('colspan="3"','');
+  }
 }
 
 // ── HOME SIDEBAR ─────────────────────────
