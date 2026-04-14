@@ -212,8 +212,43 @@ img{max-width:100%;height:auto;display:block;}
 .sb-count{font-family:var(--mono);font-size:11px;color:var(--text-4);}
 .sb-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
 
+/* ── CATEGORY PILL STRIP ─────────────
+   Horizontal scroll, no wrap, finger tabs */
+.cat-pills{
+  display:flex;gap:8px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:16px 16px 0;
+  border-bottom:1px solid var(--border);
+  margin-bottom:0;
+}
+.cat-pills::-webkit-scrollbar{display:none;}
+.cat-pill{
+  flex-shrink:0;
+  padding:0 18px;
+  height:44px;
+  border-radius:22px;
+  font-size:14px;font-weight:500;
+  border:1.5px solid var(--border);
+  background:var(--surf);
+  color:var(--text-3);
+  cursor:pointer;
+  transition:all .12s;
+  white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.cat-pill:hover{border-color:var(--border-2);color:var(--text);}
+.cat-pill.on{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+  font-weight:600;
+}
+.cat-pill-icon{font-size:16px;line-height:1;}
+
 /* ── TOOLBAR ──────────────────────── */
-.col-main{padding:16px;min-width:0;}
+.col-main{padding:0;min-width:0;}
+.col-main-inner{padding:14px 16px;}
 .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
 .tb-input{
   flex:1;min-width:0;
@@ -577,22 +612,27 @@ img{max-width:100%;height:auto;display:block;}
 
     <!-- CENTER TABLE -->
     <div class="col-main">
-      <div class="toolbar">
-        <input class="tb-input" id="tf-q" placeholder="Filter by name, variety, origin…" oninput="filterHome()">
-        <select class="tb-sel" id="tf-s" onchange="filterHome()">
-          <option value="comm">A → Z</option>
-          <option value="pl">Price ↑</option>
-          <option value="ph">Price ↓</option>
-          <option value="chg">Biggest change</option>
-        </select>
-      </div>
-      <div class="result-row">
-        <span class="result-lbl" id="rl"></span>
-        <div class="pg-btns">
-          <button class="pg-btn" id="pp1" onclick="tPrev()" disabled>← Prev</button>
-          <button class="pg-btn" id="pn1" onclick="tNext()">Next →</button>
+      <!-- Category pill strip -->
+      <div class="cat-pills" id="cat-pills"></div>
+      <div class="col-main-inner">
+        <div class="toolbar">
+          <input class="tb-input" id="tf-q" placeholder="Filter by name, variety, origin…" oninput="filterHome()">
+          <select class="tb-sel" id="tf-s" onchange="filterHome()">
+            <option value="chg">Biggest change</option>
+            <option value="pl">Price ↑</option>
+            <option value="ph">Price ↓</option>
+            <option value="comm">A → Z</option>
+          </select>
+        </div>
+        <div class="result-row">
+          <span class="result-lbl" id="rl"></span>
+          <div class="pg-btns">
+            <button class="pg-btn" id="pp1" onclick="tPrev()" disabled>← Prev</button>
+            <button class="pg-btn" id="pn1" onclick="tNext()">Next →</button>
+          </div>
         </div>
       </div>
+      </div><!-- /col-main-inner -->
       <div class="data-wrap">
         <div class="desk-tbl"><div class="tbl-scroll"><table class="data-tbl">
           <thead><tr>
@@ -860,7 +900,7 @@ const API='https://produce-iq-production.up.railway.app';
 let allData=[],datesData={},dates=[];
 let searchPage=1,searchResults=[];
 const PAGE_SIZE=25;
-let activeMkt='All',activeCat='All',homeFilt=[],homePg=1;
+let activeMkt='All',activeCat='Popular',homeFilt=[],homePg=1;
 const HOME_PG=40;
 let mktActiveMkt='All',mktActiveCat='All',mktPg=1,mktFilt=[];
 const MKT_PG=40;
@@ -871,6 +911,12 @@ const CATEGORIES={
   'Onions & Potatoes':{items:['onion','potato','yam','sweet potato','shallot']},
   'Nuts':{items:['almond','walnut','pecan','pistachio','cashew','hazelnut','macadamia','peanut','nut']}
 };
+// Most popular US wholesale produce (by USDA trading volume)
+const POPULAR=[
+  'Tomatoes','Potatoes','Onions','Lettuce','Avocados',
+  'Bell Peppers','Broccoli','Strawberries','Grapes','Apples'
+];
+
 function getCat(n){const l=n.toLowerCase();for(const[cat,{items}]of Object.entries(CATEGORIES))if(items.some(i=>l.includes(i)))return cat;return 'Other';}
 function getTrend(c){
   if(dates.length<2)return 0;
@@ -928,8 +974,29 @@ function buildHomeSidebar(){
   const cats=['All','Fruits','Vegetables','Onions & Potatoes','Nuts'];
   document.getElementById('sb-cats').innerHTML=cats.map(c=>`
     <button class="sb-item${activeCat===c?' active':''}" onclick="setCat('${c}')">
-      <span>${c}</span>
+      <span>${c==='All'?'All Categories':c}</span>
     </button>`).join('');
+  // Build horizontal pill strip
+  const pillDefs=[
+    {id:'Popular', label:'Most Popular', icon:'⭐'},
+    {id:'Fruits',  label:'Fruits',       icon:'🍎'},
+    {id:'Vegetables', label:'Vegetables',icon:'🥬'},
+    {id:'Onions & Potatoes', label:'Onions & Potatoes', icon:'🧅'},
+    {id:'Nuts',    label:'Nuts',          icon:'🥜'},
+  ];
+  const pillsEl=document.getElementById('cat-pills');
+  if(pillsEl){
+    pillsEl.innerHTML=pillDefs.map(p=>`
+      <button class="cat-pill${activeCat===p.id?' on':''}" onclick="setCat('${p.id}')">
+        <span class="cat-pill-icon">${p.icon}</span>
+        ${p.label}
+      </button>`).join('');
+    // scroll active pill into view
+    setTimeout(()=>{
+      const active=pillsEl.querySelector('.cat-pill.on');
+      if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    },50);
+  }
 }
 function setMkt(m){activeMkt=m;homePg=1;buildHomeSidebar();filterHome();}
 function setCat(c){activeCat=c;homePg=1;buildHomeSidebar();filterHome();}
@@ -937,20 +1004,31 @@ function setCat(c){activeCat=c;homePg=1;buildHomeSidebar();filterHome();}
 // ── HOME TABLE ───────────────────────────
 function filterHome(){
   const q=(document.getElementById('tf-q')?.value||'').toLowerCase().trim();
-  const s=document.getElementById('tf-s')?.value||'comm';
+  const s=document.getElementById('tf-s')?.value||'chg';
   // deduplicate to one best row per commodity
   const byComm={};
   allData.filter(d=>d.price_low!=null).forEach(r=>{
     if(activeMkt!=='All'&&r.market!==activeMkt)return;
-    if(activeCat!=='All'&&getCat(r.commodity)!==activeCat)return;
+    // Popular: only show POPULAR list commodities (fuzzy match)
+    if(activeCat==='Popular'){
+      const match=POPULAR.some(p=>r.commodity.toLowerCase().includes(p.toLowerCase())||p.toLowerCase().includes(r.commodity.toLowerCase().split(',')[0]));
+      if(!match)return;
+    } else if(activeCat!=='All'&&getCat(r.commodity)!==activeCat)return;
     if(q&&!`${r.commodity} ${r.variety||''} ${r.origin||''} ${r.market}`.toLowerCase().includes(q))return;
     if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;
   });
   homeFilt=Object.values(byComm);
-  if(s==='comm')homeFilt.sort((a,b)=>a.commodity.localeCompare(b.commodity));
-  else if(s==='pl')homeFilt.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-  else if(s==='ph')homeFilt.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low));
-  else if(s==='chg')homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+  // For Popular, sort by WoW change magnitude and cap at 10
+  if(activeCat==='Popular'&&!q){
+    homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+    // Show max 10 most popular
+    homeFilt=homeFilt.slice(0,10);
+  } else {
+    if(s==='comm')homeFilt.sort((a,b)=>a.commodity.localeCompare(b.commodity));
+    else if(s==='pl')homeFilt.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
+    else if(s==='ph')homeFilt.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low));
+    else homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+  }
   homePg=1;renderHomeTable();
 }
 function renderHomeTable(){
