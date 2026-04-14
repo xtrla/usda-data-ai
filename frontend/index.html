@@ -1009,20 +1009,28 @@ function filterHome(){
   const byComm={};
   allData.filter(d=>d.price_low!=null).forEach(r=>{
     if(activeMkt!=='All'&&r.market!==activeMkt)return;
-    // Popular: only show POPULAR list commodities (fuzzy match)
+    // Popular: match if commodity name starts with any POPULAR keyword
     if(activeCat==='Popular'){
-      const match=POPULAR.some(p=>r.commodity.toLowerCase().includes(p.toLowerCase())||p.toLowerCase().includes(r.commodity.toLowerCase().split(',')[0]));
+      const cn=r.commodity.toLowerCase();
+      const match=POPULAR.some(p=>cn.startsWith(p.toLowerCase()));
       if(!match)return;
     } else if(activeCat!=='All'&&getCat(r.commodity)!==activeCat)return;
     if(q&&!`${r.commodity} ${r.variety||''} ${r.origin||''} ${r.market}`.toLowerCase().includes(q))return;
     if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;
   });
   homeFilt=Object.values(byComm);
-  // For Popular, sort by WoW change magnitude and cap at 10
+  // For Popular: one representative row per keyword, sorted by WoW change
   if(activeCat==='Popular'&&!q){
+    const popMap={};
+    homeFilt.forEach(r=>{
+      const keyword=POPULAR.find(p=>r.commodity.toLowerCase().startsWith(p.toLowerCase()));
+      if(!keyword)return;
+      const chg=Math.abs(getTrend(r.commodity));
+      if(!popMap[keyword]||chg>Math.abs(getTrend(popMap[keyword].commodity)))popMap[keyword]=r;
+    });
+    // Order by POPULAR list order, then sort by WoW change
+    homeFilt=POPULAR.map(p=>popMap[p]).filter(Boolean);
     homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
-    // Show max 10 most popular
-    homeFilt=homeFilt.slice(0,10);
   } else {
     if(s==='comm')homeFilt.sort((a,b)=>a.commodity.localeCompare(b.commodity));
     else if(s==='pl')homeFilt.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
