@@ -796,6 +796,13 @@ img{max-width:100%;height:auto;display:block;}
         </div>
       </div><!-- /col-main-inner -->
       <div class="data-wrap">
+        <div id="tbl-date-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surf-2);border-bottom:1px solid var(--border);">
+          <span id="tbl-date-label" style="font-size:12px;font-weight:600;color:var(--text-3);display:flex;align-items:center;gap:7px;">
+            <span class="fresh-dot today"></span>
+            <span id="tbl-date-txt">Today</span>
+          </span>
+          <span id="tbl-count-label" style="font-size:11px;color:var(--text-4);font-family:var(--mono);"></span>
+        </div>
         <div class="desk-tbl"><div class="tbl-scroll"><table class="slim-tbl">
           <thead><tr>
             <th>Commodity · Origin</th>
@@ -1109,12 +1116,15 @@ function getTrend(c){
 // ── NAVIGATION ──────────────────────────
 function navigate(page,param){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
+  const pageEl=document.getElementById('page-'+page);
+  if(!pageEl){console.error('Page not found: page-'+page);return;}
+  pageEl.classList.add('active');
   document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===page));
   window.scrollTo(0,0);
   if(page==='market-detail'&&param)loadMktDetail(param);
   if(page==='commodity-detail'&&param)loadCdDetail(param);
-  if(page==='markets')renderMktTable();
+  if(page==='markets'){renderMktTable();}
+  if(page==='compare')populateComparePage();
 }
 
 // ── INIT ─────────────────────────────────
@@ -1146,6 +1156,11 @@ async function init(){
       return;
     }
     todayStr=dates[0].date;
+    const tdTxt=document.getElementById('tbl-date-txt');
+    if(tdTxt){
+      const d=new Date(todayStr+'T12:00:00');
+      tdTxt.textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    }
     const latestDate=new Date(dates[0].date+'T12:00:00');
     const dateStr=latestDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
     const shortDate=latestDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
@@ -1270,6 +1285,8 @@ function filterHome(){
 function renderHomeTable(){
   const st=(homePg-1)*HOME_PG,items=homeFilt.slice(st,st+HOME_PG),tot=Math.ceil(homeFilt.length/HOME_PG)||1;
   document.getElementById('rl').textContent=`${st+1}–${Math.min(st+items.length,homeFilt.length)} of ${homeFilt.length}`;
+  const tcl=document.getElementById('tbl-count-label');
+  if(tcl)tcl.textContent=`${homeFilt.length} listing${homeFilt.length!==1?'s':''}`;
   document.getElementById('pi').textContent=`Page ${homePg}/${tot}`;
   ['pp1','pp2'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=homePg<=1;});
   ['pn1','pn2'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=homePg>=tot;});
