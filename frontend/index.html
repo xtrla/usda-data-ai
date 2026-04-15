@@ -1015,6 +1015,11 @@ img{max-width:100%;height:auto;display:block;}
 <!-- ═══ HOME ════════════════════════════ -->
 <div id="page-home" class="page active">
 
+  <!-- DEBUG BANNER — remove after fix -->
+  <div id="debug-banner" style="background:#fef3c7;border-bottom:1px solid #fcd34d;padding:10px 20px;font-size:12px;font-family:monospace;display:none;">
+    <strong>Debug:</strong> <span id="debug-msg">JS running...</span>
+  </div>
+
   <!-- ① GLOBAL SEARCH BAR -->
   <div class="hp-search-wrap">
     <div class="hp-search-inner">
@@ -1415,6 +1420,11 @@ async function init(){
   if(wl)wl.innerHTML=`<tr><td colspan="5">${spinner}</td></tr>`;
   if(mc)mc.innerHTML=spinner;
 
+  // Show debug banner
+  const dbg=document.getElementById('debug-banner');
+  const dbgMsg=document.getElementById('debug-msg');
+  if(dbg){dbg.style.display='block';}
+  if(dbgMsg)dbgMsg.textContent='Fetching dates from API...';
   try{
     dates=await(await fetch(`${API}/dates`)).json();
     if(!dates.length){
@@ -1443,13 +1453,19 @@ async function init(){
     // Reset reports cache
     rptLoaded={terminal:false,shipping:false,trends:false};
 
+    if(dbgMsg)dbgMsg.textContent=`Data loaded: ${allData.length} rows. Building home...`;
+
     // Build pages
     buildHome();
+    if(dbgMsg)dbgMsg.textContent=`Done. ${allData.length} rows loaded. Click X to hide.`;
+    if(dbg){dbg.innerHTML+=' <button onclick="this.parentElement.remove()" style="margin-left:10px;cursor:pointer;">✕ hide</button>';}
     populateComparePage();
     populateSearchFilters();
 
   }catch(e){
     console.error('Init error:',e);
+    if(dbgMsg)dbgMsg.textContent='ERROR: '+e.message;
+    if(dbg)dbg.style.background='#fee2e2';
     const errMsg=`<tr><td colspan="5" style="padding:48px;text-align:center;">
       <div style="color:var(--text-4);font-size:14px;line-height:2;">
         <div style="font-size:20px;margin-bottom:8px;">⚠</div>
@@ -1489,10 +1505,9 @@ function getCommIcon(name){
 
 // ── Build home page after data loads ─────────────────────────────
 function buildHome(){
-  buildMovers();
-  hpFilter();
-  buildIntelligenceFeed();
-  // populate date meta
+  try{buildMovers();}catch(e){console.error('buildMovers failed:',e);}
+  try{hpFilter();}catch(e){console.error('hpFilter failed:',e);}
+  try{buildIntelligenceFeed();}catch(e){console.error('buildIntelligenceFeed failed:',e);}
   if(dates[0]){
     const d=new Date(dates[0].date+'T12:00:00');
     const dl=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -2005,12 +2020,18 @@ async function loadReportsData(tab){
 
 // ── Main render dispatcher ─────────────────────────────────────────
 async function renderReports(){
-  const ok=await loadReportsData(rptActiveTab);
-  if(!ok)return;
-  if(rptActiveTab==='terminal')renderTerminalTab();
-  else if(rptActiveTab==='shipping')renderShippingTab();
-  else if(rptActiveTab==='trends')renderTrendsTab();
-  else renderMovementTab();
+  try{
+    const ok=await loadReportsData(rptActiveTab);
+    if(!ok)return;
+    if(rptActiveTab==='terminal')renderTerminalTab();
+    else if(rptActiveTab==='shipping')renderShippingTab();
+    else if(rptActiveTab==='trends')renderTrendsTab();
+    else renderMovementTab();
+  }catch(e){
+    console.error('renderReports failed:',e);
+    const el=document.getElementById('rpt-content');
+    if(el)el.innerHTML='<div style="padding:40px;text-align:center;color:red;">Error: '+e.message+'</div>';
+  }
 }
 
 // ── Metric cards helper ───────────────────────────────────────────
