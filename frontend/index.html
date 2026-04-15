@@ -1337,6 +1337,8 @@ async function init(){
     for(let i=1;i<=6&&i<dates.length;i++){
       try{datesData[dates[i].date]=await(await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json();}catch(e){}
     }
+    // Reset reports cache so it picks up fresh allData
+    rptLoaded={terminal:false,shipping:false,trends:false};
     buildHomeSidebar();
     filterHome();
     buildRightRail();
@@ -1800,26 +1802,21 @@ function rptSetTab(tab){
 
 // ── Load data lazily ──────────────────────────────────────────────
 async function loadReportsData(tab){
-  if(rptLoaded[tab])return;
-  const content=document.getElementById('rpt-content');
-  if(content)content.innerHTML=`<div style="padding:48px;text-align:center;color:var(--text-4);display:flex;align-items:center;justify-content:center;gap:10px;">
-    <svg style="animation:spin 1s linear infinite;width:18px;height:18px;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
-    <span>Loading ${tab} data…</span>
-  </div>`;
-  try{
-    if(tab==='terminal'&&!rptLoaded.terminal){
-      rptTerminalData=await(await fetch(`${API}/reports/terminal`)).json();
-      rptLoaded.terminal=true;
-    } else if(tab==='shipping'&&!rptLoaded.shipping){
-      rptShippingData=await(await fetch(`${API}/reports/shipping-points`)).json();
-      rptLoaded.shipping=true;
-    } else if(tab==='trends'&&!rptLoaded.trends){
-      rptTrendsData=await(await fetch(`${API}/reports/trends`)).json();
-      rptLoaded.trends=true;
-    }
-  }catch(e){
-    if(content)content.innerHTML=`<div style="padding:48px;text-align:center;color:var(--text-4);">Failed to load data. <button onclick="rptLoaded['${tab}']=false;loadReportsData('${tab}').then(renderReports)" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;margin-left:8px;">Retry</button></div>`;
+  if(rptLoaded[tab])return true;
+  if(!allData.length){
+    const content=document.getElementById('rpt-content');
+    if(content)content.innerHTML='<div style="padding:48px;text-align:center;color:var(--text-4);">Data not yet loaded — please wait or refresh.</div>';
     return false;
+  }
+  if(tab==='terminal'){
+    rptTerminalData=allData.filter(r=>r.market_type==='terminal'&&r.price_low!=null);
+    rptLoaded.terminal=true;
+  } else if(tab==='shipping'){
+    rptShippingData=allData.filter(r=>r.market_type==='shipping_point'&&r.market!=='National Trends');
+    rptLoaded.shipping=true;
+  } else if(tab==='trends'){
+    rptTrendsData=allData.filter(r=>r.market==='National Trends');
+    rptLoaded.trends=true;
   }
   return true;
 }
