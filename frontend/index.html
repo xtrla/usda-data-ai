@@ -1388,21 +1388,40 @@ function getTrend(c){
 
 // ── NAVIGATION ──────────────────────────
 function navigate(page,param){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pageEl=document.getElementById('page-'+page);
-  if(!pageEl){console.error('Page not found: page-'+page);return;}
-  pageEl.classList.add('active');
-  document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===page));
-  window.scrollTo(0,0);
-  if(page==='market-detail'&&param)loadMktDetail(param);
-  if(page==='commodity-detail'&&param){
-    // reset to terminal tab on new commodity
-    cdActiveTab='terminal';
-    document.querySelectorAll('[data-cdtab]').forEach(b=>b.classList.toggle('on',b.dataset.cdtab==='terminal'));
-    loadCdDetail(param);
+  const dbg=document.getElementById('debug-msg');
+  if(dbg)dbg.textContent='navigate('+page+(param?','+param:'')+') called';
+  const banner=document.getElementById('debug-banner');
+  if(banner)banner.style.display='block';
+  try{
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const pageEl=document.getElementById('page-'+page);
+    if(!pageEl){
+      if(dbg)dbg.textContent='ERROR: page-'+page+' not found!';
+      console.error('Page not found: page-'+page);
+      return;
+    }
+    pageEl.classList.add('active');
+    document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===page));
+    window.scrollTo(0,0);
+    if(page==='market-detail'&&param)loadMktDetail(param);
+    if(page==='commodity-detail'&&param){
+      cdActiveTab='terminal';
+      document.querySelectorAll('[data-cdtab]').forEach(b=>b.classList.toggle('on',b.dataset.cdtab==='terminal'));
+      if(dbg)dbg.textContent='Loading commodity: '+param;
+      loadCdDetail(param);
+    }
+    if(page==='reports'){
+      if(dbg)dbg.textContent='Rendering reports tab: '+rptActiveTab+' allData='+allData.length;
+      renderReports();
+    }
+    if(page==='compare')populateComparePage();
+    if(page==='search'){}
+    if(dbg)dbg.textContent='navigate done: '+page+(param?' > '+param:'');
+  }catch(e){
+    console.error('navigate crash:',e);
+    if(dbg)dbg.textContent='navigate CRASH: '+e.message;
+    if(banner)banner.style.background='#fee2e2';
   }
-  if(page==='reports'){renderReports();}
-  if(page==='compare')populateComparePage();
 }
 
 // ── INIT ─────────────────────────────────
