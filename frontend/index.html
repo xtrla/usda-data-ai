@@ -680,7 +680,184 @@ img{max-width:100%;height:auto;display:block;}
 .slim-mob-price{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);line-height:1;}
 .slim-mob-date{font-size:11px;color:var(--text-4);font-family:var(--mono);margin-top:3px;}
 
+/* ══════════════════════════════════════════
+   HOME PAGE — "The Market Pulse"
+   ══════════════════════════════════════════ */
+
+/* ① Global Search */
+.hp-search-wrap{
+  background:var(--surf);
+  border-bottom:1px solid var(--border);
+  padding:20px 28px 16px;
+  position:sticky;top:52px;z-index:90;
+}
+@media(max-width:768px){.hp-search-wrap{padding:14px 16px 12px;top:52px;}}
+.hp-search-inner{max-width:var(--max);margin:0 auto;}
+.hp-search-box{
+  display:flex;align-items:center;gap:0;
+  background:var(--surf);
+  border:1.5px solid var(--border-2);
+  border-radius:10px;
+  overflow:hidden;
+  transition:border-color .15s,box-shadow .15s;
+}
+.hp-search-box:focus-within{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(10,124,78,.1);
+}
+.hp-search-icon{
+  width:18px;height:18px;flex-shrink:0;
+  color:var(--text-4);margin-left:16px;
+}
+.hp-search-input{
+  flex:1;border:none;outline:none;background:transparent;
+  padding:14px 12px;font-size:15px;color:var(--text);
+  font-family:'Inter',sans-serif;
+}
+.hp-search-input::placeholder{color:var(--text-4);}
+@media(max-width:600px){.hp-search-input{font-size:16px;padding:12px 10px;}}
+.hp-search-btn{
+  flex-shrink:0;background:var(--green);color:#fff;
+  border:none;padding:0 22px;height:52px;
+  font-size:14px;font-weight:600;cursor:pointer;
+  transition:background .12s;white-space:nowrap;
+}
+.hp-search-btn:hover{background:var(--green-dk);}
+@media(max-width:480px){.hp-search-btn{padding:0 14px;font-size:13px;}}
+.hp-search-meta{
+  display:flex;align-items:center;gap:6px;
+  margin-top:8px;padding-left:2px;
+}
+
+/* Home body layout */
+.hp-body{
+  max-width:var(--max);margin:0 auto;
+  padding:28px 28px;
+  display:flex;flex-direction:column;gap:36px;
+}
+@media(max-width:768px){.hp-body{padding:20px 16px;gap:28px;}}
+
+.hp-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-4);
+  margin-bottom:14px;
+}
+
+/* ② Market Movers */
+.hp-movers-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+@media(max-width:900px){.hp-movers-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.hp-movers-row{grid-template-columns:1fr;gap:10px;}}
+
+.hp-mover-card{
+  background:var(--surf);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px 20px;
+  position:relative;overflow:hidden;
+}
+.hp-mover-card-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-4);
+  margin-bottom:12px;display:flex;align-items:center;gap:7px;
+}
+.hp-mover-card-label svg{width:14px;height:14px;flex-shrink:0;}
+.hp-mover-items{display:flex;flex-direction:column;gap:8px;}
+.hp-mover-item{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.hp-mover-name{
+  font-size:13px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:7px;
+  min-width:0;
+}
+.hp-mover-icon{
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;background:var(--surf-2);
+}
+.hp-mover-icon svg{width:16px;height:16px;}
+.hp-mover-val{
+  font-family:var(--mono);font-size:13px;font-weight:600;
+  text-align:right;flex-shrink:0;
+}
+.hp-mover-price{
+  font-family:var(--mono);font-size:12px;
+  color:var(--text-3);text-align:right;
+}
+
+/* sentiment / volume mover cards */
+.hp-big-stat{
+  font-family:var(--mono);font-size:32px;font-weight:600;
+  color:var(--text);line-height:1;margin-bottom:6px;
+}
+.hp-big-stat-sub{font-size:13px;color:var(--text-3);}
+.hp-stat-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.hp-stat-num{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);}
+.hp-stat-lbl{font-size:12px;color:var(--text-3);}
+
+/* ③ Watchlist pills */
+.hp-pill{
+  padding:5px 12px;border-radius:20px;
+  font-size:12px;font-weight:500;
+  border:1px solid var(--border);background:var(--surf);
+  color:var(--text-3);cursor:pointer;transition:all .1s;white-space:nowrap;
+}
+.hp-pill:hover{border-color:var(--border-2);color:var(--text);}
+.hp-pill.on{background:var(--green);border-color:var(--green);color:#fff;}
+@media(max-width:600px){
+  #hp-cat-pills{overflow-x:auto;display:flex;padding-bottom:2px;scrollbar-width:none;}
+  #hp-cat-pills::-webkit-scrollbar{display:none;}
+}
+
+/* watchlist table rows */
+.hp-comm-icon{
+  width:32px;height:32px;border-radius:7px;
+  background:var(--surf-2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.hp-comm-icon svg{width:18px;height:18px;}
+
+/* ④ Intelligence Feed */
+#hp-feed{display:flex;flex-direction:column;gap:10px;}
+
+.hp-insight{
+  background:rgba(255,255,255,0.85);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 18px;
+  display:flex;align-items:flex-start;gap:14px;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  cursor:pointer;transition:border-color .12s;
+}
+.hp-insight:hover{border-color:var(--border-2);}
+.hp-insight-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;
+}
+.hp-insight-body{flex:1;min-width:0;}
+.hp-insight-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.hp-insight-text{font-size:13px;color:var(--text-3);line-height:1.5;}
+.hp-insight-meta{font-size:11px;color:var(--text-4);margin-top:6px;font-family:var(--mono);}
+.hp-insight.alert .hp-insight-icon{background:#fff7ed;}
+.hp-insight.up    .hp-insight-icon{background:var(--up-bg);}
+.hp-insight.down  .hp-insight-icon{background:var(--dn-bg);}
+.hp-insight.info  .hp-insight-icon{background:#eff6ff;}
+
+/* commodity SVG icons — shared */
+.comm-svg{display:block;}
+
+/* ── REMOVE old home CSS that's no longer needed ────────────────── */
+/* (hero, hero-inner, etc are gone — keeping in CSS won't hurt but won't render) */
+
 /* ── REPORTS PAGE ─────────────────────── */
+
 .rpt-layout{max-width:var(--max);margin:0 auto;padding:20px 28px;}
 @media(max-width:768px){.rpt-layout{padding:16px;}}
 
@@ -837,144 +1014,79 @@ img{max-width:100%;height:auto;display:block;}
 
 <!-- ═══ HOME ════════════════════════════ -->
 <div id="page-home" class="page active">
-  <div class="hero">
-    <div class="hero-inner">
-      <div>
-        <div class="hero-eyebrow">
-          <div class="hero-eyebrow-dot"></div>
-          <span class="hero-eyebrow-txt">USDA AMS · Updated 3× Daily · Mon–Fri</span>
-        </div>
-        <h1 class="hero-h1">Wholesale Produce<br><span>Price Intelligence</span></h1>
-        <p class="hero-sub">Real-time terminal market and FOB shipping data for growers, brokers, and distributors across 12 major U.S. markets.</p>
-        <div class="hero-search">
-          <input class="hero-search-input" id="homeSearch" type="text" placeholder="Search commodity, market, or origin…"
-            onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}">
-          <button class="hero-search-btn" onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();">Search</button>
-        </div>
-      </div>
 
+  <!-- ① GLOBAL SEARCH BAR -->
+  <div class="hp-search-wrap">
+    <div class="hp-search-inner">
+      <div class="hp-search-box">
+        <svg class="hp-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="homeSearch" type="text" class="hp-search-input"
+          placeholder="Search 12 terminal markets — try 'Hass Avocados' or 'Roma Tomatoes'…"
+          onkeydown="if(event.key==='Enter'){navigate('search');document.getElementById('searchInput').value=this.value;runSearch();}">
+        <button class="hp-search-btn" onclick="navigate('search');document.getElementById('searchInput').value=document.getElementById('homeSearch').value;runSearch();">Search</button>
+      </div>
+      <div class="hp-search-meta">
+        <span class="fresh-dot today" style="width:6px;height:6px;"></span>
+        <span id="hp-date-txt" style="font-size:11px;color:var(--text-4);font-family:var(--mono);">Live</span>
+        <span style="color:var(--border);margin:0 6px;">·</span>
+        <span id="hp-meta-txt" style="font-size:11px;color:var(--text-4);">USDA AMS · Updated 3× daily</span>
+      </div>
     </div>
   </div>
 
-  <!-- DATE BAR — today's date headline -->
-  <div class="date-bar">
-    <div class="date-bar-left">
-      <div class="date-bar-dot"></div>
-      <div>
-        <div class="date-bar-main" id="date-bar-main">Today's Prices</div>
-        <div class="date-bar-sub" id="date-bar-sub">USDA AMS · Updated 3× daily</div>
-      </div>
-    </div>
-    <div class="date-bar-stats">
-      <div class="dbs"><div class="dbs-v" id="stat-records">--</div><div class="dbs-l">Records</div></div>
-      <div class="dbs"><div class="dbs-v" id="stat-markets">--</div><div class="dbs-l">Markets</div></div>
-      <div class="dbs"><div class="dbs-v" id="stat-avgprice">--</div><div class="dbs-l">Natl avg</div></div>
-    </div>
-  </div>
+  <div class="hp-body">
 
-  <div class="home-body">
-    <!-- LEFT SIDEBAR -->
-    <div class="col-left">
-      <div class="sb-section">
-        <span class="sb-title">Terminal Markets</span>
-        <div id="sb-markets"></div>
-      </div>
-      <hr class="sb-divider">
-      <div class="sb-section">
-        <span class="sb-title">Category</span>
-        <div id="sb-cats"></div>
-      </div>
-    </div>
+    <!-- ② MARKET MOVERS HERO -->
+    <section class="hp-section">
+      <div class="hp-section-label">Market Movers</div>
+      <div class="hp-movers-row" id="hp-movers"></div>
+    </section>
 
-    <!-- CENTER TABLE -->
-    <div class="col-main">
-      <!-- Today strip — mobile only -->
-      <div class="today-strip" id="today-strip">
-        <div class="today-strip-date">
-          <div class="fresh-dot today"></div>
-          <span id="today-strip-date-txt">Today's prices</span>
+    <!-- ③ WATCHLIST -->
+    <section class="hp-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="hp-section-label" style="margin-bottom:0;">Watchlist</div>
+        <div style="display:flex;gap:6px;" id="hp-cat-pills">
+          <button class="hp-pill on" onclick="hpSetCat('Popular')">Popular</button>
+          <button class="hp-pill" onclick="hpSetCat('Fruits')">Fruits</button>
+          <button class="hp-pill" onclick="hpSetCat('Vegetables')">Vegetables</button>
+          <button class="hp-pill" onclick="hpSetCat('Onions & Potatoes')">Onions</button>
+          <button class="hp-pill" onclick="hpSetCat('Nuts')">Nuts</button>
         </div>
-        <div class="today-chips" id="today-chips"></div>
       </div>
-      <!-- Category pill strip -->
-      <div class="cat-pills" id="cat-pills"></div>
-      <div class="col-main-inner">
-        <div class="toolbar">
-          <input class="tb-input" id="tf-q" placeholder="Filter by name, variety, origin…" oninput="filterHome()">
-          <select class="tb-sel" id="tf-s" onchange="filterHome()">
-            <option value="chg">Biggest change</option>
-            <option value="pl">Price ↑</option>
-            <option value="ph">Price ↓</option>
-            <option value="comm">A → Z</option>
-          </select>
-        </div>
-        <div class="result-row">
-          <span class="result-lbl" id="rl"></span>
-          <div class="pg-btns">
-            <button class="pg-btn" id="pp1" onclick="tPrev()" disabled>← Prev</button>
-            <button class="pg-btn" id="pn1" onclick="tNext()">Next →</button>
-          </div>
-        </div>
-      </div><!-- /col-main-inner -->
       <div class="data-wrap">
-        <div id="tbl-date-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surf-2);border-bottom:1px solid var(--border);">
-          <span id="tbl-date-label" style="font-size:12px;font-weight:600;color:var(--text-3);display:flex;align-items:center;gap:7px;">
-            <span class="fresh-dot today"></span>
-            <span id="tbl-date-txt">Today</span>
-          </span>
-          <span id="tbl-count-label" style="font-size:11px;color:var(--text-4);font-family:var(--mono);"></span>
+        <div class="tbl-scroll">
+          <table class="slim-tbl" style="min-width:500px;">
+            <thead><tr>
+              <th>Commodity</th>
+              <th class="r">Origin</th>
+              <th class="r">Price</th>
+              <th class="r">vs last week</th>
+              <th class="r">Signal</th>
+            </tr></thead>
+            <tbody id="hp-watchlist"></tbody>
+          </table>
         </div>
-        <div class="desk-tbl"><div class="tbl-scroll"><table class="slim-tbl">
-          <thead><tr>
-            <th>Commodity · Origin</th>
-            <th class="r">Today's price</th>
-            <th class="r">vs last week</th>
-          </tr></thead>
-          <tbody id="home-tbody"></tbody>
-        </table></div></div>
-        <div class="mob-cards" id="home-cards"></div>
+        <div class="mob-cards" id="hp-mob-cards"></div>
         <div class="tbl-foot">
-          <span class="tbl-foot-lbl" id="pi"></span>
+          <span class="tbl-foot-lbl" id="hp-count"></span>
           <div class="pg-btns">
-            <button class="pg-btn" id="pp2" onclick="tPrev()" disabled>← Prev</button>
-            <button class="pg-btn" id="pn2" onclick="tNext()">Next →</button>
+            <button class="pg-btn" id="hp-prev" onclick="hpPrev()" disabled>← Prev</button>
+            <button class="pg-btn" id="hp-next" onclick="hpNext()">Next →</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- RIGHT RAIL -->
-    <div class="col-right">
-      <div class="rc-section">
-        <span class="rc-label">Price movers today</span>
-        <div id="rc-up"></div>
-        <hr class="mover-sep">
-        <div id="rc-dn"></div>
-      </div>
-      <div class="rc-section">
-        <span class="rc-label">Natl avg · 7-day trend</span>
-        <div class="sparkline" id="rc-spark">
-          <div class="spark-b" style="height:40%"></div>
-          <div class="spark-b" style="height:50%"></div>
-          <div class="spark-b mid" style="height:60%"></div>
-          <div class="spark-b mid" style="height:65%"></div>
-          <div class="spark-b mid" style="height:75%"></div>
-          <div class="spark-b hi" style="height:88%"></div>
-          <div class="spark-b hi" style="height:100%"></div>
-        </div>
-        <div class="spark-dates">
-          <span class="spark-date" id="spark-start">7d ago</span>
-          <span class="spark-date">Today</span>
-        </div>
-      </div>
-      <div class="rc-section">
-        <span class="rc-label">Market avg prices</span>
-        <div id="rc-mkts"></div>
-      </div>
-    </div>
-  </div>
+    <!-- ④ INTELLIGENCE FEED -->
+    <section class="hp-section">
+      <div class="hp-section-label">Intelligence Feed</div>
+      <div id="hp-feed"></div>
+    </section>
+
 </div>
 
+<!-- ═══ MARKETS ══════════════════════════ -->
 <!-- ═══ MARKETS ══════════════════════════ -->
 <div id="page-markets" class="page">
   <div class="mkt-layout">
@@ -1109,7 +1221,6 @@ img{max-width:100%;height:auto;display:block;}
         </div>
       </div>
     </div>
-  </div>
   </div><!-- /cd-tab-content -->
   <div id="cd-shipping-content" style="display:none;"></div>
   <div id="cd-movement-content" style="display:none;"></div>
@@ -1137,7 +1248,6 @@ img{max-width:100%;height:auto;display:block;}
     </div>
     <!-- tab content -->
     <div id="rpt-content"></div>
-  </div>
 </div>
 
 <!-- ═══ COMPARE ══════════════════════════ -->
@@ -1339,10 +1449,7 @@ async function init(){
     }
     // Reset reports cache so it picks up fresh allData
     rptLoaded={terminal:false,shipping:false,trends:false};
-    buildHomeSidebar();
-    filterHome();
-    buildRightRail();
-    buildTodayStrip();
+    buildHome();
     populateComparePage();
     populateSearchFilters();
     const prices=allData.map(i=>parseFloat(i.price_low)).filter(p=>!isNaN(p));
@@ -1371,232 +1478,324 @@ async function init(){
   }
 }
 
-// ── HOME SIDEBAR ─────────────────────────
-function buildHomeSidebar(){
-  const mkts=['All',...new Set(allData.map(i=>i.market))].filter(Boolean).sort();
-  document.getElementById('sb-markets').innerHTML=mkts.map(m=>`
-    <button class="sb-item${activeMkt===m?' active':''}" onclick="setMkt('${m.replace(/'/g,"\\'")}')">
-      <span>${m}</span>
-      <span class="sb-count">${m==='All'?allData.length:allData.filter(d=>d.market===m).length}</span>
-    </button>`).join('');
-  const cats=['All','Fruits','Vegetables','Onions & Potatoes','Nuts'];
-  document.getElementById('sb-cats').innerHTML=cats.map(c=>`
-    <button class="sb-item${activeCat===c?' active':''}" onclick="setCat('${c}')">
-      <span>${c==='All'?'All Categories':c}</span>
-    </button>`).join('');
-  // Build horizontal pill strip
-  const pillDefs=[
-    {id:'Popular', label:'Most Popular', icon:'⭐'},
-    {id:'Fruits',  label:'Fruits',       icon:'🍎'},
-    {id:'Vegetables', label:'Vegetables',icon:'🥬'},
-    {id:'Onions & Potatoes', label:'Onions & Potatoes', icon:'🧅'},
-    {id:'Nuts',    label:'Nuts',          icon:'🥜'},
-  ];
-  const pillsEl=document.getElementById('cat-pills');
-  if(pillsEl){
-    pillsEl.innerHTML=pillDefs.map(p=>`
-      <button class="cat-pill${activeCat===p.id?' on':''}" onclick="setCat('${p.id}')">
-        <span class="cat-pill-icon">${p.icon}</span>
-        ${p.label}
-      </button>`).join('');
-    // scroll active pill into view
-    setTimeout(()=>{
-      const active=pillsEl.querySelector('.cat-pill.on');
-      if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-    },50);
+// ══════════════════════════════════════════════════════════════════
+// HOME PAGE — "The Market Pulse"
+// ══════════════════════════════════════════════════════════════════
+let hpActiveCat='Popular';
+let hpFilt=[],hpPg=1;
+const HP_PG=15;
+
+// ── Commodity SVG icons ───────────────────────────────────────────
+const COMM_ICONS={
+  'Avocados':       `<svg viewBox="0 0 24 24" fill="none" stroke="#0a7c4e" stroke-width="1.5" class="comm-svg"><ellipse cx="12" cy="13" rx="5" ry="7"/><circle cx="12" cy="14" r="2.5" fill="#0a7c4e" stroke="none"/><path d="M9 7c0-4 6-4 6 0" stroke="#0a7c4e" stroke-linecap="round"/></svg>`,
+  'Tomatoes':       `<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5" class="comm-svg"><circle cx="12" cy="14" r="6"/><path d="M12 8V6M9 7l1.5 1.5M15 7l-1.5 1.5" stroke-linecap="round"/></svg>`,
+  'Potatoes':       `<svg viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="1.5" class="comm-svg"><ellipse cx="12" cy="13" rx="7" ry="5" transform="rotate(-15 12 13)"/><circle cx="9" cy="12" r=".8" fill="#92400e"/><circle cx="13" cy="15" r=".8" fill="#92400e"/><circle cx="15" cy="11" r=".8" fill="#92400e"/></svg>`,
+  'Onions':         `<svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" class="comm-svg"><ellipse cx="12" cy="15" rx="5" ry="4"/><path d="M12 11 C10 8 10 5 12 4 C14 5 14 8 12 11Z" stroke-linejoin="round"/></svg>`,
+  'Lettuce':        `<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.5" class="comm-svg"><path d="M12 18C8 18 5 15 5 12C5 8 8 6 12 6C16 6 19 8 19 12C19 15 16 18 12 18Z"/><path d="M12 6C12 6 10 9 12 12C14 9 12 6 12 6Z" fill="#16a34a" stroke="none"/></svg>`,
+  'Bell Peppers':   `<svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="1.5" class="comm-svg"><path d="M9 7h6l1 10H8L9 7Z"/><path d="M10 7V5a2 2 0 014 0v2" stroke-linecap="round"/><path d="M10 11h4M10 14h4" stroke-linecap="round"/></svg>`,
+  'Broccoli':       `<svg viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.5" class="comm-svg"><circle cx="10" cy="9" r="3"/><circle cx="14" cy="8" r="2.5"/><circle cx="12" cy="11" r="2"/><rect x="11" y="13" width="2" height="5" rx="1"/></svg>`,
+  'Strawberries':   `<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5" class="comm-svg"><path d="M12 19C8 19 6 15 6 12C6 9 9 7 12 7C15 7 18 9 18 12C18 15 16 19 12 19Z"/><path d="M9 8C9 6 12 4 12 4C12 4 15 6 15 8" stroke-linecap="round"/><path d="M10 13l1 1.5L13 11" stroke-linecap="round" stroke="#fff"/></svg>`,
+  'Grapes':         `<svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5" class="comm-svg"><circle cx="10" cy="10" r="2"/><circle cx="14" cy="10" r="2"/><circle cx="8" cy="14" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="16" cy="14" r="2"/><circle cx="10" cy="18" r="2"/><circle cx="14" cy="18" r="2"/><path d="M12 8V5M12 5C12 5 14 4 15 3" stroke-linecap="round"/></svg>`,
+  'Apples':         `<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5" class="comm-svg"><path d="M12 20C8 20 6 16 6 13C6 10 8 8 12 8C16 8 18 10 18 13C18 16 16 20 12 20Z"/><path d="M12 8C12 8 14 5 17 5" stroke-linecap="round"/><path d="M12 8V6" stroke-linecap="round"/></svg>`,
+};
+function getCommIcon(name){
+  const base=name.split(',')[0].trim();
+  const key=Object.keys(COMM_ICONS).find(k=>base.toLowerCase().includes(k.toLowerCase().split(' ')[0]));
+  return key?COMM_ICONS[key]:`<svg viewBox="0 0 24 24" fill="none" stroke="var(--text-4)" stroke-width="1.5" class="comm-svg"><circle cx="12" cy="12" r="7"/><path d="M12 8v4l3 3" stroke-linecap="round"/></svg>`;
+}
+
+// ── Build home page after data loads ─────────────────────────────
+function buildHome(){
+  buildMovers();
+  hpFilter();
+  buildIntelligenceFeed();
+  // populate date meta
+  if(dates[0]){
+    const d=new Date(dates[0].date+'T12:00:00');
+    const dl=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    const el=document.getElementById('hp-date-txt');
+    if(el)el.textContent=dl;
   }
 }
-function setMkt(m){activeMkt=m;homePg=1;buildHomeSidebar();filterHome();}
-function setCat(c){activeCat=c;homePg=1;buildHomeSidebar();filterHome();}
 
-// ── HOME TABLE ───────────────────────────
-function filterHome(){
-  const q=(document.getElementById('tf-q')?.value||'').toLowerCase().trim();
-  const s=document.getElementById('tf-s')?.value||'chg';
-  // deduplicate to one best row per commodity
+// ── ② Market Movers ──────────────────────────────────────────────
+function buildMovers(){
+  const el=document.getElementById('hp-movers');
+  if(!el||!allData.length)return;
+
+  // HEAT card — top 3 WoW movers
+  const comms=[...new Set(allData.map(i=>i.commodity))];
+  const movers=comms.map(c=>({c,ch:getTrend(c)}))
+    .filter(x=>Math.abs(x.ch)>0.5)
+    .sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))
+    .slice(0,4);
+
+  const heatHTML=`
+    <div class="hp-mover-card">
+      <div class="hp-mover-card-label">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        Price Volatility
+      </div>
+      <div class="hp-mover-items">
+        ${movers.map(m=>{
+          const row=allData.find(r=>r.commodity===m.c&&r.price_low!=null);
+          const iU=m.ch>0,iD=m.ch<0;
+          const price=row?'$'+parseFloat(row.price_low).toFixed(2):'';
+          return`<div class="hp-mover-item" onclick="navigate('commodity-detail','${m.c.replace(/'/g,"\'")}');" style="cursor:pointer;">
+            <div class="hp-mover-name">
+              <div class="hp-mover-icon">${getCommIcon(m.c)}</div>
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.c.split(',')[0]}</span>
+            </div>
+            <div>
+              <div class="hp-mover-val" style="color:${iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)'};">${iU?'↑':iD?'↓':'—'} ${Math.abs(m.ch).toFixed(1)}%</div>
+              <div class="hp-mover-price">${price}</div>
+            </div>
+          </div>`;
+        }).join('')||'<div style="font-size:12px;color:var(--text-4);">No significant movers today</div>'}
+      </div>
+    </div>`;
+
+  // SENTIMENT card — Active vs Steady count
+  const activeMarkets=allData.filter(r=>r.trading_activity&&r.trading_activity.toLowerCase().includes('active')).map(r=>r.market);
+  const activeCount=[...new Set(activeMarkets)].length;
+  const higherCount=allData.filter(r=>r.movement&&r.movement.toLowerCase().includes('higher')).length;
+  const lowerCount=allData.filter(r=>r.movement&&r.movement.toLowerCase().includes('lower')).length;
+  const markets=[...new Set(allData.map(r=>r.market))].length;
+
+  const sentHTML=`
+    <div class="hp-mover-card">
+      <div class="hp-mover-card-label">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Market Sentiment
+      </div>
+      <div class="hp-stat-row"><span class="hp-stat-num" style="color:var(--green);">${activeCount}</span><span class="hp-stat-lbl">active markets of ${markets}</span></div>
+      <div style="height:1px;background:var(--border);margin:10px 0;"></div>
+      <div class="hp-mover-items">
+        <div class="hp-mover-item">
+          <span style="font-size:13px;color:var(--text-2);">Trending higher</span>
+          <span class="badge badge-up">${higherCount} listings</span>
+        </div>
+        <div class="hp-mover-item">
+          <span style="font-size:13px;color:var(--text-2);">Trending lower</span>
+          <span class="badge badge-dn">${lowerCount} listings</span>
+        </div>
+        <div class="hp-mover-item">
+          <span style="font-size:13px;color:var(--text-2);">Steady</span>
+          <span class="badge badge-fl">${allData.length-higherCount-lowerCount} listings</span>
+        </div>
+      </div>
+    </div>`;
+
+  // VOLUME card — FOB origins + spread
+  const fobRows=allData.filter(r=>r.market_type==='shipping_point'&&r.price_low!=null&&r.market!=='National Trends');
+  const termRows=allData.filter(r=>r.market_type==='terminal'&&r.price_low!=null);
+  const fobAvg=fobRows.length?fobRows.reduce((s,r)=>s+parseFloat(r.price_low),0)/fobRows.length:0;
+  const termAvg=termRows.length?termRows.reduce((s,r)=>s+parseFloat(r.price_low),0)/termRows.length:0;
+  const spread=termAvg&&fobAvg?termAvg-fobAvg:0;
+  const origins=[...new Set(fobRows.map(r=>r.market))];
+
+  const volHTML=`
+    <div class="hp-mover-card">
+      <div class="hp-mover-card-label">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        FOB → Terminal
+      </div>
+      <div class="hp-stat-row">
+        <span class="hp-stat-num">${spread>0?'+$'+spread.toFixed(2):'—'}</span>
+        <span class="hp-stat-lbl">avg spread</span>
+      </div>
+      <div style="height:1px;background:var(--border);margin:10px 0;"></div>
+      <div class="hp-mover-items">
+        <div class="hp-mover-item">
+          <span style="font-size:12px;color:var(--text-3);">Avg FOB</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);">${fobAvg?'$'+fobAvg.toFixed(2):'—'}</span>
+        </div>
+        <div class="hp-mover-item">
+          <span style="font-size:12px;color:var(--text-3);">Avg Terminal</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);">${termAvg?'$'+termAvg.toFixed(2):'—'}</span>
+        </div>
+        <div class="hp-mover-item">
+          <span style="font-size:12px;color:var(--text-3);">Active origins</span>
+          <span style="font-size:13px;color:var(--text-2);">${origins.length} hubs</span>
+        </div>
+      </div>
+    </div>`;
+
+  el.innerHTML=heatHTML+sentHTML+volHTML;
+}
+
+// ── ③ Watchlist ──────────────────────────────────────────────────
+function hpSetCat(cat){
+  hpActiveCat=cat;
+  hpPg=1;
+  document.querySelectorAll('#hp-cat-pills .hp-pill').forEach(b=>b.classList.toggle('on',b.textContent.trim()===cat||(cat==='Onions & Potatoes'&&b.textContent.trim()==='Onions')));
+  hpFilter();
+}
+
+function hpFilter(){
   const byComm={};
   allData.filter(d=>d.price_low!=null).forEach(r=>{
-    if(activeMkt!=='All'&&r.market!==activeMkt)return;
-    // Popular: match if commodity name starts with any POPULAR keyword
-    if(activeCat==='Popular'){
-      const cn=r.commodity.toLowerCase();
-      const match=POPULAR.some(p=>cn.startsWith(p.toLowerCase()));
-      if(!match)return;
-    } else if(activeCat!=='All'&&getCat(r.commodity)!==activeCat)return;
-    if(q&&!`${r.commodity} ${r.variety||''} ${r.origin||''} ${r.market}`.toLowerCase().includes(q))return;
+    if(hpActiveCat==='Popular'){
+      if(!POPULAR.some(p=>r.commodity.toLowerCase().startsWith(p.toLowerCase())))return;
+    } else if(hpActiveCat!=='All'){
+      if(getCat(r.commodity)!==hpActiveCat)return;
+    }
     if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;
   });
-  homeFilt=Object.values(byComm);
-  // For Popular: one representative row per keyword, sorted by WoW change
-  if(activeCat==='Popular'&&!q){
+  hpFilt=Object.values(byComm);
+  if(hpActiveCat==='Popular'){
     const popMap={};
-    homeFilt.forEach(r=>{
-      const keyword=POPULAR.find(p=>r.commodity.toLowerCase().startsWith(p.toLowerCase()));
-      if(!keyword)return;
-      const chg=Math.abs(getTrend(r.commodity));
-      if(!popMap[keyword]||chg>Math.abs(getTrend(popMap[keyword].commodity)))popMap[keyword]=r;
+    hpFilt.forEach(r=>{
+      const kw=POPULAR.find(p=>r.commodity.toLowerCase().startsWith(p.toLowerCase()));
+      if(!kw)return;
+      const ch=Math.abs(getTrend(r.commodity));
+      if(!popMap[kw]||ch>Math.abs(getTrend(popMap[kw].commodity)))popMap[kw]=r;
     });
-    // Order by POPULAR list order, then sort by WoW change
-    homeFilt=POPULAR.map(p=>popMap[p]).filter(Boolean);
-    homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
-  } else {
-    if(s==='comm')homeFilt.sort((a,b)=>a.commodity.localeCompare(b.commodity));
-    else if(s==='pl')homeFilt.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
-    else if(s==='ph')homeFilt.sort((a,b)=>parseFloat(b.price_low)-parseFloat(a.price_low));
-    else homeFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+    hpFilt=POPULAR.map(p=>popMap[p]).filter(Boolean);
   }
-  homePg=1;renderHomeTable();
+  hpFilt.sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+  hpPg=1;
+  renderWatchlist();
 }
-function renderHomeTable(){
-  const st=(homePg-1)*HOME_PG,items=homeFilt.slice(st,st+HOME_PG),tot=Math.ceil(homeFilt.length/HOME_PG)||1;
-  document.getElementById('rl').textContent=`${st+1}–${Math.min(st+items.length,homeFilt.length)} of ${homeFilt.length}`;
-  const tcl=document.getElementById('tbl-count-label');
-  if(tcl)tcl.textContent=`${homeFilt.length} listing${homeFilt.length!==1?'s':''}`;
-  document.getElementById('pi').textContent=`Page ${homePg}/${tot}`;
-  ['pp1','pp2'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=homePg<=1;});
-  ['pn1','pn2'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=homePg>=tot;});
-  // compute FOB per commodity
+
+function renderWatchlist(){
+  const st=(hpPg-1)*HP_PG;
+  const items=hpFilt.slice(st,st+HP_PG);
+  const tot=Math.ceil(hpFilt.length/HP_PG)||1;
+  const countEl=document.getElementById('hp-count');
+  if(countEl)countEl.textContent=`${hpFilt.length} commodities`;
+  const prevBtn=document.getElementById('hp-prev');
+  const nextBtn=document.getElementById('hp-next');
+  if(prevBtn)prevBtn.disabled=hpPg<=1;
+  if(nextBtn)nextBtn.disabled=hpPg>=tot;
+
   const fobByComm={};
   allData.filter(i=>i.market_type==='shipping_point'&&i.price_low!=null).forEach(r=>{
     if(!fobByComm[r.commodity]||parseFloat(r.price_low)<fobByComm[r.commodity])fobByComm[r.commodity]=parseFloat(r.price_low);
   });
-  // ── Desktop slim rows — 3 columns ──────────────────────────────
-  document.getElementById('home-tbody').innerHTML=items.map(r=>{
-    const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
-    const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null);
-    const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
-    const fob=fobByComm[r.commodity];
-    const displayPrice=termAvg?'$'+termAvg.toFixed(2):(fob?'$'+fob.toFixed(2):'—');
-    const isToday=r.report_date===todayStr;
-    const dateLabel=new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
-      <td>
-        <div class="slim-name">
-          <span class="fresh-dot ${isToday?'today':'old'}"></span>
-          ${r.commodity}
-        </div>
-        <div class="slim-sub">${[r.origin,r.market].filter(Boolean).join(' · ')}</div>
-      </td>
-      <td>
-        <div class="slim-price">${displayPrice}</div>
-        <div class="slim-price-sub">${isToday?'Today':dateLabel}</div>
-      </td>
-      <td><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span></td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="3" style="padding:40px;text-align:center;color:var(--text-4);">No results</td></tr>';
-  // ── Mobile cards — large, finger-friendly ──────────────────────
-  const cardsEl=document.getElementById('home-cards');
-  if(cardsEl){cardsEl.innerHTML=items.map(r=>{
-    const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
-    const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null);
-    const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
-    const fob=fobByComm[r.commodity];
-    const displayPrice=termAvg?'$'+termAvg.toFixed(2):(fob?'$'+fob.toFixed(2):'—');
-    const chgC=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
-    const chgBg=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
-    const isToday=r.report_date===todayStr;
-    const dateLabel=new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return`<div class="slim-mob-card" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:7px;">
-          <span class="fresh-dot ${isToday?'today':'old'}"></span>
-          <span style="font-size:16px;font-weight:600;color:var(--text);">${r.commodity}</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-4);margin-top:3px;padding-left:14px;">${[r.origin||r.market,isToday?'Today':dateLabel].filter(Boolean).join(' · ')}</div>
-      </div>
-      <div class="slim-mob-right">
-        <div class="slim-mob-price">${displayPrice}</div>
-        <div class="slim-mob-date">${isToday?'Today':dateLabel}</div>
-        <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${chgC};background:${chgBg};padding:3px 9px;border-radius:4px;display:inline-block;margin-top:5px;">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('')||'<div style="padding:48px;text-align:center;color:var(--text-4);font-size:16px;">No results</div>';}
-}
-function tPrev(){if(homePg>1){homePg--;renderHomeTable();window.scrollTo(0,200);}}
-function tNext(){homePg++;renderHomeTable();window.scrollTo(0,200);}
 
-// ── TODAY STRIP (mobile) ─────────────────
-function buildTodayStrip(){
-
-  const el=document.getElementById('today-strip');
-  const dateEl=document.getElementById('today-strip-date-txt');
-  const chipsEl=document.getElementById('today-chips');
-  if(!el||!chipsEl)return;
-  if(dateEl&&todayStr){
-    dateEl.textContent=new Date(todayStr+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+" · Today's prices";
-  }
-  // top 5 popular movers with today data
-  const fobByComm={};
-  allData.filter(i=>i.market_type==='shipping_point'&&i.price_low!=null).forEach(r=>{
-    if(!fobByComm[r.commodity]||parseFloat(r.price_low)<fobByComm[r.commodity])fobByComm[r.commodity]=parseFloat(r.price_low);
+  // Trends sentiment per commodity
+  const trendsByComm={};
+  allData.filter(r=>r.market==='National Trends').forEach(r=>{
+    trendsByComm[r.commodity]=sentimentScore(r);
   });
-  const popItems=POPULAR.map(p=>{
-    const rows=allData.filter(d=>d.commodity.toLowerCase().startsWith(p.toLowerCase())&&d.price_low!=null);
-    if(!rows.length)return null;
-    const termAvg=rows.reduce((s,d)=>s+parseFloat(d.price_low),0)/rows.length;
-    const fob=fobByComm[rows[0].commodity];
-    const chg=getTrend(rows[0].commodity);
-    return{name:rows[0].commodity,price:termAvg,fob,chg,isToday:rows[0].report_date===todayStr};
-  }).filter(Boolean).sort((a,b)=>Math.abs(b.chg)-Math.abs(a.chg)).slice(0,5);
-  chipsEl.innerHTML=popItems.map(item=>{
-    const iU=item.chg>0.5,iD=item.chg<-0.5;
-    const chgC=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
-    const chgBg=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
-    return`<div class="today-chip" onclick="navigate('commodity-detail','${item.name.replace(/'/g,"\'")}')">
-      <div class="today-chip-name">${item.name.split(',')[0]}</div>
-      <div class="today-chip-price">$${item.price.toFixed(2)}</div>
-      <div class="today-chip-chg" style="color:${chgC};background:${chgBg};padding:3px 8px;border-radius:4px;display:inline-block;">
-        ${iU?'↑':iD?'↓':'—'} ${Math.abs(item.chg).toFixed(1)}%
-      </div>
-    </div>`;
-  }).join('');
-}
 
-// ── RIGHT RAIL ───────────────────────────
-function buildRightRail(){
-  const comms=[...new Set(allData.map(i=>i.commodity))];
-  const changes=comms.map(c=>({c,ch:getTrend(c)})).filter(x=>Math.abs(x.ch)>0.5);
-  const up=changes.filter(x=>x.ch>0).sort((a,b)=>b.ch-a.ch).slice(0,4);
-  const dn=changes.filter(x=>x.ch<0).sort((a,b)=>a.ch-b.ch).slice(0,4);
-  const mkRow=(x,isUp)=>{
-    const r=allData.find(d=>d.commodity===x.c&&d.price_low!=null);
-    return`<div class="mover-row">
-      <div><div class="mover-name">${x.c}</div><div class="mover-mkt">${r?.market||''}</div></div>
-      <div><div class="mover-price">${r?'$'+parseFloat(r.price_low).toFixed(2):''}</div>
-        <div class="mover-chg" style="color:${isUp?'var(--green-dk)':'var(--dn-txt)'}">${isUp?'+':''}${x.ch.toFixed(1)}%</div>
-      </div>
-    </div>`;
-  };
-  document.getElementById('rc-up').innerHTML=up.map(x=>mkRow(x,true)).join('')||'<div style="font-size:11px;color:var(--text-4);">No movers</div>';
-  document.getElementById('rc-dn').innerHTML=dn.map(x=>mkRow(x,false)).join('')||'<div style="font-size:11px;color:var(--text-4);">No movers</div>';
-  // sparkline
-  const avgs=[];
-  for(let i=6;i>=0;i--){
-    const d=dates[i]?.date;if(!d)continue;
-    const rows=datesData[d]?.filter(x=>x.price_low!=null)||[];
-    if(rows.length)avgs.push(rows.reduce((s,x)=>s+parseFloat(x.price_low),0)/rows.length);
+  // Desktop table
+  const tbody=document.getElementById('hp-watchlist');
+  if(tbody){
+    tbody.innerHTML=items.map(r=>{
+      const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
+      const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null&&d.market_type==='terminal');
+      const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
+      const price=termAvg?'$'+termAvg.toFixed(2):(r.price_low?'$'+parseFloat(r.price_low).toFixed(2):'—');
+      const sent=trendsByComm[r.commodity]??null;
+      const isToday=r.report_date===todayStr;
+      return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\'")}')">
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="hp-comm-icon">${getCommIcon(r.commodity)}</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);">${r.commodity}</div>
+              <div style="font-size:11px;color:var(--text-4);margin-top:1px;">${isToday?'Today':''+new Date(r.report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+            </div>
+          </div>
+        </td>
+        <td class="r" style="font-size:13px;color:var(--text-3);">${r.origin||r.market||'—'}</td>
+        <td class="r">
+          <div style="font-family:var(--mono);font-size:17px;font-weight:600;color:var(--text);">${price}</div>
+        </td>
+        <td class="r"><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</span></td>
+        <td class="r">
+          ${sent!==null?`<span class="sentiment ${sent>0?'pos':sent<0?'neg':'neu'}" style="width:30px;height:30px;font-size:11px;">${sent>0?'+':''}${sent}</span>`:'<span style="color:var(--text-4);font-size:12px;">—</span>'}
+        </td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-4);">No data</td></tr>';
   }
-  if(avgs.length){
-    const mn=Math.min(...avgs),mx=Math.max(...avgs);
-    document.getElementById('rc-spark').innerHTML=avgs.map((v,i)=>{
-      const h=Math.max(12,Math.round(((v-mn)/(mx-mn||1))*100));
-      const cls=i===avgs.length-1?'hi':i>=avgs.length-3?'mid':'';
-      return`<div class="spark-b${cls?' '+cls:''}" style="height:${h}%" title="$${v.toFixed(2)}"></div>`;
-    }).join('');
+
+  // Mobile cards
+  const cardsEl=document.getElementById('hp-mob-cards');
+  if(cardsEl){
+    cardsEl.innerHTML=items.map(r=>{
+      const chg=getTrend(r.commodity);const iU=chg>0.5,iD=chg<-0.5;
+      const termRows=allData.filter(d=>d.commodity===r.commodity&&d.price_low!=null&&d.market_type==='terminal');
+      const termAvg=termRows.length?termRows.reduce((s,d)=>s+parseFloat(d.price_low),0)/termRows.length:null;
+      const price=termAvg?'$'+termAvg.toFixed(2):(r.price_low?'$'+parseFloat(r.price_low).toFixed(2):'—');
+      const chgC=iU?'var(--up-txt)':iD?'var(--dn-txt)':'var(--text-4)';
+      const chgBg=iU?'var(--up-bg)':iD?'var(--dn-bg)':'var(--surf-2)';
+      return`<div class="slim-mob-card" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\'")}')">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+          <div class="hp-comm-icon">${getCommIcon(r.commodity)}</div>
+          <div style="min-width:0;">
+            <div style="font-size:15px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.commodity}</div>
+            <div style="font-size:11px;color:var(--text-4);margin-top:2px;">${r.origin||r.market||''}</div>
+          </div>
+        </div>
+        <div class="slim-mob-right">
+          <div class="slim-mob-price">${price}</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${chgC};background:${chgBg};padding:3px 8px;border-radius:4px;display:inline-block;margin-top:5px;">${iU?'↑':iD?'↓':'—'} ${Math.abs(chg).toFixed(1)}%</div>
+        </div>
+      </div>`;
+    }).join('')||'<div style="padding:40px;text-align:center;color:var(--text-4);">No data</div>';
   }
-  if(dates[6])document.getElementById('spark-start').textContent=new Date(dates[6].date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  // market avgs
-  const byMkt={};
-  allData.filter(i=>i.price_low!=null).forEach(r=>{
-    if(!byMkt[r.market]){byMkt[r.market]={s:0,n:0};}
-    byMkt[r.market].s+=parseFloat(r.price_low);byMkt[r.market].n++;
+}
+function hpPrev(){if(hpPg>1){hpPg--;renderWatchlist();}}
+function hpNext(){hpPg++;renderWatchlist();}
+
+// ── ④ Intelligence Feed ───────────────────────────────────────────
+function buildIntelligenceFeed(){
+  const el=document.getElementById('hp-feed');
+  if(!el)return;
+
+  const insights=[];
+
+  // Pull from National Trends supply_note commentary
+  const trendRows=allData.filter(r=>r.market==='National Trends'&&r.supply_note&&r.supply_note.length>20);
+  trendRows.slice(0,6).forEach(r=>{
+    const s=sentimentScore(r);
+    const iU=s>0,iD=s<0;
+    const icon=iU?'↑':iD?'⚠':'ℹ';
+    const cls=iU?'up':iD?'down':'info';
+    insights.push({
+      cls,icon,
+      title:`${r.commodity}${r.origin?' · '+r.origin:''}`,
+      text:r.supply_note.charAt(0)+r.supply_note.slice(1).toLowerCase(),
+      meta:`${r.movement||''}${r.trading_activity?' · '+r.trading_activity:''}`,
+      commodity:r.commodity
+    });
   });
-  document.getElementById('rc-mkts').innerHTML=Object.entries(byMkt)
-    .sort((a,b)=>a[0].localeCompare(b[0])).slice(0,8)
-    .map(([m,v])=>`<div class="mkt-chip"><span class="mkt-city">${m}</span><span class="mkt-avg">$${(v.s/v.n).toFixed(2)}</span></div>`)
-    .join('');
+
+  // Add movement-based alerts from shipping point data
+  const movRows=allData.filter(r=>r.market_type==='shipping_point'&&r.movement&&r.market!=='National Trends'&&r.price_low!=null);
+  const higherMov=movRows.filter(r=>r.movement==='Much Higher').slice(0,2);
+  const lowerMov=movRows.filter(r=>r.movement==='Much Lower').slice(0,2);
+  higherMov.forEach(r=>{
+    if(!insights.find(i=>i.commodity===r.commodity)){
+      insights.push({cls:'up',icon:'↑',title:`${r.commodity} · FOB Rising`,text:`F.O.B. prices at ${r.origin||r.market} trending much higher. Terminal market impact expected within 3-5 days.`,meta:`${r.market} · $${parseFloat(r.price_low).toFixed(2)}`,commodity:r.commodity});
+    }
+  });
+  lowerMov.forEach(r=>{
+    if(!insights.find(i=>i.commodity===r.commodity)){
+      insights.push({cls:'down',icon:'⚠',title:`${r.commodity} · Supply Pressure`,text:`F.O.B. prices at ${r.origin||r.market} trending lower. Increased supply or reduced demand at origin.`,meta:`${r.market} · $${parseFloat(r.price_low).toFixed(2)}`,commodity:r.commodity});
+    }
+  });
+
+  if(!insights.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-4);font-size:13px;">No intelligence data available for today</div>';
+    return;
+  }
+
+  el.innerHTML=insights.slice(0,8).map(ins=>`
+    <div class="hp-insight ${ins.cls}" onclick="navigate('commodity-detail','${ins.commodity.replace(/'/g,"\'")}')">
+      <div class="hp-insight-icon">${ins.icon}</div>
+      <div class="hp-insight-body">
+        <div class="hp-insight-title">${ins.title}</div>
+        <div class="hp-insight-text">${ins.text}</div>
+        ${ins.meta?`<div class="hp-insight-meta">${ins.meta}</div>`:''}
+      </div>
+    </div>`).join('');
 }
 
+// ── MARKETS PAGE ─────────────────────────
 // ── MARKETS PAGE ─────────────────────────
 function renderMktTable(){
   const q=(document.getElementById('mkt-search')?.value||'').toLowerCase().trim();
