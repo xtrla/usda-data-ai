@@ -680,6 +680,127 @@ img{max-width:100%;height:auto;display:block;}
 .slim-mob-price{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);line-height:1;}
 .slim-mob-date{font-size:11px;color:var(--text-4);font-family:var(--mono);margin-top:3px;}
 
+/* ── REPORTS PAGE ─────────────────────── */
+.rpt-layout{max-width:var(--max);margin:0 auto;padding:20px 28px;}
+@media(max-width:768px){.rpt-layout{padding:16px;}}
+
+/* metric cards row */
+.rpt-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+@media(max-width:900px){.rpt-metrics{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.rpt-metrics{grid-template-columns:repeat(2,1fr);gap:8px;}}
+.rpt-card{
+  background:var(--surf);border:1px solid var(--border);border-radius:8px;
+  padding:16px 18px;
+}
+.rpt-card-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);margin-bottom:8px;}
+.rpt-card-val{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);line-height:1;}
+.rpt-card-sub{font-size:11px;color:var(--text-4);margin-top:5px;font-family:var(--mono);}
+.rpt-card-chg{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-family:var(--mono);font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;}
+
+/* tab strip */
+.rpt-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none;}
+.rpt-tabs::-webkit-scrollbar{display:none;}
+.rpt-tab{
+  padding:10px 20px;font-size:13px;font-weight:500;color:var(--text-3);
+  border:none;background:none;cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .1s;flex-shrink:0;
+}
+.rpt-tab:hover{color:var(--text);}
+.rpt-tab.on{color:var(--green);border-bottom-color:var(--green);font-weight:600;}
+
+/* sub-tabs for shipping points */
+.rpt-sub-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.rpt-sub-tab{
+  padding:5px 14px;border-radius:5px;font-size:12px;font-weight:500;
+  border:1px solid var(--border);background:var(--surf);color:var(--text-3);
+  cursor:pointer;transition:all .1s;
+}
+.rpt-sub-tab:hover{border-color:var(--border-2);color:var(--text);}
+.rpt-sub-tab.on{background:var(--green-lt);border-color:var(--green-mid);color:var(--green-dk);}
+
+/* filters row */
+.rpt-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.rpt-filter-input{
+  flex:1;min-width:180px;background:var(--surf);border:1px solid var(--border);
+  border-radius:6px;padding:0 12px;height:40px;font-size:14px;color:var(--text);outline:none;
+}
+.rpt-filter-input:focus{border-color:var(--green);}
+.rpt-filter-input::placeholder{color:var(--text-4);}
+.rpt-filter-sel{
+  background:var(--surf);border:1px solid var(--border);border-radius:6px;
+  padding:0 10px;height:40px;font-size:13px;color:var(--text-2);outline:none;cursor:pointer;
+}
+
+/* sentiment score badge */
+.sentiment{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:6px;
+  font-family:var(--mono);font-size:13px;font-weight:700;flex-shrink:0;
+}
+.sentiment.pos{background:var(--up-bg);color:var(--up-txt);}
+.sentiment.neg{background:var(--dn-bg);color:var(--dn-txt);}
+.sentiment.neu{background:var(--surf-2);color:var(--text-4);}
+
+/* pulse / shipping point rows */
+.sp-row{
+  display:grid;grid-template-columns:minmax(0,1.8fr) 80px 80px 80px 80px 44px;
+  align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f1f5f9;cursor:pointer;
+  transition:background .07s;
+}
+.sp-row:last-child{border-bottom:none;}
+.sp-row:hover{background:var(--surf-2);}
+.sp-head{background:var(--surf-2);border-bottom:1px solid var(--border);}
+.sp-head .sp-cell{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-4);}
+.sp-cell{font-size:13px;color:var(--text-2);}
+.sp-cell.r{text-align:right;}
+.sp-cell.mono{font-family:var(--mono);font-weight:500;color:var(--text);}
+.sp-name{font-size:14px;font-weight:600;color:var(--text);}
+.sp-sub{font-size:11px;color:var(--text-4);margin-top:2px;}
+@media(max-width:640px){
+  .sp-row{grid-template-columns:minmax(0,1fr) 70px 44px;}
+  .sp-col-hide{display:none;}
+}
+
+/* trends rows */
+.trend-row{
+  display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 44px minmax(0,1.2fr);
+  align-items:center;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f1f5f9;
+}
+.trend-row:last-child{border-bottom:none;}
+.trend-row:hover{background:var(--surf-2);cursor:pointer;}
+.trend-note{font-size:12px;color:var(--text-3);line-height:1.5;font-style:italic;}
+@media(max-width:640px){
+  .trend-row{grid-template-columns:minmax(0,1fr) 44px;}
+  .trend-col-hide{display:none;}
+}
+
+/* movement placeholder */
+.movement-placeholder{
+  padding:48px 24px;text-align:center;
+  border:2px dashed var(--border);border-radius:8px;
+  background:var(--surf-2);
+}
+.movement-placeholder-icon{font-size:32px;margin-bottom:12px;}
+.movement-placeholder-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.movement-placeholder-sub{font-size:13px;color:var(--text-3);max-width:400px;margin:0 auto;}
+.movement-placeholder-tags{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.movement-tag{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--surf);border:1px solid var(--border);color:var(--text-4);}
+
+/* section label in reports */
+.rpt-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-4);padding:10px 16px;background:var(--surf-2);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.rpt-section-label .step-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;background:var(--green);
+  color:#fff;font-size:9px;font-weight:700;flex-shrink:0;
+}
+
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes spin{to{transform:rotate(360deg)}}
 ::-webkit-scrollbar{width:5px;height:5px;}
@@ -698,7 +819,7 @@ img{max-width:100%;height:auto;display:block;}
     </div>
     <div class="nav-links">
       <button class="nl active" data-nav="home" onclick="navigate('home')">Overview</button>
-      <button class="nl" data-nav="markets" onclick="navigate('markets')">Markets</button>
+      <button class="nl" data-nav="reports" onclick="navigate('reports')">Reports</button>
       <button class="nl" data-nav="compare" onclick="navigate('compare')">Compare</button>
     </div>
     <div class="nav-right">
@@ -918,11 +1039,20 @@ img{max-width:100%;height:auto;display:block;}
 <div id="page-commodity-detail" class="page">
   <div class="page-head">
     <div class="page-head-inner">
-      <button class="page-head-back" onclick="navigate('markets')">← Markets</button>
+      <button class="page-head-back" onclick="navigate('reports')">← Reports</button>
       <h1 id="cd-title"></h1>
       <p id="cd-stats"></p>
     </div>
   </div>
+  <!-- Market Views tab strip -->
+  <div style="background:var(--surf);border-bottom:1px solid var(--border);">
+    <div style="max-width:var(--max);margin:0 auto;padding:0 28px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;">
+      <button class="rpt-tab on" data-cdtab="terminal" onclick="cdSetTab('terminal')" style="font-size:13px;">Terminal Markets</button>
+      <button class="rpt-tab" data-cdtab="shipping" onclick="cdSetTab('shipping')" style="font-size:13px;">Shipping Point</button>
+      <button class="rpt-tab" data-cdtab="movement" onclick="cdSetTab('movement')" style="font-size:13px;">Movement</button>
+    </div>
+  </div>
+  <div id="cd-tab-content">
   <div class="page-body">
     <!-- TODAY PRICE HERO -->
     <div class="cd-b-hero">
@@ -979,6 +1109,34 @@ img{max-width:100%;height:auto;display:block;}
         </div>
       </div>
     </div>
+  </div>
+  </div><!-- /cd-tab-content -->
+  <div id="cd-shipping-content" style="display:none;"></div>
+  <div id="cd-movement-content" style="display:none;"></div>
+</div>
+
+<!-- ═══ REPORTS ════════════════════════════ -->
+<div id="page-reports" class="page">
+  <div class="page-head">
+    <div class="page-head-inner">
+      <h1>Market Reports</h1>
+      <p id="rpt-head-sub">USDA AMS · Terminal Markets · Shipping Points · National Trends</p>
+    </div>
+  </div>
+  <div class="rpt-layout">
+    <!-- metric cards — update per tab -->
+    <div class="rpt-metrics" id="rpt-metrics">
+      <div class="rpt-card"><div class="rpt-card-lbl">Loading</div><div class="rpt-card-val">--</div></div>
+    </div>
+    <!-- tab strip -->
+    <div class="rpt-tabs">
+      <button class="rpt-tab on" data-rpt="terminal" onclick="rptSetTab('terminal')">Terminal Markets</button>
+      <button class="rpt-tab" data-rpt="shipping" onclick="rptSetTab('shipping')">Shipping Points</button>
+      <button class="rpt-tab" data-rpt="trends" onclick="rptSetTab('trends')">National Trends</button>
+      <button class="rpt-tab" data-rpt="movement" onclick="rptSetTab('movement')">Movement</button>
+    </div>
+    <!-- tab content -->
+    <div id="rpt-content"></div>
   </div>
 </div>
 
@@ -1065,9 +1223,9 @@ img{max-width:100%;height:auto;display:block;}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
     Home
   </button>
-  <button class="bn" data-nav="markets" onclick="navigate('markets')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-    Markets
+  <button class="bn" data-nav="reports" onclick="navigate('reports')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    Reports
   </button>
   <button class="bn" data-nav="compare" onclick="navigate('compare')">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
@@ -1122,8 +1280,13 @@ function navigate(page,param){
   document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===page));
   window.scrollTo(0,0);
   if(page==='market-detail'&&param)loadMktDetail(param);
-  if(page==='commodity-detail'&&param)loadCdDetail(param);
-  if(page==='markets'){renderMktTable();}
+  if(page==='commodity-detail'&&param){
+    // reset to terminal tab on new commodity
+    cdActiveTab='terminal';
+    document.querySelectorAll('[data-cdtab]').forEach(b=>b.classList.toggle('on',b.dataset.cdtab==='terminal'));
+    loadCdDetail(param);
+  }
+  if(page==='reports'){renderReports();}
   if(page==='compare')populateComparePage();
 }
 
@@ -1502,6 +1665,7 @@ function loadMktDetail(market){
 
 // ── COMMODITY DETAIL ─────────────────────
 function loadCdDetail(commodity){
+  currentCommodity=commodity;
   const items=allData.filter(i=>i.commodity===commodity&&i.price_low!=null);
   const prices=items.map(i=>parseFloat(i.price_low));
   const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
@@ -1589,6 +1753,471 @@ function loadCdDetail(commodity){
       });
     }
   },80);
+  // render shipping/movement tabs if active
+  if(cdActiveTab!=='terminal')renderCdTab();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// REPORTS PAGE
+// ══════════════════════════════════════════════════════════════════
+let rptActiveTab='terminal';
+let rptTerminalData=[],rptShippingData=[],rptTrendsData=[];
+let rptLoaded={terminal:false,shipping:false,trends:false};
+let rptActiveSubTab='pulse'; // pulse | hub | sentiment
+let rptFilterQ='';
+let rptFilterOrigin='All';
+
+// ── Sentiment scoring ──────────────────────────────────────────────
+function sentimentScore(row){
+  const mov=(row.movement||'').toLowerCase();
+  const trade=(row.trading_activity||'').toLowerCase();
+  let s=0;
+  if(mov.includes('much higher'))s+=3;
+  else if(mov.includes('higher'))s+=2;
+  else if(mov.includes('slightly higher'))s+=1;
+  else if(mov.includes('much lower'))s-=3;
+  else if(mov.includes('lower'))s-=2;
+  else if(mov.includes('slightly lower'))s-=1;
+  if(trade.includes('active'))s+=1;
+  else if(trade.includes('slow')||trade.includes('light'))s-=1;
+  return Math.max(-5,Math.min(5,s));
+}
+
+function sentimentLabel(score){
+  if(score>=3)return'Bullish';
+  if(score>=1)return'Rising';
+  if(score<=-3)return'Bearish';
+  if(score<=-1)return'Falling';
+  return'Steady';
+}
+
+// ── Navigate to reports tab ────────────────────────────────────────
+function rptSetTab(tab){
+  rptActiveTab=tab;
+  document.querySelectorAll('.rpt-tab[data-rpt]').forEach(b=>b.classList.toggle('on',b.dataset.rpt===tab));
+  renderReports();
+}
+
+// ── Load data lazily ──────────────────────────────────────────────
+async function loadReportsData(tab){
+  if(rptLoaded[tab])return;
+  const content=document.getElementById('rpt-content');
+  if(content)content.innerHTML=`<div style="padding:48px;text-align:center;color:var(--text-4);display:flex;align-items:center;justify-content:center;gap:10px;">
+    <svg style="animation:spin 1s linear infinite;width:18px;height:18px;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+    <span>Loading ${tab} data…</span>
+  </div>`;
+  try{
+    if(tab==='terminal'&&!rptLoaded.terminal){
+      rptTerminalData=await(await fetch(`${API}/reports/terminal`)).json();
+      rptLoaded.terminal=true;
+    } else if(tab==='shipping'&&!rptLoaded.shipping){
+      rptShippingData=await(await fetch(`${API}/reports/shipping-points`)).json();
+      rptLoaded.shipping=true;
+    } else if(tab==='trends'&&!rptLoaded.trends){
+      rptTrendsData=await(await fetch(`${API}/reports/trends`)).json();
+      rptLoaded.trends=true;
+    }
+  }catch(e){
+    if(content)content.innerHTML=`<div style="padding:48px;text-align:center;color:var(--text-4);">Failed to load data. <button onclick="rptLoaded['${tab}']=false;loadReportsData('${tab}').then(renderReports)" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;margin-left:8px;">Retry</button></div>`;
+    return false;
+  }
+  return true;
+}
+
+// ── Main render dispatcher ─────────────────────────────────────────
+async function renderReports(){
+  const ok=await loadReportsData(rptActiveTab);
+  if(!ok)return;
+  if(rptActiveTab==='terminal')renderTerminalTab();
+  else if(rptActiveTab==='shipping')renderShippingTab();
+  else if(rptActiveTab==='trends')renderTrendsTab();
+  else renderMovementTab();
+}
+
+// ── Metric cards helper ───────────────────────────────────────────
+function setMetrics(cards){
+  document.getElementById('rpt-metrics').innerHTML=cards.map(c=>`
+    <div class="rpt-card">
+      <div class="rpt-card-lbl">${c.label}</div>
+      <div class="rpt-card-val">${c.val}</div>
+      ${c.sub?`<div class="rpt-card-sub">${c.sub}</div>`:''}
+      ${c.chg!==undefined?`<div class="rpt-card-chg ${c.chg>0?'badge-up':c.chg<0?'badge-dn':'badge-fl'}">${c.chg>0?'↑':c.chg<0?'↓':'—'} ${Math.abs(c.chg).toFixed(1)}%</div>`:''}
+    </div>`).join('');
+}
+
+// ── TERMINAL MARKETS TAB ──────────────────────────────────────────
+function renderTerminalTab(){
+  const data=rptTerminalData;
+  if(!data.length){document.getElementById('rpt-content').innerHTML='<div style="padding:40px;text-align:center;color:var(--text-4);">No terminal market data available</div>';return;}
+  const q=rptFilterQ.toLowerCase();
+  const prices=data.filter(r=>r.price_low!=null).map(r=>parseFloat(r.price_low)).filter(p=>!isNaN(p));
+  const avgPrice=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:0;
+  const markets=[...new Set(data.map(r=>r.market))].length;
+  const comms=[...new Set(data.map(r=>r.commodity))].length;
+  const date=data[0]?.report_date?new Date(data[0].report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+  setMetrics([
+    {label:'Avg terminal price',val:'$'+avgPrice.toFixed(2),sub:date},
+    {label:'Markets reporting',val:markets,sub:'Terminal cities'},
+    {label:'Commodities',val:comms,sub:'Unique items'},
+    {label:'Total listings',val:data.length.toLocaleString(),sub:'Price records'},
+  ]);
+  // dedupe per commodity+market
+  const seen=new Set();const rows=[];
+  data.sort((a,b)=>a.commodity.localeCompare(b.commodity)).forEach(r=>{
+    const k=r.commodity+'|'+r.market;
+    if(!seen.has(k)){
+      if(!q||r.commodity.toLowerCase().includes(q)||(r.market||'').toLowerCase().includes(q)||(r.origin||'').toLowerCase().includes(q)){
+        seen.add(k);rows.push(r);
+      }
+    }
+  });
+  document.getElementById('rpt-content').innerHTML=`
+    <div class="rpt-filters">
+      <input class="rpt-filter-input" placeholder="Filter commodity, market, origin…" value="${rptFilterQ}" oninput="rptFilterQ=this.value;renderTerminalTab()">
+      <select class="rpt-filter-sel" onchange="rptFilterQ='';this.form?.reset()">
+        <option>All Markets</option>
+        ${[...new Set(data.map(r=>r.market))].sort().map(m=>`<option>${m}</option>`).join('')}
+      </select>
+    </div>
+    <div class="data-wrap">
+      <div class="tbl-scroll">
+        <table class="slim-tbl" style="min-width:600px;">
+          <thead><tr>
+            <th>Commodity</th>
+            <th>Origin</th>
+            <th>Market</th>
+            <th class="r">Price low</th>
+            <th class="r">Price high</th>
+            <th class="r">Movement</th>
+          </tr></thead>
+          <tbody>${rows.map(r=>{
+            const mov=r.movement||'';
+            const iU=mov==='Higher'||mov==='Much Higher';
+            const iD=mov==='Lower'||mov==='Much Lower';
+            return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+              <td style="font-weight:600;">${r.commodity}</td>
+              <td style="color:var(--text-3);font-size:13px;">${r.origin||'—'}</td>
+              <td style="color:var(--text-3);font-size:13px;">${r.market}</td>
+              <td class="r" style="font-family:var(--mono);font-weight:600;">$${parseFloat(r.price_low).toFixed(2)}</td>
+              <td class="r" style="font-family:var(--mono);color:var(--text-3);">${r.price_high?'$'+parseFloat(r.price_high).toFixed(2):'—'}</td>
+              <td class="r"><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${mov||'—'}</span></td>
+            </tr>`;
+          }).join('')||'<tr><td colspan="6" style="padding:32px;text-align:center;color:var(--text-4);">No results</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── SHIPPING POINTS TAB — Three-Step Funnel ───────────────────────
+function renderShippingTab(){
+  const data=rptShippingData;
+  if(!data.length){document.getElementById('rpt-content').innerHTML='<div style="padding:40px;text-align:center;color:var(--text-4);">No shipping point data available</div>';return;}
+  const prices=data.filter(r=>r.price_low!=null).map(r=>parseFloat(r.price_low)).filter(p=>!isNaN(p));
+  const avgFOB=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:0;
+  const hubs=[...new Set(data.map(r=>r.market))].length;
+  const date=data[0]?.report_date?new Date(data[0].report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+  // avg sentiment
+  const comms=[...new Set(data.map(r=>r.commodity))];
+  const sentByComm={};
+  data.forEach(r=>{const k=r.commodity;if(!sentByComm[k])sentByComm[k]=[];sentByComm[k].push(sentimentScore(r));});
+  const sentScores=Object.values(sentByComm).map(arr=>arr.reduce((a,b)=>a+b,0)/arr.length);
+  const avgSent=sentScores.length?sentScores.reduce((a,b)=>a+b,0)/sentScores.length:0;
+  setMetrics([
+    {label:'Avg FOB price',val:'$'+avgFOB.toFixed(2),sub:date},
+    {label:'Shipping hubs',val:hubs,sub:'Origin regions'},
+    {label:'Market sentiment',val:(avgSent>0?'+':'')+avgSent.toFixed(1),sub:sentimentLabel(avgSent)+' signal'},
+    {label:'Commodities tracked',val:comms.length,sub:'FOB origins'},
+  ]);
+  // sub tabs
+  document.getElementById('rpt-content').innerHTML=`
+    <div class="rpt-sub-tabs">
+      <button class="rpt-sub-tab${rptActiveSubTab==='pulse'?' on':''}" onclick="rptActiveSubTab='pulse';renderShippingTab()">Step 1 · The Pulse</button>
+      <button class="rpt-sub-tab${rptActiveSubTab==='sentiment'?' on':''}" onclick="rptActiveSubTab='sentiment';renderShippingTab()">Step 2 · Momentum</button>
+      <button class="rpt-sub-tab${rptActiveSubTab==='hub'?' on':''}" onclick="rptActiveSubTab='hub';renderShippingTab()">Step 3 · Hub Deep-Dive</button>
+    </div>
+    <div id="rpt-sp-content"></div>`;
+  if(rptActiveSubTab==='pulse')renderSPPulse(data);
+  else if(rptActiveSubTab==='sentiment')renderSPMomentum(data);
+  else renderSPHub(data);
+}
+
+function renderSPPulse(data){
+  // Aggregate by commodity — avg FOB price, hub count
+  const byComm={};
+  data.filter(r=>r.price_low!=null).forEach(r=>{
+    const k=r.commodity;
+    if(!byComm[k])byComm[k]={commodity:k,prices:[],hubs:new Set(),origins:new Set()};
+    byComm[k].prices.push(parseFloat(r.price_low));
+    byComm[k].hubs.add(r.market);
+    if(r.origin)byComm[k].origins.add(r.origin);
+  });
+  const rows=Object.values(byComm).sort((a,b)=>a.commodity.localeCompare(b.commodity));
+  document.getElementById('rpt-sp-content').innerHTML=`
+    <div class="rpt-section-label"><span class="step-badge">1</span>National F.O.B. Aggregate — What is the price right now?</div>
+    <div class="data-wrap">
+      <div class="sp-row sp-head">
+        <div class="sp-cell">Commodity</div>
+        <div class="sp-cell r sp-col-hide">Avg FOB</div>
+        <div class="sp-cell r sp-col-hide">Low</div>
+        <div class="sp-cell r sp-col-hide">High</div>
+        <div class="sp-cell r">Hubs</div>
+        <div class="sp-cell r"></div>
+      </div>
+      ${rows.map(r=>{
+        const avg=r.prices.reduce((a,b)=>a+b,0)/r.prices.length;
+        const lo=Math.min(...r.prices);const hi=Math.max(...r.prices);
+        const s=sentimentScore({movement:data.find(d=>d.commodity===r.commodity)?.movement||''});
+        return`<div class="sp-row" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+          <div><div class="sp-name">${r.commodity}</div><div class="sp-sub">${[...r.origins].slice(0,2).join(', ')}</div></div>
+          <div class="sp-cell r mono sp-col-hide">$${avg.toFixed(2)}</div>
+          <div class="sp-cell r mono sp-col-hide">$${lo.toFixed(2)}</div>
+          <div class="sp-cell r mono sp-col-hide">$${hi.toFixed(2)}</div>
+          <div class="sp-cell r" style="font-size:12px;color:var(--text-3);">${r.hubs.size}</div>
+          <div class="sp-cell r"><span class="sentiment ${s>0?'pos':s<0?'neg':'neu'}">${s>0?'+':''}${s}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderSPMomentum(data){
+  // Commodity-level sentiment from movement field
+  const byComm={};
+  data.forEach(r=>{
+    const k=r.commodity;
+    if(!byComm[k])byComm[k]={commodity:k,scores:[],movements:new Set(),trading:new Set(),origins:new Set()};
+    byComm[k].scores.push(sentimentScore(r));
+    if(r.movement)byComm[k].movements.add(r.movement);
+    if(r.trading_activity)byComm[k].trading.add(r.trading_activity);
+    if(r.origin)byComm[k].origins.add(r.origin);
+  });
+  const rows=Object.values(byComm)
+    .map(r=>({...r,avg:r.scores.reduce((a,b)=>a+b,0)/r.scores.length}))
+    .sort((a,b)=>b.avg-a.avg);
+  document.getElementById('rpt-sp-content').innerHTML=`
+    <div class="rpt-section-label"><span class="step-badge">2</span>Market Momentum — Where is the price going?</div>
+    <div class="data-wrap">
+      ${rows.map(r=>{
+        const s=Math.round(r.avg*10)/10;
+        const label=sentimentLabel(s);
+        const movs=[...r.movements].join(', ')||'—';
+        const trades=[...r.trading].join(', ')||'—';
+        return`<div class="sp-row" style="grid-template-columns:minmax(0,1.8fr) 100px minmax(0,1fr) minmax(0,1fr) 44px;" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+          <div><div class="sp-name">${r.commodity}</div><div class="sp-sub">${[...r.origins].slice(0,2).join(', ')}</div></div>
+          <div style="font-size:12px;font-weight:600;color:${s>0?'var(--up-txt)':s<0?'var(--dn-txt)':'var(--text-4)'};">${label}</div>
+          <div class="sp-cell sp-col-hide" style="font-size:12px;color:var(--text-3);">${movs}</div>
+          <div class="sp-cell sp-col-hide" style="font-size:12px;color:var(--text-3);">${trades}</div>
+          <div><span class="sentiment ${s>0?'pos':s<0?'neg':'neu'}">${s>0?'+':''}${s}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderSPHub(data){
+  // Group by hub/market
+  const byHub={};
+  data.forEach(r=>{
+    const k=r.market;
+    if(!byHub[k])byHub[k]={market:k,rows:[],origins:new Set()};
+    byHub[k].rows.push(r);
+    if(r.origin)byHub[k].origins.add(r.origin);
+  });
+  const hubs=Object.values(byHub).sort((a,b)=>a.market.localeCompare(b.market));
+  document.getElementById('rpt-sp-content').innerHTML=`
+    <div class="rpt-section-label"><span class="step-badge">3</span>Regional Hub Deep-Dive — Why is this happening?</div>
+    ${hubs.map(hub=>{
+      const prices=hub.rows.filter(r=>r.price_low!=null).map(r=>parseFloat(r.price_low));
+      const avg=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:null;
+      const qualityNotes=[...new Set(hub.rows.filter(r=>r.quality_note).map(r=>r.quality_note))];
+      const supplyNotes=[...new Set(hub.rows.filter(r=>r.supply_note).map(r=>r.supply_note))].slice(0,2);
+      return`
+        <div class="data-wrap" style="margin-bottom:16px;">
+          <div class="rpt-section-label" style="background:var(--surf);">
+            <span style="font-size:13px;font-weight:600;color:var(--text);text-transform:none;letter-spacing:0;">${hub.market}</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-4);">${avg?'Avg $'+avg.toFixed(2):''} · ${hub.rows.length} listings</span>
+          </div>
+          ${qualityNotes.length?`<div style="padding:8px 16px;font-size:12px;color:var(--text-3);border-bottom:1px solid var(--border);"><span style="font-weight:600;color:var(--text);">Quality: </span>${qualityNotes.join(' · ')}</div>`:''}
+          ${supplyNotes.length?`<div style="padding:8px 16px;font-size:12px;color:var(--text-3);border-bottom:1px solid var(--border);font-style:italic;">${supplyNotes.join(' ')}</div>`:''}
+          <div class="tbl-scroll">
+            <table class="slim-tbl" style="min-width:400px;">
+              <thead><tr><th>Commodity</th><th>Origin</th><th class="r">FOB Price</th><th class="r">Movement</th></tr></thead>
+              <tbody>${hub.rows.sort((a,b)=>a.commodity.localeCompare(b.commodity)).map(r=>{
+                const mov=r.movement||'';
+                const iU=mov==='Higher'||mov==='Much Higher';
+                const iD=mov==='Lower'||mov==='Much Lower';
+                return`<tr onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+                  <td style="font-weight:600;">${r.commodity}</td>
+                  <td style="color:var(--text-3);font-size:13px;">${r.origin||'—'}</td>
+                  <td class="r" style="font-family:var(--mono);font-weight:600;">${r.price_low?'$'+parseFloat(r.price_low).toFixed(2):'—'}</td>
+                  <td class="r"><span class="badge ${iU?'badge-up':iD?'badge-dn':'badge-fl'}">${mov||'—'}</span></td>
+                </tr>`;
+              }).join('')}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }).join('')}`;
+}
+
+// ── NATIONAL TRENDS TAB ───────────────────────────────────────────
+function renderTrendsTab(){
+  const data=rptTrendsData;
+  if(!data.length){document.getElementById('rpt-content').innerHTML='<div style="padding:40px;text-align:center;color:var(--text-4);">No national trends data available</div>';return;}
+  const q=rptFilterQ.toLowerCase();
+  const scores=data.map(r=>sentimentScore(r));
+  const avgScore=scores.reduce((a,b)=>a+b,0)/scores.length;
+  const bullish=data.filter(r=>sentimentScore(r)>0).length;
+  const bearish=data.filter(r=>sentimentScore(r)<0).length;
+  const date=data[0]?.report_date?new Date(data[0].report_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+  setMetrics([
+    {label:'Mkt sentiment avg',val:(avgScore>0?'+':'')+avgScore.toFixed(1),sub:sentimentLabel(avgScore)},
+    {label:'Rising commodities',val:bullish,sub:'Positive momentum'},
+    {label:'Falling commodities',val:bearish,sub:'Negative momentum'},
+    {label:'Report date',val:date,sub:'National Trends'},
+  ]);
+  const filtered=data.filter(r=>!q||r.commodity.toLowerCase().includes(q)||(r.origin||'').toLowerCase().includes(q));
+  filtered.sort((a,b)=>sentimentScore(b)-sentimentScore(a));
+  document.getElementById('rpt-content').innerHTML=`
+    <div class="rpt-filters">
+      <input class="rpt-filter-input" placeholder="Filter commodity or origin…" value="${rptFilterQ}" oninput="rptFilterQ=this.value;renderTrendsTab()">
+    </div>
+    <div class="rpt-section-label"><span class="step-badge">2</span>Shipping Point Trends — Forward-looking market signals</div>
+    <div class="data-wrap">
+      <div class="trend-row" style="background:var(--surf-2);border-bottom:1px solid var(--border);">
+        <div class="sp-cell">Commodity · Origin</div>
+        <div class="sp-cell trend-col-hide">Trading Activity</div>
+        <div class="sp-cell">Score</div>
+        <div class="sp-cell trend-col-hide">Commentary</div>
+      </div>
+      ${filtered.map(r=>{
+        const s=sentimentScore(r);
+        return`<div class="trend-row" onclick="navigate('commodity-detail','${r.commodity.replace(/'/g,"\\'")}')">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">${r.commodity}</div>
+            <div style="font-size:11px;color:var(--text-4);margin-top:2px;">${r.origin||''} ${r.movement?'· '+r.movement:''}</div>
+          </div>
+          <div class="trend-col-hide" style="font-size:13px;color:var(--text-3);">${r.trading_activity||'—'}</div>
+          <div><span class="sentiment ${s>0?'pos':s<0?'neg':'neu'}">${s>0?'+':''}${s}</span></div>
+          <div class="trend-note trend-col-hide">${r.supply_note||'—'}</div>
+        </div>`;
+      }).join('')||'<div style="padding:32px;text-align:center;color:var(--text-4);">No results</div>'}
+    </div>`;
+}
+
+// ── MOVEMENT TAB — Placeholder ─────────────────────────────────────
+function renderMovementTab(){
+  setMetrics([
+    {label:'Daily movement',val:'Soon',sub:'Truck · Rail · Air'},
+    {label:'Truck shipments',val:'Soon',sub:'Border crossings'},
+    {label:'Supply velocity',val:'Soon',sub:'100k lb units'},
+    {label:'Fuel gauge',val:'Soon',sub:'Volume trends'},
+  ]);
+  document.getElementById('rpt-content').innerHTML=`
+    <div class="movement-placeholder">
+      <div class="movement-placeholder-icon">📦</div>
+      <div class="movement-placeholder-title">Movement Data — Coming Soon</div>
+      <div class="movement-placeholder-sub">Daily Movement, National Truck Shipments, and Supply Velocity reports are being integrated. This tab will show volume counts by commodity, origin, and transport mode.</div>
+      <div class="movement-placeholder-tags">
+        <span class="movement-tag">Daily Movement</span>
+        <span class="movement-tag">National Truck Shipments</span>
+        <span class="movement-tag">Supply Velocity</span>
+        <span class="movement-tag">Border Crossings</span>
+      </div>
+    </div>`;
+}
+
+// ── COMMODITY DETAIL — Market Views tabs ─────────────────────────
+let cdActiveTab='terminal';
+let currentCommodity='';
+
+function cdSetTab(tab){
+  cdActiveTab=tab;
+  document.querySelectorAll('[data-cdtab]').forEach(b=>b.classList.toggle('on',b.dataset.cdtab===tab));
+  renderCdTab();
+}
+
+function renderCdTab(){
+  if(cdActiveTab==='terminal')renderCdTerminal();
+  else if(cdActiveTab==='shipping')renderCdShipping();
+  else renderCdMovement();
+}
+
+function renderCdTerminal(){
+  // This is the existing page body — just show it
+  document.getElementById('cd-tab-content').style.display='block';
+  document.getElementById('cd-shipping-content').style.display='none';
+  document.getElementById('cd-movement-content').style.display='none';
+}
+
+function renderCdShipping(){
+  document.getElementById('cd-tab-content').style.display='none';
+  document.getElementById('cd-movement-content').style.display='none';
+  const el=document.getElementById('cd-shipping-content');
+  el.style.display='block';
+  const c=currentCommodity;
+  if(!c){el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-4);">No commodity selected</div>';return;}
+  // Use already-loaded allData
+  const spRows=allData.filter(r=>r.commodity===c&&r.market_type==='shipping_point'&&r.market!=='National Trends'&&r.price_low!=null);
+  const trendRows=allData.filter(r=>r.commodity===c&&r.market==='National Trends');
+  if(!spRows.length&&!trendRows.length){
+    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text-4);">No shipping point data for '+c+'</div>';
+    return;
+  }
+  const spPrices=spRows.map(r=>parseFloat(r.price_low));
+  const avgFOB=spPrices.length?spPrices.reduce((a,b)=>a+b,0)/spPrices.length:null;
+  el.innerHTML=`
+    <div style="padding:20px 24px;">
+      ${avgFOB?`<div style="margin-bottom:20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);margin-bottom:8px;">Avg FOB Price</div>
+        <div style="font-family:var(--mono);font-size:36px;font-weight:600;color:var(--text);">$${avgFOB.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--text-4);margin-top:4px;">Average across ${[...new Set(spRows.map(r=>r.market))].length} shipping hub${spRows.length!==1?'s':''}</div>
+      </div>`:''}
+      ${spRows.length?`
+        <div class="data-wrap" style="margin-bottom:16px;">
+          <div class="hist-head">F.O.B. by origin hub</div>
+          <div class="tbl-scroll"><table class="slim-tbl">
+            <thead><tr><th>Hub</th><th>Origin</th><th class="r">FOB Price</th><th class="r">Movement</th></tr></thead>
+            <tbody>${spRows.sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low)).map((r,i)=>`
+              <tr style="${i===0?'background:var(--green-lt);':''}">
+                <td style="font-weight:600;color:${i===0?'var(--green-dk)':'var(--text)'};">${r.market}${i===0?' <span style="font-size:10px;color:var(--green-dk);">best</span>':''}</td>
+                <td style="color:var(--text-3);font-size:13px;">${r.origin||'—'}</td>
+                <td class="r" style="font-family:var(--mono);font-weight:600;color:${i===0?'var(--green-dk)':'var(--text)'};">$${parseFloat(r.price_low).toFixed(2)}</td>
+                <td class="r"><span class="badge ${(r.movement||'').includes('Higher')?'badge-up':(r.movement||'').includes('Lower')?'badge-dn':'badge-fl'}">${r.movement||'—'}</span></td>
+              </tr>`).join('')}
+            </tbody>
+          </table></div>
+        </div>`:''}
+      ${trendRows.length?`
+        <div class="data-wrap">
+          <div class="hist-head">National Trends · Forward-looking signals</div>
+          ${trendRows.map(r=>`
+            <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                <span class="sentiment ${sentimentScore(r)>0?'pos':sentimentScore(r)<0?'neg':'neu'}">${sentimentScore(r)>0?'+':''}${sentimentScore(r)}</span>
+                <span style="font-size:13px;font-weight:600;color:var(--text);">${r.origin||'National'}</span>
+                <span class="badge ${(r.movement||'').includes('Higher')?'badge-up':(r.movement||'').includes('Lower')?'badge-dn':'badge-fl'}">${r.movement||'Steady'}</span>
+              </div>
+              ${r.supply_note?`<div style="font-size:12px;color:var(--text-3);font-style:italic;">${r.supply_note}</div>`:''}
+            </div>`).join('')}
+        </div>`:''}
+    </div>`;
+}
+
+function renderCdMovement(){
+  document.getElementById('cd-tab-content').style.display='none';
+  document.getElementById('cd-shipping-content').style.display='none';
+  const el=document.getElementById('cd-movement-content');
+  el.style.display='block';
+  el.innerHTML=`<div style="padding:48px 24px;">
+    <div class="movement-placeholder">
+      <div class="movement-placeholder-icon">📦</div>
+      <div class="movement-placeholder-title">Movement data coming soon</div>
+      <div class="movement-placeholder-sub">Volume counts, truck shipments, and border crossing data for ${currentCommodity} will appear here.</div>
+      <div class="movement-placeholder-tags">
+        <span class="movement-tag">Daily Volume</span>
+        <span class="movement-tag">Truck Shipments</span>
+        <span class="movement-tag">Border Crossings</span>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ── COMPARE ──────────────────────────────

@@ -81,6 +81,57 @@ def get_markets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/reports/terminal")
+def get_terminal_report(date: str = None):
+    """All terminal market rows for a given date (defaults to latest)."""
+    try:
+        q = supabase.table(TABLE).select("*").eq("market_type", "terminal")
+        if date:
+            q = q.eq("report_date", date)
+        else:
+            dates_result = supabase.table(TABLE).select("report_date").eq("market_type", "terminal").order("report_date", desc=True).limit(1).execute()
+            if dates_result.data:
+                latest = dates_result.data[0]["report_date"]
+                q = q.eq("report_date", latest)
+        result = q.limit(50000).execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/reports/shipping-points")
+def get_shipping_points(date: str = None):
+    """All FOB shipping point rows (excl. National Trends) for a given date."""
+    try:
+        q = supabase.table(TABLE).select("*").eq("market_type", "shipping_point").neq("market", "National Trends")
+        if date:
+            q = q.eq("report_date", date)
+        else:
+            dates_result = supabase.table(TABLE).select("report_date").eq("market_type", "shipping_point").neq("market", "National Trends").order("report_date", desc=True).limit(1).execute()
+            if dates_result.data:
+                latest = dates_result.data[0]["report_date"]
+                q = q.eq("report_date", latest)
+        result = q.limit(50000).execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/reports/trends")
+def get_national_trends(date: str = None):
+    """National Trends (FVWTRDS) rows — movement direction + commentary."""
+    try:
+        q = supabase.table(TABLE).select("*").eq("market", "National Trends")
+        if date:
+            q = q.eq("report_date", date)
+        else:
+            dates_result = supabase.table(TABLE).select("report_date").eq("market", "National Trends").order("report_date", desc=True).limit(1).execute()
+            if dates_result.data:
+                latest = dates_result.data[0]["report_date"]
+                q = q.eq("report_date", latest)
+        result = q.limit(10000).execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/stats")
 def get_stats():
     try:
