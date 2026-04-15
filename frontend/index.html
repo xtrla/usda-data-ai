@@ -676,17 +676,154 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 
   <!-- ═══ SHIPPING POINTS ═══ -->
   <div id="page-shipping" class="page">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title-bar"><div class="section-accent"></div><span class="section-title">Shipping Points — F.O.B. Origin Pricing</span></div>
+    <!-- Layer 2 override for shipping page — Quick Filter bar -->
+    <div style="background:#f1f4f7;border-bottom:1px solid rgba(171,179,185,.3);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div style="display:flex;align-items:center;gap:8px;overflow-x:auto;">
+        <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-right:8px;">Quick Filter:</span>
+        <select id="sp-region" onchange="spFilter()" style="background:#fff;border:1px solid var(--outline-variant);padding:4px 10px;font-family:'Space Grotesk',monospace;font-size:11px;font-weight:700;color:var(--on-surface);text-transform:uppercase;outline:none;cursor:pointer;height:30px;">
+          <option value="All">Region: All</option>
+          <option value="Western">Region: Western</option>
+          <option value="East Coast">Region: East Coast</option>
+          <option value="Southern">Region: Southern</option>
+        </select>
+        <input id="sp-search" onkeydown="spFilter()" oninput="spFilter()" placeholder="+ Filter commodity…" style="border:1px dashed var(--outline);background:transparent;padding:4px 10px;font-family:'Space Grotesk',monospace;font-size:10px;text-transform:uppercase;color:var(--outline);outline:none;height:30px;width:180px;">
       </div>
-      <div class="funnel-nav">
-        <button class="funnel-tab on" onclick="spSetTab('pulse')"><span class="step-num">1</span>The Pulse</button>
-        <button class="funnel-tab" onclick="spSetTab('momentum')"><span class="step-num">2</span>Momentum</button>
-        <button class="funnel-tab" onclick="spSetTab('hub')"><span class="step-num">3</span>Hub Deep-Dive</button>
+      <div style="display:flex;align-items:center;border:1px solid var(--outline-variant);background:#fff;">
+        <button onclick="spSetView('table')" id="sp-view-tbl" style="background:var(--surface-container-high);border:none;padding:6px 12px;cursor:pointer;border-right:1px solid var(--outline-variant);font-size:14px;">⊞</button>
+        <button onclick="spSetView('map')" id="sp-view-map" style="background:transparent;border:none;padding:6px 12px;cursor:pointer;font-size:14px;color:var(--outline);">⊟</button>
       </div>
-      <div id="sp-content"></div>
     </div>
+
+    <div style="padding:24px;padding-bottom:80px;">
+
+      <!-- 3-column intelligence row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:24px;">
+
+        <!-- Logistics Pulse -->
+        <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+              <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--outline);">Logistics Pulse</span>
+              <span id="sp-logistics-status" style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;color:var(--secondary);display:flex;align-items:center;gap:4px;">● OPTIMAL</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--on-surface-variant);">Reefer Availability</span>
+                <span id="sp-reefer" style="font-family:'Space Grotesk',monospace;font-size:14px;font-weight:700;color:var(--on-surface);">HIGH (88%)</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--on-surface-variant);">Active Markets</span>
+                <span id="sp-active-markets" style="font-family:'Space Grotesk',monospace;font-size:14px;font-weight:700;color:var(--on-surface);">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--on-surface-variant);">Avg F.O.B. Price</span>
+                <span id="sp-avg-fob" style="font-family:'Space Grotesk',monospace;font-size:14px;font-weight:700;color:var(--tertiary);">--</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding-top:14px;border-top:1px solid rgba(171,179,185,.2);">
+            <button onclick="navigate('intelligence')" style="width:100%;text-align:left;background:none;border:none;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--primary);cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:.06em;">View Freight Index →</button>
+          </div>
+        </div>
+
+        <!-- Growing District Weather (static + data-driven label) -->
+        <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+              <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--outline);">Growing District Weather</span>
+              <span id="sp-weather-status" style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;color:var(--tertiary);">⚠ HARVEST IMPACT</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px;">
+              <div style="text-align:center;background:var(--surface);padding:8px 4px;border:1px solid rgba(171,179,185,.3);">
+                <span style="display:block;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--outline);margin-bottom:4px;">Mon</span>
+                <span style="font-size:16px;display:block;margin:4px 0;">☀</span>
+                <span style="display:block;font-size:10px;font-weight:700;">72°</span>
+              </div>
+              <div style="text-align:center;background:var(--surface);padding:8px 4px;border:1px solid rgba(171,179,185,.3);">
+                <span style="display:block;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--outline);margin-bottom:4px;">Tue</span>
+                <span style="font-size:16px;display:block;margin:4px 0;">⛅</span>
+                <span style="display:block;font-size:10px;font-weight:700;">68°</span>
+              </div>
+              <div style="text-align:center;background:var(--surface);padding:8px 4px;border:1px solid rgba(171,179,185,.3);border-bottom:2px solid var(--tertiary);">
+                <span style="display:block;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--outline);margin-bottom:4px;">Wed</span>
+                <span style="font-size:16px;display:block;margin:4px 0;color:var(--tertiary);">🌧</span>
+                <span style="display:block;font-size:10px;font-weight:700;">61°</span>
+              </div>
+              <div style="text-align:center;background:var(--surface);padding:8px 4px;border:1px solid rgba(171,179,185,.3);">
+                <span style="display:block;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--outline);margin-bottom:4px;">Thu</span>
+                <span style="font-size:16px;display:block;margin:4px 0;">🌨</span>
+                <span style="display:block;font-size:10px;font-weight:700;">58°</span>
+              </div>
+              <div style="text-align:center;background:var(--surface);padding:8px 4px;border:1px solid rgba(171,179,185,.3);">
+                <span style="display:block;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--outline);margin-bottom:4px;">Fri</span>
+                <span style="font-size:16px;display:block;margin:4px 0;">☀</span>
+                <span style="display:block;font-size:10px;font-weight:700;">64°</span>
+              </div>
+            </div>
+          </div>
+          <p id="sp-weather-note" style="font-size:11px;color:var(--on-surface-variant);font-style:italic;">Heavy precipitation expected Wed–Thu. Harvest delays anticipated.</p>
+        </div>
+
+        <!-- Sentiment Analysis -->
+        <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+              <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--outline);">Sentiment Analysis</span>
+              <span id="sp-sent-label" style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;color:var(--primary);">NEUTRAL</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;" id="sp-sentiment-feed"></div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(171,179,185,.2);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:'Space Grotesk',monospace;font-size:10px;text-transform:uppercase;color:var(--outline);">Source: USDA AMS</span>
+            <span id="sp-agcore" style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;color:var(--secondary);">-- AGCORE SCORE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily F.O.B. Pricing Ledger -->
+      <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);">
+        <!-- Ledger header -->
+        <div style="padding:14px 24px;border-bottom:1px solid var(--outline-variant);background:var(--surface);display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span style="font-family:'Space Grotesk',monospace;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;">Daily F.O.B. Pricing Ledger</span>
+            <span id="sp-data-ref" style="font-family:'Space Grotesk',monospace;font-size:11px;color:var(--outline);margin-left:12px;">DATA REF: --</span>
+          </div>
+          <div style="display:flex;gap:16px;">
+            <button style="background:none;border:none;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--on-surface);display:flex;align-items:center;gap:6px;letter-spacing:.06em;">↓ Export CSV</button>
+            <button style="background:none;border:none;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;color:var(--on-surface);display:flex;align-items:center;gap:6px;letter-spacing:.06em;">⎙ Print</button>
+          </div>
+        </div>
+        <!-- Table -->
+        <div style="overflow-x:auto;">
+          <table class="data-tbl" id="sp-tbl">
+            <thead>
+              <tr>
+                <th style="width:40px;"></th>
+                <th onclick="spSort('district')">District / Origin</th>
+                <th onclick="spSort('commodity')">Commodity & Variety</th>
+                <th onclick="spSort('pack')">Pack / Size</th>
+                <th class="r" onclick="spSort('price')">F.O.B. Price</th>
+                <th style="text-align:center;" onclick="spSort('delta')">Δ Daily</th>
+                <th onclick="spSort('tone')">Market Tone</th>
+                <th class="r">7-Day Vol.</th>
+              </tr>
+            </thead>
+            <tbody id="sp-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Ledger footer -->
+        <div style="padding:14px 24px;background:var(--surface);border-top:1px solid var(--outline-variant);display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:20px;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--outline);">
+            <span>Total Origins: <span id="sp-origin-count">--</span></span>
+            <span>Active SKUs: <span id="sp-sku-count">--</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;">
+            <button class="pg-btn" id="sp-prev" onclick="spPrev()" disabled>Prev</button>
+            <span id="sp-pg-label" style="padding:0 12px;color:var(--outline);">Page 1 of --</span>
+            <button class="pg-btn" id="sp-next" onclick="spNext()">Next</button>
+          </div>
+        </div>
+      </div>
   </div>
 
   <!-- ═══ MOVEMENT ═══ -->
@@ -1125,101 +1262,166 @@ function renderDashTable(){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// SHIPPING POINTS
+// SHIPPING POINTS — Daily F.O.B. Pricing Ledger
 // ══════════════════════════════════════════════════════════════════
-let spTab='pulse';
-function spSetTab(tab){
-  spTab=tab;
-  document.querySelectorAll('.funnel-tab').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick').includes("'"+tab+"'")));
-  renderShipping();
+let spFilt=[],spPg=1,spSortCol='district',spSortDir=1;
+const SP_PG=25;
+
+function spSetView(view){
+  document.getElementById('sp-view-tbl').style.background=view==='table'?'var(--surface-container-high)':'transparent';
+  document.getElementById('sp-view-map').style.background=view==='map'?'var(--surface-container-high)':'transparent';
 }
+
 function renderShipping(){
-  const el=document.getElementById('sp-content');
-  if(!el||!allData.length)return;
-  const data=allData.filter(r=>r.market_type==='shipping_point'&&r.market!=='National Trends');
-  if(spTab==='pulse')renderSPPulse(el,data);
-  else if(spTab==='momentum')renderSPMomentum(el,data);
-  else renderSPHub(el,data);
+  if(!allData.length)return;
+  buildSPCards();
+  spFilter();
 }
-function renderSPPulse(el,data){
-  const byComm={};
-  data.filter(r=>r.price_low!=null).forEach(r=>{
-    if(!byComm[r.commodity])byComm[r.commodity]={c:r.commodity,prices:[],hubs:new Set(),origins:new Set()};
-    byComm[r.commodity].prices.push(parseFloat(r.price_low));
-    byComm[r.commodity].hubs.add(r.market);
-    if(r.origin)byComm[r.commodity].origins.add(r.origin);
+
+function buildSPCards(){
+  const data=allData.filter(r=>r.market_type==='shipping_point'&&r.market!=='National Trends'&&r.price_low!=null);
+  // Logistics card
+  const activeCount=[...new Set(data.filter(r=>r.trading_activity&&r.trading_activity.toLowerCase().includes('active')).map(r=>r.market))].length;
+  const totalMkts=[...new Set(data.map(r=>r.market))].length;
+  const prices=data.map(r=>parseFloat(r.price_low));
+  const avgFob=prices.length?(prices.reduce((a,b)=>a+b,0)/prices.length):0;
+  const higher=data.filter(r=>r.movement&&r.movement.includes('Higher')).length;
+  const lower=data.filter(r=>r.movement&&r.movement.includes('Lower')).length;
+  const health=activeCount>8?'OPTIMAL':activeCount>4?'MODERATE':'LOW';
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  setEl('sp-logistics-status',`<span style="color:${health==='OPTIMAL'?'var(--secondary)':health==='MODERATE'?'var(--primary)':'var(--tertiary)'}">● ${health}</span>`);
+  setEl('sp-active-markets',`${activeCount} / ${totalMkts} mkts`);
+  setEl('sp-avg-fob',`<span style="color:${avgFob>30?'var(--tertiary)':'var(--on-surface)'}">${fmt(avgFob)}</span>`);
+  // Data ref
+  if(dates[0]){
+    const d=new Date(dates[0].date+'T12:00:00');
+    setEl('sp-data-ref',`DATA REF: ${d.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'})} · USDA AMS`);
+  }
+  // Agcore score
+  const sentAvg=data.map(r=>sentimentScore(r)).reduce((a,b)=>a+b,0)/Math.max(1,data.length);
+  const agcore=Math.min(100,Math.max(0,(sentAvg+5)/10*100)).toFixed(1);
+  setEl('sp-agcore',`${agcore} AGCORE SCORE`);
+  // Sentiment label
+  setEl('sp-sent-label',higher>lower?'BULLISH':lower>higher?'BEARISH':'NEUTRAL');
+  // Sentiment feed — pull from National Trends
+  const trendRows=allData.filter(r=>r.market==='National Trends'&&r.supply_note&&r.supply_note.length>10);
+  const bullRows=trendRows.filter(r=>sentimentScore(r)>0).slice(0,2);
+  const bearRows=trendRows.filter(r=>sentimentScore(r)<0).slice(0,2);
+  const sentFeed=document.getElementById('sp-sentiment-feed');
+  if(sentFeed){
+    sentFeed.innerHTML=[
+      ...bullRows.map(r=>`<div style="display:flex;gap:10px;"><div style="width:3px;background:var(--secondary);flex-shrink:0;"></div><p style="font-size:12px;line-height:1.5;"><strong>Bullish:</strong> ${r.commodity}${r.origin?' in '+r.origin:''} — ${(r.supply_note||'').slice(0,100).toLowerCase()}</p></div>`),
+      ...bearRows.map(r=>`<div style="display:flex;gap:10px;"><div style="width:3px;background:var(--tertiary);flex-shrink:0;"></div><p style="font-size:12px;line-height:1.5;"><strong>Bearish:</strong> ${r.commodity}${r.origin?' in '+r.origin:''} — ${(r.supply_note||'').slice(0,100).toLowerCase()}</p></div>`)
+    ].join('') || '<div style="font-size:12px;color:var(--on-surface-variant);">No sentiment data available</div>';
+  }
+  // Weather note — pull from quality notes
+  const weatherNotes=allData.filter(r=>r.supply_note&&(r.supply_note.toLowerCase().includes('rain')||r.supply_note.toLowerCase().includes('heat')||r.supply_note.toLowerCase().includes('weather')||r.supply_note.toLowerCase().includes('frost'))).slice(0,1);
+  if(weatherNotes.length){
+    const note=weatherNotes[0];
+    const wnEl=document.getElementById('sp-weather-note');
+    if(wnEl)wnEl.textContent=(note.supply_note||'').charAt(0)+(note.supply_note||'').slice(1).toLowerCase();
+    const wsEl=document.getElementById('sp-weather-status');
+    if(wsEl)wsEl.textContent='⚠ HARVEST IMPACT';
+  } else {
+    const wsEl=document.getElementById('sp-weather-status');
+    if(wsEl){wsEl.textContent='● NORMAL';wsEl.style.color='var(--secondary)';}
+  }
+}
+
+function spSort(col){if(spSortCol===col)spSortDir*=-1;else{spSortCol=col;spSortDir=1;}spRender();}
+function spPrev(){if(spPg>1){spPg--;spRender();}}
+function spNext(){spPg++;spRender();}
+
+function spFilter(){
+  const q=(document.getElementById('sp-search')?.value||''). toLowerCase();
+  const region=document.getElementById('sp-region')?.value||'All';
+  spFilt=allData.filter(r=>{
+    if(r.market_type!=='shipping_point'||r.market==='National Trends')return false;
+    if(q&&!`${r.commodity} ${r.origin||''} ${r.market} ${r.variety||''} `.toLowerCase().includes(q))return false;
+    if(region!=='All'){
+      const orig=(r.origin||r.market||''). toLowerCase();
+      if(region==='Western'&&!orig.includes('california')&&!orig.includes('ca')&&!orig.includes('nogales')&&!orig.includes('arizona')&&!orig.includes('fresno')&&!orig.includes('salinas'))return false;
+      if(region==='East Coast'&&!orig.includes('florida')&&!orig.includes('orlando')&&!orig.includes('miami'))return false;
+      if(region==='Southern'&&!orig.includes('texas')&&!orig.includes('georgia')&&!orig.includes('carolina'))return false;
+    }
+    return true;
   });
-  const rows=Object.values(byComm).sort((a,b)=>a.c.localeCompare(b.c));
-  el.innerHTML=`<div style="overflow-x:auto;"><table class="data-tbl"><thead><tr>
-    <th>Commodity</th><th>Origins</th><th class="r">Avg F.O.B.</th><th class="r">Low</th><th class="r">High</th><th class="r">Hubs</th><th style="text-align:center;">Signal</th>
-  </tr></thead><tbody>${rows.map(r=>{
-    const avg=r.prices.reduce((a,b)=>a+b,0)/r.prices.length;
-    const lo=Math.min(...r.prices),hi=Math.max(...r.prices);
-    const s=sentimentScore({movement:data.find(d=>d.commodity===r.c)?.movement||''});
-    return`<tr onclick="openPanel('${r.c.replace(/'/g,"\\'")}')">
-      <td><div class="comm-name">${r.c}</div></td>
-      <td style="font-size:11px;color:var(--on-surface-variant);">${[...r.origins].slice(0,2).join(', ')||'—'}</td>
-      <td class="r" style="font-weight:700;">${fmt(avg)}</td>
-      <td class="r" style="color:var(--secondary);font-weight:700;">${fmt(lo)}</td>
-      <td class="r" style="color:var(--on-surface-variant);">${fmt(hi)}</td>
-      <td class="r" style="font-size:11px;font-family:'Space Grotesk',monospace;">${r.hubs.size}</td>
-      <td style="text-align:center;"><span class="sent-score ${s>0?'pos':s<0?'neg':'neu'}">${s>0?'+':''}${s}</span></td>
+  // Sort
+  spFilt.sort((a,b)=>{
+    if(spSortCol==='district')return spSortDir*(a.origin||a.market||'').localeCompare(b.origin||b.market||'');
+    if(spSortCol==='commodity')return spSortDir*a.commodity.localeCompare(b.commodity);
+    if(spSortCol==='price')return spSortDir*(parseFloat(b.price_low||0)-parseFloat(a.price_low||0));
+    if(spSortCol==='delta')return spSortDir*(Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
+    return 0;
+  });
+  spPg=1;spRender();
+}
+
+function spRender(){
+  const st=(spPg-1)*SP_PG,items=spFilt.slice(st,st+SP_PG),tot=Math.ceil(spFilt.length/SP_PG)||1;
+  const pb=document.getElementById('sp-prev'),nb=document.getElementById('sp-next');
+  if(pb)pb.disabled=spPg<=1;if(nb)nb.disabled=spPg>=tot;
+  const pgLbl=document.getElementById('sp-pg-label');
+  if(pgLbl)pgLbl.textContent=`Page ${spPg} of ${tot}`;
+  const origins=[...new Set(spFilt.map(r=>r.origin||r.market))].length;
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setEl('sp-origin-count',origins);
+  setEl('sp-sku-count',spFilt.length);
+  const tbody=document.getElementById('sp-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=items.map(r=>{
+    const chg=getTrend(r.commodity);
+    const iU=chg>0.2,iD=chg<-0.2;
+    const lo=parseFloat(r.price_low),hi=parseFloat(r.price_high||r.price_low);
+    const mv=r.movement||r.trading_activity||'';
+    // Market tone chip
+    let toneCls,toneTxt;
+    if(mv.toLowerCase().includes('higher')||mv.toLowerCase().includes('active')){toneCls='background:rgba(181,41,0,.1);color:var(--tertiary);';toneTxt='Demand Exceeds Supply';}
+    else if(mv.toLowerCase().includes('lower')||mv.toLowerCase().includes('weaker')){toneCls='background:rgba(87,94,112,.1);color:var(--primary);';toneTxt='Slightly Weaker';}
+    else if(mv.toLowerCase().includes('good')||mv.toLowerCase().includes('fairly')){toneCls='background:rgba(0,110,42,.1);color:var(--secondary);';toneTxt='Demand Fairly Good';}
+    else{toneCls='background:var(--surface-container);color:var(--on-surface-variant);border:1px solid var(--outline-variant);';toneTxt='Steady';}
+    if(r.trading_activity&&r.trading_activity.toLowerCase().includes('active'))toneTxt='Demand Exceeds Supply';
+    // Sparkline from history
+    const sparkBars=Array.from({length:7},(_,i)=>{
+      const di=dates[6-i];if(!di)return'<div style="width:3px;background:rgba(171,179,185,.3);height:4px;"></div>';
+      const dr=datesData[di.date]?.filter(x=>x.commodity===r.commodity&&x.price_low!=null)||[];
+      if(!dr.length)return'<div style="width:3px;background:rgba(171,179,185,.3);height:4px;"></div>';
+      const avg=dr.reduce((s,x)=>s+parseFloat(x.price_low),0)/dr.length;
+      const maxP=parseFloat(r.price_high||r.price_low)*1.1;
+      const pct=Math.round((avg/maxP)*24);
+      return`<div style="width:3px;background:var(--primary);height:${Math.max(4,pct)}px;"></div>`;
+    }).join('');
+    const regionLabel=r.origin?(r.origin.includes('California')||r.origin.includes('CA')||r.origin.includes('ca')?'West Coast Hub':r.origin.includes('Florida')||r.origin.includes('FL')?'East Coast Hub':r.origin.includes('Texas')||r.origin.includes('TX')?'Southern Hub':'Regional Hub'):r.market||'Origin Hub';
+    return`<tr style="transition:background .05s;cursor:pointer;" onmouseenter="this.style.background='var(--surface-container-low)'" onmouseleave="this.style.background=''" onclick="openPanel('${r.commodity.replace(/'/g,"\\'")}')">
+      <td style="padding:16px;text-align:center;">
+        <span style="color:var(--outline);cursor:pointer;font-size:18px;" onclick="event.stopPropagation();this.textContent=this.textContent==='★'?'☆':'★'">☆</span>
+      </td>
+      <td style="padding:16px;">
+        <span style="font-weight:700;display:block;font-size:13px;text-transform:uppercase;letter-spacing:.02em;">${(r.origin||r.market||'—').toUpperCase()}</span>
+        <span style="font-family:'Space Grotesk',monospace;font-size:10px;text-transform:uppercase;color:var(--outline);letter-spacing:.06em;">${regionLabel}</span>
+      </td>
+      <td style="padding:16px;">
+        <span style="font-size:13px;font-weight:500;">${r.commodity}${r.variety?': '+r.variety:''}</span>
+      </td>
+      <td style="padding:16px;font-size:13px;color:var(--on-surface-variant);">${r.package||'—'}</td>
+      <td style="padding:16px;text-align:right;font-family:'Space Grotesk',monospace;font-size:16px;font-weight:700;">
+        ${fmt(lo)}${hi&&hi!==lo?' – '+hi.toFixed(2):''}
+      </td>
+      <td style="padding:16px;text-align:center;">
+        <span style="font-family:'Space Grotesk',monospace;font-weight:700;font-size:13px;color:${iU?'var(--secondary)':iD?'var(--tertiary)':'var(--on-surface-variant)'};display:flex;align-items:center;justify-content:center;gap:2px;">
+          ${iU?'▲':iD?'▼':''} ${Math.abs(chg).toFixed(2)}
+        </span>
+      </td>
+      <td style="padding:16px;">
+        <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;letter-spacing:.05em;${toneCls}">${toneTxt}</span>
+      </td>
+      <td style="padding:16px;">
+        <div style="display:flex;align-items:flex-end;gap:2px;height:24px;justify-content:flex-end;">
+          ${sparkBars}
+        </div>
+      </td>
     </tr>`;
-  }).join('')}</tbody></table></div>
-  <div class="tbl-foot"><span class="tbl-foot-label">${rows.length} commodities · F.O.B. national aggregate</span></div>`;
-}
-function renderSPMomentum(el,data){
-  const byComm={};
-  data.forEach(r=>{
-    if(!byComm[r.commodity])byComm[r.commodity]={c:r.commodity,scores:[],movs:new Set(),origins:new Set()};
-    byComm[r.commodity].scores.push(sentimentScore(r));
-    if(r.movement)byComm[r.commodity].movs.add(r.movement);
-    if(r.origin)byComm[r.commodity].origins.add(r.origin);
-  });
-  const rows=Object.values(byComm).map(r=>({...r,avg:r.scores.reduce((a,b)=>a+b,0)/r.scores.length})).sort((a,b)=>b.avg-a.avg);
-  el.innerHTML=`<div style="overflow-x:auto;"><table class="data-tbl"><thead><tr>
-    <th>Commodity</th><th>Origins</th><th>Direction</th><th class="r">Momentum Score</th>
-  </tr></thead><tbody>${rows.map(r=>{
-    const s=Math.round(r.avg*10)/10;
-    const lbl=s>=2?'Bullish':s>=0.5?'Rising':s<=-2?'Bearish':s<=-0.5?'Falling':'Steady';
-    return`<tr onclick="openPanel('${r.c.replace(/'/g,"\\'")}')">
-      <td><div class="comm-name">${r.c}</div><div class="comm-origin">${[...r.origins].slice(0,1).join(', ')}</div></td>
-      <td style="font-size:11px;color:var(--on-surface-variant);">${[...r.movs].join(', ')||'—'}</td>
-      <td><span class="vel-chip ${s>0?'vel-rising':s<0?'vel-heavy-vol':'vel-stable'}">${lbl}</span></td>
-      <td class="r"><span class="sent-score ${s>0?'pos':s<0?'neg':'neu'}">${s>0?'+':''}${s}</span></td>
-    </tr>`;
-  }).join('')}</tbody></table></div>`;
-}
-function renderSPHub(el,data){
-  const byHub={};
-  data.forEach(r=>{
-    if(!byHub[r.market])byHub[r.market]={market:r.market,rows:[]};
-    byHub[r.market].rows.push(r);
-  });
-  el.innerHTML=Object.values(byHub).sort((a,b)=>a.market.localeCompare(b.market)).map(hub=>{
-    const prices=hub.rows.filter(r=>r.price_low!=null).map(r=>parseFloat(r.price_low));
-    const avg=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:null;
-    const qNotes=[...new Set(hub.rows.filter(r=>r.quality_note).map(r=>r.quality_note))];
-    const sNotes=[...new Set(hub.rows.filter(r=>r.supply_note).map(r=>r.supply_note))].slice(0,1);
-    return`<div style="border-bottom:1px solid var(--outline-variant);">
-      <div style="background:var(--surface-container);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--outline-variant);">
-        <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--on-surface);">${hub.market}</span>
-        <span style="font-family:'Space Grotesk',monospace;font-size:10px;color:var(--on-surface-variant);">${avg?fmt(avg)+' avg':''} · ${hub.rows.length} listings</span>
-      </div>
-      ${qNotes.length?`<div style="padding:6px 16px;font-size:11px;color:var(--on-surface-variant);border-bottom:1px solid var(--surface-container-high);"><strong>Quality:</strong> ${qNotes.join(' · ')}</div>`:''}
-      ${sNotes.length?`<div style="padding:6px 16px;font-size:11px;color:var(--on-surface-variant);font-style:italic;border-bottom:1px solid var(--surface-container-high);">${sNotes[0].slice(0,200)}</div>`:''}
-      <div style="overflow-x:auto;"><table class="data-tbl"><thead><tr><th>Commodity</th><th>Origin</th><th class="r">F.O.B. Price</th><th class="r">Movement</th></tr></thead>
-      <tbody>${hub.rows.sort((a,b)=>a.commodity.localeCompare(b.commodity)).map(r=>{
-        const mv=r.movement||'';
-        return`<tr onclick="openPanel('${r.commodity.replace(/'/g,"\\'")}')">
-          <td class="comm-name">${r.commodity}</td>
-          <td style="font-size:11px;color:var(--on-surface-variant);">${r.origin||'—'}</td>
-          <td class="r" style="font-weight:700;">${fmt(r.price_low)}</td>
-          <td class="r"><span class="${mv.includes('Higher')?'delta-up':mv.includes('Lower')?'delta-dn':'delta-fl'}">${mv||'—'}</span></td>
-        </tr>`;
-      }).join('')}</tbody></table></div>
-    </div>`;
-  }).join('');
+  }).join('')||'<tr><td colspan="8" style="padding:32px;text-align:center;color:var(--on-surface-variant);font-size:12px;">No shipping point data found</td></tr>';
 }
 
 // ══════════════════════════════════════════════════════════════════
