@@ -156,14 +156,14 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 }
 .section-header{
   background:var(--carbon);
-  padding:0 16px;
+  padding:8px 16px;
   display:flex;align-items:center;justify-content:space-between;
-  height:44px;gap:12px;
+  min-height:44px;gap:8px;flex-wrap:wrap;
 }
 .section-title-bar{display:flex;align-items:center;gap:8px;}
 .section-accent{width:3px;height:16px;background:var(--secondary-container);}
 .section-title{font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#fff;}
-.section-controls{display:flex;align-items:center;gap:6px;}
+.section-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;overflow-x:auto;}
 .filter-pill{
   background:transparent;border:1px solid rgba(255,255,255,.2);
   color:rgba(255,255,255,.6);
@@ -175,7 +175,7 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 .filter-pill.on{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.5);}
 .tbl-search{
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  color:#fff;padding:0 10px;height:24px;font-size:11px;outline:none;width:180px;
+  color:#fff;padding:0 10px;height:24px;font-size:11px;outline:none;width:160px;max-width:100%;
   font-family:'Space Grotesk',monospace;
 }
 .tbl-search::placeholder{color:rgba(255,255,255,.35);}
@@ -320,6 +320,9 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 
 /* Arbitrage bridge */
 .arb-bridge{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:0;margin-bottom:12px;}
+@media(max-width:480px){.arb-bridge{grid-template-columns:1fr;gap:4px;}
+.arb-op{text-align:left;padding:2px 0;font-size:12px;}
+.arb-node{padding:8px;}}
 .arb-node{background:var(--surface-container);border:1px solid var(--outline-variant);padding:12px;text-align:center;}
 .arb-node-label{font-family:'Space Grotesk',monospace;font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--on-surface-variant);margin-bottom:6px;}
 .arb-node-val{font-size:18px;font-weight:700;color:var(--on-surface);}
@@ -391,6 +394,8 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 
 /* ── QUICK PRICE CHECK ────────────────── */
 #qpc-commodity:focus,#qpc-market:focus{border-color:var(--primary);z-index:1;position:relative;}
+.sp-intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:900px){.sp-intel-grid{grid-template-columns:1fr!important;}}
 @media(max-width:768px){
   #qpc-widget>div:first-child{flex-wrap:wrap;}
   #qpc-commodity,#qpc-market{border-left:1px solid var(--outline-variant)!important;flex:1 1 40%;}
@@ -449,19 +454,92 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 
 /* ── MOBILE ───────────────────────────────────────────────────── */
 .mob-menu{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:4px;font-size:20px;line-height:1;}
+
+/* Prevent all horizontal overflow */
+html,body{overflow-x:hidden;max-width:100vw;}
+.main{overflow-x:hidden;}
+.page{overflow-x:hidden;}
+
+/* All tables get horizontal scroll wrapper */
+.tbl-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
+.data-tbl{min-width:600px;}
+
 @media(max-width:768px){
+  /* Nav */
   .mob-menu{display:flex;align-items:center;justify-content:center;}
   .nav-links{display:none;}
   .nav-links.open{
     display:flex;flex-direction:column;
-    position:fixed;top:48px;left:0;right:0;bottom:32px;
-    background:var(--carbon);z-index:199;padding:16px 0;overflow-y:auto;
+    position:fixed;top:56px;left:0;right:0;bottom:32px;
+    background:var(--carbon);z-index:199;padding:8px 0;overflow-y:auto;
     border-top:1px solid rgba(255,255,255,.1);
   }
-  .nav-links.open .nav-link{height:48px;padding:0 24px;justify-content:flex-start;}
-  .nav-l2-filters{overflow-x:auto;padding-bottom:4px;}
-  .main{padding:16px;}
-  .insights-grid{grid-template-columns:1fr;}
+  .nav-links.open .nav-link{height:52px;padding:0 24px;font-size:12px;}
+  .nav-l1{padding:0 16px;height:52px;}
+  .nav-l2{padding:0 12px;height:auto;min-height:44px;flex-wrap:wrap;gap:8px;padding-top:8px;padding-bottom:8px;}
+  .nav-l2-filters{overflow-x:auto;padding-bottom:0;gap:6px;flex-wrap:nowrap;}
+  .ctx-select,.ctx-input{font-size:11px;height:28px;}
+
+  /* Main layout */
+  .main{padding:12px;}
+
+  /* Stat grid */
+  .stat-grid{grid-template-columns:repeat(2,1fr);gap:0;}
+  .stat-card{padding:14px 16px;}
+  .stat-card-val{font-size:22px;}
+
+  /* Tables — all horizontally scrollable */
+  .section>div,#sp-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .data-tbl{min-width:540px;font-size:12px;}
+  .data-tbl thead th{padding:8px 10px;font-size:8px;}
+  .data-tbl tbody td{padding:10px 10px;}
+
+  /* Insights grid */
+  .insights-grid{grid-template-columns:1fr;gap:16px;}
+  .chart-section{padding:16px;}
+  .intel-panel{padding:16px;}
+
+  /* Side panel */
+  .side-panel{width:100%;max-width:100%;}
+  .arb-bridge{grid-template-columns:1fr auto 1fr auto 1fr;}
+  .arb-node-val{font-size:14px;}
+  .arb-spread-val{font-size:20px;}
+  .gt-grid{grid-template-columns:1fr;}
+
+  /* QPC widget */
+  #qpc-widget{padding:12px 16px;}
+  #qpc-widget>div:first-child{flex-wrap:wrap;gap:0;}
+  #qpc-widget>div:first-child>div:first-child{width:100%;flex-shrink:0;height:36px;}
+  #qpc-commodity,#qpc-market{flex:1 1 50%;height:40px;border-left:1px solid var(--outline-variant)!important;border-top:none;font-size:11px;}
+  #qpc-result{display:none!important;}
+  #qpc-result.visible{display:flex!important;flex:1 1 100%;height:auto!important;min-height:44px;padding:10px 14px!important;flex-wrap:wrap;gap:8px;border-left:1px solid var(--outline-variant)!important;border-top:none;}
+  #qpc-ticker{margin-top:8px;}
+  #qpc-movers{gap:8px;}
+
+  /* Shipping page */
+  #page-shipping .insights-row{flex-direction:column;}
+  .sp-intel-grid{grid-template-columns:1fr!important;}
+
+  /* Panel pagination */
+  .tbl-foot{padding:10px 12px;flex-wrap:wrap;gap:8px;}
+  .tbl-foot-label{font-size:9px;}
+
+  /* Footer ticker */
+  .ticker{height:32px;}
+  .ticker-brand{padding:0 10px;font-size:8px;}
+
+  /* Prevent text overflow in table cells */
+  .comm-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+  .comm-origin{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+}
+
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .stat-card-val{font-size:18px;}
+  .stat-card{padding:12px;}
+  .main{padding:8px;}
+  .data-tbl{min-width:480px;}
+  .nav-l1{padding:0 12px;}
 }
 
 @keyframes pulse-glow{0%{box-shadow:0 0 0 0 rgba(105,255,135,.7);}70%{box-shadow:0 0 0 6px rgba(105,255,135,0);}100%{box-shadow:0 0 0 0 rgba(105,255,135,0);}}
@@ -738,7 +816,7 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
     <div style="padding:24px;padding-bottom:80px;">
 
       <!-- 3-column intelligence row -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;" class="sp-intel-grid">
 
         <!-- Logistics Pulse -->
         <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
@@ -820,6 +898,7 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
           </div>
         </div>
       </div>
+      </div><!-- /sp-intel-grid -->
 
       <!-- Daily F.O.B. Pricing Ledger -->
       <div style="background:var(--surface-container-lowest);border:1px solid var(--outline-variant);">
@@ -1200,7 +1279,7 @@ function qpcUpdate(){
   qpcCurrentComm=commSel.value;
   qpcCurrentMkt=mktSel.value;
   if(!qpcCurrentComm||!qpcCurrentMkt){
-    result.style.display='none';
+    result.style.display='none';result.classList.remove('visible');
     if(ticker)ticker.style.display='flex';
     return;
   }
