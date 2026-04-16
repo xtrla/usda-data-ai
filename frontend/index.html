@@ -389,6 +389,14 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 .sent-score.neg{color:var(--tertiary);border-color:var(--tertiary);background:rgba(181,41,0,.08);}
 .sent-score.neu{color:var(--on-surface-variant);border-color:var(--outline-variant);background:var(--surface-container);}
 
+/* ── QUICK PRICE CHECK ────────────────── */
+#qpc-commodity:focus,#qpc-market:focus{border-color:var(--primary);z-index:1;position:relative;}
+@media(max-width:768px){
+  #qpc-widget>div:first-child{flex-wrap:wrap;}
+  #qpc-commodity,#qpc-market{border-left:1px solid var(--outline-variant)!important;flex:1 1 40%;}
+  #qpc-result{border-left:1px solid var(--outline-variant)!important;flex:1 1 100%;height:auto!important;padding:10px 14px!important;flex-direction:column!important;align-items:flex-start!important;gap:8px!important;}
+}
+
 /* ── TICKER TAPE (footer) ─────────────────────────────────────── */
 .ticker{
   position:fixed;bottom:0;left:0;right:0;z-index:500;
@@ -518,6 +526,39 @@ button,input,select{font-family:inherit;font-size:inherit;border-radius:0!import
 
   <!-- ═══ TERMINAL MARKETS (default active) ═══ -->
   <div id="page-terminal" class="page active">
+
+    <!-- ── QUICK PRICE CHECK HERO WIDGET ─────────────────────── -->
+    <div id="qpc-widget" style="background:var(--surface-container-lowest);border-bottom:1px solid var(--outline-variant);padding:16px 24px;">
+      <!-- Dual-input row -->
+      <div style="display:flex;align-items:center;gap:0;max-width:900px;">
+        <div style="flex-shrink:0;padding:0 14px;height:44px;background:var(--carbon);display:flex;align-items:center;">
+          <span style="font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.6);">Today's Quick Price Check</span>
+        </div>
+        <select id="qpc-commodity" onchange="qpcUpdate()" style="flex:1;height:44px;background:var(--surface-container-lowest);border:1px solid var(--outline-variant);border-left:none;padding:0 12px;font-family:'Space Grotesk',monospace;font-size:12px;font-weight:600;color:var(--on-surface);text-transform:uppercase;letter-spacing:.04em;outline:none;cursor:pointer;min-width:0;">
+          <option value="">SELECT COMMODITY</option>
+        </select>
+        <select id="qpc-market" onchange="qpcUpdate()" style="flex:1;height:44px;background:var(--surface-container-lowest);border:1px solid var(--outline-variant);border-left:none;padding:0 12px;font-family:'Space Grotesk',monospace;font-size:12px;font-weight:600;color:var(--on-surface);text-transform:uppercase;letter-spacing:.04em;outline:none;cursor:pointer;min-width:0;">
+          <option value="">SELECT MARKET</option>
+        </select>
+        <!-- Live result card — hidden until both selected -->
+        <div id="qpc-result" style="display:none;flex:1.4;height:44px;background:var(--surface-container);border:1px solid var(--outline-variant);border-left:none;display:none;align-items:center;padding:0 14px;gap:14px;min-width:0;overflow:hidden;">
+          <div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:16px;font-weight:700;color:var(--on-surface);white-space:nowrap;" id="qpc-price">--</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:9px;color:var(--on-surface-variant);margin-top:1px;text-transform:uppercase;letter-spacing:.06em;">Mostly Price</div>
+          </div>
+          <div style="width:1px;height:28px;background:var(--outline-variant);flex-shrink:0;"></div>
+          <div id="qpc-trend" style="font-family:'Space Grotesk',monospace;font-size:11px;font-weight:700;white-space:nowrap;">--</div>
+          <div style="width:1px;height:28px;background:var(--outline-variant);flex-shrink:0;"></div>
+          <div id="qpc-spread" style="font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;padding:3px 8px;border:1px solid;">--</div>
+          <button id="qpc-report-btn" onclick="qpcViewReport()" style="margin-left:auto;flex-shrink:0;background:var(--carbon);color:#fff;border:none;height:30px;padding:0 14px;font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;">View Full Report →</button>
+        </div>
+      </div>
+      <!-- Empty state ticker — top 3 movers, hidden when result showing -->
+      <div id="qpc-ticker" style="margin-top:10px;display:flex;align-items:center;gap:16px;overflow-x:auto;scrollbar-width:none;">
+        <span style="font-family:'Space Grotesk',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--outline);flex-shrink:0;">Market Snapshot</span>
+        <div id="qpc-movers" style="display:flex;gap:12px;"></div>
+      </div>
+    </div>
 
     <!-- Hero stat cards -->
     <div class="stat-grid" id="term-stats">
@@ -1106,8 +1147,113 @@ function renderTerminal(){
   buildStats('s',allData.filter(r=>r.market_type==='terminal'));
   buildBarChart('price-chart','price-chart-dates');
   buildIntelAlert('intel-title','intel-body');
+  qpcInit();
   termFilter();
 }
+
+// ── QUICK PRICE CHECK ────────────────────────────────────────────
+let qpcCurrentComm='',qpcCurrentMkt='';
+
+function qpcInit(){
+  // Populate commodity dropdown — deduplicated, sorted
+  const commSel=document.getElementById('qpc-commodity');
+  const mktSel=document.getElementById('qpc-market');
+  if(!commSel||!mktSel||commSel.options.length>1)return;
+  const comms=[...new Set(allData.filter(r=>r.market_type==='terminal'&&r.price_low!=null).map(r=>r.commodity))].sort();
+  comms.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;commSel.appendChild(o);});
+  const mkts=[...new Set(allData.filter(r=>r.market_type==='terminal').map(r=>r.market))].sort();
+  mkts.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;mktSel.appendChild(o);});
+  qpcBuildMovers();
+}
+
+function qpcBuildMovers(){
+  const el=document.getElementById('qpc-movers');
+  if(!el)return;
+  const comms=[...new Set(allData.map(r=>r.commodity))];
+  const movers=comms.map(c=>({c,ch:getTrend(c),row:allData.find(r=>r.commodity===c&&r.price_low!=null)}))
+    .filter(x=>x.row&&Math.abs(x.ch)>0.1)
+    .sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch))
+    .slice(0,4);
+  el.innerHTML=movers.map(m=>{
+    const iU=m.ch>0,iD=m.ch<0;
+    const col=iU?'var(--secondary)':iD?'var(--tertiary)':'var(--on-surface-variant)';
+    return`<div style="display:flex;align-items:center;gap:8px;padding:4px 12px;background:var(--surface-container);border:1px solid var(--outline-variant);cursor:pointer;flex-shrink:0;" onclick="qpcSelectComm('${m.c.replace(/'/g,"\\'")}')">
+      <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--on-surface);">${m.c.split(',')[0]}</span>
+      <span style="font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;color:${col};">${iU?'▲':iD?'▼':'—'} ${Math.abs(m.ch).toFixed(1)}%</span>
+      <span style="font-family:'Space Grotesk',monospace;font-size:10px;color:var(--on-surface-variant);">${fmt(m.row.price_low)}</span>
+    </div>`;
+  }).join('');
+}
+
+function qpcSelectComm(commodity){
+  const sel=document.getElementById('qpc-commodity');
+  if(sel)sel.value=commodity;
+  qpcUpdate();
+}
+
+function qpcUpdate(){
+  const commSel=document.getElementById('qpc-commodity');
+  const mktSel=document.getElementById('qpc-market');
+  const result=document.getElementById('qpc-result');
+  const ticker=document.getElementById('qpc-ticker');
+  if(!commSel||!mktSel||!result)return;
+  qpcCurrentComm=commSel.value;
+  qpcCurrentMkt=mktSel.value;
+  if(!qpcCurrentComm||!qpcCurrentMkt){
+    result.style.display='none';
+    if(ticker)ticker.style.display='flex';
+    return;
+  }
+  // Find matching rows
+  const rows=allData.filter(r=>r.commodity===qpcCurrentComm&&r.market===qpcCurrentMkt&&r.price_low!=null);
+  if(!rows.length){
+    result.style.display='flex';
+    if(ticker)ticker.style.display='none';
+    document.getElementById('qpc-price').textContent='No data';
+    document.getElementById('qpc-trend').textContent='—';
+    document.getElementById('qpc-spread').textContent='No spread data';
+    return;
+  }
+  result.style.display='flex';
+  if(ticker)ticker.style.display='none';
+  // Price — use mostly range if available, else low-high
+  const r=rows[0];
+  const lo=parseFloat(r.price_mostly_low||r.price_low);
+  const hi=parseFloat(r.price_mostly_high||r.price_high||r.price_low);
+  const priceStr=hi&&hi!==lo?`$${lo.toFixed(2)} – $${hi.toFixed(2)}`:`$${lo.toFixed(2)}`;
+  document.getElementById('qpc-price').textContent=priceStr;
+  // Trend vs last week
+  const chg=getTrend(qpcCurrentComm);
+  const iU=chg>0.2,iD=chg<-0.2;
+  const trendEl=document.getElementById('qpc-trend');
+  trendEl.textContent=`${iU?'▲':iD?'▼':'—'} ${chg>0?'+':''}${chg.toFixed(2)}% vs Last Week`;
+  trendEl.style.color=iU?'var(--secondary)':iD?'var(--tertiary)':'var(--on-surface-variant)';
+  // Spread vs FOB
+  const fobRows=allData.filter(x=>x.commodity===qpcCurrentComm&&x.market_type==='shipping_point'&&x.market!=='National Trends'&&x.price_low!=null);
+  const fobAvg=fobRows.length?fobRows.reduce((s,x)=>s+parseFloat(x.price_low),0)/fobRows.length:null;
+  const spreadEl=document.getElementById('qpc-spread');
+  if(fobAvg){
+    const spread=lo-fobAvg;
+    const spreadLabel=spread>12?'Optimal Spread':spread>6?'Good Spread':spread>0?'Low Spread':'Negative Spread';
+    const spreadColor=spread>6?'var(--secondary)':spread>0?'var(--primary)':'var(--tertiary)';
+    spreadEl.textContent=`${spreadLabel}: +${fmt(spread)}`;
+    spreadEl.style.color=spreadColor;
+    spreadEl.style.borderColor=spreadColor;
+    spreadEl.style.display='block';
+  } else {
+    spreadEl.style.display='none';
+  }
+}
+
+function qpcViewReport(){
+  // Set the terminal table filter to this commodity and scroll to it
+  const q=document.getElementById('term-q');
+  if(q){q.value=qpcCurrentComm;termFilter();}
+  // Scroll past widget to table
+  const tbl=document.querySelector('#page-terminal .section');
+  if(tbl)tbl.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function termSetCat(cat){
   termCat=cat;termPg=1;
   document.querySelectorAll('#page-terminal .filter-pill').forEach(b=>{
