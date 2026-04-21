@@ -6,549 +6,361 @@
 <title>agraX — Wholesale Produce Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-/* ═══════════════════════════════════════════════════
-   agraX — Shopify Structure · Light-First Adaptation
-   Pill CTAs · Multi-layer shadows · Restrained palette
-   Fresh, airy, produce-forward
-═══════════════════════════════════════════════════ */
-
-/* ── TOKENS ─────────────────────────────────────── */
+/* ── TOKENS ───────────────────────────────────── */
 :root {
-  /* Surfaces — warm white hierarchy */
-  --bg:          #F7F8F5;   /* page canvas — the faintest green tint */
-  --surface:     #FFFFFF;   /* cards, panels */
-  --surface-2:   #F2F4F0;   /* secondary surfaces, table heads */
-  --surface-3:   #EAEDE6;   /* pressed states, deep secondary */
-
-  /* Brand greens */
-  --green:       #1A6B3C;   /* primary brand — Starbucks-depth richness */
-  --green-mid:   #2B8A52;   /* hover / elevated */
-  --green-light: #E8F5EE;   /* tint backgrounds */
-  --green-neon:  #36F4A4;   /* Shopify accent — focus rings, live dots */
-  --green-soft:  #C6E8D5;   /* mid-wash */
-
-  /* Text */
-  --text:        #0D1B0F;   /* near-black with green undertone */
-  --text-2:      #3D5440;   /* secondary — muted forest */
-  --text-3:      #7A9280;   /* tertiary — very muted */
-  --text-4:      #A8BAB0;   /* placeholder, disabled */
-
-  /* Borders */
-  --border:      #DDE5DA;   /* standard */
-  --border-2:    #C8D5C4;   /* stronger */
-
-  /* Semantic */
+  --bg:          #F7F8F5;
+  --surface:     #FFFFFF;
+  --surface-2:   #F2F4F0;
+  --surface-3:   #EAEDE6;
+  --green:       #1A6B3C;
+  --green-mid:   #2B8A52;
+  --green-light: #E8F5EE;
+  --green-neon:  #36F4A4;
+  --green-soft:  #C6E8D5;
+  --text:        #0D1B0F;
+  --text-2:      #3D5440;
+  --text-3:      #7A9280;
+  --text-4:      #A8BAB0;
+  --border:      #DDE5DA;
   --red:         #C0392B;
   --red-light:   #FBF0EE;
   --amber:       #B5590A;
-  --amber-light: #FFF5EB;
-
-  /* Shopify-style multi-layer card shadow */
   --shadow-card: rgba(0,0,0,0.04) 0px 0px 0px 1px,
                  rgba(0,0,0,0.04) 0px 2px 2px,
                  rgba(0,0,0,0.04) 0px 4px 4px,
                  rgba(0,0,0,0.04) 0px 8px 8px,
                  rgba(255,255,255,0.6) 0px 1px 0px inset;
-  --shadow-hover: rgba(0,0,0,0.06) 0px 0px 0px 1px,
-                  rgba(0,0,0,0.06) 0px 4px 6px,
-                  rgba(0,0,0,0.06) 0px 8px 12px,
-                  rgba(0,0,0,0.06) 0px 16px 24px,
-                  rgba(255,255,255,0.7) 0px 1px 0px inset;
-  --shadow-nav:  0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
-
-  /* Spacing (Shopify 8px base) */
-  --s1: 4px;  --s2: 8px;  --s3: 12px;  --s4: 16px;
-  --s5: 24px; --s6: 28px; --s7: 32px;  --s8: 40px;
-  --s9: 64px; --s10: 80px;
-
-  /* Typography */
-  --font:  'Inter', -apple-system, Helvetica, Arial, sans-serif;
-  --mono:  'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --pill:  9999px;
-
-  font-feature-settings: "ss03";
+  --shadow-hover:rgba(0,0,0,0.07) 0px 0px 0px 1px,
+                 rgba(0,0,0,0.07) 0px 6px 12px,
+                 rgba(0,0,0,0.05) 0px 16px 32px;
+  --shadow-nav:  0 1px 3px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);
+  --pill:   9999px;
+  --gutter: 48px;     /* shared: nav + hero + section all use this */
+  --max-w:  1280px;
+  --font:   'Inter',-apple-system,Helvetica,Arial,sans-serif;
+  --mono:   'DM Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-feature-settings:"ss03";
 }
 
-/* ── RESET ──────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
-button, input, select { font-family: var(--font); }
-a { text-decoration: none; color: inherit; }
-img { max-width: 100%; display: block; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--green-soft); border-radius: var(--pill); }
-:focus-visible { outline: 2px solid var(--green-neon); outline-offset: 2px; }
+/* ── RESET ────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+button,input,select{font-family:var(--font);}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--green-soft);border-radius:var(--pill);}
+:focus-visible{outline:2px solid var(--green-neon);outline-offset:2px;}
 
-/* ── NAV ────────────────────────────────────────── */
-.nav {
-  position: sticky; top: 0; z-index: 200;
-  background: rgba(247,248,245,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-nav);
-  transition: background 300ms ease;
+/* ── NAV ──────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(247,248,245,0.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-nav);
 }
-.nav-inner {
-  max-width: 1280px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--s9); height: 64px;
+.nav-inner{
+  max-width:var(--max-w);margin:0 auto;
+  padding:0 var(--gutter);height:56px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.nav-logo {
-  font-size: 20px; font-weight: 800; color: var(--green);
-  letter-spacing: -0.04em; cursor: pointer; flex-shrink: 0;
-}
-.nav-logo em { color: var(--text); font-style: normal; }
-.nav-links { display: flex; align-items: center; gap: 0; height: 64px; }
-.nav-link {
-  font-size: 15px; font-weight: 500; color: var(--text-2);
-  letter-spacing: 0.01em; padding: 0 16px; height: 64px;
-  display: flex; align-items: center; cursor: pointer;
-  border: none; background: none;
-  border-bottom: 2px solid transparent;
-  transition: color 150ms ease, border-color 150ms ease;
-  white-space: nowrap;
-}
-.nav-link:hover { color: var(--green); }
-.nav-link.on { color: var(--green); border-bottom-color: var(--green); font-weight: 600; }
-.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.nav-live {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; color: var(--green);
-  background: var(--green-light); border: 1px solid var(--green-soft);
-  padding: 6px 14px; border-radius: var(--pill);
-}
-.nav-live-dot { width: 6px; height: 6px; background: var(--green-neon); border-radius: 50%; animation: live-pulse 1.8s ease-in-out infinite; flex-shrink: 0; }
-@keyframes live-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.5} }
-.btn-primary {
-  background: var(--green); color: #fff;
-  border: 2px solid transparent;
-  border-radius: var(--pill); padding: 10px 22px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  transition: all 200ms ease; white-space: nowrap;
-}
-.btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,107,60,.25); }
-.btn-primary:active { transform: scale(0.97); }
-.btn-ghost {
-  background: transparent; color: var(--green);
-  border: 2px solid var(--green-soft);
-  border-radius: var(--pill); padding: 10px 22px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  transition: all 200ms ease;
-}
-.btn-ghost:hover { border-color: var(--green); background: var(--green-light); }
-.mob-menu { display: none; width: 36px; height: 36px; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; border-radius: 8px; }
-.mob-menu:hover { background: var(--surface-2); }
-.mob-menu svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; }
+.nav-logo{font-size:18px;font-weight:800;color:var(--green);letter-spacing:-.04em;cursor:pointer;flex-shrink:0;}
+.nav-logo em{color:var(--text);font-style:normal;}
+.nav-links{display:flex;align-items:center;height:56px;margin-left:8px;}
+.nav-link{font-size:14px;font-weight:500;color:var(--text-3);padding:0 14px;height:56px;display:flex;align-items:center;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color 150ms,border-color 150ms;white-space:nowrap;}
+.nav-link:hover{color:var(--green);}
+.nav-link.on{color:var(--green);border-bottom-color:var(--green);font-weight:600;}
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-live{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green);background:var(--green-light);border:1px solid var(--green-soft);padding:5px 12px;border-radius:var(--pill);}
+.nav-live-dot{width:6px;height:6px;background:var(--green-neon);border-radius:50%;animation:live-pulse 1.8s ease-in-out infinite;flex-shrink:0;}
+@keyframes live-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+.btn-primary{background:var(--green);color:#fff;border:none;border-radius:var(--pill);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:all 200ms;}
+.btn-primary:hover{background:var(--green-mid);}
+.btn-ghost{background:transparent;color:var(--green);border:1.5px solid var(--green-soft);border-radius:var(--pill);padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:all 200ms;}
+.btn-ghost:hover{border-color:var(--green);background:var(--green-light);}
+.mob-menu{display:none;width:34px;height:34px;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;border-radius:8px;}
+.mob-menu svg{width:17px;height:17px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;}
 
-/* ── FILTER BAR ─────────────────────────────────── */
-.filter-bar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 var(--s9);
-  display: flex; align-items: center; height: 48px;
-  gap: 0; overflow-x: auto; scrollbar-width: none;
+/* ── HERO ─────────────────────────────────────── */
+.hero{
+  position:relative;
+  overflow:hidden;
+  /* tall enough to feel cinematic but not overwhelming */
+  min-height:340px;
+  display:flex;align-items:center;
 }
-.filter-bar::-webkit-scrollbar { display: none; }
-.fb-city {
-  border: none; background: none; font-size: 13px; font-weight: 600;
-  color: var(--text); outline: none; cursor: pointer; padding: 0 8px;
-  height: 48px; letter-spacing: 0.01em; flex-shrink: 0;
-}
-.fb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 12px; flex-shrink: 0; }
-.fb-pill {
-  font-size: 13px; font-weight: 500; color: var(--text-3);
-  padding: 5px 14px; border-radius: var(--pill);
-  border: 1.5px solid transparent; background: none; cursor: pointer;
-  transition: all 150ms ease; white-space: nowrap;
-}
-.fb-pill:hover { color: var(--green); border-color: var(--green-soft); background: var(--green-light); }
-.fb-pill.on { color: var(--green); border-color: var(--green); background: var(--green-light); font-weight: 600; }
-.fb-date { font-size: 12px; color: var(--text-3); margin-left: auto; font-family: var(--mono); flex-shrink: 0; padding: 0 8px; }
-.fb-search {
-  border: 1.5px solid var(--border); background: var(--bg);
-  padding: 0 14px; height: 30px; font-size: 12px; outline: none;
-  border-radius: var(--pill); color: var(--text); width: 180px; flex-shrink: 0;
-  margin-left: 12px;
-}
-.fb-search:focus { border-color: var(--green); background: var(--surface); }
-.fb-search::placeholder { color: var(--text-4); }
 
-/* ── HERO ───────────────────────────────────────── */
-.hero {
-  background: var(--green);
-  padding: var(--s10) var(--s9);
-  position: relative; overflow: hidden;
+/* Background: Unsplash agriculture image, full-cover */
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=80&auto=format&fit=crop');
+  background-size:cover;background-position:center 40%;
+  filter:saturate(0.85);
 }
-/* Subtle radial atmospheric glow */
-.hero::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(54,244,164,0.12) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-inner {
-  max-width: 1280px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
-  position: relative; z-index: 1;
-}
-.hero-eyebrow {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: rgba(255,255,255,0.55);
-  margin-bottom: 16px; font-family: var(--mono);
-}
-.hero-h1 {
-  font-size: clamp(40px, 5vw, 72px);
-  font-weight: 300; line-height: 1.05;
-  letter-spacing: -0.02em; color: #fff;
-  margin-bottom: 20px;
-}
-.hero-h1 strong { font-weight: 800; color: var(--green-neon); }
-.hero-sub {
-  font-size: 18px; font-weight: 400; line-height: 1.65;
-  color: rgba(255,255,255,0.72); margin-bottom: 36px;
-  max-width: 480px;
-}
-.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero-btn-primary {
-  background: #fff; color: var(--green);
-  border: 2px solid transparent; border-radius: var(--pill);
-  padding: 12px 28px; font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: all 200ms ease;
-}
-.hero-btn-primary:hover { background: var(--green-neon); color: var(--text); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
-.hero-btn-primary:active { transform: scale(0.97); }
-.hero-btn-ghost {
-  background: transparent; color: rgba(255,255,255,0.9);
-  border: 2px solid rgba(255,255,255,0.3); border-radius: var(--pill);
-  padding: 12px 28px; font-size: 15px; font-weight: 600;
-  cursor: pointer; transition: all 200ms ease;
-}
-.hero-btn-ghost:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.08); }
 
-/* Hero stats grid */
-.hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.hero-stat {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px; padding: 20px 22px;
-  backdrop-filter: blur(8px);
-  transition: all 250ms ease;
+/* Dark gradient overlay — heavier at left (text side), fades right */
+.hero-overlay{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(
+      105deg,
+      rgba(10,30,15,0.82) 0%,
+      rgba(10,30,15,0.68) 40%,
+      rgba(10,30,15,0.35) 70%,
+      rgba(10,30,15,0.10) 100%
+    );
 }
-.hero-stat:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
-.hero-stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.45); margin-bottom: 10px; font-family: var(--mono); }
-.hero-stat-val { font-size: 36px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.03em; }
-.hero-stat-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
-.hero-stat-chg { font-size: 13px; font-weight: 700; margin-top: 4px; }
-.hero-stat-chg.up { color: var(--green-neon); }
-.hero-stat-chg.dn { color: #FF8A7A; }
 
-/* ── SECTION WRAPPER ────────────────────────────── */
-.section { max-width: 1280px; margin: 0 auto; padding: 0 var(--s9); }
-.section-gap { height: var(--s10); }
-.section-gap-sm { height: var(--s8); }
+/* Bottom fade to page bg — seamless blend */
+.hero-fade{
+  position:absolute;bottom:0;left:0;right:0;height:80px;
+  background:linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events:none;
+}
 
-/* ── COMMODITY CARDS ────────────────────────────── */
-.cards-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
-.comm-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-  cursor: pointer;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 250ms ease, transform 200ms ease;
-  position: relative; overflow: hidden;
+.hero-inner{
+  position:relative;z-index:1;
+  max-width:var(--max-w);margin:0 auto;
+  padding:48px var(--gutter);
+  width:100%;
 }
-.comm-card::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--green-soft); border-radius: 16px 16px 0 0;
-  transition: background 200ms;
-}
-.comm-card.hot::after { background: linear-gradient(90deg, #C0392B, #E55039); }
-.comm-card.warm::after { background: linear-gradient(90deg, var(--green), var(--green-mid)); }
-.comm-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
-.comm-card:hover::after { background: var(--green); }
-.card-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 8px; font-family: var(--mono); }
-.card-name { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 3px; letter-spacing: -0.01em; }
-.card-origin { font-size: 12px; color: var(--text-3); margin-bottom: 18px; }
-.card-price { font-size: 38px; font-weight: 800; color: var(--text); letter-spacing: -0.04em; line-height: 1; }
-.card-range { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-top: 5px; }
-.card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-.card-delta { font-size: 14px; font-weight: 700; }
-.card-delta.up { color: var(--green); }
-.card-delta.dn { color: var(--red); }
-.card-delta.fl { color: var(--text-3); }
-.card-signal { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: var(--pill); }
-.card-signal.up { background: var(--green-light); color: var(--green); }
-.card-signal.dn { background: var(--red-light); color: var(--red); }
-.card-signal.fl { background: var(--surface-2); color: var(--text-3); }
 
-/* ── TABLE SECTION ──────────────────────────────── */
-.table-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px; overflow: hidden;
-  box-shadow: var(--shadow-card);
+.hero-h1{
+  font-size:clamp(28px,4vw,52px);
+  font-weight:700;line-height:1.08;
+  letter-spacing:-0.03em;
+  color:#fff;
+  margin-bottom:10px;
+  max-width:560px;
+  text-shadow:0 2px 16px rgba(0,0,0,.3);
 }
-.table-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 24px; border-bottom: 1px solid var(--border);
-  flex-wrap: wrap; gap: 12px;
+.hero-h1 em{color:var(--green-neon);font-style:normal;}
+.hero-sub{
+  font-size:15px;font-weight:400;
+  color:rgba(255,255,255,.72);
+  line-height:1.6;
+  max-width:440px;
+  margin-bottom:28px;
+  text-shadow:0 1px 8px rgba(0,0,0,.25);
 }
-.table-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
-.table-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.tbl-pill {
-  font-size: 12px; font-weight: 600; color: var(--text-2);
-  padding: 5px 14px; border-radius: var(--pill);
-  border: 1.5px solid var(--border); background: var(--surface);
-  cursor: pointer; transition: all 150ms ease;
+
+/* Hero search bar */
+.hero-search{
+  display:flex;align-items:center;gap:0;
+  max-width:500px;
+  background:rgba(255,255,255,0.96);
+  border-radius:var(--pill);
+  box-shadow:0 4px 24px rgba(0,0,0,0.18),0 1px 4px rgba(0,0,0,0.1);
+  overflow:hidden;
+  transition:box-shadow 200ms;
 }
-.tbl-pill:hover { border-color: var(--green); color: var(--green); }
-.tbl-pill.on { background: var(--green); color: #fff; border-color: var(--green); }
-.tbl-search {
-  border: 1.5px solid var(--border); background: var(--bg);
-  padding: 0 14px; height: 32px; font-size: 12px; outline: none;
-  border-radius: var(--pill); color: var(--text); width: 170px;
+.hero-search:focus-within{
+  box-shadow:0 4px 28px rgba(0,0,0,0.22),0 0 0 3px rgba(54,244,164,0.4);
 }
-.tbl-search:focus { border-color: var(--green); background: var(--surface); }
-.tbl-search::placeholder { color: var(--text-4); }
+.hero-search-icon{
+  width:46px;height:46px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--green);
+}
+.hero-search-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+.hero-search input{
+  flex:1;border:none;outline:none;
+  font-size:14px;font-weight:500;color:var(--text);
+  background:transparent;padding:0 4px 0 0;height:46px;
+}
+.hero-search input::placeholder{color:var(--text-4);}
+.hero-search-btn{
+  flex-shrink:0;background:var(--green);color:#fff;border:none;
+  height:46px;padding:0 22px;font-size:14px;font-weight:700;
+  cursor:pointer;border-radius:0 var(--pill) var(--pill) 0;
+  transition:background 180ms;
+  white-space:nowrap;
+}
+.hero-search-btn:hover{background:var(--green-mid);}
+
+/* ── SHARED SECTION CONTAINER ─────────────────── */
+.section{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter);}
+.section-gap{height:32px;}
+
+/* ── TABLE CARD ───────────────────────────────── */
+.table-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.table-header{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;background:var(--surface);
+}
+.table-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em;flex-shrink:0;margin-right:4px;}
+.tbl-sep{width:1px;height:18px;background:var(--border);flex-shrink:0;margin:0 4px;}
+.tbl-city{border:none;background:none;font-size:13px;font-weight:600;color:var(--text);outline:none;cursor:pointer;height:30px;padding:0 4px;flex-shrink:0;}
+.tbl-pill{font-size:12px;font-weight:500;color:var(--text-3);padding:4px 12px;border-radius:var(--pill);border:1.5px solid transparent;background:none;cursor:pointer;transition:all 140ms;white-space:nowrap;flex-shrink:0;}
+.tbl-pill:hover{color:var(--green);border-color:var(--green-soft);background:var(--green-light);}
+.tbl-pill.on{color:var(--green);border-color:var(--green);background:var(--green-light);font-weight:600;}
+.tbl-search{border:1.5px solid var(--border);background:var(--bg);padding:0 12px;height:30px;font-size:12px;outline:none;border-radius:var(--pill);color:var(--text);width:160px;margin-left:auto;flex-shrink:0;}
+.tbl-search:focus{border-color:var(--green);background:var(--surface);}
+.tbl-search::placeholder{color:var(--text-4);}
 
 /* Data table */
-.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
-.data-table thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border); }
-.data-table thead th {
-  padding: 11px 18px; text-align: left;
-  font-size: 11px; font-weight: 700; color: var(--text-3);
-  text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; cursor: pointer;
-}
-.data-table thead th.r { text-align: right; }
-.data-table thead th:hover { color: var(--green); }
-.data-table tbody tr { border-bottom: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: background 80ms ease; }
-.data-table tbody tr:last-child { border-bottom: none; }
-.data-table tbody tr:hover { background: var(--surface-2); }
-.data-table tbody td { padding: 14px 18px; vertical-align: middle; }
-.data-table tbody td.r { text-align: right; }
-.td-comm { font-size: 14px; font-weight: 700; color: var(--text); }
-.td-origin { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-.td-fob { font-size: 10px; color: var(--green); font-weight: 600; margin-top: 3px; display: flex; align-items: center; gap: 3px; }
-.td-price { font-size: 15px; font-weight: 700; color: var(--text); font-family: var(--mono); }
-.td-price-hi { font-family: var(--mono); font-size: 10px; color: var(--text-3); margin-top: 2px; }
-.td-delta { font-size: 13px; font-weight: 700; font-family: var(--mono); }
-.td-delta.up { color: var(--green); }
-.td-delta.dn { color: var(--red); }
-.td-delta.fl { color: var(--text-3); }
-.td-bar { width: 72px; height: 4px; background: var(--border); border-radius: var(--pill); overflow: hidden; }
-.td-bar-fill { height: 100%; border-radius: var(--pill); transition: width 400ms ease; }
-.td-bar-fill.up { background: var(--green); }
-.td-bar-fill.dn { background: var(--red); }
-.td-signal {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11px; font-weight: 700; padding: 4px 12px;
-  border-radius: var(--pill);
-}
-.td-signal::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-.td-signal.up { background: var(--green-light); color: var(--green); }
-.td-signal.dn { background: var(--red-light); color: var(--red); }
-.td-signal.fl { background: var(--surface-2); color: var(--text-3); }
-.table-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 24px; border-top: 1px solid var(--border);
-  background: var(--surface-2); flex-wrap: wrap; gap: 10px;
-}
-.table-footer-label { font-size: 12px; color: var(--text-3); }
-.page-btns { display: flex; gap: 4px; }
-.page-btn {
-  padding: 5px 14px; font-size: 12px; font-weight: 600;
-  border: 1.5px solid var(--border); background: var(--surface);
-  border-radius: var(--pill); cursor: pointer; color: var(--text-2);
-  transition: all 150ms ease;
-}
-.page-btn:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
-.page-btn.on { background: var(--green); color: #fff; border-color: var(--green); }
-.page-btn:disabled { opacity: .35; cursor: default; }
+.data-table{width:100%;border-collapse:collapse;min-width:680px;}
+.data-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border);}
+.data-table thead th{padding:9px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;cursor:pointer;user-select:none;}
+.data-table thead th.r{text-align:right;}
+.data-table thead th:hover{color:var(--green);}
+.data-table tbody tr.main-row{border-bottom:1px solid var(--border);background:var(--surface);cursor:pointer;transition:background 80ms;}
+.data-table tbody tr.main-row:hover{background:var(--surface-2);}
+.data-table tbody tr.main-row.expanded{background:var(--green-light);border-bottom:none;}
+.data-table tbody tr.main-row.expanded:hover{background:var(--green-light);}
+.data-table tbody tr.expand-row{border-bottom:1px solid var(--border);}
+.data-table tbody tr.expand-row td{padding:0;}
 
-/* ── LOWER GRID: CHART + INTEL ──────────────────── */
-.lower-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-.chart-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; padding: 28px; box-shadow: var(--shadow-card);
+/* Expand panel */
+.expand-panel{
+  background:var(--green-light);
+  border-top:1px solid var(--green-soft);
+  padding:20px 20px 20px 56px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;
+  animation:expand-in 180ms ease;
 }
-.chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
-.chart-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
-.chart-sub { font-size: 12px; color: var(--text-3); margin-top: 3px; }
-.chart-tabs { display: flex; gap: 2px; background: var(--surface-2); padding: 3px; border-radius: var(--pill); flex-shrink: 0; }
-.chart-tab {
-  padding: 5px 14px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: none; background: none; color: var(--text-3);
-  border-radius: var(--pill); transition: all 150ms ease;
-}
-.chart-tab.on { background: var(--surface); color: var(--green); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-.intel-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card);
-  display: flex; flex-direction: column;
-}
-.intel-card-head { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.intel-card-title { font-size: 14px; font-weight: 700; color: var(--text); }
-.intel-card-badge {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 10px; font-weight: 700; color: var(--green);
-  background: var(--green-light); padding: 3px 10px; border-radius: var(--pill);
-  font-family: var(--mono);
-}
-.intel-badge-dot { width: 5px; height: 5px; background: var(--green-neon); border-radius: 50%; animation: live-pulse 1.8s ease-in-out infinite; }
-.intel-item { padding: 14px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 80ms; }
-.intel-item:last-child { border-bottom: none; }
-.intel-item:hover { background: var(--surface-2); }
-.intel-item-top { display: flex; align-items: flex-start; gap: 10px; }
-.intel-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-.intel-comm { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-.intel-note { font-size: 12px; color: var(--text-2); line-height: 1.6; }
-.intel-meta { font-size: 10px; color: var(--text-3); margin-top: 5px; font-family: var(--mono); }
-.intel-cta { padding: 16px 20px; background: var(--surface-2); border-top: 1px solid var(--border); margin-top: auto; }
-.intel-cta-btn {
-  width: 100%; padding: 11px; background: var(--green); color: #fff;
-  border: none; border-radius: var(--pill); font-size: 13px; font-weight: 700;
-  cursor: pointer; transition: all 200ms ease;
-}
-.intel-cta-btn:hover { background: var(--green-mid); }
-.intel-cta-btn:active { transform: scale(0.98); }
+@keyframes expand-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.expand-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:10px;font-family:var(--mono);}
+.expand-arb{display:flex;align-items:center;gap:0;}
+.arb-node{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;flex:1;}
+.arb-node-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:4px;font-family:var(--mono);}
+.arb-node-val{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+.arb-op{font-size:14px;color:var(--text-3);padding:0 8px;flex-shrink:0;}
+.arb-spread{background:var(--green);color:#fff;border-radius:8px;padding:10px 14px;text-align:center;margin-top:10px;}
+.arb-spread-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.65);font-family:var(--mono);}
+.arb-spread-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;}
+.expand-history{display:flex;flex-direction:column;}
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.hist-row:last-child{border-bottom:none;}
+.hist-date{color:var(--text-3);font-family:var(--mono);font-size:10px;}
+.hist-date.today{font-weight:700;color:var(--green);}
+.hist-price{font-weight:700;color:var(--text);font-family:var(--mono);}
+.hist-chg{font-family:var(--mono);font-size:10px;font-weight:700;min-width:44px;text-align:right;}
+.expand-markets{display:flex;flex-direction:column;}
+.mkt-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.mkt-row:last-child{border-bottom:none;}
+.mkt-city{font-weight:600;color:var(--text);}
+.mkt-city.best{color:var(--green);}
+.mkt-origin{font-size:10px;color:var(--text-3);}
+.mkt-price{font-family:var(--mono);font-size:13px;font-weight:700;}
+.mkt-best-badge{font-size:9px;font-weight:700;padding:2px 8px;background:var(--green);color:#fff;border-radius:var(--pill);}
+.expand-actions{grid-column:1/-1;display:flex;gap:10px;padding-top:12px;border-top:1px solid var(--green-soft);flex-wrap:wrap;}
+.expand-close{padding:7px 16px;background:none;border:1.5px solid var(--border);border-radius:var(--pill);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-3);transition:all 150ms;}
+.expand-close:hover{border-color:var(--text-3);color:var(--text);}
+.expand-report{padding:7px 18px;background:var(--green);color:#fff;border:none;border-radius:var(--pill);font-size:12px;font-weight:700;cursor:pointer;transition:background 180ms;}
+.expand-report:hover{background:var(--green-mid);}
+.td-chevron{font-size:9px;color:var(--text-4);transition:transform 250ms ease;display:inline-block;margin-left:6px;}
+.expanded .td-chevron{transform:rotate(180deg);color:var(--green);}
 
-/* ── FEATURE BAND (Shopify-style dark accent section) ── */
-.feature-band {
-  background: var(--text);  /* near-black with green tint */
-  padding: var(--s10) var(--s9);
-  margin: var(--s10) 0 0;
-}
-.feature-band-inner {
-  max-width: 1280px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
-}
-.band-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-neon); margin-bottom: 14px; font-family: var(--mono); }
-.band-h2 { font-size: clamp(32px, 4vw, 56px); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; color: #fff; margin-bottom: 18px; }
-.band-h2 strong { font-weight: 800; }
-.band-body { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 28px; }
-.band-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.band-btn-primary {
-  background: #fff; color: var(--text);
-  border: 2px solid transparent; border-radius: var(--pill);
-  padding: 12px 26px; font-size: 14px; font-weight: 700;
-  cursor: pointer; transition: all 200ms ease;
-}
-.band-btn-primary:hover { background: var(--green-neon); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.3); }
-.band-btn-ghost {
-  background: transparent; color: rgba(255,255,255,0.85);
-  border: 2px solid rgba(255,255,255,0.25); border-radius: var(--pill);
-  padding: 12px 26px; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: all 200ms ease;
-}
-.band-btn-ghost:hover { border-color: rgba(255,255,255,0.6); }
-/* Stats in band */
-.band-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; }
-.band-stat {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 22px 24px;
-  transition: background 200ms;
-}
-.band-stat:hover { background: rgba(255,255,255,0.08); }
-.band-stat-num { font-size: 48px; font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1; }
-.band-stat-num em { color: var(--green-neon); font-style: normal; }
-.band-stat-label { font-size: 14px; color: rgba(255,255,255,0.55); margin-top: 8px; }
+/* Cell styles */
+.data-table tbody td{padding:13px 16px;vertical-align:middle;}
+.data-table tbody td.r{text-align:right;}
+.td-comm{font-size:13px;font-weight:700;color:var(--text);}
+.td-origin{font-size:11px;color:var(--text-3);margin-top:2px;}
+.td-fob{font-size:10px;color:var(--green);font-weight:600;margin-top:2px;}
+.td-price{font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono);}
+.td-price-hi{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px;}
+.td-delta{font-size:12px;font-weight:700;font-family:var(--mono);}
+.td-delta.up{color:var(--green);}
+.td-delta.dn{color:var(--red);}
+.td-delta.fl{color:var(--text-3);}
+.td-bar{width:60px;height:3px;background:var(--border);border-radius:var(--pill);overflow:hidden;}
+.td-bar-fill{height:100%;border-radius:var(--pill);transition:width 400ms;}
+.td-bar-fill.up{background:var(--green);}
+.td-bar-fill.dn{background:var(--red);}
+.td-signal{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--pill);}
+.td-signal::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.td-signal.up{background:var(--green-light);color:var(--green);}
+.td-signal.dn{background:var(--red-light);color:var(--red);}
+.td-signal.fl{background:var(--surface-2);color:var(--text-3);}
+.table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;gap:8px;}
+.tbl-foot-label{font-size:11px;color:var(--text-3);}
+.page-btns{display:flex;gap:4px;}
+.page-btn{padding:4px 12px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surface);border-radius:var(--pill);cursor:pointer;color:var(--text-2);transition:all 140ms;}
+.page-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
+.page-btn.on{background:var(--green);color:#fff;border-color:var(--green);}
+.page-btn:disabled{opacity:.35;cursor:default;}
 
-/* ── FOOTER / TICKER ────────────────────────────── */
-.ticker {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  height: 36px; display: flex; align-items: center; overflow: hidden;
-  position: sticky; bottom: 0; z-index: 100;
-  box-shadow: 0 -2px 8px rgba(0,0,0,.04);
-}
-.ticker-brand {
-  flex-shrink: 0; padding: 0 20px; border-right: 1px solid var(--border);
-  height: 100%; display: flex; align-items: center;
-  background: var(--green-light);
-  font-size: 10px; font-weight: 700; color: var(--green);
-  letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
-  font-family: var(--mono);
-}
-.ticker-scroll { flex: 1; overflow: hidden; }
-.ticker-track {
-  display: flex; align-items: center; gap: 36px; white-space: nowrap;
-  animation: ticker-move 50s linear infinite; padding: 0 20px;
-  font-family: var(--mono); font-size: 11px; font-weight: 500;
-}
-@keyframes ticker-move { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-.tick-item { color: var(--text-2); }
-.tick-item.up { color: var(--green); }
-.tick-item.dn { color: var(--red); }
-.tick-item.alert { color: var(--amber); font-weight: 700; }
+/* ── FEATURE BAND ─────────────────────────────── */
+.feature-band{background:var(--text);padding:56px 0;margin-top:48px;}
+.feature-band-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter);display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.band-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green-neon);margin-bottom:12px;font-family:var(--mono);}
+.band-h2{font-size:clamp(28px,3.5vw,46px);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:#fff;margin-bottom:16px;}
+.band-h2 strong{font-weight:800;}
+.band-body{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:24px;}
+.band-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.band-btn{background:#fff;color:var(--text);border:none;border-radius:var(--pill);padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;transition:all 200ms;}
+.band-btn:hover{background:var(--green-neon);}
+.band-btn-ghost{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.25);border-radius:var(--pill);padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:all 200ms;}
+.band-btn-ghost:hover{border-color:rgba(255,255,255,.6);}
+.band-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;}
+.band-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:20px 22px;transition:background 200ms;}
+.band-stat:hover{background:rgba(255,255,255,.08);}
+.band-stat-num{font-size:40px;font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1;}
+.band-stat-num em{color:var(--green-neon);font-style:normal;}
+.band-stat-label{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;}
 
-/* ── RESPONSIVE ─────────────────────────────────── */
+/* ── TICKER ───────────────────────────────────── */
+.ticker{background:var(--surface);border-top:1px solid var(--border);height:34px;display:flex;align-items:center;overflow:hidden;position:sticky;bottom:0;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.04);}
+.ticker-brand{flex-shrink:0;padding:0 18px;border-right:1px solid var(--border);height:100%;display:flex;align-items:center;background:var(--green-light);font-size:10px;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;font-family:var(--mono);}
+.ticker-scroll{flex:1;overflow:hidden;}
+.ticker-track{display:flex;align-items:center;gap:36px;white-space:nowrap;animation:ticker-move 50s linear infinite;padding:0 20px;font-family:var(--mono);font-size:11px;font-weight:500;}
+@keyframes ticker-move{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{color:var(--text-2);}
+.tick-item.up{color:var(--green);}
+.tick-item.dn{color:var(--red);}
+.tick-item.alert{color:var(--amber);font-weight:700;}
+
+/* ── RESPONSIVE ───────────────────────────────── */
 @media(max-width:1024px){
-  .nav-inner,.filter-bar,.section,.hero-inner,.feature-band-inner { padding-left: var(--s7); padding-right: var(--s7); }
-  .hero { padding: 60px var(--s7); }
-  .feature-band { padding: 60px var(--s7); }
-  .cards-grid { grid-template-columns: repeat(2,1fr); }
-  .lower-grid { grid-template-columns: 1fr; }
+  :root{--gutter:32px;}
+  .feature-band-inner{grid-template-columns:1fr;gap:40px;}
 }
 @media(max-width:768px){
-  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-  .hero-h1 { font-size: 42px; }
-  .hero-stats { grid-template-columns: 1fr 1fr; }
-  .feature-band-inner { grid-template-columns: 1fr; gap: 40px; }
-  .band-stats { grid-template-columns: repeat(2,1fr); }
-  .band-stat-num { font-size: 36px; }
-  .nav-links { display: none; }
-  .mob-menu { display: flex; }
-  .nav-links.open {
-    display: flex; flex-direction: column;
-    position: fixed; top: 64px; left: 0; right: 0; bottom: 36px;
-    background: var(--surface); z-index: 199;
-    border-top: 1px solid var(--border); padding: 16px 0; overflow-y: auto;
-  }
-  .nav-links.open .nav-link { height: 52px; padding: 0 24px; width: 100%; border-bottom: 1px solid var(--border); }
-  .nav-inner { padding: 0 var(--s4); }
-  .filter-bar { padding: 0 var(--s4); }
-  .section { padding: 0 var(--s4); }
-  .hero { padding: 48px var(--s4); }
-  .feature-band { padding: 48px var(--s4); }
-  .cards-grid { grid-template-columns: 1fr; }
-  .section-gap { height: 48px; }
-  .data-table { min-width: 580px; font-size: 13px; }
-  .table-card { border-radius: 16px; }
-  .chart-card,.intel-card { border-radius: 16px; }
+  :root{--gutter:20px;}
+  .nav-links{display:none;}
+  .mob-menu{display:flex;}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;bottom:34px;background:var(--surface);z-index:199;border-top:1px solid var(--border);padding:8px 0;overflow-y:auto;}
+  .nav-links.open .nav-link{height:48px;padding:0 20px;width:100%;border-bottom:1px solid var(--border);}
+  .hero-inner{padding:36px var(--gutter) 52px;}
+  .hero-h1{font-size:32px;}
+  .hero-search{max-width:100%;}
+  .section-gap{height:20px;}
+  .table-header{padding:10px 14px;}
+  .expand-panel{grid-template-columns:1fr;padding:16px;}
+  .band-stats{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:480px){
-  .hero-stats { grid-template-columns: 1fr; }
-  .band-stats { grid-template-columns: 1fr; }
-  .hero-h1 { font-size: 34px; }
+  .hero-h1{font-size:26px;}
+  .hero-search-btn{padding:0 14px;font-size:13px;}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ NAV ══════════════════════════════════════ -->
+<!-- ═══ NAV ══════════════════════════════════ -->
 <nav class="nav" id="main-nav">
   <div class="nav-inner">
     <div style="display:flex;align-items:center;">
       <span class="nav-logo">agra<em>X</em></span>
-      <nav class="nav-links" id="nav-links" style="margin-left:8px;">
+      <nav class="nav-links" id="nav-links" style="margin-left:4px;">
         <button class="nav-link on">Markets</button>
-        <button class="nav-link">Shipping Points</button>
+        <button class="nav-link">Shipping</button>
         <button class="nav-link">Growers</button>
         <button class="nav-link">Intelligence</button>
-        <button class="nav-link">About</button>
       </nav>
     </div>
     <div class="nav-actions">
-      <div class="nav-live"><span class="nav-live-dot"></span>Live Data</div>
-      <button class="btn-ghost btn-sm" style="font-size:13px;padding:8px 18px;">Sign In</button>
-      <button class="btn-primary btn-sm" style="font-size:13px;padding:8px 18px;">Get Started</button>
+      <div class="nav-live"><span class="nav-live-dot"></span>Live</div>
+      <button class="btn-ghost">Sign In</button>
+      <button class="btn-primary">Get Started</button>
       <button class="mob-menu" onclick="document.getElementById('nav-links').classList.toggle('open')">
         <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -556,99 +368,59 @@ img { max-width: 100%; display: block; }
   </div>
 </nav>
 
-<!-- ═══ FILTER BAR ════════════════════════════════ -->
-<div class="filter-bar">
-  <select class="fb-city" id="fb-city" onchange="doFilter()">
-    <option value="All">All Cities</option>
-  </select>
-  <div class="fb-sep"></div>
-  <button class="fb-pill on" onclick="setCat('All',this)">All</button>
-  <button class="fb-pill" onclick="setCat('Fruits',this)">Fruits</button>
-  <button class="fb-pill" onclick="setCat('Vegetables',this)">Vegetables</button>
-  <button class="fb-pill" onclick="setCat('Onions & Potatoes',this)">Onions</button>
-  <button class="fb-pill" onclick="setCat('Nuts',this)">Nuts</button>
-  <span class="fb-date" id="fb-date">Loading…</span>
-  <input class="fb-search" id="fb-search" placeholder="Search commodity…" oninput="doFilter()">
-</div>
-
-<!-- ═══ HERO ══════════════════════════════════════ -->
+<!-- ═══ HERO ══════════════════════════════════ -->
 <section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-inner">
-    <div>
-      <div class="hero-eyebrow">USDA Terminal Market Report</div>
-      <h1 class="hero-h1">Real-time wholesale<br>produce <strong>prices</strong></h1>
-      <p class="hero-sub">USDA AMS data across terminal markets, FOB shipping points, and grower origins — built for importers, brokers, and distributors.</p>
-      <div class="hero-btns">
-        <button class="hero-btn-primary">Explore Markets →</button>
-        <button class="hero-btn-ghost">View Shipping Points</button>
+    <h1 class="hero-h1">Wholesale produce prices, <em>live.</em></h1>
+    <p class="hero-sub">USDA AMS terminal market data — built for importers, brokers &amp; distributors.</p>
+    <div class="hero-search">
+      <div class="hero-search-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </div>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-label">Avg Terminal Price</div>
-        <div class="hero-stat-val" id="h-avg">—</div>
-        <div class="hero-stat-sub">National composite</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-label">Markets Tracked</div>
-        <div class="hero-stat-val" id="h-mkts">—</div>
-        <div class="hero-stat-sub">Terminal + FOB</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-label">Active Commodities</div>
-        <div class="hero-stat-val" id="h-comms">—</div>
-        <div class="hero-stat-sub">Live listings today</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-label">Top Mover</div>
-        <div class="hero-stat-val" id="h-mover" style="font-size:22px;">—</div>
-        <div class="hero-stat-chg up" id="h-mover-chg">—</div>
-      </div>
+      <input id="hero-search-input" placeholder="Search commodity, origin, or market…" oninput="heroSearch(this.value)" onkeydown="if(event.key==='Enter')heroSearch(this.value)">
+      <button class="hero-search-btn" onclick="heroSearch(document.getElementById('hero-search-input').value)">Search</button>
     </div>
   </div>
+  <div class="hero-fade"></div>
 </section>
 
-<!-- ═══ COMMODITY CARDS ═══════════════════════════ -->
-<div class="section-gap"></div>
-<div class="section">
-  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;">
-    <div>
-      <h2 style="font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">Featured Commodities</h2>
-      <p style="font-size:13px;color:var(--text-3);margin-top:4px;" id="cards-date">Today's biggest price movers</p>
-    </div>
-    <button style="font-size:13px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;">View all →</button>
-  </div>
-  <div class="cards-grid" id="comm-cards"></div>
-</div>
-
-<!-- ═══ MARKET TABLE ══════════════════════════════ -->
+<!-- ═══ MARKET TABLE ══════════════════════════ -->
 <div class="section-gap"></div>
 <div class="section">
   <div class="table-card">
     <div class="table-header">
-      <span class="table-title">Terminal Market Ledger</span>
-      <div class="table-controls">
-        <button class="tbl-pill on" onclick="setTblView('all',this)">All</button>
-        <button class="tbl-pill" onclick="setTblView('movers',this)">↑ Movers</button>
-        <input class="tbl-search" id="tbl-search" placeholder="Search…" oninput="doFilter()">
-      </div>
+      <span class="table-title">Terminal Markets</span>
+      <div class="tbl-sep"></div>
+      <select class="tbl-city" id="tbl-city" onchange="doFilter()">
+        <option value="All">All Cities</option>
+      </select>
+      <div class="tbl-sep"></div>
+      <button class="tbl-pill on" onclick="setCat('All',this)">All</button>
+      <button class="tbl-pill" onclick="setCat('Fruits',this)">Fruits</button>
+      <button class="tbl-pill" onclick="setCat('Vegetables',this)">Veg</button>
+      <button class="tbl-pill" onclick="setCat('Onions & Potatoes',this)">Onions</button>
+      <button class="tbl-pill" onclick="setCat('Nuts',this)">Nuts</button>
+      <input class="tbl-search" id="tbl-search" placeholder="Search…" oninput="doFilter()">
     </div>
     <div style="overflow-x:auto;">
       <table class="data-table">
         <thead><tr>
-          <th></th>
+          <th style="width:36px;"></th>
           <th>Commodity</th>
           <th>Variety · Package</th>
           <th class="r">Price</th>
           <th class="r">WoW Δ</th>
           <th>Trend</th>
           <th>Signal</th>
+          <th style="width:20px;"></th>
         </tr></thead>
         <tbody id="main-tbody"></tbody>
       </table>
     </div>
     <div class="table-footer">
-      <span class="table-footer-label" id="tbl-count">Loading…</span>
+      <span class="tbl-foot-label" id="tbl-count">Loading…</span>
       <div class="page-btns">
         <button class="page-btn" id="pg-prev" onclick="prevPage()" disabled>←</button>
         <button class="page-btn on" id="pg-num">1</button>
@@ -658,86 +430,37 @@ img { max-width: 100%; display: block; }
   </div>
 </div>
 
-<!-- ═══ CHART + INTEL ═════════════════════════════ -->
-<div class="section-gap"></div>
-<div class="section">
-  <div class="lower-grid">
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">National Price Trajectory</div>
-          <div class="chart-sub">7-day rolling average across all terminal markets</div>
-        </div>
-        <div class="chart-tabs">
-          <button class="chart-tab on">7D</button>
-          <button class="chart-tab">30D</button>
-        </div>
-      </div>
-      <canvas id="price-chart" height="180"></canvas>
-    </div>
-    <div class="intel-card">
-      <div class="intel-card-head">
-        <span class="intel-card-title">Market Intelligence</span>
-        <span class="intel-card-badge"><span class="intel-badge-dot"></span>Live</span>
-      </div>
-      <div id="intel-items" style="flex:1;overflow:hidden;"></div>
-      <div class="intel-cta">
-        <button class="intel-cta-btn">Generate Prediction Report →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ FEATURE BAND ══════════════════════════════ -->
+<!-- ═══ FEATURE BAND ══════════════════════════ -->
 <div class="feature-band">
   <div class="feature-band-inner">
     <div>
       <div class="band-eyebrow">Built for the trade</div>
       <h2 class="band-h2">Every market.<br><strong>Every price.</strong><br>Every morning.</h2>
-      <p class="band-body">agraX ingests USDA AMS reports three times daily — terminal markets, FOB origins, and national trends — and surfaces the signals that matter: arbitrage spreads, supply gaps, and price velocity.</p>
+      <p class="band-body">agraX ingests USDA AMS reports three times daily — terminal markets, FOB origins, and national trends — surfacing arbitrage spreads, supply gaps, and price velocity.</p>
       <div class="band-btns">
-        <button class="band-btn-primary">Start Free Trial →</button>
+        <button class="band-btn">Start Free Trial →</button>
         <button class="band-btn-ghost">View Sample Report</button>
       </div>
     </div>
-    <div class="band-stats" id="band-stats">
-      <div class="band-stat">
-        <div class="band-stat-num" id="bs-mkts">—</div>
-        <div class="band-stat-label">Terminal markets tracked daily</div>
-      </div>
-      <div class="band-stat">
-        <div class="band-stat-num" id="bs-comms">—</div>
-        <div class="band-stat-label">Active commodity listings</div>
-      </div>
-      <div class="band-stat">
-        <div class="band-stat-num">3<em>×</em></div>
-        <div class="band-stat-label">Daily USDA data refreshes</div>
-      </div>
-      <div class="band-stat">
-        <div class="band-stat-num"><em>$</em>0</div>
-        <div class="band-stat-label">To start — free tier available</div>
-      </div>
+    <div class="band-stats">
+      <div class="band-stat"><div class="band-stat-num" id="bs-mkts">—</div><div class="band-stat-label">Markets tracked daily</div></div>
+      <div class="band-stat"><div class="band-stat-num" id="bs-comms">—</div><div class="band-stat-label">Active commodities</div></div>
+      <div class="band-stat"><div class="band-stat-num">3<em>×</em></div><div class="band-stat-label">Daily USDA data refreshes</div></div>
+      <div class="band-stat"><div class="band-stat-num"><em>$</em>0</div><div class="band-stat-label">To start — free tier available</div></div>
     </div>
   </div>
 </div>
 
-<!-- ═══ TICKER ════════════════════════════════════ -->
+<!-- ═══ TICKER ════════════════════════════════ -->
 <div class="ticker">
   <div class="ticker-brand">agraX Live</div>
-  <div class="ticker-scroll">
-    <div class="ticker-track" id="ticker-track">
-      <span class="tick-item">Loading market data…</span>
-    </div>
-  </div>
+  <div class="ticker-scroll"><div class="ticker-track" id="ticker-track"><span class="tick-item">Loading…</span></div></div>
 </div>
 
 <script>
-/* ────────────────────────────────────────────
-   DATA LAYER
-─────────────────────────────────────────────── */
-const API = 'https://produce-iq-production.up.railway.app';
-let allData=[], datesData={}, dates=[], todayStr='';
-const CATS = {
+const API='https://produce-iq-production.up.railway.app';
+let allData=[],datesData={},dates=[],todayStr='';
+const CATS={
   'Fruits':['apple','pear','grape','peach','plum','cherry','nectarine','kiwi','melon','watermelon','mango','papaya','pineapple','banana','avocado','orange','lemon','lime','grapefruit','tangerine','strawberr','blueberr','raspberr','blackberr','coconut'],
   'Vegetables':['lettuce','tomato','pepper','carrot','celery','broccoli','cauliflower','cabbage','spinach','kale','cucumber','squash','zucchini','eggplant','corn','bean','pea','asparagus','garlic','mushroom','cilantro','herb'],
   'Onions & Potatoes':['onion','potato','yam','sweet potato','shallot'],
@@ -753,60 +476,50 @@ function getTrend(com){
   const wa=w.reduce((s,x)=>s+parseFloat(x.price_low),0)/w.length;
   return((ta-wa)/wa)*100;
 }
-function fmt(v){return v!=null?'$'+parseFloat(v).toFixed(2):'—';}
+function fmt(v){return v!=null&&v!==''?'$'+parseFloat(v).toFixed(2):'—';}
 function fmtChg(c){return(c>0?'+':'')+c.toFixed(1)+'%';}
 function setEl(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 
+/* hero search feeds into table filter */
+function heroSearch(q){
+  const tbl=document.getElementById('tbl-search');
+  if(tbl){tbl.value=q;}
+  doFilter();
+  const section=document.querySelector('.table-card');
+  if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 async function init(){
   try{
-    dates = await(await fetch(`${API}/dates`)).json();
+    dates=await(await fetch(`${API}/dates`)).json();
     if(!dates.length)return;
-    todayStr = dates[0].date;
-    const d = new Date(todayStr+'T12:00:00');
-    const ds = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-    setEl('fb-date', ds);
-    setEl('cards-date', `${ds} — top movers by week-on-week change`);
-
-    datesData[dates[0].date] = await(await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
-    allData = datesData[dates[0].date];
-
+    todayStr=dates[0].date;
+    datesData[dates[0].date]=await(await fetch(`${API}/commodities/by-date/${dates[0].date}`)).json();
+    allData=datesData[dates[0].date];
     for(let i=1;i<=6&&i<dates.length;i++){
       try{datesData[dates[i].date]=await(await fetch(`${API}/commodities/by-date/${dates[i].date}`)).json();}catch(e){}
     }
-
-    // Populate city dropdown
     const cities=[...new Set(allData.filter(r=>r.market_type==='terminal').map(r=>r.market))].sort();
-    const sel=document.getElementById('fb-city');
+    const sel=document.getElementById('tbl-city');
     cities.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
-
     renderAll();
-  }catch(e){console.error('Init error:',e);}
+  }catch(e){console.error(e);}
 }
 
-/* ────────────────────────────────────────────
-   FILTER STATE
-─────────────────────────────────────────────── */
-let activeCat='All', activeFilt=[], activePg=1, tblView='all';
-const PG=25;
+let activeCat='All',activeFilt=[],activePg=1;
+const PG=30;
 
 function setCat(cat,btn){
-  activeCat=cat; activePg=1;
-  document.querySelectorAll('.fb-pill').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  doFilter();
-}
-function setTblView(v,btn){
-  tblView=v;
+  activeCat=cat;activePg=1;
   document.querySelectorAll('.tbl-pill').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  doFilter();
+  btn.classList.add('on');doFilter();
 }
 function prevPage(){if(activePg>1){activePg--;renderTable();}}
 function nextPage(){activePg++;renderTable();}
 
 function doFilter(){
-  const q=(document.getElementById('fb-search')?.value||document.getElementById('tbl-search')?.value||'').toLowerCase();
-  const city=document.getElementById('fb-city')?.value||'All';
+  const q=(document.getElementById('tbl-search')?.value||'').toLowerCase();
+  const city=document.getElementById('tbl-city')?.value||'All';
   const byComm={};
   allData.filter(r=>r.market_type==='terminal'&&r.price_low!=null).forEach(r=>{
     if(activeCat!=='All'&&getCat(r.commodity)!==activeCat)return;
@@ -815,205 +528,143 @@ function doFilter(){
     if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;
   });
   activeFilt=Object.values(byComm).sort((a,b)=>Math.abs(getTrend(b.commodity))-Math.abs(getTrend(a.commodity)));
-  if(tblView==='movers') activeFilt=activeFilt.filter(r=>Math.abs(getTrend(r.commodity))>1);
-  activePg=1;
+  activePg=1;renderTable();
+}
+
+let expandedComm=null;
+function toggleRow(commodity){
+  expandedComm=expandedComm===commodity?null:commodity;
   renderTable();
 }
 
-/* ────────────────────────────────────────────
-   RENDER TABLE
-─────────────────────────────────────────────── */
-function renderTable(){
-  const st=(activePg-1)*PG, items=activeFilt.slice(st,st+PG), tot=Math.ceil(activeFilt.length/PG)||1;
-  setEl('tbl-count',`Showing ${st+1}–${Math.min(st+items.length,activeFilt.length)} of ${activeFilt.length.toLocaleString()} commodities`);
-  const pb=document.getElementById('pg-prev'), nb=document.getElementById('pg-next'), pn=document.getElementById('pg-num');
-  if(pb)pb.disabled=activePg<=1; if(nb)nb.disabled=activePg>=tot; if(pn)pn.textContent=activePg;
+function buildExpandPanel(r){
+  const fobItems=allData.filter(x=>x.commodity===r.commodity&&x.market_type==='shipping_point'&&x.market!=='National Trends'&&x.price_low!=null).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low));
+  const fobAvg=fobItems.length?fobItems.reduce((s,x)=>s+parseFloat(x.price_low),0)/fobItems.length:null;
+  const termAvg=parseFloat(r.price_low);
+  const spread=fobAvg?termAvg-fobAvg:null;
+  const history=[];
+  for(let i=Math.min(5,dates.length-1);i>=0;i--){
+    const d=dates[i]?.date;if(!d)continue;
+    const dr=datesData[d]?.filter(x=>x.commodity===r.commodity&&x.price_low!=null)||[];
+    if(dr.length){const a=dr.reduce((s,x)=>s+parseFloat(x.price_low),0)/dr.length;history.push({date:d,price:a,isLatest:i===0});}
+  }
+  const termItems=allData.filter(x=>x.commodity===r.commodity&&x.market_type==='terminal'&&x.price_low!=null).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low)).slice(0,5);
+  const trendRow=allData.find(x=>x.commodity===r.commodity&&x.market==='National Trends'&&x.supply_note);
+  return`<div class="expand-panel">
+    <div>
+      <div class="expand-section-label">Arbitrage Analysis</div>
+      <div class="expand-arb">
+        <div class="arb-node"><div class="arb-node-label">FOB Origin</div><div class="arb-node-val">${fobAvg?fmt(fobAvg):'N/A'}</div></div>
+        <div class="arb-op">+</div>
+        <div class="arb-node"><div class="arb-node-label">Freight</div><div class="arb-node-val" style="font-size:14px;color:var(--text-3);">Est.</div></div>
+        <div class="arb-op">=</div>
+        <div class="arb-node"><div class="arb-node-label">Terminal</div><div class="arb-node-val">${fmt(termAvg)}</div></div>
+      </div>
+      ${spread!=null?`<div class="arb-spread"><div class="arb-spread-label">Gross Spread</div><div class="arb-spread-val">+${fmt(spread)}</div></div>`:'<div style="margin-top:8px;font-size:12px;color:var(--text-3);">No FOB data</div>'}
+      ${trendRow?.supply_note?`<div style="margin-top:10px;font-size:12px;color:var(--text-2);line-height:1.6;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">${trendRow.supply_note.charAt(0)+trendRow.supply_note.slice(1).toLowerCase()}</div>`:''}
+    </div>
+    <div>
+      <div class="expand-section-label">Price History</div>
+      <div class="expand-history">
+        ${history.map((h,i)=>{
+          const prev=history[i+1]?.price;
+          const dc=prev?((h.price-prev)/prev)*100:null;
+          const iU2=dc&&dc>0.2,iD2=dc&&dc<-0.2;
+          return`<div class="hist-row">
+            <span class="hist-date ${h.isLatest?'today':''}">${h.isLatest?'● Today':new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
+            <span class="hist-price" style="color:${h.isLatest?'var(--green)':'var(--text)'};">${fmt(h.price)}</span>
+            <span class="hist-chg" style="color:${iU2?'var(--green)':iD2?'var(--red)':'var(--text-3)'};">${dc?`${iU2?'↑':iD2?'↓':'—'}${Math.abs(dc).toFixed(1)}%`:'—'}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="expand-section-label">Prices by Market</div>
+      <div class="expand-markets">
+        ${termItems.map((m,i)=>`<div class="mkt-row">
+          <div>
+            <div class="mkt-city ${i===0?'best':''}">${m.market}</div>
+            <div class="mkt-origin">${m.origin||'—'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="mkt-price" style="color:${i===0?'var(--green)':'var(--text)'};">${fmt(m.price_low)}</span>
+            ${i===0?'<span class="mkt-best-badge">Best</span>':''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="expand-actions">
+      <button class="expand-close" onclick="toggleRow('${r.commodity.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">↑ Collapse</button>
+      <button class="expand-report" onclick="alert('Full report coming soon')">Generate Full Report →</button>
+    </div>
+  </div>`;
+}
 
+function renderTable(){
   const fob={};
   allData.filter(r=>r.market_type==='shipping_point'&&r.price_low!=null&&r.market!=='National Trends').forEach(r=>{
     if(!fob[r.commodity]||parseFloat(r.price_low)<fob[r.commodity])fob[r.commodity]=parseFloat(r.price_low);
   });
-
+  const st=(activePg-1)*PG,items=activeFilt.slice(st,st+PG),tot=Math.ceil(activeFilt.length/PG)||1;
+  setEl('tbl-count',`Showing ${st+1}–${Math.min(st+items.length,activeFilt.length)} of ${activeFilt.length.toLocaleString()}`);
+  const pb=document.getElementById('pg-prev'),nb=document.getElementById('pg-next'),pn=document.getElementById('pg-num');
+  if(pb)pb.disabled=activePg<=1;if(nb)nb.disabled=activePg>=tot;if(pn)pn.textContent=activePg;
   const tbody=document.getElementById('main-tbody');
   if(!tbody)return;
-  tbody.innerHTML=items.map(r=>{
+  const rows=[];
+  items.forEach(r=>{
     const chg=getTrend(r.commodity);
-    const iU=chg>0.3, iD=chg<-0.3;
+    const iU=chg>0.3,iD=chg<-0.3;
     const mv=r.movement||'';
     const mvPct=mv.includes('Higher')?80:mv.includes('Lower')?20:50;
     const fobSrc=allData.filter(x=>x.commodity===r.commodity&&x.market_type==='shipping_point'&&x.market!=='National Trends'&&x.price_low!=null).sort((a,b)=>parseFloat(a.price_low)-parseFloat(b.price_low))[0];
     const srcLbl=fobSrc?(fobSrc.origin||fobSrc.market):'';
-    return`<tr>
-      <td style="color:var(--text-4);font-size:14px;padding:14px 10px 14px 18px;">☆</td>
+    const isOpen=expandedComm===r.commodity;
+    rows.push(`<tr class="main-row${isOpen?' expanded':''}" onclick="toggleRow('${r.commodity.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
+      <td style="color:var(--text-4);font-size:13px;padding:13px 8px 13px 16px;">☆</td>
       <td>
-        <div class="td-comm">${r.commodity}</div>
+        <div class="td-comm">${r.commodity}<span class="td-chevron">▼</span></div>
         <div class="td-origin">${r.origin||r.market||'—'}</div>
-        ${srcLbl?`<div class="td-fob"><span>↗</span>${srcLbl}</div>`:''}
+        ${srcLbl?`<div class="td-fob">↗ ${srcLbl}</div>`:''}
       </td>
-      <td style="font-size:12px;color:var(--text-3);">${r.variety||'—'} · ${(r.package||'—').slice(0,22)}</td>
-      <td class="r">
-        <div class="td-price">${fmt(r.price_low)}</div>
-        ${r.price_high?`<div class="td-price-hi">H: ${fmt(r.price_high)}</div>`:''}
-      </td>
+      <td style="font-size:12px;color:var(--text-3);">${r.variety||'—'} · ${(r.package||'—').slice(0,20)}</td>
+      <td class="r"><div class="td-price">${fmt(r.price_low)}</div>${r.price_high?`<div class="td-price-hi">H: ${fmt(r.price_high)}</div>`:''}</td>
       <td class="r"><span class="td-delta ${iU?'up':iD?'dn':'fl'}">${iU?'+':''}${chg.toFixed(1)}%</span></td>
       <td><div class="td-bar"><div class="td-bar-fill ${iU?'up':'dn'}" style="width:${mvPct}%"></div></div></td>
       <td><span class="td-signal ${iU?'up':iD?'dn':'fl'}">${iU?'Rising':iD?'Falling':'Stable'}</span></td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--text-3);">No results found</td></tr>';
+      <td style="padding:13px 12px;"></td>
+    </tr>`);
+    if(isOpen)rows.push(`<tr class="expand-row"><td colspan="8">${buildExpandPanel(r)}</td></tr>`);
+  });
+  tbody.innerHTML=rows.join('')||'<tr><td colspan="8" style="padding:32px;text-align:center;color:var(--text-3);">No results found</td></tr>';
 }
-
-/* ────────────────────────────────────────────
-   RENDER ALL
-─────────────────────────────────────────────── */
-let priceChart=null;
 
 function renderAll(){
   if(!allData.length)return;
-
-  // ── Hero stats
-  const terminal=allData.filter(r=>r.market_type==='terminal'&&r.price_low!=null);
-  const prices=terminal.map(r=>parseFloat(r.price_low));
-  const avg=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:0;
   const mkts=[...new Set(allData.map(r=>r.market))].length;
   const comms=[...new Set(allData.map(r=>r.commodity))].length;
+  setEl('bs-mkts',String(mkts));
+  setEl('bs-comms',String(comms));
+  doFilter();
+  // Ticker
   const allComms=[...new Set(allData.map(r=>r.commodity))];
   const trends=allComms.map(c=>({c,ch:getTrend(c)})).sort((a,b)=>Math.abs(b.ch)-Math.abs(a.ch));
-  const mover=trends[0];
-
-  setEl('h-avg',fmt(avg));
-  setEl('h-mkts',mkts);
-  setEl('h-comms',comms);
-  if(mover){
-    setEl('h-mover',mover.c.split(',')[0]);
-    const moverChgEl=document.getElementById('h-mover-chg');
-    if(moverChgEl){
-      moverChgEl.textContent=`${mover.ch>0?'▲ +':'▼ '}${mover.ch.toFixed(1)}% this week`;
-      moverChgEl.className='hero-stat-chg '+(mover.ch>0?'up':'dn');
-    }
-  }
-
-  // ── Band stats
-  setEl('bs-mkts',mkts);
-  setEl('bs-comms',comms);
-
-  // ── Commodity cards (top 4 movers)
-  const cardsEl=document.getElementById('comm-cards');
-  if(cardsEl){
-    cardsEl.innerHTML=trends.slice(0,4).map(m=>{
-      const r=allData.find(x=>x.commodity===m.c&&x.price_low!=null&&x.market_type==='terminal')||allData.find(x=>x.commodity===m.c&&x.price_low!=null);
-      if(!r)return'';
-      const iU=m.ch>0.3, iD=m.ch<-0.3;
-      const cls=Math.abs(m.ch)>10?'hot':Math.abs(m.ch)>5?'warm':'';
-      return`<div class="comm-card ${cls}">
-        <div class="card-eyebrow">${getCat(m.c)}</div>
-        <div class="card-name">${m.c.split(',')[0]}</div>
-        <div class="card-origin">${r.origin||r.market||'—'}</div>
-        <div class="card-price">${fmt(r.price_low)}</div>
-        <div class="card-range">${r.price_high?`H: ${fmt(r.price_high)} · L: ${fmt(r.price_low)}`:`Avg: ${fmt(r.price_low)}`}</div>
-        <div class="card-footer">
-          <span class="card-delta ${iU?'up':iD?'dn':'fl'}">${iU?'↑ +':iD?'↓ ':''}${fmtChg(m.ch)}</span>
-          <span class="card-signal ${iU?'up':iD?'dn':'fl'}">${iU?'Rising':iD?'Falling':'Stable'}</span>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  // ── Table
-  doFilter();
-
-  // ── Chart.js line chart
-  const history=[], labels=[];
-  for(let i=Math.min(6,dates.length-1);i>=0;i--){
-    const rows=datesData[dates[i].date]?.filter(r=>r.price_low!=null)||[];
-    if(rows.length){
-      const a=rows.reduce((s,r)=>s+parseFloat(r.price_low),0)/rows.length;
-      history.push(parseFloat(a.toFixed(2)));
-      labels.push(new Date(dates[i].date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
-    }
-  }
-  history.reverse(); labels.reverse();
-  const ctx=document.getElementById('price-chart');
-  if(ctx){
-    if(priceChart)priceChart.destroy();
-    priceChart=new Chart(ctx,{
-      type:'line',
-      data:{
-        labels,
-        datasets:[{
-          label:'Avg Price',data:history,
-          borderColor:'#1A6B3C',
-          backgroundColor:(ctx)=>{
-            const g=ctx.chart.ctx.createLinearGradient(0,0,0,280);
-            g.addColorStop(0,'rgba(26,107,60,0.18)');
-            g.addColorStop(1,'rgba(26,107,60,0)');
-            return g;
-          },
-          borderWidth:2.5,fill:true,tension:0.4,
-          pointBackgroundColor:'#1A6B3C',
-          pointRadius:4,pointHoverRadius:7,
-          pointBorderColor:'#fff',pointBorderWidth:2,
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{
-          legend:{display:false},
-          tooltip:{
-            mode:'index',intersect:false,
-            backgroundColor:'#fff',
-            titleColor:'#0D1B0F',bodyColor:'#3D5440',
-            borderColor:'#DDE5DA',borderWidth:1,
-            padding:10,cornerRadius:8,
-            callbacks:{label:ctx=>`Avg: $${ctx.parsed.y.toFixed(2)}`}
-          }
-        },
-        scales:{
-          x:{grid:{color:'#EFF1EC'},ticks:{font:{size:11,family:"'Inter',sans-serif"},color:'#7A9280'}},
-          y:{grid:{color:'#EFF1EC'},ticks:{font:{size:11,family:"'Inter',sans-serif"},color:'#7A9280',callback:v=>'$'+v.toFixed(0)}}
-        }
-      }
-    });
-  }
-
-  // ── Intel feed
-  const intelEl=document.getElementById('intel-items');
-  if(intelEl){
-    const alerts=allData.filter(r=>r.market==='National Trends'&&r.supply_note&&r.supply_note.length>10).slice(0,5);
-    intelEl.innerHTML=alerts.map(r=>{
-      const mv=r.movement||'';
-      const iU=mv.includes('Higher'), iD=mv.includes('Lower');
-      const dotColor=iU?'var(--green)':iD?'var(--red)':'var(--text-3)';
-      return`<div class="intel-item">
-        <div class="intel-item-top">
-          <div class="intel-dot" style="background:${dotColor};"></div>
-          <div>
-            <div class="intel-comm">${r.commodity}</div>
-            <div class="intel-note">${(r.supply_note||'').slice(0,100).toLowerCase()}</div>
-            <div class="intel-meta">${mv||'Stable'} · ${r.origin||r.market||'National'}</div>
-          </div>
-        </div>
-      </div>`;
-    }).join('')||'<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px;">No alerts today</div>';
-  }
-
-  // ── Ticker tape
   const tickerEl=document.getElementById('ticker-track');
   if(tickerEl){
     const items=trends.slice(0,14).map(m=>({...m,r:allData.find(x=>x.commodity===m.c&&x.price_low!=null)})).filter(x=>x.r);
-    const alerts=allData.filter(r=>(r.movement==='Much Higher'||r.movement==='Much Lower')&&r.market!=='National Trends').slice(0,4).map(r=>({isAlert:true,commodity:r.commodity,movement:r.movement,market:r.market}));
+    const alerts=allData.filter(r=>(r.movement==='Much Higher'||r.movement==='Much Lower')&&r.market!=='National Trends').slice(0,3).map(r=>({isAlert:true,...r}));
     const all=[...items,...alerts,...items,...alerts];
     tickerEl.innerHTML=all.map(item=>{
-      if(item.isAlert)return`<span class="tick-item alert">⚠ ${item.commodity} — ${item.movement} (${item.market})</span>`;
+      if(item.isAlert)return`<span class="tick-item alert">⚠ ${item.commodity} — ${item.movement}</span>`;
       const iU=item.ch>0.3,iD=item.ch<-0.3;
       return`<span class="tick-item ${iU?'up':iD?'dn':''}">${item.c.split(',')[0]} ${fmt(item.r.price_low)} ${iU?'▲':iD?'▼':''}${fmtChg(item.ch)}</span>`;
     }).join('');
   }
 }
 
-// Scroll nav behavior
 window.addEventListener('scroll',()=>{
-  const nav=document.getElementById('main-nav');
-  if(nav)nav.style.background=window.scrollY>10?'rgba(247,248,245,0.97)':'rgba(247,248,245,0.92)';
+  const n=document.getElementById('main-nav');
+  if(n)n.style.background=window.scrollY>10?'rgba(247,248,245,0.98)':'rgba(247,248,245,0.95)';
 });
 
 init();
