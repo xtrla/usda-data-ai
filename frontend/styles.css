@@ -2099,3 +2099,377 @@ select.input { appearance: none; -webkit-appearance: none;
   .mvmt-side { flex-direction: row; flex-wrap: wrap; }
   .mvmt-side > .card { flex: 1 1 280px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — agraX
+   Full mobile-first overhaul for phones and tablets
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tablet (< 1024px) ─────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .app {
+    grid-template-columns: 200px 1fr;
+  }
+  .popular-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── Mobile (< 768px) ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* App shell — single column, no sidebar */
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px 1fr 60px;
+    grid-template-areas:
+      "top"
+      "main"
+      "mobnav";
+    height: 100dvh;
+    height: -webkit-fill-available;
+  }
+
+  /* Hide desktop sidebar and brand */
+  .brand { display: none; }
+  .sidenav { display: none; }
+  .statusbar { display: none; }
+
+  /* Topbar — simplified */
+  .topbar {
+    padding: 0 14px;
+    gap: 8px;
+  }
+  .crumbs { font-size: 13px; font-weight: 600; color: var(--text); }
+  .crumbs .sep { display: none; }
+  .crumbs .crumb-link { color: var(--text-muted); }
+
+  /* Hide density + dark mode toggles from topbar on mobile */
+  .topbar .seg { display: none; }
+  .topbar .btn.ghost.sm.icon { display: none; }
+
+  /* Mobile search bar in topbar */
+  .topbar .search {
+    flex: 1;
+    max-width: none;
+    height: 34px;
+    border-radius: 20px;
+  }
+  .topbar .search input { font-size: 14px; }
+  .topbar .search kbd { display: none; }
+
+  /* Bottom nav bar */
+  .mob-nav {
+    grid-area: mobnav;
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .mob-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 4px;
+    color: var(--text-dim);
+    font-size: 10px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    transition: color 120ms;
+    position: relative;
+  }
+  .mob-nav-btn.active { color: var(--accent); }
+  .mob-nav-btn svg { width: 20px; height: 20px; }
+  .mob-nav-badge {
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 14px);
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+
+  /* Main content — full width, scrollable */
+  .main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px;
+  }
+
+  /* Page padding */
+  .page { padding: 0 0 24px; }
+
+  /* Hero — mobile */
+  .hero {
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 16px 20px;
+  }
+  .hero-r { width: 100%; }
+  .hero-date { font-size: 20px; }
+  .hero-eyebrow { font-size: 11px; flex-wrap: wrap; gap: 4px; }
+  .hero-meta { font-size: 12px; }
+  .market-btn { width: 100%; }
+
+  /* Popular cards — stack vertically */
+  .popular-grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 12px;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* Filter bar — horizontal scroll */
+  .fbar {
+    padding: 8px 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    gap: 6px;
+    scrollbar-width: none;
+  }
+  .fbar::-webkit-scrollbar { display: none; }
+  .fbar .label-eyebrow { display: none; }
+
+  /* Table card */
+  .card { border-radius: 10px; margin: 0 12px 12px; }
+  .card-h { padding: 12px 14px; gap: 8px; flex-wrap: wrap; }
+  .card-h h3 { font-size: 13px; }
+  .card-h .sub { font-size: 11px; }
+  .card-h .btn { display: none; }
+
+  /* Data table — mobile optimized */
+  .dt {
+    font-size: 12.5px;
+  }
+  .dt thead th {
+    padding: 7px 10px;
+    font-size: 9px;
+  }
+  .dt tbody td {
+    padding: 10px 10px;
+  }
+
+  /* Hide non-essential columns on mobile */
+  .dt .col-unit,
+  .dt .col-supply,
+  .dt .col-spark,
+  .dt th:nth-child(3),
+  .dt td:nth-child(3),
+  .dt th:nth-child(8),
+  .dt td:nth-child(8),
+  .dt th:nth-child(9),
+  .dt td:nth-child(9) {
+    display: none;
+  }
+
+  /* Commodity rows — tighter */
+  .dt tbody tr td:nth-child(2) div:first-child { font-size: 13px; }
+  .dt tbody tr td:nth-child(2) div:last-child { font-size: 10.5px; }
+
+  /* KPI strip — 2x2 grid on mobile */
+  .kpi-strip-mobile {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0 12px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .kpi {
+    border-right: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .kpi:nth-child(2n) { border-right: none; }
+  .kpi:nth-last-child(-n+2) { border-bottom: none; }
+
+  /* Detail nav */
+  .detail-nav {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .nav-arrows { margin-left: auto; }
+
+  /* Page header */
+  .page-h {
+    padding: 12px 14px 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .page-title { font-size: 22px; }
+
+  /* Supply chain band — already stacks at 1180px, just pad */
+  .sc-band { margin: 0 12px 12px; }
+  .sc-col { padding: 14px; }
+
+  /* Market picker dropdown full width */
+  .market-menu {
+    left: 0;
+    right: 0;
+    width: auto;
+  }
+
+  /* Search overlay — full screen on mobile */
+  .search-overlay .panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+  .search-overlay .field {
+    border-radius: 0;
+    padding: 0 16px;
+    height: 56px;
+  }
+  .search-overlay .field input { font-size: 16px; } /* prevent zoom on iOS */
+  .search-overlay .results { max-height: calc(100dvh - 100px); }
+  .search-overlay .result { padding: 12px 16px; }
+
+  /* Popular rows — slightly taller for touch */
+  .popular-row { padding: 10px 14px !important; min-height: 48px; }
+
+  /* Chips — larger touch targets */
+  .chip { padding: 5px 12px; font-size: 12px; min-height: 30px; }
+  .btn { min-height: 34px; }
+
+  /* Watchlist empty state */
+  .empty { padding: 32px 20px; }
+
+  /* FOB table on mobile — scroll */
+  .card > div[style*="overflow-x"] { -webkit-overflow-scrolling: touch; }
+
+  /* Hide sort indicators on mobile to save space */
+  .sort-ind { display: none; }
+}
+
+/* ── Small phones (< 400px) ────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .hero-date { font-size: 17px; }
+  .popular-grid { padding: 0 10px; }
+  .card { margin: 0 10px 10px; }
+  .dt { font-size: 11.5px; }
+}
+
+/* ── Mobile sidebar overlay (drawer) ───────────────────────────────────── */
+.mob-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 300;
+  animation: fadeIn 160ms ease;
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+.mob-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(300px, 85vw);
+  background: var(--surface);
+  z-index: 301;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: slideIn 200ms cubic-bezier(.2,0,.2,1);
+  padding: 16px 10px;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+@keyframes slideIn { from { transform: translateX(-100%) } to { transform: translateX(0) } }
+
+.mob-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.mob-drawer-logo { font-size: 17px; font-weight: 700; color: var(--text); }
+.mob-drawer-logo span { color: var(--accent); }
+.mob-drawer-close {
+  width: 32px; height: 32px;
+  background: var(--bg-2); border: none; border-radius: 50%;
+  cursor: pointer; display: grid; place-items: center; color: var(--text-muted);
+}
+
+/* Commodity search card on mobile top of markets screen */
+.mob-search-card {
+  background: var(--accent);
+  margin: 0 12px 16px;
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mob-search-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+.mob-search-card-sub { font-size: 12px; color: rgba(255,255,255,.65); }
+.mob-search-input-wrap {
+  display: flex;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 42px;
+  align-items: center;
+}
+.mob-search-input-wrap svg { margin: 0 10px; flex-shrink: 0; color: var(--text-muted); }
+.mob-search-input-wrap input {
+  flex: 1; border: none; outline: none;
+  font-size: 15px; font-family: var(--font-sans);
+  color: var(--text); background: transparent;
+}
+.mob-quick-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.mob-quick-pill {
+  background: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-sans);
+}
+
+/* Mobile market bar (below search card) */
+.mob-market-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 12px 8px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.mob-market-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.mob-market-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.mob-market-change { font-size: 12px; font-weight: 600; color: var(--accent); }
+

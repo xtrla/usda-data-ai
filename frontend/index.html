@@ -417,7 +417,7 @@ function MarketsScreen({ commodities, market, setMarket, watchlist, toggleWatch,
       </div>
 
       {/* Popular cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
+      <div className="popular-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 20 }}>
         <PopularCard title="Popular fruit" subtitle="Today's wholesale prices" items={popularFruit} market={market} onOpen={onOpen} onSeeAll={() => setCategory('Fruits')} />
         <PopularCard title="Popular vegetables" subtitle="Today's wholesale prices" items={popularVeg} market={market} onOpen={onOpen} onSeeAll={() => setCategory('Vegetables')} />
         <WatchlistCard items={watchItems} market={market} onOpen={onOpen} watchCount={Object.keys(watchlist).length} />
@@ -857,12 +857,23 @@ function App() {
   const [watchlist, setWatchlist] = useState({});
   const [searchOpen, setSearchOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = () => window.innerWidth <= 768;
   const [density, setDensity] = useState('regular');
 
   // Sidebar tree state
   const [commOpen, setCommOpen] = useState(true);
   const [termOpen, setTermOpen] = useState(false);
   const [openCats, setOpenCats] = useState({ Fruits: true, Vegetables: false, 'Onions & Potatoes': false, Nuts: false });
+
+  useEffect(() => {
+    // Show/hide mobile nav based on screen width
+    const bar = document.getElementById('mob-nav-bar');
+    function checkMob() { if (bar) bar.style.display = window.innerWidth <= 768 ? 'flex' : 'none'; }
+    checkMob();
+    window.addEventListener('resize', checkMob);
+    return () => window.removeEventListener('resize', checkMob);
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -918,6 +929,18 @@ function App() {
     });
     return tree;
   }, [commodities]);
+
+  // Sync bottom nav active state
+  useEffect(() => {
+    const map = {
+      commodities: 'mnb-home', today: 'mnb-home', commodity: 'mnb-home',
+      watchlist: 'mnb-watch', shipping: 'mnb-ship'
+    };
+    ['mnb-home','mnb-search','mnb-watch','mnb-ship','mnb-menu'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active', map[route] === id);
+    });
+  }, [route]);
 
   const crumbs = route === 'commodity' && openComm
     ? [{ label: 'Commodities', onClick: () => { setRoute('commodities'); setOpenId(null); } }, { label: openComm.name }]
@@ -1102,6 +1125,69 @@ function App() {
         <span className="sep">|</span>
         <span>{commodities.length} commodities · {allRows.filter(r => r.market_type === 'terminal').length} terminal listings</span>
       </div>
+
+      {/* Mobile bottom nav */}
+      <div className="mob-nav" style={{ display: 'none' }} id="mob-nav-bar">
+        <button className="mob-nav-btn" id="mnb-home" onClick={() => { setRoute('commodities'); setOpenId(null); setCatFilter(null); }}>
+          <Ico.Grid />
+          Markets
+        </button>
+        <button className="mob-nav-btn" id="mnb-search" onClick={() => setSearchOpen(true)}>
+          <Ico.Search />
+          Search
+        </button>
+        <button className="mob-nav-btn" id="mnb-watch" onClick={() => setRoute('watchlist')} style={{ position: 'relative' }}>
+          <Ico.Star />
+          Watchlist
+          {watchCount > 0 && <span className="mob-nav-badge">{watchCount}</span>}
+        </button>
+        <button className="mob-nav-btn" id="mnb-ship" onClick={() => setRoute('shipping')}>
+          <Ico.Truck />
+          Shipping
+        </button>
+        <button className="mob-nav-btn" id="mnb-menu" onClick={() => setDrawerOpen(true)}>
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+          More
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {drawerOpen && (
+        <div className="mob-drawer-overlay" onClick={() => setDrawerOpen(false)}>
+          <div className="mob-drawer" onClick={e => e.stopPropagation()}>
+            <div className="mob-drawer-header">
+              <span className="mob-drawer-logo">agra<span>X</span></span>
+              <button className="mob-drawer-close" onClick={() => setDrawerOpen(false)}><Ico.X /></button>
+            </div>
+            <div className="nav-section">Markets</div>
+            {['Fruits','Vegetables','Onions & Potatoes','Nuts'].map(cat => (
+              <button key={cat} className="nav-item" onClick={() => { goToCategory(cat); setDrawerOpen(false); }}>
+                <span className="ico"><Ico.Grid /></span>{cat}
+                <span className="cat-count" style={{ marginLeft: 'auto' }}>{(commTree[cat]||[]).length}</span>
+              </button>
+            ))}
+            <div className="nav-section" style={{ marginTop: 8 }}>Terminal city</div>
+            {TERMINALS.slice(1).map(t => (
+              <button key={t.code} className={`nav-item ${market === t.code ? 'active' : ''}`}
+                onClick={() => { setMarket(t.code); setRoute('commodities'); setDrawerOpen(false); }}>
+                <span className="ico"><Ico.Map /></span>{t.city}, {t.state}
+              </button>
+            ))}
+            <div className="nav-section" style={{ marginTop: 8 }}>Settings</div>
+            <button className="nav-item" onClick={() => { setDark(d => !d); }}>
+              <span className="ico"><Ico.Sun /></span>{dark ? 'Light mode' : 'Dark mode'}
+            </button>
+            <div style={{ padding: '6px 8px', marginTop: 4 }}>
+              <div className="label-eyebrow" style={{ marginBottom: 6 }}>Density</div>
+              <div className="seg">
+                {['compact','regular','spacious'].map(d => (
+                  <button key={d} className={density === d ? 'on' : ''} onClick={() => setDensity(d)}>{d[0].toUpperCase()}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {searchOpen && <SearchOverlay commodities={commodities} onClose={() => setSearchOpen(false)} onOpen={openCommodity} />}
     </div>
