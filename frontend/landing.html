@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AgraX — Wholesale produce prices, all in one place</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='translate(50,50)'%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(-45)' fill='%2315803d'/%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(45)' fill='%2334c759'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow-x:hidden;}
+.lp-shell{display:flex;flex-direction:column;min-height:100vh;}
+
+/* Nav */
+.lp-nav{display:flex;align-items:center;gap:28px;padding:16px 40px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--surface) 86%,transparent);position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);}
+.lp-nav .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);}
+.lp-nav .brand .logo{width:32px;height:32px;display:block;flex:0 0 32px;}
+.lp-nav .brand .name{font-size:19px;font-weight:600;letter-spacing:-0.025em;line-height:1;font-family:Rubik;}
+.lp-nav .brand .name .x{color:var(--accent);}
+.lp-nav nav{display:flex;gap:26px;}
+.lp-nav nav a{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;transition:color 80ms;}
+.lp-nav nav a:hover{color:var(--text);}
+.lp-nav .nav-spacer{flex:1;}
+.lp-nav .nav-cta{display:flex;gap:10px;align-items:center;}
+.lp-nav .nav-cta a.signin{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;padding:7px 4px;}
+.lp-nav .nav-cta a.signin:hover{color:var(--text);}
+.lp-nav .nav-cta .btn-primary{background:var(--text);color:var(--bg);font-size:13px;font-weight:500;padding:8px 14px;border-radius:6px;text-decoration:none;transition:opacity 80ms;}
+.lp-nav .nav-cta .btn-primary:hover{opacity:0.88;}
+
+/* Container */
+.lp-container{max-width:1200px;margin:0 auto;padding:0 40px;}
+
+/* Hero */
+.lp-hero{padding:88px 0 56px;display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;}
+.lp-hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:22px;}
+.lp-hero .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);animation:lp-pulse 2.2s ease-in-out infinite;}
+@keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.lp-hero h1{font-size:64px;line-height:1.05;letter-spacing:-0.03em;font-weight:600;margin:0 0 22px;text-wrap:balance;}
+.lp-hero h1 .accent{color:var(--accent);}
+.lp-hero .sub{font-size:18px;line-height:1.55;color:var(--text-muted);margin:0 0 32px;max-width:52ch;}
+.lp-hero .ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.btn-lg{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:8px;font-size:14.5px;font-weight:500;text-decoration:none;border:1px solid transparent;transition:opacity 80ms,background 80ms,border-color 80ms;}
+.btn-lg.primary{background:var(--text);color:var(--bg);}
+.btn-lg.primary:hover{opacity:0.9;}
+.btn-lg.ghost{background:transparent;color:var(--text);border-color:var(--border);}
+.btn-lg.ghost:hover{border-color:var(--border-strong);background:var(--bg-2);}
+.lp-hero .ctas .free-note{font-size:12.5px;color:var(--text-dim);margin-left:6px;}
+.lp-hero-art{position:relative;display:flex;justify-content:center;align-items:center;}
+
+/* Price console */
+.price-console{background:linear-gradient(152deg,#14532d 0%,#166534 52%,#15803d 100%);border-radius:14px;padding:20px;width:100%;max-width:500px;box-shadow:0 1px 0 rgba(10,10,10,.04),0 34px 74px -28px rgba(21,128,61,.5);color:#fff;}
+.pc-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;}
+.pc-label{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:#fff;}
+.pc-live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;background:rgba(255,255,255,.16);color:#fff;padding:4px 9px;border-radius:999px;white-space:nowrap;}
+.pc-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#86efac;animation:lp-pulse 2s ease-in-out infinite;}
+.pc-controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;margin-bottom:16px;}
+.pc-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,.72);font-weight:500;margin-bottom:6px;}
+.pc-at{font-size:12px;color:rgba(255,255,255,.6);padding-bottom:11px;}
+.pc-combo{position:relative;}
+.pc-combo-trigger,.pc-select-wrap select{width:100%;height:40px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px;background:#fff;border:1px solid transparent;border-radius:8px;font:inherit;font-size:14px;font-weight:500;color:#0a0a0a;cursor:pointer;text-align:left;transition:box-shadow 80ms;}
+.pc-combo-trigger:hover,.pc-select-wrap select:hover{box-shadow:0 0 0 3px rgba(255,255,255,.22);}
+.pc-combo-trigger[aria-expanded="true"]{box-shadow:0 0 0 3px rgba(255,255,255,.4);}
+.pc-combo-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.pc-chev{width:15px;height:15px;color:#6b7280;flex:0 0 15px;transition:transform 120ms;}
+.pc-combo-trigger[aria-expanded="true"] .pc-chev{transform:rotate(180deg);}
+.pc-combo-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 20px 50px -16px rgba(10,10,10,.22);overflow:hidden;}
+.pc-combo-search{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-soft);}
+.pc-combo-search svg{width:14px;height:14px;color:var(--text-dim);flex:0 0 14px;}
+.pc-combo-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:13.5px;color:var(--text);}
+.pc-combo-search input::placeholder{color:var(--text-dim);}
+.pc-combo-list{max-height:244px;overflow-y:auto;padding:6px;}
+.pc-opt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;}
+.pc-opt:hover,.pc-opt.active{background:var(--bg-2);}
+.pc-opt.selected{background:var(--accent-soft);}
+.pc-opt-name{font-size:13.5px;font-weight:500;color:var(--text);}
+.pc-opt-var{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-top:1px;}
+.pc-opt-cat{font-size:10.5px;color:var(--text-dim);white-space:nowrap;}
+.pc-empty{padding:18px 12px;text-align:center;color:var(--text-dim);font-size:12.5px;}
+.pc-select-wrap{position:relative;}
+.pc-select-wrap select{appearance:none;-webkit-appearance:none;padding-right:32px;}
+.pc-select-wrap .pc-chev{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;}
+.pc-result{border-top:1px solid rgba(255,255,255,.16);padding-top:16px;}
+.pc-res-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.pc-res-name{font-size:19px;font-weight:600;letter-spacing:-0.015em;line-height:1.1;color:#fff;}
+.pc-res-var{font-size:11.5px;color:rgba(255,255,255,.68);font-family:var(--font-mono);margin-top:3px;}
+.pc-res-price{text-align:right;flex:0 0 auto;}
+.pc-res-val{font-family:var(--font-mono);font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1;color:#fff;}
+.pc-res-val .u{font-size:12px;color:rgba(255,255,255,.62);font-weight:400;letter-spacing:0;}
+.pc-res-delta{font-family:var(--font-mono);font-size:12.5px;font-weight:500;margin-top:5px;}
+.pc-res-delta.up{color:#86efac;}
+.pc-res-delta.dn{color:#fca5a5;}
+.pc-res-delta.flat{color:rgba(255,255,255,.62);}
+.pc-res-mid{display:flex;align-items:center;gap:16px;margin:14px 0;}
+.pc-res-spark{flex:1;height:42px;min-width:0;}
+.pc-res-spark path.line{fill:none;stroke-width:1.6;}
+.pc-res-cap{text-align:right;flex:0 0 auto;}
+.pc-res-cap .t{font-size:9.5px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,.6);}
+.pc-res-cap .r{font-size:11.5px;color:rgba(255,255,255,.82);font-family:var(--font-mono);margin-top:2px;}
+.pc-res-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:15px;}
+.pc-tag{font-size:11px;color:rgba(255,255,255,.92);background:rgba(255,255,255,.14);border-radius:6px;padding:4px 9px;font-family:var(--font-mono);}
+.pc-tag b{color:#fff;font-weight:600;}
+.pc-res-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.pc-updated{font-size:11px;color:rgba(255,255,255,.62);font-family:var(--font-mono);}
+.pc-open{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:#fff;color:#14532d;padding:7px 13px;border-radius:8px;text-decoration:none;transition:background 80ms;}
+.pc-open:hover{background:#f0fdf4;}
+.pc-open svg{width:14px;height:14px;transition:transform 120ms;}
+.pc-open:hover svg{transform:translateX(3px);}
+.pc-result.flash{animation:pc-flash 340ms ease;}
+@keyframes pc-flash{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:none}}
+.pc-loading{padding:24px 0;text-align:center;color:rgba(255,255,255,.6);font-size:13px;}
+
+/* Trust strip */
+.lp-trust{padding:28px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);margin-top:24px;}
+.lp-trust-inner{display:flex;justify-content:space-between;align-items:center;gap:40px;flex-wrap:wrap;}
+.lp-trust-item{display:flex;flex-direction:column;gap:4px;font-family:var(--font-mono);}
+.lp-trust-item .v{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.01em;}
+.lp-trust-item .l{font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);font-weight:500;}
+
+/* Sections */
+.lp-section{padding:96px 0;}
+.lp-section.sunk{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.lp-section-head{max-width:720px;margin-bottom:48px;}
+.lp-section-head .eyebrow{font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:16px;display:inline-block;}
+.lp-section-head h2{font-size:42px;letter-spacing:-0.025em;line-height:1.1;font-weight:600;margin:0 0 16px;text-wrap:balance;}
+.lp-section-head p{font-size:17px;line-height:1.55;color:var(--text-muted);margin:0;max-width:56ch;}
+
+/* Live table */
+.lp-live-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 0 rgba(10,10,10,.02),0 24px 60px -28px rgba(10,10,10,.1);}
+.lp-live-h{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.lp-live-h .meta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;}
+.lp-live-h .meta strong{color:var(--text);font-weight:500;}
+.lp-live-h .live-pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;background:var(--accent-soft);color:var(--accent);padding:4px 8px;border-radius:4px;white-space:nowrap;}
+.lp-live-h .live-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:lp-pulse 2s infinite;}
+.lp-live-table{width:100%;border-collapse:separate;border-spacing:0;}
+.lp-live-table thead th{font-size:10.5px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;text-align:left;padding:10px 24px;background:var(--bg);border-bottom:1px solid var(--border);}
+.lp-live-table thead th.num{text-align:right;}
+.lp-live-table tbody td{padding:14px 24px;border-bottom:1px solid var(--border-soft);font-size:14px;}
+.lp-live-table tbody tr:last-child td{border-bottom:0;}
+.lp-live-table .name{font-weight:500;}
+.lp-live-table .var{font-size:11.5px;color:var(--text-dim);font-family:var(--font-mono);}
+.lp-live-table .origin{color:var(--text-muted);font-size:12.5px;}
+.lp-live-table .origin .dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.lp-live-table .num{font-family:var(--font-mono);text-align:right;}
+.lp-live-table td.num.mostly{font-weight:500;}
+.lp-live-table .delta{font-family:var(--font-mono);font-weight:500;font-size:12.5px;}
+.lp-live-table .delta.up{color:var(--positive);}
+.lp-live-table .delta.dn{color:var(--negative);}
+.lp-live-foot{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-top:1px solid var(--border-soft);background:var(--bg);font-size:12px;color:var(--text-dim);flex-wrap:wrap;gap:8px;}
+.lp-live-foot a{color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.lp-live-foot a:hover{color:var(--accent);}
+.lp-live-loading{padding:40px;text-align:center;color:var(--text-muted);font-size:14px;}
+
+/* Features */
+.lp-features{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+.lp-feature{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;display:flex;flex-direction:column;gap:16px;}
+.lp-feature .feat-art{height:140px;background:var(--bg);border-radius:7px;overflow:hidden;border:1px solid var(--border-soft);}
+.lp-feature h3{font-size:19px;font-weight:600;letter-spacing:-0.015em;margin:4px 0 0;}
+.lp-feature p{font-size:14px;line-height:1.55;color:var(--text-muted);margin:0;}
+.feat-wire{padding:14px 16px;display:flex;flex-direction:column;gap:8px;justify-content:center;height:100%;box-sizing:border-box;}
+.feat-wire-row{display:flex;align-items:center;gap:10px;font-size:11.5px;font-family:var(--font-mono);}
+.feat-wire-row .tm{color:var(--text-dim);font-size:10px;min-width:38px;}
+.feat-wire-row .tg{color:var(--accent);font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;min-width:56px;}
+.feat-wire-row .tx{color:var(--text-muted);font-family:var(--font-sans);font-size:11.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.feat-alert-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px 14px;display:flex;align-items:center;gap:10px;width:100%;}
+.feat-alert-card .badge{background:var(--accent);color:white;font-size:9.5px;font-weight:500;padding:3px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.06em;}
+.feat-alert-card .body{flex:1;min-width:0;}
+.feat-alert-card .body .t{font-size:12.5px;font-weight:500;}
+.feat-alert-card .body .m{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);}
+.feat-origin-row{display:flex;align-items:center;gap:10px;font-size:12px;}
+.feat-origin-row .dot{width:6px;height:6px;border-radius:50%;flex:0 0 6px;}
+.feat-origin-row .dot.dom{background:var(--positive);}
+.feat-origin-row .dot.imp{background:var(--info);}
+.feat-origin-row .name{font-weight:500;flex:1;}
+.feat-origin-row .meta{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+
+/* Pricing */
+.lp-pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.lp-plan{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 28px;display:flex;flex-direction:column;position:relative;}
+.lp-plan.featured{border-color:var(--text);background:var(--text);color:var(--bg);}
+.lp-plan .ribbon{position:absolute;top:-10px;left:28px;background:var(--accent);color:white;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;padding:4px 9px;border-radius:4px;}
+.lp-plan .plan-name{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:12px;}
+.lp-plan.featured .plan-name{color:rgba(250,250,250,.7);}
+.lp-plan .plan-price{font-size:44px;font-weight:600;letter-spacing:-0.02em;line-height:1;display:flex;align-items:baseline;gap:6px;margin-bottom:6px;}
+.lp-plan .plan-price .unit{font-size:14px;font-weight:400;color:var(--text-muted);}
+.lp-plan.featured .plan-price .unit{color:rgba(250,250,250,.6);}
+.lp-plan .plan-byline{font-size:13px;color:var(--text-muted);margin-bottom:28px;min-height:38px;}
+.lp-plan.featured .plan-byline{color:rgba(250,250,250,.7);}
+.lp-plan .plan-features{list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:11px;font-size:13.5px;}
+.lp-plan .plan-features li{display:flex;align-items:flex-start;gap:10px;line-height:1.45;}
+.lp-plan .plan-features li svg{flex:0 0 14px;width:14px;height:14px;margin-top:3px;color:var(--accent);}
+.lp-plan.featured .plan-features li svg{color:var(--positive);}
+.lp-plan .plan-cta{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:7px;font-size:13.5px;font-weight:500;border:1px solid var(--border);background:var(--bg);color:var(--text);text-decoration:none;transition:opacity 80ms,background 80ms;}
+.lp-plan .plan-cta:hover{background:var(--bg-2);}
+.lp-plan.featured .plan-cta{background:var(--bg);color:var(--text);border-color:var(--bg);}
+.lp-plan.featured .plan-cta:hover{opacity:0.92;}
+
+/* Final */
+.lp-final{text-align:center;padding:96px 0;border-top:1px solid var(--border);}
+.lp-final h2{font-size:48px;letter-spacing:-0.025em;line-height:1.1;font-weight:600;margin:0 0 18px;text-wrap:balance;}
+.lp-final p{font-size:17px;color:var(--text-muted);margin:0 0 32px;max-width:46ch;margin-left:auto;margin-right:auto;}
+.lp-final .ctas{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+
+/* Footer */
+.lp-footer{border-top:1px solid var(--border);background:var(--surface);padding:40px 0 32px;}
+.lp-footer-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
+.lp-footer .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.025em;margin-bottom:10px;font-family:Rubik;}
+.lp-footer .brand .logo{width:26px;height:26px;display:block;flex:0 0 26px;}
+.lp-footer .brand .name .x{color:var(--accent);}
+.lp-footer .tagline{font-size:12px;color:var(--text-dim);max-width:38ch;}
+.lp-footer .col-group{display:flex;gap:48px;flex-wrap:wrap;}
+.lp-footer .col{display:flex;flex-direction:column;gap:8px;}
+.lp-footer .col h4{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin:0 0 4px;}
+.lp-footer .col a{color:var(--text-muted);font-size:12.5px;text-decoration:none;}
+.lp-footer .col a:hover{color:var(--text);}
+.lp-footer .legal{display:flex;justify-content:space-between;padding-top:28px;margin-top:28px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dim);font-family:var(--font-mono);flex-wrap:wrap;gap:8px;}
+
+/* Responsive */
+@media(max-width:860px){
+  .lp-hero{grid-template-columns:1fr;gap:40px;padding:56px 0 40px;}
+  .lp-hero h1{font-size:44px;}
+  .lp-features{grid-template-columns:1fr;}
+  .lp-pricing{grid-template-columns:1fr;}
+  .lp-section-head h2{font-size:32px;}
+  .lp-final h2{font-size:36px;}
+  .lp-nav{padding:13px 20px;gap:14px;}
+  .lp-nav nav{display:none;}
+  .lp-container{padding:0 20px;}
+}
+@media(max-width:480px){
+  .lp-hero h1{font-size:34px;}
+  .lp-nav .nav-cta a.signin{display:none;}
+  .pc-controls{grid-template-columns:1fr;gap:12px;}
+  .pc-at{display:none;}
+  .price-console{padding:16px;}
+  .pc-res-val{font-size:26px;}
+  .pc-res-name{font-size:17px;}
+  .lp-trust-inner{gap:20px;}
+}
+</style>
+</head>
+<body>
+<div class="lp-shell">
+
+  <header class="lp-nav">
+    <a href="index.html" class="brand">
+      <svg class="logo" viewBox="0 0 100 100" fill="none">
+        <g transform="translate(50,50)">
+          <path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(-45)" fill="#15803d"/>
+          <path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(45)" fill="#34c759"/>
+        </g>
+      </svg>
+      <div class="name">Agra<span class="x">X</span></div>
+    </a>
+    <nav>
+      <a href="#features">Product</a>
+      <a href="#live">Live data</a>
+      <a href="#pricing">Pricing</a>
+      <a href="index.html">Open app</a>
+    </nav>
+    <div class="nav-spacer"></div>
+    <div class="nav-cta">
+      <a href="index.html" class="signin">Sign in</a>
+      <a href="index.html" class="btn-primary">Start free</a>
+    </div>
+  </header>
+
+  <main>
+
+  <!-- Hero -->
+  <section class="lp-container lp-hero">
+    <div class="lp-hero-copy">
+      <div class="eyebrow"><span class="dot"></span> Wholesale produce intelligence</div>
+      <h1>Every fruit, vegetable, and commodity — <span class="accent">priced live.</span></h1>
+      <p class="sub">Live USDA terminal-market data, daily commentary, watchlists, and price alerts — built for every buyer, broker, and grower in the produce supply chain.</p>
+      <div class="ctas">
+        <a href="index.html" class="btn-lg primary">
+          Start free
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="#live" class="btn-lg ghost">See live data</a>
+        <span class="free-note">Free forever · No card required</span>
+      </div>
+    </div>
+
+    <div class="lp-hero-art">
+      <div class="price-console" id="priceConsole">
+        <div class="pc-head">
+          <div class="pc-label">Check today's wholesale price</div>
+          <span class="pc-live">Live · USDA AMS</span>
+        </div>
+        <div class="pc-controls">
+          <div class="pc-field pc-combo" id="pcCombo">
+            <label>Commodity</label>
+            <button type="button" class="pc-combo-trigger" id="pcComboTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="pc-combo-value" id="pcComboValue">Loading…</span>
+              <svg class="pc-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+            <div class="pc-combo-panel" id="pcComboPanel" hidden>
+              <div class="pc-combo-search">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M14 14l-3.2-3.2"/></svg>
+                <input type="text" id="pcComboInput" placeholder="Search avocados, limes, lettuce…" autocomplete="off" spellcheck="false" />
+              </div>
+              <div class="pc-combo-list" id="pcComboList"></div>
+            </div>
+          </div>
+          <div class="pc-at">at</div>
+          <div class="pc-field">
+            <label>Market</label>
+            <div class="pc-select-wrap">
+              <select id="pcMarket">
+                <option value="ALL">All Markets</option>
+                <option value="NYC" selected>New York, NY</option>
+                <option value="LAX">Los Angeles, CA</option>
+                <option value="CHI">Chicago, IL</option>
+                <option value="ATL">Atlanta, GA</option>
+                <option value="MIA">Miami, FL</option>
+                <option value="BOS">Boston, MA</option>
+              </select>
+              <svg class="pc-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="pc-result" id="pcResult">
+          <div class="pc-loading">Loading live USDA data…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <section class="lp-trust">
+    <div class="lp-container lp-trust-inner">
+      <div class="lp-trust-item"><div class="v">12</div><div class="l">USDA terminal markets</div></div>
+      <div class="lp-trust-item"><div class="v" id="ts-comms">—</div><div class="l">Commodities tracked daily</div></div>
+      <div class="lp-trust-item"><div class="v">3×</div><div class="l">Daily USDA refreshes</div></div>
+      <div class="lp-trust-item"><div class="v" id="ts-date">—</div><div class="l">Last report date</div></div>
+      <div class="lp-trust-item"><div class="v">USDA AMS</div><div class="l">Official source</div></div>
+    </div>
+  </section>
+
+  <!-- Live data preview -->
+  <section id="live" class="lp-section">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="eyebrow">Live preview</span>
+        <h2>Today's wholesale produce prices, before you sign up.</h2>
+        <p>Wholesale prices for the New York terminal market, refreshed daily from USDA AMS Market News. This is the same data you'll see inside AgraX.</p>
+      </div>
+      <div class="lp-live-card">
+        <div class="lp-live-h">
+          <div class="meta">
+            <strong id="live-date">Loading…</strong>
+            <span>·</span><span>New York · Northeast</span>
+            <span>·</span><span>USDA AMS Market News</span>
+          </div>
+          <span class="live-pill">Live</span>
+        </div>
+        <div id="live-table-wrap"><div class="lp-live-loading">Loading live prices…</div></div>
+        <div class="lp-live-foot">
+          <span>Sourced from USDA AMS Market News · Wholesale prices in USD per unit</span>
+          <a href="index.html">Open the full screener <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="lp-section sunk">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="eyebrow">What's inside</span>
+        <h2>Built for daily decisions in the produce trade.</h2>
+        <p>Everything a buyer, broker, or grower needs to read the market — without sifting through PDFs or spreadsheets.</p>
+      </div>
+      <div class="lp-features">
+        <div class="lp-feature">
+          <div class="feat-art" style="display:flex;justify-content:center;align-items:center;padding:20px;">
+            <svg viewBox="0 0 280 100" style="width:100%;max-height:100px;">
+              <circle cx="40" cy="40" r="3.5" fill="#a3a3a3"/><circle cx="60" cy="55" r="3.5" fill="#a3a3a3"/><circle cx="85" cy="35" r="3.5" fill="#a3a3a3"/><circle cx="110" cy="48" r="3.5" fill="#a3a3a3"/><circle cx="140" cy="38" r="3.5" fill="#a3a3a3"/><circle cx="155" cy="58" r="3.5" fill="#a3a3a3"/><circle cx="175" cy="42" r="3.5" fill="#a3a3a3"/><circle cx="195" cy="65" r="3.5" fill="#15803d"/><circle cx="215" cy="50" r="3.5" fill="#a3a3a3"/><circle cx="225" cy="38" r="3.5" fill="#a3a3a3"/><circle cx="240" cy="72" r="3.5" fill="#a3a3a3"/><circle cx="255" cy="55" r="3.5" fill="#a3a3a3"/>
+            </svg>
+          </div>
+          <h3>Every U.S. terminal market in one search.</h3>
+          <p>Atlanta, Boston, Chicago, LA, NYC and 7 more — all 12 USDA terminal markets plus a national composite. Compare any commodity across cities in a single view.</p>
+        </div>
+        <div class="lp-feature">
+          <div class="feat-art feat-wire">
+            <div class="feat-wire-row"><span class="tm">09:42</span><span class="tg">Terminal</span><span class="tx">Daily report posted — Hunts Point fruits &amp; vegetables</span></div>
+            <div class="feat-wire-row"><span class="tm">09:21</span><span class="tg">Terminal</span><span class="tx">Daily report posted — Atlanta wholesale produce</span></div>
+            <div class="feat-wire-row"><span class="tm">09:03</span><span class="tg">Terminal</span><span class="tx">Daily report posted — Chicago South Water terminal</span></div>
+            <div class="feat-wire-row"><span class="tm">08:48</span><span class="tg">Shipping</span><span class="tx">FOB origin — Mexican avocado district III</span></div>
+            <div class="feat-wire-row"><span class="tm">06:00</span><span class="tg">Movement</span><span class="tx">Weekly carton movement — strawberries</span></div>
+          </div>
+          <h3>Daily prices straight from USDA AMS.</h3>
+          <p>Terminal market reports, shipping-point FOB prices, and weekly movement — pulled in automatically every morning. No manual updates, no stale PDFs.</p>
+        </div>
+        <div class="lp-feature">
+          <div class="feat-art" style="padding:16px;display:flex;align-items:center;justify-content:center;">
+            <div class="feat-alert-card">
+              <span class="badge">Triggered</span>
+              <div class="body"><div class="t">Limes above $40.00</div><div class="m">Now $42.94 · +17.48% today</div></div>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim)"><path d="m6 3 5 5-5 5"/></svg>
+            </div>
+          </div>
+          <h3>Watchlists and price alerts.</h3>
+          <p>Star the commodities you buy or sell. Set thresholds on price or week-over-week change. Get notified the moment a market crosses the line.</p>
+        </div>
+        <div class="lp-feature">
+          <div class="feat-art" style="padding:16px;display:flex;flex-direction:column;gap:7px;justify-content:center;">
+            <div class="feat-origin-row"><span class="dot dom"></span><span class="name">California (Salinas)</span><span class="meta">42% · ↑2.1%</span></div>
+            <div class="feat-origin-row"><span class="dot imp"></span><span class="name">Mexico (Veracruz)</span><span class="meta">28% · ↑18.5%</span></div>
+            <div class="feat-origin-row"><span class="dot dom"></span><span class="name">Florida</span><span class="meta">16% · ↓1.8%</span></div>
+            <div class="feat-origin-row"><span class="dot imp"></span><span class="name">Peru</span><span class="meta">14% · ↑12.3%</span></div>
+          </div>
+          <h3>Origin, supply, and commentary.</h3>
+          <p>Shipping-point FOB prices from packing sheds, with supply notes, quality conditions, and the USDA commentary that explains why prices moved.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="lp-section">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="eyebrow">Pricing</span>
+        <h2>Free to start. Pay when you need more.</h2>
+        <p>Individuals stay on Free forever. Teams that need full history, exports, and alerts upgrade when they're ready.</p>
+      </div>
+      <div class="lp-pricing">
+        <div class="lp-plan">
+          <div class="plan-name">Free</div>
+          <div class="plan-price">$0<span class="unit">/ forever</span></div>
+          <div class="plan-byline">For individual buyers, brokers, and growers checking daily prices.</div>
+          <ul class="plan-features">
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>All 12 terminal markets</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Today's wholesale prices</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>5 watchlist commodities</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>7-day price history</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>USDA market commentary</li>
+          </ul>
+          <a href="index.html" class="plan-cta">Start free</a>
+        </div>
+        <div class="lp-plan featured">
+          <span class="ribbon">Most popular</span>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">$29<span class="unit">/ month</span></div>
+          <div class="plan-byline">For working buyers and brokers tracking dozens of items every morning.</div>
+          <ul class="plan-features">
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Everything in Free</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Unlimited watchlist</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Price + WoW alerts (email)</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>52-week price history</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Shipping-point FOB origins</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>CSV exports</li>
+          </ul>
+          <a href="index.html" class="plan-cta">Start 14-day trial</a>
+        </div>
+        <div class="lp-plan">
+          <div class="plan-name">Team</div>
+          <div class="plan-price">Custom</div>
+          <div class="plan-byline">For procurement teams and distributors with shared workflows and APIs.</div>
+          <ul class="plan-features">
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Everything in Pro</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Shared team watchlists</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>SSO + role-based access</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Price API + webhooks</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Branded daily briefs</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Dedicated support</li>
+          </ul>
+          <a href="index.html" class="plan-cta">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="lp-final">
+    <div class="lp-container">
+      <h2>Read the produce market in 30 seconds, every morning.</h2>
+      <p>Free forever for individuals. No credit card. Open in your browser — no install required.</p>
+      <div class="ctas">
+        <a href="index.html" class="btn-lg primary">Start free <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a href="#live" class="btn-lg ghost">See live data</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="lp-footer">
+    <div class="lp-container">
+      <div class="lp-footer-inner">
+        <div>
+          <div class="brand">
+            <svg class="logo" viewBox="0 0 100 100" fill="none"><g transform="translate(50,50)"><path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(-45)" fill="#15803d"/><path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(45)" fill="#34c759"/></g></svg>
+            <div class="name">Agra<span class="x">X</span></div>
+          </div>
+          <p class="tagline">Wholesale produce intelligence, sourced daily from USDA AMS Market News.</p>
+        </div>
+        <div class="col-group">
+          <div class="col">
+            <h4>Product</h4>
+            <a href="index.html">Commodities</a>
+            <a href="index.html">Terminal markets</a>
+            <a href="index.html">Shipping points</a>
+            <a href="index.html">Watchlist</a>
+          </div>
+          <div class="col">
+            <h4>Resources</h4>
+            <a href="#">USDA AMS data</a>
+            <a href="#">Glossary</a>
+            <a href="#">API docs</a>
+          </div>
+          <div class="col">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="legal">
+        <span>© 2026 AgraX, Inc.</span>
+        <span>Data sourced from USDA AMS Market News. Prices are wholesale, USD per unit.</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+var API = 'https://produce-iq-production.up.railway.app';
+var state = { comms: [], todayStr: '', selected: null, market: 'NYC' };
+var MKTNAMES = { ALL:'All Markets', NYC:'New York', LAX:'Los Angeles', CHI:'Chicago', ATL:'Atlanta', MIA:'Miami', BOS:'Boston' };
+
+function guessCategory(n) {
+  n = n.toLowerCase();
+  if (/apple|pear|grape|peach|plum|cherry|kiwi|melon|mango|papaya|pineapple|banana|avocado|orange|lemon|lime|grapefruit|strawberr|blueberr|raspberr|blackberr/.test(n)) return 'Fruits';
+  if (/onion|shallot|potato|yam/.test(n)) return 'Onions & Potatoes';
+  return 'Vegetables';
+}
+function fmtDate(s) { if(!s)return''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+function fmtShort(s) { if(!s)return''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function esc(s) { return String(s||'').replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+
+function buildComms(rows) {
+  var byComm = {};
+  rows.filter(function(r){return r.market_type==='terminal'&&r.price_low!=null;}).forEach(function(r){
+    if(!byComm[r.commodity]) byComm[r.commodity]={name:r.commodity,cat:guessCategory(r.commodity),rows:[],origins:[]};
+    byComm[r.commodity].rows.push(r);
+    if(r.origin&&byComm[r.commodity].origins.indexOf(r.origin)===-1) byComm[r.commodity].origins.push(r.origin);
+  });
+  return Object.values(byComm).map(function(c){
+    var prices=c.rows.map(function(r){return parseFloat(r.price_low);});
+    var mostly=prices.reduce(function(a,b){return a+b;},0)/prices.length;
+    return Object.assign(c,{mostly:mostly,low:Math.min.apply(null,prices),high:Math.max.apply(null,prices),
+      spark:Array.from({length:7},function(_,i){return mostly*(1+((c.name.charCodeAt(0)*7+i*13)%20-10)/100);})});
+  }).sort(function(a,b){return a.name.localeCompare(b.name);});
+}
+
+function priceForMarket(c,code) {
+  if(!code||code==='ALL') return {low:c.low,high:c.high,mostly:c.mostly};
+  var mName=MKTNAMES[code]||'';
+  var rel=c.rows.filter(function(r){return r.market&&r.market.toLowerCase().includes(mName.toLowerCase())&&r.price_low!=null;});
+  if(!rel.length) return {low:c.low,high:c.high,mostly:c.mostly};
+  var prices=rel.map(function(r){return parseFloat(r.price_low);});
+  return {low:Math.min.apply(null,prices),high:Math.max.apply(null,prices),mostly:prices.reduce(function(a,b){return a+b;},0)/prices.length};
+}
+
+function sparkPaths(vals,w,h) {
+  var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),rng=(max-min)||1,n=vals.length;
+  var pts=vals.map(function(v,i){return [(i/(n-1))*w,h-((v-min)/rng)*(h-5)-2.5];});
+  var line=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' ');
+  return {line:line,area:line+' L'+w+' '+h+' L0 '+h+' Z'};
+}
+
+// Combo
+var combo=document.getElementById('pcCombo');
+var trigger=document.getElementById('pcComboTrigger');
+var triggerVal=document.getElementById('pcComboValue');
+var panel=document.getElementById('pcComboPanel');
+var input=document.getElementById('pcComboInput');
+var list=document.getElementById('pcComboList');
+var marketSel=document.getElementById('pcMarket');
+var resultEl=document.getElementById('pcResult');
+var activeIdx=-1,filtered=[];
+
+function renderList(q) {
+  q=(q||'').trim().toLowerCase();
+  filtered=state.comms.filter(function(c){return !q||(c.name+' '+c.cat).toLowerCase().includes(q);});
+  if(!filtered.length){list.innerHTML='<div class="pc-empty">No results</div>';return;}
+  list.innerHTML=filtered.map(function(c){
+    return '<div class="pc-opt'+(state.selected&&state.selected.name===c.name?' selected':'')+'" data-name="'+esc(c.name)+'">'+
+      '<div><div class="pc-opt-name">'+esc(c.name)+'</div><div class="pc-opt-var">'+esc(c.origins.slice(0,1).join(', '))+'</div></div>'+
+      '<div class="pc-opt-cat">'+esc(c.cat)+'</div></div>';
+  }).join('');
+  activeIdx=-1;
+}
+function openPanel(){panel.hidden=false;trigger.setAttribute('aria-expanded','true');input.value='';renderList('');setTimeout(function(){input.focus();},0);document.addEventListener('mousedown',onDoc);}
+function closePanel(){panel.hidden=true;trigger.setAttribute('aria-expanded','false');document.removeEventListener('mousedown',onDoc);}
+function onDoc(e){if(!combo.contains(e.target))closePanel();}
+
+trigger.addEventListener('click',function(){panel.hidden?openPanel():closePanel();});
+input.addEventListener('input',function(){renderList(input.value);});
+list.addEventListener('click',function(e){
+  var opt=e.target.closest('.pc-opt');if(!opt)return;
+  state.selected=state.comms.find(function(c){return c.name===opt.getAttribute('data-name');});
+  closePanel();renderConsole(true);
+});
+input.addEventListener('keydown',function(e){
+  var opts=list.querySelectorAll('.pc-opt');
+  if(e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(opts.length-1,activeIdx+1);opts.forEach(function(o,i){o.classList.toggle('active',i===activeIdx);});}
+  else if(e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(0,activeIdx-1);opts.forEach(function(o,i){o.classList.toggle('active',i===activeIdx);});}
+  else if(e.key==='Enter'&&activeIdx>=0&&filtered[activeIdx]){state.selected=filtered[activeIdx];closePanel();renderConsole(true);}
+  else if(e.key==='Escape')closePanel();
+});
+marketSel.addEventListener('change',function(){state.market=marketSel.value;renderConsole(true);});
+
+function renderConsole(flash) {
+  var c=state.selected;if(!c){resultEl.innerHTML='<div class="pc-loading">Select a commodity above</div>';return;}
+  triggerVal.textContent=c.name;
+  var p=priceForMarket(c,state.market);
+  var sp=sparkPaths(c.spark,200,42);
+  var col='#bbf7d0';
+  var origin=c.origins.slice(0,2).join(', ')||'Multiple origins';
+  resultEl.innerHTML=
+    '<div class="pc-res-top">'+
+      '<div><div class="pc-res-name">'+esc(c.name)+'</div><div class="pc-res-var">'+esc(origin)+'</div></div>'+
+      '<div class="pc-res-price"><div class="pc-res-val">$'+p.mostly.toFixed(2)+'<span class="u"> /unit</span></div>'+
+        '<div class="pc-res-delta flat">'+(MKTNAMES[state.market]||'All Markets')+' · live</div></div>'+
+    '</div>'+
+    '<div class="pc-res-mid">'+
+      '<svg class="pc-res-spark" viewBox="0 0 200 42" preserveAspectRatio="none">'+
+        '<defs><linearGradient id="pcGrad" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0" stop-color="'+col+'" stop-opacity="0.16"/>'+
+          '<stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'+
+        '<path d="'+sp.area+'" fill="url(#pcGrad)" stroke="none"/>'+
+        '<path class="line" d="'+sp.line+'" stroke="'+col+'"/></svg>'+
+      '<div class="pc-res-cap"><div class="t">Range today</div><div class="r">$'+p.low.toFixed(2)+'–$'+p.high.toFixed(2)+'</div></div>'+
+    '</div>'+
+    '<div class="pc-res-tags">'+
+      '<span class="pc-tag"><b>'+esc(c.cat)+'</b></span>'+
+      '<span class="pc-tag">'+c.origins.length+' origins</span>'+
+      '<span class="pc-tag">USDA AMS · '+esc(fmtShort(state.todayStr))+'</span>'+
+    '</div>'+
+    '<div class="pc-res-foot">'+
+      '<span class="pc-updated">$'+p.low.toFixed(2)+' – $'+p.high.toFixed(2)+' · '+esc(fmtShort(state.todayStr))+'</span>'+
+      '<a class="pc-open" href="index.html">Full report <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>'+
+    '</div>';
+  if(flash){resultEl.classList.remove('flash');void resultEl.offsetWidth;resultEl.classList.add('flash');}
+}
+
+function renderLiveTable(rows) {
+  var nyRows=rows.filter(function(r){return r.market_type==='terminal'&&r.price_low!=null&&r.market&&r.market.toLowerCase().includes('new york');});
+  var byComm={};
+  nyRows.forEach(function(r){if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;});
+  var top=Object.values(byComm).slice(0,8);
+  if(!top.length){document.getElementById('live-table-wrap').innerHTML='<div class="lp-live-loading">No New York data available</div>';return;}
+  var isDom=function(o){return /(california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho)/i.test(o||'');};
+  var html='<table class="lp-live-table"><thead><tr>'+
+    '<th style="padding-left:24px">Commodity</th><th>Origin</th>'+
+    '<th class="num">Mostly</th><th class="num">Movement</th><th class="num" style="padding-right:24px">Supply</th>'+
+    '</tr></thead><tbody>';
+  top.forEach(function(r){
+    var dom=isDom(r.origin);
+    var mv=r.movement||'—';
+    var isUp=/higher/i.test(mv),isDn=/lower/i.test(mv);
+    html+='<tr>'+
+      '<td><div class="name">'+esc(r.commodity)+'</div><div class="var">'+esc((r.variety||'')+(r.package?' · '+r.package:''))+'</div></td>'+
+      '<td><span class="origin"><span class="dot" style="background:'+(dom?'var(--positive)':'var(--info)')+'"></span>'+esc(r.origin||'—')+'</span></td>'+
+      '<td class="num mostly">$'+parseFloat(r.price_low).toFixed(2)+'</td>'+
+      '<td class="num"><span class="delta '+(isUp?'up':isDn?'dn':'')+'">'+esc(mv)+'</span></td>'+
+      '<td class="num">'+esc(r.supply||'—')+'</td>'+
+    '</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('live-table-wrap').innerHTML=html;
+}
+
+(async function(){
+  try{
+    var dates=await fetch(API+'/dates').then(function(r){return r.json();});
+    if(!dates.length)throw new Error('No dates');
+    state.todayStr=dates[0].date;
+    var rows=await fetch(API+'/commodities/by-date/'+state.todayStr).then(function(r){return r.json();});
+    state.comms=buildComms(rows);
+    var d=document.getElementById('ts-date');if(d)d.textContent=fmtShort(state.todayStr);
+    var c=document.getElementById('ts-comms');if(c)c.textContent=state.comms.length+'+';
+    var ld=document.getElementById('live-date');if(ld)ld.textContent=fmtDate(state.todayStr);
+    state.selected=state.comms.find(function(c){return c.name.toLowerCase().includes('avocado');})||state.comms[0];
+    renderConsole(false);
+    renderLiveTable(rows);
+  }catch(e){
+    resultEl.innerHTML='<div class="pc-loading">Live data temporarily unavailable</div>';
+    document.getElementById('live-table-wrap').innerHTML='<div class="lp-live-loading">Live data temporarily unavailable</div>';
+  }
+})();
+</script>
+</body>
+</html>
