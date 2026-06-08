@@ -25,25 +25,28 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
 .lp-nav .nav-cta{display:flex;gap:10px;align-items:center;}
 .lp-nav .nav-cta a.signin{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;padding:7px 4px;}
 .lp-nav .nav-cta a.signin:hover{color:var(--text);}
-.lp-nav .nav-cta .btn-primary{background:var(--text);color:var(--bg);font-size:13px;font-weight:500;padding:8px 14px;border-radius:6px;text-decoration:none;transition:opacity 80ms;}
+.lp-nav .nav-cta .btn-primary{background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none;transition:opacity 80ms;}
 .lp-nav .nav-cta .btn-primary:hover{opacity:0.88;}
 
 /* Container */
 .lp-container{max-width:1200px;margin:0 auto;padding:0 40px;}
 
 /* Hero */
-.lp-hero{padding:88px 0 56px;display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;}
+.lp-hero-wrap{position:relative;overflow:hidden;background:#f5f5f0;}
+.lp-hero-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1595064574879-ab4a37cd8bd6?w=2000&q=80&auto=format&fit=crop');background-size:cover;background-position:center 40%;opacity:0.18;pointer-events:none;}
+.lp-hero-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(245,245,240,1) 35%,rgba(245,245,240,0.6) 60%,rgba(245,245,240,0.1) 100%);pointer-events:none;}
+.lp-hero{padding:88px 0 56px;display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;}
 .lp-hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:22px;}
 .lp-hero .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);animation:lp-pulse 2.2s ease-in-out infinite;}
 @keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:.55}}
-.lp-hero h1{font-size:64px;line-height:1.05;letter-spacing:-0.03em;font-weight:600;margin:0 0 22px;text-wrap:balance;}
+.lp-hero h1{font-size:68px;line-height:1.0;letter-spacing:-0.03em;font-weight:700;margin:0 0 22px;color:var(--text);}
 .lp-hero h1 .accent{color:var(--accent);}
 .lp-hero .sub{font-size:18px;line-height:1.55;color:var(--text-muted);margin:0 0 32px;max-width:52ch;}
 .lp-hero .ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .btn-lg{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:8px;font-size:14.5px;font-weight:500;text-decoration:none;border:1px solid transparent;transition:opacity 80ms,background 80ms,border-color 80ms;}
-.btn-lg.primary{background:var(--text);color:var(--bg);}
+.btn-lg.primary{background:var(--text);color:var(--bg);font-weight:600;border-radius:7px;}
 .btn-lg.primary:hover{opacity:0.9;}
-.btn-lg.ghost{background:transparent;color:var(--text);border-color:var(--border);}
+.btn-lg.ghost{background:transparent;color:var(--text);border-color:var(--border);font-weight:500;border-radius:7px;}
 .btn-lg.ghost:hover{border-color:var(--border-strong);background:var(--bg-2);}
 .lp-hero .ctas .free-note{font-size:12.5px;color:var(--text-dim);margin-left:6px;}
 .lp-hero-art{position:relative;display:flex;justify-content:center;align-items:center;}
@@ -268,10 +271,13 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
   <main>
 
   <!-- Hero -->
+  <div class="lp-hero-wrap">
+  <div class="lp-hero-bg"></div>
+  <div class="lp-hero-fade"></div>
   <section class="lp-container lp-hero">
     <div class="lp-hero-copy">
       <div class="eyebrow"><span class="dot"></span> Wholesale produce intelligence</div>
-      <h1>Every fruit, vegetable, and commodity — <span class="accent">priced live.</span></h1>
+      <h1>Commodity data<br>for the produce<br>supply chain.</h1>
       <p class="sub">Live USDA terminal-market data, daily commentary, watchlists, and price alerts — built for every buyer, broker, and grower in the produce supply chain.</p>
       <div class="ctas">
         <a href="/app" class="btn-lg primary">
@@ -327,6 +333,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
       </div>
     </div>
   </section>
+  </div><!-- end lp-hero-wrap -->
 
   <!-- Trust strip -->
   <section class="lp-trust">
