@@ -583,9 +583,9 @@ function MarketsScreen({ commodities, market, setMarket, watchlist, toggleWatch,
             <span className="sub">{filtered.length} commodities · prices in <span className="mono">USD per unit</span> · USDA terminal market</span>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div className="search" style={{ maxWidth: 200 }}>
+            <div className="filter-search" style={{ display:"flex",alignItems:"center",gap:6,background:"var(--bg-2)",border:"1.5px solid var(--border)",borderRadius:8,padding:"0 10px",height:36,maxWidth:200 }}>
               <Ico.Search />
-              <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Filter…" />
+              <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Filter…" style={{flex:1,border:"none",outline:"none",background:"transparent",fontSize:13,fontFamily:"var(--font-sans)",color:"var(--text)"}} />
               {searchQ && <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)', padding: 0 }} onClick={() => setSearchQ('')}><Ico.X /></button>}
             </div>
           </div>
@@ -639,6 +639,8 @@ function CommodityScreen({ c, market, setMarket, watchlist, toggleWatch, onBack,
   if (!c) return null;
   const p = priceForMarket(c, market);
   const spread = c.fobAvg ? c.mostly - c.fobAvg : null;
+  const spreadColor = (spread != null && spread > 0) ? 'var(--positive)' : 'var(--text)';
+  const spreadFlowColor = (spread != null && spread > 0) ? 'var(--positive)' : 'var(--negative)';
   const termMarkets = useMemo(() => {
     const byM = {};
     c.termRows.forEach(r => {
@@ -706,7 +708,7 @@ function CommodityScreen({ c, market, setMarket, watchlist, toggleWatch, onBack,
         </div>
         <div className="kpi" style={{ flex: 1 }}>
           <span className="l">FOB → Terminal spread</span>
-          <span className="v num" style={{ fontSize: 18, color: spread && spread > 0 ? 'var(--positive)' : '' }}>
+          <span className="v num" style={{ fontSize: 18, color: spreadColor }}>
             {spread != null ? (spread >= 0 ? '+' : '') + '$' + Math.abs(spread).toFixed(2) : '—'}
           </span>
           <div className="d" style={{ color: 'var(--text-dim)', fontSize: 11.5 }}>{c.fobAvg ? `FOB avg $${c.fobAvg.toFixed(2)}` : 'No FOB data'}</div>
@@ -739,7 +741,10 @@ function CommodityScreen({ c, market, setMarket, watchlist, toggleWatch, onBack,
             <div className="sc-col-h"><span className="sc-step">2</span><div><div className="sc-title">Transit</div><div className="sc-sub">Freight + handling</div></div></div>
             <div className="sc-rows">
               <div style={{ color: 'var(--text-dim)', fontSize: 12.5, lineHeight: 1.6, marginTop: 8 }}>
-                {spread != null ? <>Gross spread: <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: spread > 0 ? 'var(--positive)' : 'var(--negative)' }}>{spread >= 0 ? '+' : ''}${spread.toFixed(2)}</span></> : 'FOB data not available'}
+                {spread != null
+  ? <span>{'Gross spread: '}<span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: spreadFlowColor }}>{(spread >= 0 ? '+$' : '-$') + Math.abs(spread).toFixed(2)}</span></span>
+  : <span>{'FOB data not available'}</span>
+}
               </div>
             </div>
           </div>
@@ -851,7 +856,7 @@ function ShippingScreen({ allRows, todayStr, onOpen }) {
     <div className="page">
       <div className="page-h">
         <div><h1 className="page-title">Shipping Points</h1><p className="page-sub">F.O.B. origin pricing · {fmtDate(todayStr)}</p></div>
-        <div className="search" style={{ maxWidth: 260 }}><Ico.Search /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Search commodity or origin…" /></div>
+        <div className="filter-search" style={{ display:"flex",alignItems:"center",gap:6,background:"var(--bg-2)",border:"1.5px solid var(--border)",borderRadius:8,padding:"0 10px",height:36,maxWidth:260 }}><Ico.Search /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Search commodity or origin…" style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:13,fontFamily:'var(--font-sans)',color:'var(--text)'}} /></div>
       </div>
       <div className="card" style={{ padding: 0 }}>
         <div style={{ overflowX: 'auto' }}>
