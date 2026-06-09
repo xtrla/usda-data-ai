@@ -22,18 +22,11 @@
   grid-area: bar;
   display: flex;
   align-items: center;
+  gap: 6px;
+  padding: 0 calc(max(18px, (100% - 1480px) / 2));
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   position: sticky; top: 0; z-index: 20;
-}
-.appbar-inner {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 18px;
-  width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
 }
 .appbar-brand { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; padding-right: 10px; margin-right: 2px; cursor: pointer; text-decoration: none; color: var(--text); }
 .appbar-brand .logo-mark { width: 28px; height: 28px; flex: 0 0 28px; display: block; }
@@ -931,7 +924,6 @@ function App() {
     <div className="app">
       {/* Horizontal appbar — matches Claude Design exactly */}
       <header className="appbar">
-        <div className="appbar-inner">
         <a className="appbar-brand" href="/">
           <svg className="logo-mark" viewBox="0 0 100 100" fill="none">
             <g transform="translate(50,50)">
@@ -990,7 +982,6 @@ function App() {
           <button className="btn ghost sm icon" onClick={() => setDark(d => !d)} title="Toggle dark mode"><Ico.Sun /></button>
           <div className="appbar-avatar">AX</div>
         </div>{/* end appbar-right */}
-        </div>{/* end appbar-inner */}
       </header>
 
       {/* Main */}
