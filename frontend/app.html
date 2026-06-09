@@ -10,7 +10,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <style>
-/* Override app grid to use appbar layout (no sidebar) */
+/* ── App grid ── */
 .app {
   display: grid;
   grid-template-columns: 1fr;
@@ -18,76 +18,162 @@
   grid-template-areas: "bar" "main" "status";
   height: 100vh;
 }
+.main { grid-area: main; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.statusbar { grid-area: status; }
+
+/* ── Appbar ── */
 .appbar {
   grid-area: bar;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 calc(max(18px, (100% - 1480px) / 2));
+  gap: 0;
+  padding: 0 calc(max(16px, (100% - 1480px) / 2));
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   position: sticky; top: 0; z-index: 20;
+  box-shadow: 0 1px 0 var(--border-soft);
 }
-.appbar-brand { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; padding-right: 10px; margin-right: 2px; cursor: pointer; text-decoration: none; color: var(--text); }
-.appbar-brand .logo-mark { width: 28px; height: 28px; flex: 0 0 28px; display: block; }
-.appbar-brand .wm { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+
+/* Brand */
+.appbar-brand {
+  display: flex; align-items: center; gap: 8px;
+  flex: 0 0 auto; padding: 0 16px 0 0;
+  text-decoration: none; color: var(--text);
+  border-right: 1px solid var(--border-soft);
+  height: 56px; margin-right: 6px;
+}
+.appbar-brand .logo-mark { width: 30px; height: 30px; flex: 0 0 30px; display: block; border-radius: 7px; }
+.appbar-brand .wm { font-weight: 700; font-size: 17px; letter-spacing: -0.025em; }
 .appbar-brand .wm .x { color: var(--accent); }
-.topnav { display: flex; align-items: center; gap: 1px; flex: 1 1 auto; min-width: 0; }
-.topnav-div { width: 1px; height: 20px; background: var(--border); margin: 0 9px; flex: 0 0 auto; }
+
+/* Top nav */
+.topnav { display: flex; align-items: center; gap: 1px; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.topnav-div { width: 1px; height: 18px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
 .topnav-menu { position: relative; flex: 0 0 auto; }
-.topnav-item { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 11px; border: 0; background: transparent; border-radius: 7px; color: var(--text-muted); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 80ms, color 80ms; }
+.topnav-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 10px;
+  border: 0; background: transparent; border-radius: 7px;
+  color: var(--text-muted); font: inherit; font-size: 13px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; transition: background 80ms, color 80ms;
+}
 .topnav-item:hover { background: var(--bg-2); color: var(--text); }
 .topnav-item.active { background: var(--accent-soft); color: var(--accent); }
-.tni-ico { width: 16px; height: 16px; display: inline-flex; opacity: 0.9; }
-.tni-ico svg { width: 16px; height: 16px; }
+.tni-ico { width: 15px; height: 15px; display: inline-flex; opacity: .85; flex-shrink: 0; }
+.tni-ico svg { width: 15px; height: 15px; }
 .topnav-item.active .tni-ico { opacity: 1; }
 .tni-label { font-size: 13px; }
-.tni-badge { background: var(--bg-2); color: var(--text-muted); border-radius: 4px; padding: 0 5px; font-size: 10.5px; font-family: var(--font-mono); }
-.topnav-item.active .tni-badge { background: var(--accent); color: #fff; }
-.tni-caret { font-size: 9px; opacity: 0.5; margin-left: -3px; }
-.topnav-dropdown { position: absolute; top: calc(100% + 7px); left: 0; min-width: 224px; z-index: 40; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 1px 0 rgba(10,10,10,.02), 0 18px 44px -16px rgba(10,10,10,.24); padding: 6px; }
-.tnd-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; padding: 8px 10px; border: 0; background: transparent; border-radius: 7px; font: inherit; font-size: 13px; color: var(--text); cursor: pointer; text-align: left; }
+.tni-badge { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 10px; font-family: var(--font-mono); font-weight: 600; }
+.tni-caret { font-size: 8px; opacity: 0.45; margin-left: -2px; }
+.topnav-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; min-width: 220px;
+  z-index: 40; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,.04), 0 16px 40px -12px rgba(0,0,0,.18);
+  padding: 5px;
+}
+.tnd-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; padding: 8px 10px; border: 0; background: transparent;
+  border-radius: 6px; font: inherit; font-size: 13px; color: var(--text);
+  cursor: pointer; text-align: left;
+}
 .tnd-item:hover { background: var(--bg-2); }
-.tnd-count { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); flex: 0 0 auto; }
-.tnd-sep { height: 1px; background: var(--border-soft); margin: 5px 4px; }
-.tnd-scroll { max-height: 320px; overflow-y: auto; }
-.appbar-right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; margin-left: 10px; }
-.appbar-right .search { width: 232px; flex: 0 0 auto; }
-.appbar-avatar { width: 28px; height: 28px; border-radius: 50%; flex: 0 0 auto; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 600; font-size: 11px; font-family: var(--font-mono); }
-.main { grid-area: main; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.statusbar { grid-area: status; }
+.tnd-count { font-size: 10.5px; color: var(--text-dim); font-family: var(--font-mono); flex-shrink: 0; }
+.tnd-sep { height: 1px; background: var(--border-soft); margin: 4px 4px; }
+.tnd-scroll { max-height: 300px; overflow-y: auto; }
+
+/* Right side */
+.appbar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+
+/* Search bar — prominent */
+.appbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-2); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 0 12px; height: 36px;
+  cursor: pointer; transition: border-color 140ms, box-shadow 140ms;
+  min-width: 200px;
+}
+.appbar-search:hover { border-color: var(--accent); }
+.appbar-search svg { width: 15px; height: 15px; color: var(--text-dim); flex-shrink: 0; }
+.appbar-search-text { font-size: 13px; color: var(--text-dim); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.appbar-search-kbd { font-size: 10px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); flex-shrink: 0; }
+.appbar-icon-btn {
+  width: 34px; height: 34px; border-radius: 7px;
+  border: 1px solid var(--border); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-muted); transition: background 80ms, color 80ms;
+  flex-shrink: 0;
+}
+.appbar-icon-btn:hover { background: var(--bg-2); color: var(--text); }
+.appbar-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 11px; font-family: var(--font-mono);
+  border: 1.5px solid var(--accent-soft); flex-shrink: 0;
+}
 
 /* Popular card rows */
 .popular-row { display: flex; align-items: center; gap: 12px; padding: 9px 16px; cursor: pointer; border-bottom: 1px solid var(--border-soft); transition: background 60ms; }
 .popular-row:last-child { border-bottom: none; }
 .popular-row:hover { background: var(--bg-2); }
 
+/* Mobile search overlay */
+.mob-search-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.5); flex-direction: column;
+}
+.mob-search-overlay.open { display: flex; }
+.mob-search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.mob-search-bar input {
+  flex: 1; border: none; outline: none; font-size: 16px;
+  background: transparent; font-family: var(--font-sans); color: var(--text);
+}
+.mob-search-bar input::placeholder { color: var(--text-dim); }
+.mob-search-bar svg { width: 20px; height: 20px; color: var(--text-muted); flex-shrink: 0; }
+.mob-search-cancel { background: none; border: none; font-size: 14px; font-weight: 500; color: var(--accent); cursor: pointer; white-space: nowrap; font-family: var(--font-sans); padding: 0 4px; }
+.mob-search-results { flex: 1; background: var(--surface); overflow-y: auto; }
+
 /* Mobile bottom nav */
 .mob-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom,0); z-index: 100; }
-.mob-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 8px 4px; color: var(--text-dim); font-size: 10px; font-family: var(--font-sans); font-weight: 500; }
+.mob-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 8px 4px; color: var(--text-dim); font-size: 10px; font-family: var(--font-sans); font-weight: 500; position: relative; }
 .mob-nav-btn.active { color: var(--accent); }
-.mob-nav-btn svg { width: 20px; height: 20px; }
-.mob-nav-badge { position: absolute; top: 6px; right: calc(50% - 14px); background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; min-width: 14px; height: 14px; border-radius: 99px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+.mob-nav-btn svg { width: 22px; height: 22px; }
+.mob-nav-badge { position: absolute; top: 5px; left: calc(50% + 6px); background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; min-width: 14px; height: 14px; border-radius: 99px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
 
 /* Loading */
 @keyframes lb { 0%{width:0;margin-left:0} 50%{width:60%;margin-left:20%} 100%{width:0;margin-left:100%} }
 
-/* Responsive */
-@media(max-width:1180px) { .tni-label { display: none; } .topnav-item { padding: 0 9px; gap: 0; } .tni-caret { margin-left: 3px; } .topnav-div { margin: 0 6px; } }
+/* ── Responsive ── */
+@media(max-width:1200px) {
+  .tni-label { display: none; }
+  .topnav-item { padding: 0 8px; }
+  .tni-caret { margin-left: 2px; }
+  .appbar-search { min-width: 160px; }
+  .appbar-search-kbd { display: none; }
+}
 @media(max-width:768px) {
-  .appbar { padding: 0 12px; }
-  .topnav { display: none; }
-  .appbar-right .search { width: 140px; }
-  .appbar-avatar { display: none; }
-  .mob-nav { display: flex; }
   .app { grid-template-rows: 52px 1fr; padding-bottom: 60px; }
+  .appbar { padding: 0 12px; height: 52px; gap: 0; }
+  .appbar-brand { padding-right: 12px; height: 52px; }
+  .topnav { display: none; }
+  .appbar-search { min-width: 0; flex: 1; margin: 0 8px; }
+  .appbar-search-text { display: none; }
+  .appbar-search { padding: 0 10px; }
+  .appbar-avatar { display: none; }
+  .appbar-icon-btn.hide-mobile { display: none; }
+  .mob-nav { display: flex; }
   .statusbar { display: none; }
   .page { padding-bottom: 20px; }
   .popular-grid { grid-template-columns: 1fr !important; }
   .hero { flex-direction: column; gap: 12px; padding: 14px 14px 18px; }
   .hero-r { width: 100%; }
   .market-btn { width: 100%; }
-  .fbar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+  .fbar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; padding: 8px 10px; }
   .fbar::-webkit-scrollbar { display: none; }
   .fbar .label-eyebrow { display: none; }
   .card { border-radius: 10px; margin: 0 10px 10px; }
@@ -925,13 +1011,13 @@ function App() {
       {/* Horizontal appbar — matches Claude Design exactly */}
       <header className="appbar">
         <a className="appbar-brand" href="/">
-          <svg className="logo-mark" viewBox="0 0 100 100" fill="none">
-            <g transform="translate(50,50)">
-              <path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(-45)" fill="#15803d" />
-              <path d="M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z" transform="rotate(45)" fill="#34c759" />
-            </g>
+          <svg className="logo-mark" viewBox="0 0 36 36" fill="none">
+            <rect width="36" height="36" rx="8" fill="#15803d"/>
+            <path d="M8 18 Q18 8 28 18 Q18 28 8 18Z" fill="rgba(255,255,255,0.25)"/>
+            <path d="M18 8 Q28 18 18 28 Q8 18 18 8Z" fill="rgba(255,255,255,0.55)"/>
+            <circle cx="18" cy="18" r="3.5" fill="#fff"/>
           </svg>
-          <div className="wm">Agra<span className="x">X</span></div>
+          <div className="wm">agra<span className="x">X</span></div>
         </a>
 
         <nav className="topnav">
@@ -974,12 +1060,12 @@ function App() {
         </nav>
 
         <div className="appbar-right">
-          <button className="search" onClick={() => setSearchOpen(true)} style={{ background: 'var(--bg)' }}>
+          <button className="appbar-search" onClick={() => setSearchOpen(true)} aria-label="Search">
             <Ico.Search />
-            <input readOnly placeholder="Search commodities… ⌘K" style={{ pointerEvents: 'none' }} />
-            <kbd>⌘K</kbd>
+            <span className="appbar-search-text">Search commodities…</span>
+            <span className="appbar-search-kbd">⌘K</span>
           </button>
-          <button className="btn ghost sm icon" onClick={() => setDark(d => !d)} title="Toggle dark mode"><Ico.Sun /></button>
+          <button className="appbar-icon-btn hide-mobile" onClick={() => setDark(d => !d)} title="Toggle dark mode"><Ico.Sun /></button>
           <div className="appbar-avatar">AX</div>
         </div>{/* end appbar-right */}
       </header>
