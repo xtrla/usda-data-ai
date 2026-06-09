@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='translate(50,50)'%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(-45)' fill='%2315803d'/%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(45)' fill='%2334c759'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="stylesheet" href="styles.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow-x:hidden;}
 .lp-shell{display:flex;flex-direction:column;min-height:100vh;}
@@ -16,7 +16,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
 .lp-nav{display:flex;align-items:center;gap:28px;padding:16px 40px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--surface) 86%,transparent);position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);}
 .lp-nav .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);}
 .lp-nav .brand .logo{width:32px;height:32px;display:block;flex:0 0 32px;}
-.lp-nav .brand .name{font-size:18px;font-weight:700;letter-spacing:-0.03em;line-height:1;}
+.lp-nav .brand .name{font-size:17px;font-weight:700;letter-spacing:-0.025em;line-height:1;font-family:var(--font-sans);}
 .lp-nav .brand .name .x{color:var(--accent);}
 .lp-nav nav{display:flex;gap:26px;}
 .lp-nav nav a{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;transition:color 80ms;}
@@ -33,7 +33,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
 
 /* Hero */
 .lp-hero-wrap{position:relative;overflow:hidden;background:#f5f5f0;}
-.lp-hero-bg{position:absolute;inset:0;background-image:url('hero-bg.jpg');background-size:cover;background-position:center 40%;opacity:0.18;pointer-events:none;}
+.lp-hero-bg{position:absolute;inset:0;background-color:#d4e8c2;background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=75&auto=format&fit=crop&crop=center');background-size:cover;background-position:center 40%;opacity:0.22;pointer-events:none;}
 .lp-hero-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(245,245,240,1) 35%,rgba(245,245,240,0.6) 60%,rgba(245,245,240,0.1) 100%);pointer-events:none;}
 .lp-hero{padding:88px 0 56px;display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;}
 .lp-hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:22px;}
@@ -207,7 +207,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflo
 /* Footer */
 .lp-footer{border-top:1px solid var(--border);background:var(--surface);padding:40px 0 32px;}
 .lp-footer-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
-.lp-footer .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.025em;margin-bottom:10px;font-family:Rubik;}
+.lp-footer .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.025em;margin-bottom:10px;font-family:var(--font-sans);}
 .lp-footer .brand .logo{width:26px;height:26px;display:block;flex:0 0 26px;}
 .lp-footer .brand .name .x{color:var(--accent);}
 .lp-footer .tagline{font-size:12px;color:var(--text-dim);max-width:38ch;}
