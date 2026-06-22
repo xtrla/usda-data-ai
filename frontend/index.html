@@ -1,967 +1,543 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AgraX — Wholesale produce prices, all in one place</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='translate(50,50)'%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(-45)' fill='%2315803d'/%3E%3Cpath d='M-40,0 Q0,-11.5 40,0 Q0,11.5 -40,0 Z' transform='rotate(45)' fill='%2334c759'/%3E%3C/g%3E%3C/svg%3E" />
-<link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>agraX — Commodity data for the produce supply chain.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%2315803d'/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-body{font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow-x:hidden;}
-.lp-shell{display:flex;flex-direction:column;min-height:100vh;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Inter",system-ui,sans-serif;color:#0a0a0a;background:#fff;-webkit-font-smoothing:antialiased;}
+::selection{background:#15803d;color:#fff;}
+img{display:block;max-width:100%;}
+@keyframes axpulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6);}70%{box-shadow:0 0 0 6px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
+.mono{font-family:"IBM Plex Mono",monospace;}
 
-/* Nav */
-.lp-nav{display:flex;align-items:center;gap:28px;padding:16px 40px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--surface) 86%,transparent);position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);}
-.lp-nav .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);}
-.lp-nav .brand .logo{width:32px;height:32px;display:block;flex:0 0 32px;}
-.lp-nav .brand .name{font-size:17px;font-weight:700;letter-spacing:-0.025em;line-height:1;font-family:var(--font-sans);}
-.lp-nav .brand .name .x{color:var(--accent);}
-.lp-nav nav{display:flex;gap:26px;}
-.lp-nav nav a{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;transition:color 80ms;}
-.lp-nav nav a:hover{color:var(--text);}
-.lp-nav .nav-spacer{flex:1;}
-.lp-nav .nav-cta{display:flex;gap:10px;align-items:center;}
-.lp-nav .nav-cta a.signin{color:var(--text-muted);font-size:13.5px;font-weight:500;text-decoration:none;padding:7px 4px;}
-.lp-nav .nav-cta a.signin:hover{color:var(--text);}
-.lp-nav .nav-cta .btn-primary{background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none;transition:opacity 80ms;}
-.lp-nav .nav-cta .btn-primary:hover{opacity:0.88;}
-
-/* Container */
-.lp-container{max-width:1200px;margin:0 auto;padding:0 40px;}
-
-/* Hero */
-.lp-hero-wrap{position:relative;overflow:hidden;background:#f5f5f0;}
-.lp-hero-bg{position:absolute;inset:0;background-color:#d4e8c2;background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=75&auto=format&fit=crop&crop=center');background-size:cover;background-position:center 40%;opacity:0.22;pointer-events:none;}
-.lp-hero-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(245,245,240,1) 35%,rgba(245,245,240,0.6) 60%,rgba(245,245,240,0.1) 100%);pointer-events:none;}
-.lp-hero{padding:88px 0 56px;display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;}
-.lp-hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:22px;}
-.lp-hero .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);animation:lp-pulse 2.2s ease-in-out infinite;}
-@keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:.55}}
-.lp-hero h1{font-size:68px;line-height:1.0;letter-spacing:-0.03em;font-weight:700;margin:0 0 22px;color:var(--text);}
-.lp-hero h1 .accent{color:var(--accent);}
-.lp-hero .sub{font-size:18px;line-height:1.55;color:var(--text-muted);margin:0 0 32px;max-width:52ch;}
-.lp-hero .ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
-.btn-lg{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:8px;font-size:14.5px;font-weight:500;text-decoration:none;border:1px solid transparent;transition:opacity 80ms,background 80ms,border-color 80ms;}
-.btn-lg.primary{background:var(--text);color:var(--bg);font-weight:600;border-radius:7px;}
-.btn-lg.primary:hover{opacity:0.9;}
-.btn-lg.ghost{background:transparent;color:var(--text);border-color:var(--border);font-weight:500;border-radius:7px;}
-.btn-lg.ghost:hover{border-color:var(--border-strong);background:var(--bg-2);}
-.lp-hero .ctas .free-note{font-size:12.5px;color:var(--text-dim);margin-left:6px;}
-.lp-hero-art{position:relative;display:flex;justify-content:center;align-items:center;}
-
-/* Price console */
-.price-console{background:linear-gradient(152deg,#14532d 0%,#166534 52%,#15803d 100%);border-radius:14px;padding:20px;width:100%;max-width:500px;box-shadow:0 1px 0 rgba(10,10,10,.04),0 34px 74px -28px rgba(21,128,61,.5);color:#fff;}
-.pc-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;}
-.pc-label{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;color:#fff;}
-.pc-live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;background:rgba(255,255,255,.16);color:#fff;padding:4px 9px;border-radius:999px;white-space:nowrap;}
-.pc-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#86efac;animation:lp-pulse 2s ease-in-out infinite;}
-.pc-controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;margin-bottom:16px;}
-.pc-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,.72);font-weight:500;margin-bottom:6px;}
-.pc-at{font-size:12px;color:rgba(255,255,255,.6);padding-bottom:11px;}
-.pc-combo{position:relative;}
-.pc-combo-trigger,.pc-select-wrap select{width:100%;height:40px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px;background:#fff;border:1px solid transparent;border-radius:8px;font:inherit;font-size:14px;font-weight:500;color:#0a0a0a;cursor:pointer;text-align:left;transition:box-shadow 80ms;}
-.pc-combo-trigger:hover,.pc-select-wrap select:hover{box-shadow:0 0 0 3px rgba(255,255,255,.22);}
-.pc-combo-trigger[aria-expanded="true"]{box-shadow:0 0 0 3px rgba(255,255,255,.4);}
-.pc-combo-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
-.pc-chev{width:15px;height:15px;color:#6b7280;flex:0 0 15px;transition:transform 120ms;}
-.pc-combo-trigger[aria-expanded="true"] .pc-chev{transform:rotate(180deg);}
-.pc-combo-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 20px 50px -16px rgba(10,10,10,.22);overflow:hidden;}
-.pc-combo-search{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-soft);}
-.pc-combo-search svg{width:14px;height:14px;color:var(--text-dim);flex:0 0 14px;}
-.pc-combo-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:13.5px;color:var(--text);}
-.pc-combo-search input::placeholder{color:var(--text-dim);}
-.pc-combo-list{max-height:244px;overflow-y:auto;padding:6px;}
-.pc-opt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;}
-.pc-opt:hover,.pc-opt.active{background:var(--bg-2);}
-.pc-opt.selected{background:var(--accent-soft);}
-.pc-opt-name{font-size:13.5px;font-weight:500;color:var(--text);}
-.pc-opt-var{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-top:1px;}
-.pc-opt-cat{font-size:10.5px;color:var(--text-dim);white-space:nowrap;}
-.pc-empty{padding:18px 12px;text-align:center;color:var(--text-dim);font-size:12.5px;}
-.pc-select-wrap{position:relative;}
-.pc-select-wrap select{appearance:none;-webkit-appearance:none;padding-right:32px;}
-.pc-select-wrap .pc-chev{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;}
-.pc-result{border-top:1px solid rgba(255,255,255,.16);padding-top:16px;}
-.pc-res-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
-.pc-res-name{font-size:19px;font-weight:600;letter-spacing:-0.015em;line-height:1.1;color:#fff;}
-.pc-res-var{font-size:11.5px;color:rgba(255,255,255,.68);font-family:var(--font-mono);margin-top:3px;}
-.pc-res-price{text-align:right;flex:0 0 auto;}
-.pc-res-val{font-family:var(--font-mono);font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1;color:#fff;}
-.pc-res-val .u{font-size:12px;color:rgba(255,255,255,.62);font-weight:400;letter-spacing:0;}
-.pc-res-delta{font-family:var(--font-mono);font-size:12.5px;font-weight:500;margin-top:5px;}
-.pc-res-delta.up{color:#86efac;}
-.pc-res-delta.dn{color:#fca5a5;}
-.pc-res-delta.flat{color:rgba(255,255,255,.62);}
-.pc-res-mid{display:flex;align-items:center;gap:16px;margin:14px 0;}
-.pc-res-spark{flex:1;height:42px;min-width:0;}
-.pc-res-spark path.line{fill:none;stroke-width:1.6;}
-.pc-res-cap{text-align:right;flex:0 0 auto;}
-.pc-res-cap .t{font-size:9.5px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,.6);}
-.pc-res-cap .r{font-size:11.5px;color:rgba(255,255,255,.82);font-family:var(--font-mono);margin-top:2px;}
-.pc-res-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:15px;}
-.pc-tag{font-size:11px;color:rgba(255,255,255,.92);background:rgba(255,255,255,.14);border-radius:6px;padding:4px 9px;font-family:var(--font-mono);}
-.pc-tag b{color:#fff;font-weight:600;}
-.pc-res-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;}
-.pc-updated{font-size:11px;color:rgba(255,255,255,.62);font-family:var(--font-mono);}
-.pc-open{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:#fff;color:#14532d;padding:7px 13px;border-radius:8px;text-decoration:none;transition:background 80ms;}
-.pc-open:hover{background:#f0fdf4;}
-.pc-open svg{width:14px;height:14px;transition:transform 120ms;}
-.pc-open:hover svg{transform:translateX(3px);}
-.pc-result.flash{animation:pc-flash 340ms ease;}
-@keyframes pc-flash{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:none}}
-.pc-loading{padding:24px 0;text-align:center;color:rgba(255,255,255,.6);font-size:13px;}
-
-/* Trust strip */
-.lp-trust{padding:28px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);margin-top:24px;}
-.lp-trust-inner{display:flex;justify-content:space-between;align-items:center;gap:40px;flex-wrap:wrap;}
-.lp-trust-item{display:flex;flex-direction:column;gap:4px;font-family:var(--font-mono);}
-.lp-trust-item .v{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.01em;}
-.lp-trust-item .l{font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);font-weight:500;}
-
-/* Sections */
-.lp-section{padding:96px 0;}
-.lp-section.sunk{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.lp-section-head{max-width:720px;margin-bottom:48px;}
-.lp-section-head .eyebrow{font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:16px;display:inline-block;}
-.lp-section-head h2{font-size:42px;letter-spacing:-0.025em;line-height:1.1;font-weight:600;margin:0 0 16px;text-wrap:balance;}
-.lp-section-head p{font-size:17px;line-height:1.55;color:var(--text-muted);margin:0;max-width:56ch;}
-
-/* Live table */
-.lp-live-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 0 rgba(10,10,10,.02),0 24px 60px -28px rgba(10,10,10,.1);}
-.lp-live-h{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
-.lp-live-h .meta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;}
-.lp-live-h .meta strong{color:var(--text);font-weight:500;}
-.lp-live-h .live-pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;background:var(--accent-soft);color:var(--accent);padding:4px 8px;border-radius:4px;white-space:nowrap;}
-.lp-live-h .live-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:lp-pulse 2s infinite;}
-.lp-live-table{width:100%;border-collapse:separate;border-spacing:0;}
-.lp-live-table thead th{font-size:10.5px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;text-align:left;padding:10px 24px;background:var(--bg);border-bottom:1px solid var(--border);}
-.lp-live-table thead th.num{text-align:right;}
-.lp-live-table tbody td{padding:14px 24px;border-bottom:1px solid var(--border-soft);font-size:14px;}
-.lp-live-table tbody tr:last-child td{border-bottom:0;}
-.lp-live-table .name{font-weight:500;}
-.lp-live-table .var{font-size:11.5px;color:var(--text-dim);font-family:var(--font-mono);}
-.lp-live-table .origin{color:var(--text-muted);font-size:12.5px;}
-.lp-live-table .origin .dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:6px;vertical-align:middle;}
-.lp-live-table .num{font-family:var(--font-mono);text-align:right;}
-.lp-live-table td.num.mostly{font-weight:500;}
-.lp-live-table .delta{font-family:var(--font-mono);font-weight:500;font-size:12.5px;}
-.lp-live-table .delta.up{color:var(--positive);}
-.lp-live-table .delta.dn{color:var(--negative);}
-.lp-live-foot{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-top:1px solid var(--border-soft);background:var(--bg);font-size:12px;color:var(--text-dim);flex-wrap:wrap;gap:8px;}
-.lp-live-foot a{color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
-.lp-live-foot a:hover{color:var(--accent);}
-.lp-live-loading{padding:40px;text-align:center;color:var(--text-muted);font-size:14px;}
-
-/* Features */
-.lp-features{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-.lp-feature{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;display:flex;flex-direction:column;gap:16px;}
-.lp-feature .feat-art{height:160px;background:var(--bg);border-radius:7px;overflow:hidden;border:1px solid var(--border-soft);}
-.lp-feature h3{font-size:19px;font-weight:600;letter-spacing:-0.015em;margin:4px 0 0;}
-.lp-feature p{font-size:14px;line-height:1.55;color:var(--text-muted);margin:0;}
-.feat-wire{padding:14px 16px;display:flex;flex-direction:column;gap:8px;justify-content:center;height:100%;box-sizing:border-box;}
-.feat-wire-row{display:flex;align-items:center;gap:10px;font-size:11.5px;font-family:var(--font-mono);}
-.feat-wire-row .tm{color:var(--text-dim);font-size:10px;min-width:38px;}
-.feat-wire-row .tg{color:var(--accent);font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;min-width:56px;}
-.feat-wire-row .tx{color:var(--text-muted);font-family:var(--font-sans);font-size:11.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.feat-alert-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px 14px;display:flex;align-items:center;gap:10px;width:100%;}
-.feat-alert-card .badge{background:var(--accent);color:white;font-size:9.5px;font-weight:500;padding:3px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.06em;}
-.feat-alert-card ..lp-main-content{flex:1;min-width:0;}
-.feat-alert-card .body .t{font-size:12.5px;font-weight:500;}
-.feat-alert-card .body .m{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);}
-.feat-origin-row{display:flex;align-items:center;gap:10px;font-size:12px;}
-.feat-origin-row .dot{width:6px;height:6px;border-radius:50%;flex:0 0 6px;}
-.feat-origin-row .dot.dom{background:var(--positive);}
-.feat-origin-row .dot.imp{background:var(--info);}
-.feat-origin-row .name{font-weight:500;flex:1;}
-.feat-origin-row .meta{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
-
-/* Pricing */
-.lp-pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.lp-plan{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 28px;display:flex;flex-direction:column;position:relative;}
-.lp-plan.featured{border-color:var(--text);background:var(--text);color:var(--bg);}
-.lp-plan .ribbon{position:absolute;top:-10px;left:28px;background:var(--accent);color:white;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;padding:4px 9px;border-radius:4px;}
-.lp-plan .plan-name{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:12px;}
-.lp-plan.featured .plan-name{color:rgba(250,250,250,.7);}
-.lp-plan .plan-price{font-size:44px;font-weight:600;letter-spacing:-0.02em;line-height:1;display:flex;align-items:baseline;gap:6px;margin-bottom:6px;}
-.lp-plan .plan-price .unit{font-size:14px;font-weight:400;color:var(--text-muted);}
-.lp-plan.featured .plan-price .unit{color:rgba(250,250,250,.6);}
-.lp-plan .plan-byline{font-size:13px;color:var(--text-muted);margin-bottom:28px;min-height:38px;}
-.lp-plan.featured .plan-byline{color:rgba(250,250,250,.7);}
-.lp-plan .plan-features{list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:11px;font-size:13.5px;}
-.lp-plan .plan-features li{display:flex;align-items:flex-start;gap:10px;line-height:1.45;}
-.lp-plan .plan-features li svg{flex:0 0 14px;width:14px;height:14px;margin-top:3px;color:var(--accent);}
-.lp-plan.featured .plan-features li svg{color:var(--positive);}
-.lp-plan .plan-cta{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:7px;font-size:13.5px;font-weight:500;border:1px solid var(--border);background:var(--bg);color:var(--text);text-decoration:none;transition:opacity 80ms,background 80ms;}
-.lp-plan .plan-cta:hover{background:var(--bg-2);}
-.lp-plan.featured .plan-cta{background:var(--bg);color:var(--text);border-color:var(--bg);}
-.lp-plan.featured .plan-cta:hover{opacity:0.92;}
-
-/* Final */
-.lp-final{text-align:center;padding:96px 0;border-top:1px solid var(--border);}
-.lp-final h2{font-size:48px;letter-spacing:-0.025em;line-height:1.1;font-weight:600;margin:0 0 18px;text-wrap:balance;}
-.lp-final p{font-size:17px;color:var(--text-muted);margin:0 0 32px;max-width:46ch;margin-left:auto;margin-right:auto;}
-.lp-final .ctas{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
-
-/* Footer */
-.lp-footer{border-top:1px solid var(--border);background:var(--surface);padding:40px 0 32px;}
-.lp-footer-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
-.lp-footer .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.025em;margin-bottom:10px;font-family:var(--font-sans);}
-.lp-footer .brand .logo{width:26px;height:26px;display:block;flex:0 0 26px;}
-.lp-footer .brand .name .x{color:var(--accent);}
-.lp-footer .tagline{font-size:12px;color:var(--text-dim);max-width:38ch;}
-.lp-footer .col-group{display:flex;gap:48px;flex-wrap:wrap;}
-.lp-footer .col{display:flex;flex-direction:column;gap:8px;}
-.lp-footer .col h4{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin:0 0 4px;}
-.lp-footer .col a{color:var(--text-muted);font-size:12.5px;text-decoration:none;}
-.lp-footer .col a:hover{color:var(--text);}
-.lp-footer .legal{display:flex;justify-content:space-between;padding-top:28px;margin-top:28px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-dim);font-family:var(--font-mono);flex-wrap:wrap;gap:8px;}
-
-/* Responsive */
-.lp-mob-menu-btn{display:none;background:none;border:0.5px solid var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;color:var(--text);}
-@media(max-width:860px){
-  .lp-hero{grid-template-columns:1fr;gap:40px;padding:56px 0 40px;}
-  .lp-hero h1{font-size:44px;}
-  .lp-features{grid-template-columns:1fr;}
-  .lp-pricing{grid-template-columns:1fr;}
-  .lp-section-head h2{font-size:32px;}
-  .lp-final h2{font-size:36px;}
-  .lp-nav{padding:13px 20px;gap:14px;}
-  .lp-nav nav{display:none;}
-  .lp-mob-menu-btn{display:flex;align-items:center;gap:6px;}
-  .lp-container{padding:0 20px;}
+/* ── NAV ── */
+.lp-nav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:32px;
+  padding:16px 40px;
+  background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid #ededed;
 }
-@media(max-width:480px){
-  .lp-hero h1{font-size:34px;}
-  .lp-nav .nav-cta a.signin{display:none;}
-  .pc-controls{grid-template-columns:1fr;gap:12px;}
-  .pc-at{display:none;}
-  .price-console{padding:16px;}
-  .pc-res-val{font-size:26px;}
-  .pc-res-name{font-size:17px;}
-  .lp-trust-inner{gap:20px;}
+.lp-logo{display:flex;align-items:baseline;gap:0;text-decoration:none;color:#0a0a0a;}
+.lp-logo span{font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.lp-logo img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
+.lp-nav nav{display:flex;gap:24px;font-size:14px;font-weight:500;color:#525252;}
+.lp-nav nav a{color:inherit;text-decoration:none;cursor:pointer;}
+.lp-nav nav a:hover{color:#0a0a0a;}
+.lp-nav-r{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.lp-nav-r .signin{font-size:14px;font-weight:500;color:#0a0a0a;text-decoration:none;cursor:pointer;}
+.lp-btn-dark{font-family:inherit;font-size:14px;font-weight:600;color:#fff;background:#0a0a0a;border:0;padding:9px 16px;border-radius:9px;cursor:pointer;text-decoration:none;display:inline-block;}
+.lp-btn-dark:hover{background:#171717;}
+
+/* ── HERO ── */
+.lp-hero{
+  position:relative;min-height:640px;
+  display:flex;align-items:center;overflow:hidden;
+  background:#0c1f14;
+}
+.lp-hero img.bg{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+  filter:saturate(.85) contrast(1.02) brightness(.85);
+}
+.lp-hero-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(8,20,13,.94) 0%,rgba(8,20,13,.78) 38%,rgba(8,20,13,.30) 72%,rgba(8,20,13,.55) 100%);
+}
+.lp-hero-inner{
+  position:relative;z-index:2;width:100%;
+  max-width:1240px;margin:0 auto;padding:0 40px;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;
+}
+.lp-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
+  font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#d1fae5;
+}
+.lp-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:axpulse 2s infinite;}
+.lp-h1{margin-top:22px;font-size:60px;line-height:1.04;font-weight:800;letter-spacing:-.035em;color:#fff;}
+.lp-lead{margin-top:22px;font-size:19px;line-height:1.55;color:#cbd5cd;max-width:480px;}
+.lp-ctas{margin-top:30px;display:flex;gap:13px;flex-wrap:wrap;}
+.btn-hero-solid{font-family:inherit;font-size:15px;font-weight:600;color:#0a0a0a;background:#fff;border:0;padding:13px 22px;border-radius:11px;cursor:pointer;text-decoration:none;display:inline-block;}
+.btn-hero-solid:hover{background:#f5f5f5;}
+.btn-hero-ghost{font-family:inherit;font-size:15px;font-weight:600;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);padding:13px 22px;border-radius:11px;cursor:pointer;text-decoration:none;display:inline-block;}
+.btn-hero-ghost:hover{background:rgba(255,255,255,.14);}
+.lp-tagline{margin-top:26px;display:flex;align-items:center;gap:10px;font-size:13px;color:#9fb3a6;}
+
+/* ── PRICE CONSOLE ── */
+.price-console{
+  background:#0e2a1b;border:1px solid rgba(74,222,128,.22);
+  border-radius:18px;padding:22px;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.6);
+}
+.pc-head{display:flex;align-items:flex-start;justify-content:space-between;}
+.pc-comm-row{display:flex;align-items:center;gap:9px;}
+.pc-comm-name{font-size:18px;font-weight:700;color:#fff;}
+.pc-comm-sub{margin-top:3px;font-size:12px;color:#86a394;font-family:"IBM Plex Mono",monospace;}
+.pc-delta{font-size:11px;font-weight:600;color:#fca5a5;background:rgba(220,38,38,.16);padding:4px 9px;border-radius:7px;font-family:"IBM Plex Mono",monospace;}
+.pc-price{margin-top:16px;display:flex;align-items:baseline;gap:8px;}
+.pc-price-val{font-size:44px;font-weight:700;color:#fff;font-family:"IBM Plex Mono",monospace;letter-spacing:-.02em;}
+.pc-price-unit{font-size:13px;color:#86a394;}
+.pc-tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px;}
+.pc-tag{font-size:11.5px;color:#cbe8d6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);padding:4px 9px;border-radius:7px;}
+.pc-tag.amber{color:#fcd34d;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.25);}
+.pc-tag.green{color:#86efac;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);}
+.pc-btn{margin-top:16px;width:100%;font-family:inherit;font-size:13.5px;font-weight:600;color:#0a0a0a;background:#4ade80;border:0;padding:11px;border-radius:10px;cursor:pointer;}
+.pc-btn:hover{background:#22c55e;}
+
+/* ── TRUST STRIP ── */
+.lp-trust{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;border-bottom:1px solid #ededed;background:#fff;}
+.lp-trust-item{flex:1;min-width:160px;padding:22px 26px;text-align:center;border-right:1px solid #f0f0f0;}
+.lp-trust-item:last-child{border-right:none;}
+.lp-trust-v{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#0a0a0a;font-family:"IBM Plex Mono",monospace;}
+.lp-trust-l{margin-top:4px;font-size:12.5px;color:#737373;font-weight:500;}
+
+/* ── LIVE TABLE ── */
+.lp-live{max-width:1180px;margin:0 auto;padding:80px 40px 20px;}
+.lp-live-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap;}
+.lp-live-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#15803d;}
+.lp-live-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:axpulse 2s infinite;}
+.lp-live-h h2{margin-top:10px;font-size:34px;font-weight:800;letter-spacing:-.03em;}
+.btn-open{font-family:inherit;font-size:14px;font-weight:600;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;}
+.btn-open:hover{background:#dcfce7;}
+.lp-table-wrap{border:1px solid #ededed;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px -24px rgba(0,0,0,.25);}
+.lp-tbl-head{display:grid;grid-template-columns:2.4fr 1fr 1.1fr 1fr 1.1fr;gap:0;padding:13px 22px;background:#fafafa;border-bottom:1px solid #ededed;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;}
+.lp-tbl-head span:not(:first-child){text-align:right;}
+.lp-tbl-row{display:grid;grid-template-columns:2.4fr 1fr 1.1fr 1fr 1.1fr;align-items:center;gap:0;padding:13px 22px;border-bottom:1px solid #f3f3f3;cursor:pointer;transition:background 100ms;}
+.lp-tbl-row:last-child{border-bottom:none;}
+.lp-tbl-row:hover{background:#f0fdf4;}
+.lp-tbl-row:nth-child(even){background:#fafafa;}
+.lp-tbl-row:nth-child(even):hover{background:#f0fdf4;}
+.lp-comm-cell{display:flex;align-items:center;gap:12px;}
+.lp-thumb{width:38px;height:38px;border-radius:9px;overflow:hidden;flex:none;}
+.lp-comm-name{font-size:14.5px;font-weight:600;}
+.lp-comm-unit{font-size:11.5px;color:#a3a3a3;font-family:"IBM Plex Mono",monospace;}
+.lp-origin-cell{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
+.lp-origin-dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.lp-origin-label{font-size:12.5px;color:#525252;}
+.lp-mostly{font-size:15px;font-weight:600;font-family:"IBM Plex Mono",monospace;text-align:right;}
+.lp-delta{text-align:right;}
+.lp-delta-chip{display:inline-block;font-size:12px;font-weight:600;font-family:"IBM Plex Mono",monospace;padding:3px 8px;border-radius:6px;}
+.lp-spark-cell{display:flex;justify-content:flex-end;}
+
+/* ── FEATURES ── */
+.lp-features{max-width:1180px;margin:0 auto;padding:90px 40px;}
+.lp-features h2{font-size:34px;font-weight:800;letter-spacing:-.03em;max-width:620px;}
+.lp-features .lead{margin-top:12px;font-size:17px;color:#525252;max-width:560px;}
+.feat-grid{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.feat-card{border:1px solid #ededed;border-radius:16px;overflow:hidden;background:#fff;}
+.feat-photo{height:210px;overflow:hidden;position:relative;}
+.feat-photo img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.02);}
+.feat-tag{position:absolute;top:14px;left:14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:rgba(10,10,10,.55);backdrop-filter:blur(4px);padding:5px 10px;border-radius:7px;}
+.feat-body{padding:24px;}
+.feat-body h3{font-size:19px;font-weight:700;letter-spacing:-.01em;}
+.feat-body p{margin-top:9px;font-size:14.5px;line-height:1.55;color:#525252;}
+
+/* ── PRICING ── */
+.lp-pricing{background:#fafafa;border-top:1px solid #ededed;border-bottom:1px solid #ededed;}
+.lp-pricing-inner{max-width:1180px;margin:0 auto;padding:90px 40px;}
+.lp-pricing-inner h2{font-size:34px;font-weight:800;letter-spacing:-.03em;text-align:center;}
+.lp-pricing-inner .sub{display:block;margin-top:12px;font-size:17px;color:#525252;text-align:center;}
+.plan-grid{margin-top:44px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;align-items:start;}
+.plan-card{position:relative;border-radius:16px;padding:30px 26px;background:#fff;border:1px solid #ededed;}
+.plan-card.featured{background:#0a0a0a;border-color:#0a0a0a;box-shadow:0 30px 70px -25px rgba(0,0,0,.5);}
+.plan-ribbon{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#0a0a0a;background:#4ade80;padding:5px 12px;border-radius:999px;white-space:nowrap;}
+.plan-name{font-size:14px;font-weight:600;color:#737373;}
+.plan-card.featured .plan-name{color:#a3a3a3;}
+.plan-price{margin-top:12px;display:flex;align-items:baseline;gap:5px;font-family:"IBM Plex Mono",monospace;}
+.plan-price .amount{font-size:42px;font-weight:800;letter-spacing:-.03em;color:#0a0a0a;}
+.plan-card.featured .plan-price .amount{color:#fff;}
+.plan-price .per{font-size:14px;color:#737373;}
+.plan-card.featured .plan-price .per{color:#a3a3a3;}
+.plan-blurb{margin-top:10px;font-size:13.5px;color:#737373;min-height:38px;}
+.plan-card.featured .plan-blurb{color:#a3a3a3;}
+.plan-btn{font-family:inherit;width:100%;margin-top:18px;font-size:14px;font-weight:600;cursor:pointer;padding:12px;border-radius:10px;border:1px solid #d4d4d4;background:#fff;color:#0a0a0a;}
+.plan-btn:hover{background:#f5f5f5;}
+.plan-btn.featured{background:#4ade80;border-color:#4ade80;color:#0a0a0a;}
+.plan-btn.featured:hover{background:#22c55e;}
+.plan-feats{margin-top:22px;display:flex;flex-direction:column;gap:11px;}
+.plan-feat{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#0a0a0a;}
+.plan-card.featured .plan-feat{color:#fff;}
+.plan-feat svg{flex:none;margin-top:1px;}
+
+/* ── FINAL CTA ── */
+.lp-cta-section{background:#0a0a0a;color:#fff;}
+.lp-cta-inner{max-width:1000px;margin:0 auto;padding:100px 40px;text-align:center;}
+.lp-cta-inner h2{font-size:46px;line-height:1.08;font-weight:800;letter-spacing:-.035em;}
+.lp-cta-inner h2 em{color:#4ade80;font-style:normal;}
+.lp-cta-inner p{margin-top:20px;font-size:18px;color:#a3a3a3;max-width:560px;margin-left:auto;margin-right:auto;}
+.lp-cta-inner .ctas{margin-top:32px;display:flex;gap:13px;justify-content:center;flex-wrap:wrap;}
+
+/* ── FOOTER ── */
+.lp-footer{background:#0a0a0a;color:#a3a3a3;border-top:1px solid #1f1f1f;}
+.lp-footer-inner{max-width:1180px;margin:0 auto;padding:56px 40px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;}
+.lp-footer-brand{display:flex;align-items:baseline;}
+.lp-footer-brand span{font-size:22px;font-weight:800;letter-spacing:-.02em;color:#fff;}
+.lp-footer-brand img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
+.lp-footer-tagline{margin-top:14px;font-size:13.5px;line-height:1.6;max-width:280px;}
+.lp-footer-col-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;margin-bottom:14px;}
+.lp-footer-col a{display:block;font-size:13.5px;color:#a3a3a3;text-decoration:none;margin-bottom:10px;cursor:pointer;}
+.lp-footer-col a:hover{color:#fff;}
+.lp-footer-legal{border-top:1px solid #1f1f1f;padding:20px 40px;max-width:1180px;margin:0 auto;font-size:12.5px;font-family:"IBM Plex Mono",monospace;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .lp-hero-inner{grid-template-columns:1fr;padding:40px 24px;}
+  .lp-h1{font-size:42px;}
+  .lp-nav{padding:14px 24px;gap:16px;}
+  .lp-nav nav{display:none;}
+  .feat-grid,.plan-grid{grid-template-columns:1fr;}
+  .lp-footer-inner{grid-template-columns:1fr 1fr;gap:28px;}
+  .lp-live,.lp-features,.lp-pricing-inner,.lp-cta-inner{padding-left:24px;padding-right:24px;}
+}
+@media(max-width:560px){
+  .lp-h1{font-size:34px;}
+  .lp-lead{font-size:16px;}
+  .btn-hero-solid,.btn-hero-ghost{padding:11px 18px;font-size:14px;}
+  .lp-tbl-head span:nth-child(n+4),.lp-tbl-row>*:nth-child(n+4){display:none;}
+  .lp-tbl-head,.lp-tbl-row{grid-template-columns:2.4fr 1fr 1.1fr;}
+  .lp-footer-inner{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
-<div class="lp-shell">
 
-  <header class="lp-nav">
-    <a href="/app" class="brand">
-      <svg class="logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="36" height="36" rx="8" fill="#15803d"/>
-        <path d="M8 18 Q18 8 28 18 Q18 28 8 18Z" fill="rgba(255,255,255,0.25)"/>
-        <path d="M18 8 Q28 18 18 28 Q8 18 18 8Z" fill="rgba(255,255,255,0.55)"/>
-        <circle cx="18" cy="18" r="3.5" fill="#fff"/>
-      </svg>
-      <div class="name">agra<span class="x">X</span></div>
-    </a>
-    <nav>
-      <a href="#features">Product</a>
-      <a href="#live">Live data</a>
-      <a href="#pricing">Pricing</a>
-      <a href="/app">Open app</a>
-    </nav>
-    <div class="nav-spacer"></div>
-    <div class="nav-cta">
-      <a href="/app" class="signin">Sign in</a>
-      <a href="/app" class="btn-primary">Start free</a>
-    </div>
-  </header>
+<!-- NAV -->
+<header class="lp-nav">
+  <a href="/" class="lp-logo">
+    <span>agra</span>
+    <img src="logo-x-black.png" alt="X">
+  </a>
+  <nav>
+    <a href="#live">Markets</a>
+    <a href="#features">Commodities</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Data sources</a>
+  </nav>
+  <div class="lp-nav-r">
+    <a href="/app" class="signin">Sign in</a>
+    <a href="/app" class="lp-btn-dark">Start free →</a>
+  </div>
+</header>
 
-  <main>
-
-  <!-- Hero -->
-  <div class="lp-hero-wrap">
-  <div class="lp-hero-bg"></div>
-  <div class="lp-hero-fade"></div>
-  <section class="lp-container lp-hero">
-    <div class="lp-hero-copy">
-      <div class="eyebrow"><span class="dot"></span> Wholesale produce intelligence</div>
-      <h1>Commodity data<br>for the produce<br>supply chain.</h1>
-      <p class="sub">Live USDA terminal-market data, daily commentary, watchlists, and price alerts — built for every buyer, broker, and grower in the produce supply chain.</p>
-      <div class="ctas">
-        <a href="/app" class="btn-lg primary">
-          Start free
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-        </a>
-        <a href="#live" class="btn-lg ghost">See live data</a>
-        <span class="free-note">Free forever · No card required</span>
+<!-- HERO -->
+<section class="lp-hero">
+  <img class="bg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1700" alt="aerial farmland" loading="eager">
+  <div class="lp-hero-scrim"></div>
+  <div class="lp-hero-inner">
+    <div>
+      <div class="lp-eyebrow">
+        <span class="dot"></span>
+        Wholesale Produce Intelligence
+      </div>
+      <h1 class="lp-h1">Commodity data for the produce supply chain.</h1>
+      <p class="lp-lead">Live USDA terminal-market data for every buyer, broker, and grower. Read the market before you pick up the phone.</p>
+      <div class="lp-ctas">
+        <a href="/app" class="btn-hero-solid">Start free →</a>
+        <a href="#live" class="btn-hero-ghost">See live data</a>
+      </div>
+      <div class="lp-tagline">
+        <span class="mono">USDA AMS Market News</span>
+        <span style="opacity:.4">·</span>
+        <span>No card required</span>
       </div>
     </div>
 
-    <div class="lp-hero-art">
-      <div class="price-console" id="priceConsole">
-        <div class="pc-head">
-          <div class="pc-label">Check today's wholesale price</div>
-          <span class="pc-live">Live · USDA AMS</span>
-        </div>
-        <div class="pc-controls">
-          <div class="pc-field pc-combo" id="pcCombo">
-            <label>Commodity</label>
-            <button type="button" class="pc-combo-trigger" id="pcComboTrigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="pc-combo-value" id="pcComboValue">Loading…</span>
-              <svg class="pc-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
-            </button>
-            <div class="pc-combo-panel" id="pcComboPanel" hidden>
-              <div class="pc-combo-search">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M14 14l-3.2-3.2"/></svg>
-                <input type="text" id="pcComboInput" placeholder="Search avocados, limes, lettuce…" autocomplete="off" spellcheck="false" />
-              </div>
-              <div class="pc-combo-list" id="pcComboList"></div>
-            </div>
-          </div>
-          <div class="pc-at">at</div>
-          <div class="pc-field">
-            <label>Market</label>
-            <div class="pc-select-wrap">
-              <select id="pcMarket">
-                <option value="ALL">All Markets</option>
-                <option value="NYC" selected>New York, NY</option>
-                <option value="LAX">Los Angeles, CA</option>
-                <option value="CHI">Chicago, IL</option>
-                <option value="ATL">Atlanta, GA</option>
-                <option value="MIA">Miami, FL</option>
-                <option value="BOS">Boston, MA</option>
-              </select>
-              <svg class="pc-chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="pc-result" id="pcResult">
-          <div class="pc-loading">Loading live USDA data…</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  </div><!-- end lp-hero-wrap -->
-
-  <!-- Trust strip -->
-  <section class="lp-trust">
-    <div class="lp-container lp-trust-inner">
-      <div class="lp-trust-item"><div class="v">12</div><div class="l">USDA terminal markets</div></div>
-      <div class="lp-trust-item"><div class="v" id="ts-comms">—</div><div class="l">Commodities tracked daily</div></div>
-      <div class="lp-trust-item"><div class="v">3×</div><div class="l">Daily USDA refreshes</div></div>
-      <div class="lp-trust-item"><div class="v" id="ts-date">—</div><div class="l">Last report date</div></div>
-      <div class="lp-trust-item"><div class="v">USDA AMS</div><div class="l">Official source</div></div>
-    </div>
-  </section>
-
-  <!-- Live data preview -->
-  <section id="live" class="lp-section">
-    <div class="lp-container">
-      <div class="lp-section-head">
-        <span class="eyebrow">Live preview</span>
-        <h2>Today's wholesale produce prices, before you sign up.</h2>
-        <p>Wholesale prices for the New York terminal market, refreshed daily from USDA AMS Market News. This is the same data you'll see inside AgraX.</p>
-      </div>
-      <div class="lp-live-card">
-        <div class="lp-live-h">
-          <div class="meta">
-            <strong id="live-date">Loading…</strong>
-            <span>·</span><span>New York · Northeast</span>
-            <span>·</span><span>USDA AMS Market News</span>
-          </div>
-          <span class="live-pill">Live</span>
-        </div>
-        <div id="live-table-wrap"><div class="lp-live-loading">Loading live prices…</div></div>
-        <div class="lp-live-foot">
-          <span>Sourced from USDA AMS Market News · Wholesale prices in USD per unit</span>
-          <a href="/app">Open the full screener <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="lp-section sunk">
-    <div class="lp-container">
-      <div class="lp-section-head">
-        <span class="eyebrow">What's inside</span>
-        <h2>Built for daily decisions in the produce trade.</h2>
-        <p>Everything a buyer, broker, or grower needs to read the market — without sifting through PDFs or spreadsheets.</p>
-      </div>
-      <div class="lp-features">
-        <div class="lp-feature">
-          <div class="feat-art" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-            <svg viewBox="0 0 320 160" width="320" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- US outline simplified -->
-              <path d="M28,48 L52,32 L90,28 L130,24 L175,20 L220,22 L258,26 L285,35 L295,50 L292,72 L278,88 L258,100 L230,108 L200,112 L175,118 L150,122 L120,118 L95,110 L68,105 L45,96 L30,80 L22,64 Z" fill="#f0fdf4" stroke="#C0DD97" stroke-width="1.5"/>
-              <!-- Great Lakes -->
-              <ellipse cx="198" cy="42" rx="14" ry="7" fill="#dbeafe" opacity=".6"/>
-              <ellipse cx="210" cy="50" rx="8" ry="5" fill="#dbeafe" opacity=".5"/>
-              <!-- Connection lines between cities -->
-              <line x1="265" y1="68" x2="245" y2="55" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="245" y1="55" x2="210" y2="58" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="210" y1="58" x2="185" y2="52" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="185" y1="52" x2="155" y2="56" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="155" y1="56" x2="130" y2="62" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="130" y1="62" x2="100" y2="68" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="185" y1="52" x2="180" y2="72" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="265" y1="68" x2="270" y2="85" stroke="#C0DD97" stroke-width="1" stroke-dasharray="3,3"/>
-              <!-- Cities — active (green) -->
-              <!-- NYC -->
-              <circle cx="265" cy="68" r="7" fill="#15803d"/>
-              <circle cx="265" cy="68" r="4" fill="#fff"/>
-              <circle cx="265" cy="68" r="2" fill="#15803d"/>
-              <text x="275" y="66" font-size="7.5" fill="#15803d" font-weight="700">NYC</text>
-              <!-- Boston -->
-              <circle cx="278" cy="55" r="5" fill="#15803d" opacity=".8"/>
-              <circle cx="278" cy="55" r="2.5" fill="#fff"/>
-              <text x="284" y="54" font-size="6.5" fill="#3B6D11">BOS</text>
-              <!-- Philadelphia -->
-              <circle cx="260" cy="76" r="5" fill="#15803d" opacity=".75"/>
-              <circle cx="260" cy="76" r="2.5" fill="#fff"/>
-              <text x="266" y="80" font-size="6.5" fill="#3B6D11">PHL</text>
-              <!-- Baltimore -->
-              <circle cx="252" cy="82" r="4.5" fill="#15803d" opacity=".7"/>
-              <circle cx="252" cy="82" r="2" fill="#fff"/>
-              <!-- Chicago -->
-              <circle cx="210" cy="58" r="6" fill="#15803d" opacity=".85"/>
-              <circle cx="210" cy="58" r="3" fill="#fff"/>
-              <text x="215" y="56" font-size="7" fill="#3B6D11">CHI</text>
-              <!-- Detroit -->
-              <circle cx="225" cy="52" r="4.5" fill="#15803d" opacity=".7"/>
-              <circle cx="225" cy="52" r="2" fill="#fff"/>
-              <text x="230" y="50" font-size="6.5" fill="#3B6D11">DET</text>
-              <!-- Atlanta -->
-              <circle cx="230" cy="92" r="5.5" fill="#15803d" opacity=".8"/>
-              <circle cx="230" cy="92" r="2.5" fill="#fff"/>
-              <text x="236" y="90" font-size="7" fill="#3B6D11">ATL</text>
-              <!-- Miami -->
-              <circle cx="245" cy="112" r="5" fill="#15803d" opacity=".75"/>
-              <circle cx="245" cy="112" r="2.5" fill="#fff"/>
-              <text x="250" y="116" font-size="6.5" fill="#3B6D11">MIA</text>
-              <!-- Los Angeles -->
-              <circle cx="70" cy="82" r="7" fill="#15803d"/>
-              <circle cx="70" cy="82" r="4" fill="#fff"/>
-              <circle cx="70" cy="82" r="2" fill="#15803d"/>
-              <text x="55" y="76" font-size="7.5" fill="#15803d" font-weight="700">LAX</text>
-              <!-- San Francisco -->
-              <circle cx="55" cy="68" r="5.5" fill="#15803d" opacity=".8"/>
-              <circle cx="55" cy="68" r="2.5" fill="#fff"/>
-              <text x="40" y="66" font-size="6.5" fill="#3B6D11">SFO</text>
-              <!-- Columbia SC -->
-              <circle cx="248" cy="88" r="4" fill="#15803d" opacity=".65"/>
-              <circle cx="248" cy="88" r="1.8" fill="#fff"/>
-              <!-- Asheville -->
-              <circle cx="232" cy="82" r="4" fill="#15803d" opacity=".6"/>
-              <circle cx="232" cy="82" r="1.8" fill="#fff"/>
-              <!-- Legend -->
-              <rect x="18" y="126" width="86" height="28" rx="5" fill="rgba(255,255,255,.85)" stroke="#C0DD97" stroke-width=".8"/>
-              <circle cx="30" cy="136" r="4" fill="#15803d"/>
-              <circle cx="30" cy="136" r="2" fill="#fff"/>
-              <text x="38" y="139" font-size="7.5" fill="#15803d" font-weight="600">Active market</text>
-              <circle cx="30" cy="148" r="3" fill="#C0DD97"/>
-              <text x="38" y="151" font-size="7" fill="#3B6D11">12 cities total</text>
-            </svg>
-          </div>
-          <h3>Every U.S. terminal market in one search.</h3>
-          <p>Atlanta, Boston, Chicago, LA, NYC and 7 more — all 12 USDA terminal markets plus a national composite. Compare any commodity across cities in a single view.</p>
-        </div>
-        <div class="lp-feature">
-          <div class="feat-art" style="background:linear-gradient(135deg,#0a2e14,#15803d);display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 320 160" width="320" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- USDA source box -->
-              <rect x="18" y="55" width="68" height="50" rx="6" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
-              <text x="52" y="74" font-size="8" fill="rgba(255,255,255,.5)" text-anchor="middle" font-weight="500">SOURCE</text>
-              <text x="52" y="86" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">USDA</text>
-              <text x="52" y="97" font-size="7.5" fill="rgba(255,255,255,.65)" text-anchor="middle">AMS Market</text>
-              <!-- PDF icon -->
-              <rect x="34" y="104" width="14" height="17" rx="1.5" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.2)" stroke-width=".8"/>
-              <text x="41" y="116" font-size="6" fill="rgba(255,255,255,.5)" text-anchor="middle">PDF</text>
-              <rect x="52" y="104" width="14" height="17" rx="1.5" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.2)" stroke-width=".8"/>
-              <text x="59" y="116" font-size="6" fill="rgba(255,255,255,.5)" text-anchor="middle">XML</text>
-              <rect x="70" y="104" width="10" height="17" rx="1.5" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
-              <!-- Arrow 1 -->
-              <path d="M87 80 L106 80" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#wa)"/>
-              <text x="96" y="76" font-size="6.5" fill="rgba(255,255,255,.45)" text-anchor="middle">3× daily</text>
-              <!-- Ingest engine -->
-              <rect x="108" y="52" width="72" height="56" rx="6" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
-              <text x="144" y="72" font-size="8" fill="rgba(255,255,255,.55)" text-anchor="middle" font-weight="500">INGEST</text>
-              <text x="144" y="85" font-size="9" fill="#86efac" text-anchor="middle" font-weight="700">agraX</text>
-              <!-- spinning gear suggestion -->
-              <circle cx="144" cy="97" r="8" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.2"/>
-              <circle cx="144" cy="97" r="3" fill="rgba(255,255,255,.15)"/>
-              <line x1="144" y1="87" x2="144" y2="89" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="144" y1="105" x2="144" y2="107" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="134" y1="97" x2="136" y2="97" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="152" y1="97" x2="154" y2="97" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>
-              <!-- Arrow 2 -->
-              <path d="M181 80 L200 80" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#wa)"/>
-              <text x="190" y="76" font-size="6.5" fill="rgba(255,255,255,.45)" text-anchor="middle">API</text>
-              <!-- Database -->
-              <ellipse cx="220" cy="65" rx="18" ry="8" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
-              <rect x="202" y="65" width="36" height="22" fill="rgba(255,255,255,.12)"/>
-              <ellipse cx="220" cy="87" rx="18" ry="8" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
-              <text x="220" y="80" font-size="7" fill="rgba(255,255,255,.7)" text-anchor="middle">Supabase</text>
-              <!-- Arrow 3 -->
-              <path d="M238 76 L256 76" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#wa)"/>
-              <!-- App screen -->
-              <rect x="258" y="50" width="50" height="62" rx="5" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
-              <rect x="262" y="55" width="42" height="5" rx="1.5" fill="#86efac" opacity=".6"/>
-              <rect x="262" y="63" width="30" height="3" rx="1" fill="rgba(255,255,255,.25)"/>
-              <rect x="262" y="69" width="38" height="3" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="262" y="75" width="28" height="3" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="262" y="81" width="36" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
-              <rect x="262" y="87" width="24" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
-              <text x="283" y="105" font-size="7.5" fill="#86efac" text-anchor="middle" font-weight="600">agraX</text>
-              <!-- Live pill -->
-              <rect x="262" y="108" width="32" height="10" rx="3" fill="#15803d"/>
-              <text x="278" y="115.5" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="600">● LIVE</text>
-              <!-- Labels below -->
-              <text x="52" y="130" font-size="7" fill="rgba(255,255,255,.45)" text-anchor="middle">Public data</text>
-              <text x="144" y="130" font-size="7" fill="rgba(255,255,255,.45)" text-anchor="middle">Structured</text>
-              <text x="220" y="108" font-size="7" fill="rgba(255,255,255,.45)" text-anchor="middle">Stored</text>
-              <text x="283" y="130" font-size="7" fill="rgba(255,255,255,.45)" text-anchor="middle">You</text>
-              <defs><marker id="wa" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.5)"/></marker></defs>
-            </svg>
-          </div>
-          <h3>Daily prices straight from USDA AMS.</h3>
-          <p>Terminal market reports, shipping-point FOB prices, and weekly movement — pulled in automatically every morning. No manual updates, no stale PDFs.</p>
-        </div>
-        <div class="lp-feature">
-          <div class="feat-art" style="display:flex;align-items:center;justify-content:center;background:#f8fdf9;padding:0;">
-            <svg viewBox="0 0 320 160" width="320" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Background grid -->
-              <rect width="320" height="160" fill="#f0fdf4"/>
-              <!-- Price chart area -->
-              <rect x="16" y="14" width="288" height="100" rx="6" fill="#fff" stroke="#C0DD97" stroke-width="1"/>
-              <!-- Chart grid lines -->
-              <line x1="30" y1="30" x2="290" y2="30" stroke="#e8f5ee" stroke-width=".8"/>
-              <line x1="30" y1="50" x2="290" y2="50" stroke="#e8f5ee" stroke-width=".8"/>
-              <line x1="30" y1="70" x2="290" y2="70" stroke="#e8f5ee" stroke-width=".8"/>
-              <line x1="30" y1="90" x2="290" y2="90" stroke="#e8f5ee" stroke-width=".8"/>
-              <!-- Y-axis labels -->
-              <text x="24" y="33" font-size="6.5" fill="#9ca3af" text-anchor="end">$48</text>
-              <text x="24" y="53" font-size="6.5" fill="#9ca3af" text-anchor="end">$44</text>
-              <text x="24" y="73" font-size="6.5" fill="#9ca3af" text-anchor="end">$40</text>
-              <text x="24" y="93" font-size="6.5" fill="#9ca3af" text-anchor="end">$36</text>
-              <!-- Price line going up, crossing threshold -->
-              <defs>
-                <linearGradient id="ag1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#15803d" stop-opacity=".12"/>
-                  <stop offset="1" stop-color="#15803d" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="ag2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#dc2626" stop-opacity=".14"/>
-                  <stop offset="1" stop-color="#dc2626" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <!-- Line before threshold crossing (green) -->
-              <path d="M30,88 L65,84 L100,82 L135,78 L170,74 L205,70" fill="none" stroke="#15803d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M30,88 L65,84 L100,82 L135,78 L170,74 L205,70 L205,100 L30,100 Z" fill="url(#ag1)"/>
-              <!-- Threshold line -->
-              <line x1="30" y1="70" x2="290" y2="70" stroke="#dc2626" stroke-width="1" stroke-dasharray="5,4"/>
-              <rect x="247" y="63" width="40" height="13" rx="3" fill="#dc2626"/>
-              <text x="267" y="72.5" font-size="7" fill="#fff" text-anchor="middle" font-weight="600">Alert: $40</text>
-              <!-- Line after crossing (red) -->
-              <path d="M205,70 L230,58 L255,44 L280,34" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M205,70 L230,58 L255,44 L280,34 L280,100 L205,100 Z" fill="url(#ag2)"/>
-              <!-- Crossing point marker -->
-              <circle cx="205" cy="70" r="5" fill="#fff" stroke="#dc2626" stroke-width="2"/>
-              <circle cx="205" cy="70" r="2" fill="#dc2626"/>
-              <!-- Alert notification card -->
-              <rect x="60" y="20" width="160" height="40" rx="6" fill="#fff" stroke="#fca5a5" stroke-width="1.2"/>
-              <rect x="68" y="28" width="7" height="7" rx="1.5" fill="#dc2626"/>
-              <text x="82" y="34" font-size="7.5" fill="#dc2626" font-weight="700">Alert triggered</text>
-              <text x="68" y="46" font-size="7" fill="#374151">Limes crossed $40.00 · Now $42.94</text>
-              <text x="68" y="55" font-size="6.5" fill="#9ca3af">+17.48% · Mon Jun 8, 9:41 AM</text>
-              <!-- X-axis labels -->
-              <text x="30" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Mon</text>
-              <text x="80" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Tue</text>
-              <text x="130" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Wed</text>
-              <text x="180" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Thu</text>
-              <text x="230" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Fri</text>
-              <text x="280" y="112" font-size="6.5" fill="#9ca3af" text-anchor="middle">Today</text>
-              <!-- Bottom caption -->
-              <text x="160" y="140" font-size="8" fill="#15803d" text-anchor="middle" font-weight="500">Price threshold alert — Limes · New York</text>
-              <text x="160" y="152" font-size="7" fill="#9ca3af" text-anchor="middle">Notified the moment your commodity crosses the line</text>
-            </svg>
-          </div>
-          <h3>Watchlists and price alerts.</h3>
-          <p>Star the commodities you buy or sell. Set thresholds on price or week-over-week change. Get notified the moment a market crosses the line.</p>
-        </div>
-        <div class="lp-feature">
-          <div class="feat-art" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fafdf7,#f0fdf4);padding:0;">
-            <svg viewBox="0 0 320 160" width="320" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Supply chain flow: Farm → FOB → Transit → Terminal -->
-              <!-- Step 1: Farm/Origin -->
-              <rect x="12" y="50" width="64" height="64" rx="8" fill="#fff" stroke="#C0DD97" stroke-width="1.2"/>
-              <!-- Farm illustration -->
-              <!-- Field rows -->
-              <rect x="20" y="74" width="48" height="5" rx="2" fill="#97C459" opacity=".7"/>
-              <rect x="20" y="82" width="44" height="5" rx="2" fill="#86C860" opacity=".65"/>
-              <rect x="20" y="90" width="50" height="5" rx="2" fill="#97C459" opacity=".6"/>
-              <rect x="20" y="98" width="38" height="5" rx="2" fill="#86C860" opacity=".55"/>
-              <!-- Barn -->
-              <rect x="26" y="60" width="18" height="14" rx="1" fill="#639922"/>
-              <path d="M24,62 L35,54 L46,62 Z" fill="#3B6D11"/>
-              <rect x="32" y="66" width="6" height="8" rx="1" fill="rgba(255,255,255,.3)"/>
-              <!-- Silo -->
-              <rect x="47" y="58" width="10" height="16" rx="2" fill="#4A7C1A"/>
-              <ellipse cx="52" cy="58" rx="5" ry="3" fill="#3B6D11"/>
-              <text x="44" y="116" font-size="7" fill="#3B6D11" text-anchor="middle" font-weight="600">FOB ORIGIN</text>
-              <text x="44" y="125" font-size="6.5" fill="#9ca3af" text-anchor="middle">Packing shed</text>
-              <!-- Price bubble 1 -->
-              <rect x="14" y="16" width="60" height="28" rx="5" fill="#fff" stroke="#C0DD97" stroke-width="1"/>
-              <text x="44" y="28" font-size="7" fill="#3B6D11" text-anchor="middle" font-weight="600">F.O.B. Salinas</text>
-              <text x="44" y="39" font-size="10" fill="#0a2e14" text-anchor="middle" font-weight="700">$18.50</text>
-
-              <!-- Arrow 1 -->
-              <path d="M79 82 L98 82" stroke="#C0DD97" stroke-width="2" marker-end="url(#ga)"/>
-              <text x="88" y="76" font-size="6.5" fill="#3B6D11" text-anchor="middle">truck</text>
-
-              <!-- Step 2: Transit -->
-              <rect x="100" y="58" width="54" height="48" rx="8" fill="#fff" stroke="#C0DD97" stroke-width="1.2"/>
-              <!-- Truck illustration -->
-              <rect x="108" y="72" width="30" height="18" rx="2" fill="#0a2e14"/>
-              <rect x="126" y="76" width="16" height="12" rx="1.5" fill="#15803d"/>
-              <circle cx="116" cy="91" r="5" fill="#0a2e14" stroke="#86C860" stroke-width="1.5"/>
-              <circle cx="132" cy="91" r="5" fill="#0a2e14" stroke="#86C860" stroke-width="1.5"/>
-              <rect x="108" y="72" width="8" height="10" rx="1" fill="#1e4a28" opacity=".6"/>
-              <!-- road -->
-              <line x1="104" y1="96" x2="150" y2="96" stroke="#e5e7eb" stroke-width="1.5" stroke-dasharray="6,4"/>
-              <text x="127" y="116" font-size="7" fill="#3B6D11" text-anchor="middle" font-weight="600">TRANSIT</text>
-              <text x="127" y="125" font-size="6.5" fill="#9ca3af" text-anchor="middle">Freight + handling</text>
-              <!-- Spread bubble -->
-              <rect x="100" y="16" width="54" height="36" rx="5" fill="#FAEEDA" stroke="#FAC775" stroke-width="1"/>
-              <text x="127" y="28" font-size="6.5" fill="#854F0B" text-anchor="middle" font-weight="600">Gross spread</text>
-              <text x="127" y="40" font-size="11" fill="#854F0B" text-anchor="middle" font-weight="700">+$9.44</text>
-              <text x="127" y="48" font-size="6" fill="#9ca3af" text-anchor="middle">FOB → terminal</text>
-
-              <!-- Arrow 2 -->
-              <path d="M156 82 L174 82" stroke="#C0DD97" stroke-width="2" marker-end="url(#ga)"/>
-
-              <!-- Step 3: Terminal Market -->
-              <rect x="176" y="44" width="68" height="76" rx="8" fill="#fff" stroke="#C0DD97" stroke-width="1.2"/>
-              <!-- Building -->
-              <rect x="186" y="58" width="48" height="44" rx="2" fill="#15803d"/>
-              <rect x="186" y="54" width="48" height="6" rx="1" fill="#0a2e14"/>
-              <!-- windows -->
-              <rect x="190" y="62" width="8" height="8" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="201" y="62" width="8" height="8" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="212" y="62" width="8" height="8" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="223" y="62" width="8" height="8" rx="1" fill="rgba(255,255,255,.2)"/>
-              <rect x="190" y="74" width="8" height="8" rx="1" fill="rgba(255,255,255,.15)"/>
-              <rect x="201" y="74" width="8" height="8" rx="1" fill="rgba(255,255,255,.15)"/>
-              <rect x="212" y="74" width="8" height="8" rx="1" fill="rgba(255,255,255,.15)"/>
-              <rect x="223" y="74" width="8" height="8" rx="1" fill="rgba(255,255,255,.15)"/>
-              <rect x="200" y="85" width="20" height="13" rx="1" fill="rgba(255,255,255,.15)"/>
-              <text x="210" y="116" font-size="7" fill="#3B6D11" text-anchor="middle" font-weight="600">TERMINAL</text>
-              <text x="210" y="125" font-size="6.5" fill="#9ca3af" text-anchor="middle">Wholesale landed</text>
-              <!-- Price bubble 3 -->
-              <rect x="176" y="12" width="68" height="28" rx="5" fill="#EAF3DE" stroke="#97C459" stroke-width="1"/>
-              <text x="210" y="24" font-size="7" fill="#3B6D11" text-anchor="middle" font-weight="600">New York price</text>
-              <text x="210" y="35" font-size="11" fill="#0a2e14" text-anchor="middle" font-weight="700">$27.94</text>
-
-              <!-- Arrow 3 -->
-              <path d="M246 40 L264 40" stroke="#C0DD97" stroke-width="2" marker-end="url(#ga)"/>
-
-              <!-- Step 4: agraX screen -->
-              <rect x="266" y="20" width="46" height="122" rx="8" fill="#0a2e14" stroke="#15803d" stroke-width="1"/>
-              <rect x="270" y="26" width="38" height="22" rx="3" fill="#15803d"/>
-              <text x="289" y="35" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="700">agraX</text>
-              <text x="289" y="43" font-size="5.5" fill="rgba(255,255,255,.6)" text-anchor="middle">Live price</text>
-              <rect x="270" y="52" width="38" height="4" rx="1" fill="rgba(255,255,255,.12)"/>
-              <rect x="270" y="59" width="28" height="4" rx="1" fill="rgba(255,255,255,.1)"/>
-              <rect x="270" y="66" width="34" height="4" rx="1" fill="rgba(255,255,255,.1)"/>
-              <rect x="270" y="73" width="24" height="4" rx="1" fill="rgba(255,255,255,.08)"/>
-              <rect x="270" y="80" width="30" height="4" rx="1" fill="rgba(255,255,255,.08)"/>
-              <rect x="270" y="87" width="22" height="4" rx="1" fill="rgba(255,255,255,.06)"/>
-              <!-- green price highlight -->
-              <rect x="270" y="96" width="38" height="16" rx="3" fill="#15803d"/>
-              <text x="289" y="104" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="600">$27.94</text>
-              <text x="289" y="110" font-size="5.5" fill="#86efac" text-anchor="middle">↑ +0.36%</text>
-              <rect x="275" y="118" width="28" height="8" rx="2" fill="rgba(54,244,164,.2)"/>
-              <text x="289" y="124" font-size="5.5" fill="#86efac" text-anchor="middle">● LIVE</text>
-              <text x="289" y="148" font-size="6.5" fill="#3B6D11" text-anchor="middle" font-weight="600">YOU</text>
-              <defs><marker id="ga" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#97C459"/></marker></defs>
-            </svg>
-          </div>
-          <h3>Origin, supply, and commentary.</h3>
-          <p>Shipping-point FOB prices from packing sheds, with supply notes, quality conditions, and the USDA commentary that explains why prices moved.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="lp-section">
-    <div class="lp-container">
-      <div class="lp-section-head">
-        <span class="eyebrow">Pricing</span>
-        <h2>Free to start. Pay when you need more.</h2>
-        <p>Individuals stay on Free forever. Teams that need full history, exports, and alerts upgrade when they're ready.</p>
-      </div>
-      <div class="lp-pricing">
-        <div class="lp-plan">
-          <div class="plan-name">Free</div>
-          <div class="plan-price">$0<span class="unit">/ forever</span></div>
-          <div class="plan-byline">For individual buyers, brokers, and growers checking daily prices.</div>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>All 12 terminal markets</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Today's wholesale prices</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>5 watchlist commodities</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>7-day price history</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>USDA market commentary</li>
-          </ul>
-          <a href="/app" class="plan-cta">Start free</a>
-        </div>
-        <div class="lp-plan featured">
-          <span class="ribbon">Most popular</span>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">$29<span class="unit">/ month</span></div>
-          <div class="plan-byline">For working buyers and brokers tracking dozens of items every morning.</div>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Everything in Free</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Unlimited watchlist</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Price + WoW alerts (email)</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>52-week price history</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Shipping-point FOB origins</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>CSV exports</li>
-          </ul>
-          <a href="/app" class="plan-cta">Start 14-day trial</a>
-        </div>
-        <div class="lp-plan">
-          <div class="plan-name">Team</div>
-          <div class="plan-price">Custom</div>
-          <div class="plan-byline">For procurement teams and distributors with shared workflows and APIs.</div>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Everything in Pro</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Shared team watchlists</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>SSO + role-based access</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Price API + webhooks</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Branded daily briefs</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>Dedicated support</li>
-          </ul>
-          <a href="/app" class="plan-cta">Talk to sales</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA -->
-  <section class="lp-final">
-    <div class="lp-container">
-      <h2>Read the produce market in 30 seconds, every morning.</h2>
-      <p>Free forever for individuals. No credit card. Open in your browser — no install required.</p>
-      <div class="ctas">
-        <a href="/app" class="btn-lg primary">Start free <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        <a href="#live" class="btn-lg ghost">See live data</a>
-      </div>
-    </div>
-  </section>
-
-  </main>
-
-  <footer class="lp-footer">
-    <div class="lp-container">
-      <div class="lp-footer-inner">
+    <!-- Price console -->
+    <div class="price-console">
+      <div class="pc-head">
         <div>
-          <div class="brand">
-            <svg class="logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="8" fill="#15803d"/><path d="M8 18 Q18 8 28 18 Q18 28 8 18Z" fill="rgba(255,255,255,0.25)"/><path d="M18 8 Q28 18 18 28 Q8 18 18 8Z" fill="rgba(255,255,255,0.55)"/><circle cx="18" cy="18" r="3.5" fill="#fff"/></svg>
-            <div class="name">agra<span class="x">X</span></div>
+          <div class="pc-comm-row">
+            <span style="font-size:21px">🥑</span>
+            <span class="pc-comm-name">Avocados</span>
           </div>
-          <p class="tagline">Wholesale produce intelligence, sourced daily from USDA AMS Market News.</p>
+          <div class="pc-comm-sub">Hass · ctn 2-layer · LA terminal</div>
         </div>
-        <div class="col-group">
-          <div class="col">
-            <h4>Product</h4>
-            <a href="/app">Commodities</a>
-            <a href="/app">Terminal markets</a>
-            <a href="/app">Shipping points</a>
-            <a href="/app">Watchlist</a>
-          </div>
-          <div class="col">
-            <h4>Resources</h4>
-            <a href="#">USDA AMS data</a>
-            <a href="#">Glossary</a>
-            <a href="#">API docs</a>
-          </div>
-          <div class="col">
-            <h4>Company</h4>
-            <a href="#">About</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#">Contact</a>
-          </div>
-        </div>
+        <span class="pc-delta">▼ 5.66%</span>
       </div>
-      <div class="legal">
-        <span>© 2026 AgraX, Inc.</span>
-        <span>Data sourced from USDA AMS Market News. Prices are wholesale, USD per unit.</span>
+      <div class="pc-price">
+        <span class="pc-price-val">$52.94</span>
+        <span class="pc-price-unit">/ ctn</span>
       </div>
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" style="margin-top:14px;width:100%;height:80px;display:block;">
+        <defs><linearGradient id="hg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(220,38,38,.35)"/><stop offset="1" stop-color="rgba(220,38,38,0)"/></linearGradient></defs>
+        <path d="M0,18 L40,22 L80,15 L120,30 L160,28 L200,42 L240,50 L280,58 L320,66 L320,80 L0,80 Z" fill="url(#hg)"/>
+        <path d="M0,18 L40,22 L80,15 L120,30 L160,28 L200,42 L240,50 L280,58 L320,66" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <div class="pc-tags">
+        <span class="pc-tag">ctn 2 layer</span>
+        <span class="pc-tag amber">Supply Moderate</span>
+        <span class="pc-tag green">Trend Higher</span>
+      </div>
+      <a href="/app" class="pc-btn" style="display:block;text-align:center;text-decoration:none;">Full report →</a>
     </div>
-  </footer>
+  </div>
+</section>
 
+<!-- TRUST STRIP -->
+<div class="lp-trust">
+  <div class="lp-trust-item"><div class="lp-trust-v mono">12</div><div class="lp-trust-l">Terminal markets</div></div>
+  <div class="lp-trust-item"><div class="lp-trust-v mono" id="ts-comms">257+</div><div class="lp-trust-l">Commodities</div></div>
+  <div class="lp-trust-item"><div class="lp-trust-v mono">3×</div><div class="lp-trust-l">Daily refreshes</div></div>
+  <div class="lp-trust-item"><div class="lp-trust-v mono">USDA</div><div class="lp-trust-l">AMS Market News</div></div>
+  <div class="lp-trust-item"><div class="lp-trust-v mono" style="color:#15803d">Live</div><div class="lp-trust-l" id="ts-date">Jun 8, 2026</div></div>
 </div>
 
+<!-- LIVE DATA PREVIEW -->
+<section id="live" class="lp-live">
+  <div class="lp-live-h">
+    <div>
+      <div class="lp-live-eyebrow"><span class="dot"></span> Live now</div>
+      <h2>Today's New York wholesale prices</h2>
+    </div>
+    <a href="/app" class="btn-open">Open full markets →</a>
+  </div>
+  <div class="lp-table-wrap">
+    <div class="lp-tbl-head">
+      <span>Commodity</span>
+      <span>Origin</span>
+      <span>Mostly</span>
+      <span>Move</span>
+      <span>7-day</span>
+    </div>
+    <div id="live-table-body">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="lp-features">
+  <h2>Everything the produce desk checks before 10am.</h2>
+  <p class="lead">Twelve terminal markets, refreshed three times daily, straight from USDA AMS — structured, charted, and searchable.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&q=80&w=900" alt="terminal markets network" onerror="this.parentElement.style.background='#1a1f2e'">
+        <span class="feat-tag">Network</span>
+      </div>
+      <div class="feat-body">
+        <h3>12 terminal markets, one view.</h3>
+        <p>Los Angeles to Boston — every USDA terminal market refreshed three times a day, normalized into one comparable price grid.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&q=80&w=900" alt="USDA data source" onerror="this.parentElement.style.background='#3a3424'">
+        <span class="feat-tag">Source</span>
+      </div>
+      <div class="feat-body">
+        <h3>Straight from USDA AMS.</h3>
+        <p>No scraping, no guesswork. Official Agricultural Marketing Service Market News, structured and charted the moment it publishes.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=900" alt="warehouse field ready" onerror="this.parentElement.style.background='#2a3326'">
+        <span class="feat-tag">Field-ready</span>
+      </div>
+      <div class="feat-body">
+        <h3>Built for the warehouse floor.</h3>
+        <p>Check a price from the dock, the truck, or the buying desk. Watchlists and alerts keep your commodities one tap away.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=900" alt="supply chain logistics" onerror="this.parentElement.style.background='#2e2a22'">
+        <span class="feat-tag">Supply chain</span>
+      </div>
+      <div class="feat-body">
+        <h3>FOB to terminal, end to end.</h3>
+        <p>See origin pricing, freight spread, and terminal mostly side by side — so you know exactly where the margin is.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="lp-pricing">
+  <div class="lp-pricing-inner">
+    <h2>Pricing that pays for itself in one call.</h2>
+    <span class="sub">Start free. Upgrade when the market gets interesting.</span>
+    <div class="plan-grid">
+
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price"><span class="amount">$0</span><span class="per">/mo</span></div>
+        <div class="plan-blurb">For growers and brokers tracking a handful of commodities.</div>
+        <button class="plan-btn" onclick="location.href='/app'">Start free</button>
+        <div class="plan-feats">
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>1 terminal market</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>10 watchlist items</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily price refresh</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Email summary</div>
+        </div>
+      </div>
+
+      <div class="plan-card featured">
+        <div class="plan-ribbon">Most popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><span class="amount">$29</span><span class="per">/mo</span></div>
+        <div class="plan-blurb">For buyers who price their day on the market.</div>
+        <button class="plan-btn featured" onclick="location.href='/app'">Start Pro →</button>
+        <div class="plan-feats">
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>All 12 terminal markets</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited watchlists</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>3× daily refresh + alerts</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>FOB → terminal spreads</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Full commodity history</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>CSV & API export</div>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-name">Team</div>
+        <div class="plan-price"><span class="amount" style="font-size:28px;letter-spacing:-.01em">Custom</span></div>
+        <div class="plan-blurb">For desks and co-ops with multiple seats.</div>
+        <button class="plan-btn" onclick="location.href='/app'">Talk to sales</button>
+        <div class="plan-feats">
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Pro</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Shared team watchlists</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>SSO & admin controls</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority data SLAs</div>
+          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated support</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="lp-cta-section">
+  <div class="lp-cta-inner">
+    <h2>Read the produce market in <em>30 seconds</em>, every morning.</h2>
+    <p>Join the buyers, brokers, and growers who price their day with agraX.</p>
+    <div class="ctas">
+      <a href="/app" class="btn-hero-solid">Start free →</a>
+      <a href="/app" class="btn-hero-ghost">Talk to sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="lp-footer">
+  <div class="lp-footer-inner">
+    <div>
+      <div class="lp-footer-brand">
+        <span>agra</span>
+        <img src="logo-x-white.png" alt="X">
+      </div>
+      <p class="lp-footer-tagline">Commodity price intelligence for the wholesale produce supply chain.</p>
+    </div>
+    <div class="lp-footer-col">
+      <div class="lp-footer-col-head">Product</div>
+      <a href="/app">Markets</a><a href="/app">Commodities</a><a href="/app">Terminal markets</a><a href="/app">Watchlists</a><a href="#">API</a>
+    </div>
+    <div class="lp-footer-col">
+      <div class="lp-footer-col-head">Company</div>
+      <a href="#">About</a><a href="#">Data sources</a><a href="#">Careers</a><a href="#">Contact</a>
+    </div>
+    <div class="lp-footer-col">
+      <div class="lp-footer-col-head">Legal</div>
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Disclaimer</a>
+    </div>
+  </div>
+  <div class="lp-footer-legal">© 2026 agraX, Inc. · Data via USDA AMS Market News · Not investment advice.</div>
+</footer>
+
 <script>
-var API = 'https://produce-iq-production.up.railway.app';
-var state = { comms: [], todayStr: '', selected: null, market: 'NYC' };
-var MKTNAMES = { ALL:'All Markets', NYC:'New York', LAX:'Los Angeles', CHI:'Chicago', ATL:'Atlanta', MIA:'Miami', BOS:'Boston' };
+const API = 'https://produce-iq-production.up.railway.app';
+const UNSPLASH = 'https://images.unsplash.com/photo-';
+const IMGS = {
+  avocados:    '1523049673857-eb18f1d7b578',
+  strawberries:'1464965911861-746a04b4bca6',
+  limes:       '1603042293225-e7d880f97d46',
+  tomatoes:    '1592924357228-91a4daadcfea',
+  lettuce:     '1622206151226-18ca2c9ab4a1',
+  onions:      '1508747703725-719777637510',
+  potatoes:    '1518977676601-b53f82aba655',
+  blueberries: '1498557850523-fd3d118b962e',
+};
+const TINTS = { avocados:'#3f5a2e', strawberries:'#7a1f2b', limes:'#3f6b1f', tomatoes:'#7a2420', lettuce:'#3d5e2a', onions:'#6b5320', potatoes:'#6b5630', blueberries:'#2c3566' };
+const PREVIEW_ORDER = ['avocados','strawberries','limes','tomatoes','lettuce','onions','potatoes','blueberries'];
 
-function guessCategory(n) {
-  n = n.toLowerCase();
-  if (/apple|pear|grape|peach|plum|cherry|kiwi|melon|mango|papaya|pineapple|banana|avocado|orange|lemon|lime|grapefruit|strawberr|blueberr|raspberr|blackberr/.test(n)) return 'Fruits';
-  if (/onion|shallot|potato|yam/.test(n)) return 'Onions & Potatoes';
-  return 'Vegetables';
+function $ (v) { return '$' + parseFloat(v).toFixed(2); }
+function signalFor(r) {
+  const m = (r.movement || '').toLowerCase();
+  if (m.includes('higher')) return { c:'#15803d', bg:'#f0fdf4', a:'▲', label: r.movement };
+  if (m.includes('lower'))  return { c:'#dc2626', bg:'#fef2f2', a:'▼', label: r.movement };
+  return { c:'#a3a3a3', bg:'#f5f5f5', a:'—', label: r.movement || 'Steady' };
 }
-function fmtDate(s) { if(!s)return''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
-function fmtShort(s) { if(!s)return''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function esc(s) { return String(s||'').replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
-
-function buildComms(rows) {
-  var byComm = {};
-  rows.filter(function(r){return r.market_type==='terminal'&&r.price_low!=null;}).forEach(function(r){
-    if(!byComm[r.commodity]) byComm[r.commodity]={name:r.commodity,cat:guessCategory(r.commodity),rows:[],origins:[]};
-    byComm[r.commodity].rows.push(r);
-    if(r.origin&&byComm[r.commodity].origins.indexOf(r.origin)===-1) byComm[r.commodity].origins.push(r.origin);
-  });
-  return Object.values(byComm).map(function(c){
-    var prices=c.rows.map(function(r){return parseFloat(r.price_low);});
-    var mostly=prices.reduce(function(a,b){return a+b;},0)/prices.length;
-    return Object.assign(c,{mostly:mostly,low:Math.min.apply(null,prices),high:Math.max.apply(null,prices),
-      spark:Array.from({length:7},function(_,i){return mostly*(1+((c.name.charCodeAt(0)*7+i*13)%20-10)/100);})});
-  }).sort(function(a,b){return a.name.localeCompare(b.name);});
-}
-
-function priceForMarket(c,code) {
-  if(!code||code==='ALL') return {low:c.low,high:c.high,mostly:c.mostly};
-  var mName=MKTNAMES[code]||'';
-  var rel=c.rows.filter(function(r){return r.market&&r.market.toLowerCase().includes(mName.toLowerCase())&&r.price_low!=null;});
-  if(!rel.length) return {low:c.low,high:c.high,mostly:c.mostly};
-  var prices=rel.map(function(r){return parseFloat(r.price_low);});
-  return {low:Math.min.apply(null,prices),high:Math.max.apply(null,prices),mostly:prices.reduce(function(a,b){return a+b;},0)/prices.length};
+function sparkSVG(vals, trend) {
+  const up = trend === 'up', down = trend === 'down';
+  const col = up ? '#15803d' : down ? '#dc2626' : '#a3a3a3';
+  const fill = up ? 'rgba(21,128,61,.12)' : down ? 'rgba(220,38,38,.12)' : 'rgba(163,163,163,.12)';
+  const w = 78, h = 26;
+  const min = Math.min(...vals), max = Math.max(...vals), rng = (max - min) || 1;
+  const pts = vals.map((v, i) => [(i / (vals.length - 1) * w).toFixed(1), (h - 2 - (v - min) / rng * (h - 4)).toFixed(1)]);
+  const line = 'M' + pts.map(p => p[0] + ',' + p[1]).join(' L');
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '" preserveAspectRatio="none" style="display:block">' +
+    '<path d="' + line + ' L' + w + ',' + h + ' L0,' + h + ' Z" fill="' + fill + '"/>' +
+    '<path d="' + line + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 }
 
-function sparkPaths(vals,w,h) {
-  var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),rng=(max-min)||1,n=vals.length;
-  var pts=vals.map(function(v,i){return [(i/(n-1))*w,h-((v-min)/rng)*(h-5)-2.5];});
-  var line=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' ');
-  return {line:line,area:line+' L'+w+' '+h+' L0 '+h+' Z'};
-}
+(async function () {
+  try {
+    const dates = await fetch(API + '/dates').then(r => r.json());
+    if (!dates.length) return;
+    const today = dates[0].date;
+    // update trust strip date
+    const d = new Date(today + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const el = document.getElementById('ts-date'); if (el) el.textContent = dateStr;
 
-// Combo
-var combo=document.getElementById('pcCombo');
-var trigger=document.getElementById('pcComboTrigger');
-var triggerVal=document.getElementById('pcComboValue');
-var panel=document.getElementById('pcComboPanel');
-var input=document.getElementById('pcComboInput');
-var list=document.getElementById('pcComboList');
-var marketSel=document.getElementById('pcMarket');
-var resultEl=document.getElementById('pcResult');
-var activeIdx=-1,filtered=[];
+    const rows = await fetch(API + '/commodities/by-date/' + today).then(r => r.json());
+    const termRows = rows.filter(r => r.market_type === 'terminal' && r.price_low != null && r.market && r.market.toLowerCase().includes('new york'));
 
-function renderList(q) {
-  q=(q||'').trim().toLowerCase();
-  filtered=state.comms.filter(function(c){return !q||(c.name+' '+c.cat).toLowerCase().includes(q);});
-  if(!filtered.length){list.innerHTML='<div class="pc-empty">No results</div>';return;}
-  list.innerHTML=filtered.map(function(c){
-    return '<div class="pc-opt'+(state.selected&&state.selected.name===c.name?' selected':'')+'" data-name="'+esc(c.name)+'">'+
-      '<div><div class="pc-opt-name">'+esc(c.name)+'</div><div class="pc-opt-var">'+esc(c.origins.slice(0,1).join(', '))+'</div></div>'+
-      '<div class="pc-opt-cat">'+esc(c.cat)+'</div></div>';
-  }).join('');
-  activeIdx=-1;
-}
-function openPanel(){panel.hidden=false;trigger.setAttribute('aria-expanded','true');input.value='';renderList('');setTimeout(function(){input.focus();},0);document.addEventListener('mousedown',onDoc);}
-function closePanel(){panel.hidden=true;trigger.setAttribute('aria-expanded','false');document.removeEventListener('mousedown',onDoc);}
-function onDoc(e){if(!combo.contains(e.target))closePanel();}
+    // dedupe by commodity, take first row per commodity
+    const byComm = {};
+    termRows.forEach(r => { if (!byComm[r.commodity]) byComm[r.commodity] = r; });
 
-trigger.addEventListener('click',function(){panel.hidden?openPanel():closePanel();});
-input.addEventListener('input',function(){renderList(input.value);});
-list.addEventListener('click',function(e){
-  var opt=e.target.closest('.pc-opt');if(!opt)return;
-  state.selected=state.comms.find(function(c){return c.name===opt.getAttribute('data-name');});
-  closePanel();renderConsole(true);
-});
-input.addEventListener('keydown',function(e){
-  var opts=list.querySelectorAll('.pc-opt');
-  if(e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(opts.length-1,activeIdx+1);opts.forEach(function(o,i){o.classList.toggle('active',i===activeIdx);});}
-  else if(e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(0,activeIdx-1);opts.forEach(function(o,i){o.classList.toggle('active',i===activeIdx);});}
-  else if(e.key==='Enter'&&activeIdx>=0&&filtered[activeIdx]){state.selected=filtered[activeIdx];closePanel();renderConsole(true);}
-  else if(e.key==='Escape')closePanel();
-});
-marketSel.addEventListener('change',function(){state.market=marketSel.value;renderConsole(true);});
+    // update trust strip commodity count
+    const allComms = rows.filter(r => r.market_type === 'terminal' && r.price_low != null);
+    const commCount = new Set(allComms.map(r => r.commodity)).size;
+    const tsComms = document.getElementById('ts-comms'); if (tsComms) tsComms.textContent = commCount + '+';
 
-function renderConsole(flash) {
-  var c=state.selected;if(!c){resultEl.innerHTML='<div class="pc-loading">Select a commodity above</div>';return;}
-  triggerVal.textContent=c.name;
-  var p=priceForMarket(c,state.market);
-  var sp=sparkPaths(c.spark,200,42);
-  var col='#bbf7d0';
-  var origin=c.origins.slice(0,2).join(', ')||'Multiple origins';
-  resultEl.innerHTML=
-    '<div class="pc-res-top">'+
-      '<div><div class="pc-res-name">'+esc(c.name)+'</div><div class="pc-res-var">'+esc(origin)+'</div></div>'+
-      '<div class="pc-res-price"><div class="pc-res-val">$'+p.mostly.toFixed(2)+'<span class="u"> /unit</span></div>'+
-        '<div class="pc-res-delta flat">'+(MKTNAMES[state.market]||'All Markets')+' · live</div></div>'+
-    '</div>'+
-    '<div class="pc-res-mid">'+
-      '<svg class="pc-res-spark" viewBox="0 0 200 42" preserveAspectRatio="none">'+
-        '<defs><linearGradient id="pcGrad" x1="0" y1="0" x2="0" y2="1">'+
-          '<stop offset="0" stop-color="'+col+'" stop-opacity="0.16"/>'+
-          '<stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'+
-        '<path d="'+sp.area+'" fill="url(#pcGrad)" stroke="none"/>'+
-        '<path class="line" d="'+sp.line+'" stroke="'+col+'"/></svg>'+
-      '<div class="pc-res-cap"><div class="t">Range today</div><div class="r">$'+p.low.toFixed(2)+'–$'+p.high.toFixed(2)+'</div></div>'+
-    '</div>'+
-    '<div class="pc-res-tags">'+
-      '<span class="pc-tag"><b>'+esc(c.cat)+'</b></span>'+
-      '<span class="pc-tag">'+c.origins.length+' origins</span>'+
-      '<span class="pc-tag">USDA AMS · '+esc(fmtShort(state.todayStr))+'</span>'+
-    '</div>'+
-    '<div class="pc-res-foot">'+
-      '<span class="pc-updated">$'+p.low.toFixed(2)+' – $'+p.high.toFixed(2)+' · '+esc(fmtShort(state.todayStr))+'</span>'+
-      '<a class="pc-open" href="/app">Full report <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>'+
-    '</div>';
-  if(flash){resultEl.classList.remove('flash');void resultEl.offsetWidth;resultEl.classList.add('flash');}
-}
-
-function renderLiveTable(rows) {
-  var nyRows=rows.filter(function(r){return r.market_type==='terminal'&&r.price_low!=null&&r.market&&r.market.toLowerCase().includes('new york');});
-  var byComm={};
-  nyRows.forEach(function(r){if(!byComm[r.commodity]||parseFloat(r.price_low)<parseFloat(byComm[r.commodity].price_low))byComm[r.commodity]=r;});
-  var top=Object.values(byComm).slice(0,8);
-  if(!top.length){document.getElementById('live-table-wrap').innerHTML='<div class="lp-live-loading">No New York data available</div>';return;}
-  var isDom=function(o){return /(california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho)/i.test(o||'');};
-  var html='<table class="lp-live-table"><thead><tr>'+
-    '<th style="padding-left:24px">Commodity</th><th>Origin</th>'+
-    '<th class="num">Mostly</th><th class="num">Movement</th><th class="num" style="padding-right:24px">Supply</th>'+
-    '</tr></thead><tbody>';
-  top.forEach(function(r){
-    var dom=isDom(r.origin);
-    var mv=r.movement||'—';
-    var isUp=/higher/i.test(mv),isDn=/lower/i.test(mv);
-    html+='<tr>'+
-      '<td><div class="name">'+esc(r.commodity)+'</div><div class="var">'+esc((r.variety||'')+(r.package?' · '+r.package:''))+'</div></td>'+
-      '<td><span class="origin"><span class="dot" style="background:'+(dom?'var(--positive)':'var(--info)')+'"></span>'+esc(r.origin||'—')+'</span></td>'+
-      '<td class="num mostly">$'+parseFloat(r.price_low).toFixed(2)+'</td>'+
-      '<td class="num"><span class="delta '+(isUp?'up':isDn?'dn':'')+'">'+esc(mv)+'</span></td>'+
-      '<td class="num">'+esc(r.supply||'—')+'</td>'+
-    '</tr>';
-  });
-  html+='</tbody></table>';
-  document.getElementById('live-table-wrap').innerHTML=html;
-}
-
-(async function(){
-  try{
-    var dates=await fetch(API+'/dates').then(function(r){return r.json();});
-    if(!dates.length)throw new Error('No dates');
-    state.todayStr=dates[0].date;
-    var rows=await fetch(API+'/commodities/by-date/'+state.todayStr).then(function(r){return r.json();});
-    state.comms=buildComms(rows);
-    var d=document.getElementById('ts-date');if(d)d.textContent=fmtShort(state.todayStr);
-    var c=document.getElementById('ts-comms');if(c)c.textContent=state.comms.length+'+';
-    var ld=document.getElementById('live-date');if(ld)ld.textContent=fmtDate(state.todayStr);
-    state.selected=state.comms.find(function(c){return c.name.toLowerCase().includes('avocado');})||state.comms[0];
-    renderConsole(false);
-    renderLiveTable(rows);
-  }catch(e){
-    resultEl.innerHTML='<div class="pc-loading">Live data temporarily unavailable</div>';
-    document.getElementById('live-table-wrap').innerHTML='<div class="lp-live-loading">Live data temporarily unavailable</div>';
+    // build the live table
+    const ORDER_MAP = { avocados:'Avocados', strawberries:'Strawberries', limes:'Limes', tomatoes:'Tomatoes', lettuce:'Iceberg Lettuce', onions:'Onions', potatoes:'Potatoes', blueberries:'Blueberries' };
+    const html = PREVIEW_ORDER.map((key, i) => {
+      const commName = ORDER_MAP[key];
+      const r = Object.values(byComm).find(x => x.commodity.toLowerCase().includes(commName.toLowerCase().split(' ')[0]));
+      if (!r) return '';
+      const s = signalFor(r);
+      const isDom = /(california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho)/i.test(r.origin || '');
+      const dotColor = isDom ? '#15803d' : '#2563eb';
+      const imgSrc = UNSPLASH + (IMGS[key] || IMGS.avocados) + '?auto=format&fit=crop&q=80&w=200';
+      const tint = TINTS[key] || '#3f5a2e';
+      const unit = r.package || r.variety || '—';
+      const spVals = Array.from({length: 8}, (_, idx) => parseFloat(r.price_low) * (1 + ((key.charCodeAt(0) * 7 + idx * 13) % 20 - 10) / 100));
+      const trend = s.a === '▲' ? 'up' : s.a === '▼' ? 'down' : 'steady';
+      return '<div class="lp-tbl-row" onclick="location.href=\'/app\'">' +
+        '<div class="lp-comm-cell"><div class="lp-thumb" style="background:' + tint + '"><img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div>' +
+        '<div><div class="lp-comm-name">' + r.commodity + '</div><div class="lp-comm-unit">' + unit + '</div></div></div>' +
+        '<div class="lp-origin-cell"><span class="lp-origin-dot" style="background:' + dotColor + '"></span><span class="lp-origin-label">' + (r.origin || '—') + '</span></div>' +
+        '<div class="lp-mostly">' + $(r.price_low) + '</div>' +
+        '<div class="lp-delta"><span class="lp-delta-chip" style="color:' + s.c + ';background:' + s.bg + '">' + s.a + ' ' + (s.label || '—') + '</span></div>' +
+        '<div class="lp-spark-cell">' + sparkSVG(spVals, trend) + '</div></div>';
+    }).join('');
+    const tbody = document.getElementById('live-table-body');
+    if (tbody) tbody.innerHTML = html || '<div style="padding:32px;text-align:center;color:#a3a3a3">Live data loading…</div>';
+  } catch (e) {
+    const tbody = document.getElementById('live-table-body');
+    if (tbody) tbody.innerHTML = '<div style="padding:32px;text-align:center;color:#a3a3a3">Live data temporarily unavailable</div>';
   }
 })();
 </script>
