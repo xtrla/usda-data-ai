@@ -908,7 +908,14 @@ function SearchOverlay({ comms, onClose, onOpen }) {
 function LoadScreen() {
   return (
     <div className="load-screen">
-      <div className="load-logo"><span>agra</span><img src="logo-x-black.png" alt="X" /></div>
+      <div className="load-logo"><span>agra</span><svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;">
+  <!-- X strokes -->
+  <line x1="15" y1="15" x2="85" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
+  <line x1="85" y1="15" x2="15" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
+  <!-- Leaf growing from upper-right arm -->
+  <ellipse cx="78" cy="22" rx="20" ry="11" fill="#15803d" transform="rotate(-45 78 22)"/>
+  <ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/>
+</svg></div>
       <div style={{color:'#737373',fontSize:13}}>Loading USDA market data…</div>
       <div className="load-bar-wrap"><div className="load-bar"/></div>
     </div>
@@ -985,7 +992,14 @@ function App() {
       <nav className="app-nav">
         <a className="nav-logo" href="/">
           <span>agra</span>
-          <img src="logo-x-black.png" alt="X" />
+          <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;">
+  <!-- X strokes -->
+  <line x1="15" y1="15" x2="85" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
+  <line x1="85" y1="15" x2="15" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
+  <!-- Leaf growing from upper-right arm -->
+  <ellipse cx="78" cy="22" rx="20" ry="11" fill="#15803d" transform="rotate(-45 78 22)"/>
+  <ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/>
+</svg>
         </a>
         <div className="nav-tabs">
           <button className={'nav-tab '+(screen==='markets'?'on':'')} onClick={goMarkets}>Today</button>

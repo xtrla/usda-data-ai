@@ -1,13 +1,5 @@
 {
   "outputDirectory": ".",
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.agra-x.com" }],
-      "destination": "https://agra-x.com/:path*",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     { "source": "/app", "destination": "/app.html" },
     { "source": "/app/(.*)", "destination": "/app.html" }
