@@ -262,6 +262,63 @@ img{display:block;max-width:100%;}
   .detail-h1{font-size:28px;}
   .detail-header{flex-wrap:wrap;}
 }
+
+/* ── Movement screen ── */
+.mv-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #ededed;}
+.mv-kpi{padding:12px 16px;border-right:1px solid #ededed;}
+.mv-kpi:last-child{border-right:none;}
+.mv-kpi-l{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;margin-bottom:4px;}
+.mv-kpi-v{font-size:20px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;}
+.mv-kpi-s{font-size:11.5px;color:#737373;margin-top:2px;}
+.mv-kpi-s.up{color:#15803d;} .mv-kpi-s.dn{color:#dc2626;}
+.mv-layout{display:flex;gap:0;}
+.mv-sidebar{width:188px;flex-shrink:0;border-right:1px solid #ededed;background:#fafafa;padding:10px 0;}
+.mv-sb-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;padding:4px 12px 6px;}
+.mv-sb-item{font-size:12.5px;padding:7px 12px;color:#0a0a0a;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.mv-sb-item:hover{background:#f0fdf4;}
+.mv-sb-item.on{background:#fff;color:#15803d;font-weight:600;border-left:2.5px solid #15803d;}
+.mv-sb-signal{font-size:10px;font-weight:700;}
+.mv-sb-signal.up{color:#15803d;} .mv-sb-signal.dn{color:#dc2626;} .mv-sb-signal.neu{color:#a3a3a3;}
+.mv-sb-div{height:1px;background:#ededed;margin:6px 12px;}
+.mv-main{flex:1;overflow:hidden;}
+.mv-section{padding:14px 16px 0;}
+.mv-sec-h{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;margin-bottom:10px;}
+.mv-mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.mv-mode-card{border:1px solid #ededed;border-radius:10px;padding:12px 14px;background:#fff;}
+.mv-mode-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.mv-mode-ico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:15px;flex-shrink:0;}
+.mv-mode-ico.t{background:#f0fdf4;color:#15803d;} .mv-mode-ico.a{background:#eff6ff;color:#1d4ed8;} .mv-mode-ico.b{background:#fffbeb;color:#b45309;}
+.mv-mode-lbl{font-size:13px;font-weight:600;color:#0a0a0a;}
+.mv-mode-v{font-size:17px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;}
+.mv-mode-s{font-size:11px;color:#737373;margin-top:2px;}
+.mv-mode-bar-wrap{margin-top:8px;height:4px;background:#f0f0f0;border-radius:99px;overflow:hidden;}
+.mv-mode-bar{height:100%;border-radius:99px;}
+.mv-mode-bar.t{background:#15803d;} .mv-mode-bar.a{background:#1d4ed8;} .mv-mode-bar.b{background:#b45309;}
+.mv-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px 16px;}
+.mv-box{border:1px solid #ededed;border-radius:10px;overflow:hidden;}
+.mv-box-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;padding:8px 12px;background:#fafafa;border-bottom:1px solid #ededed;}
+.mv-comm-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;align-items:center;padding:9px 12px;border-bottom:1px solid #f4f4f4;}
+.mv-comm-row:last-child{border-bottom:none;}
+.mv-comm-row:nth-child(even){background:#fafafa;}
+.mv-comm-name{font-size:13px;font-weight:600;color:#0a0a0a;}
+.mv-comm-or{font-size:11px;color:#a3a3a3;margin-top:1px;}
+.mv-num{text-align:right;font-size:12.5px;font-family:"IBM Plex Mono",monospace;color:#525252;}
+.mv-num.bold{font-weight:700;color:#0a0a0a;}
+.mv-sig{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;}
+.mv-sig.up{background:#f0fdf4;color:#15803d;} .mv-sig.dn{background:#fef2f2;color:#dc2626;} .mv-sig.neu{background:#f5f5f5;color:#737373;}
+.mv-origin-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #f4f4f4;}
+.mv-origin-row:last-child{border-bottom:none;}
+.mv-flag{font-size:14px;flex-shrink:0;width:22px;text-align:center;}
+.mv-origin-name{font-size:12.5px;font-weight:600;color:#0a0a0a;min-width:72px;}
+.mv-origin-bar-wrap{flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;}
+.mv-origin-bar{height:100%;border-radius:99px;}
+.mv-origin-pct{font-size:11.5px;font-family:"IBM Plex Mono",monospace;color:#737373;min-width:32px;text-align:right;}
+.mv-origin-lbs{font-size:11.5px;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;min-width:68px;text-align:right;}
+.mv-note{font-size:12px;color:#525252;padding:9px 12px;border-bottom:1px solid #f4f4f4;line-height:1.55;}
+.mv-note:last-child{border-bottom:none;}
+.mv-note.warn{border-left:2px solid #ef9f27;background:#fffbf0;}
+.mv-note b{color:#0a0a0a;font-weight:600;}
+.mv-load{padding:40px;text-align:center;color:#a3a3a3;font-size:14px;}
 </style>
 </head>
 <body>
@@ -904,6 +961,362 @@ function SearchOverlay({ comms, onClose, onOpen }) {
   );
 }
 
+
+
+// ── Shipping Screen ────────────────────────────────────────────────────────────
+function ShipScreen({ allRows, todayStr, onOpen }) {
+  const rows = useMemo(() => allRows.filter(r => r.market_type === 'shipping_point' && r.market !== 'National Trends' && r.price_low != null), [allRows]);
+  const [q, setQ] = useState('');
+  const filtered = q ? rows.filter(r => r.commodity.toLowerCase().includes(q.toLowerCase()) || (r.origin || '').toLowerCase().includes(q.toLowerCase())) : rows;
+  return (
+    <div className="page-content">
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18,flexWrap:'wrap',gap:10 }}>
+        <div>
+          <h1 style={{ fontSize:24,fontWeight:700,letterSpacing:'-.02em' }}>Shipping Points</h1>
+          <div style={{ fontSize:13,color:'#737373',marginTop:4 }}>F.O.B. origin pricing · {new Date((todayStr||'')+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div style={{ display:'flex',alignItems:'center',gap:8,background:'#fafafa',border:'1px solid #ededed',borderRadius:9,padding:'0 12px',height:36 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-4-4" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search commodity or origin…"
+            style={{ border:'none',outline:'none',background:'transparent',fontSize:13,width:220,fontFamily:'inherit',color:'#0a0a0a' }} />
+        </div>
+      </div>
+      <div style={{ border:'1px solid #ededed',borderRadius:14,overflow:'hidden' }}>
+        <div style={{ display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 1fr 1fr',padding:'10px 16px',background:'#fafafa',borderBottom:'1px solid #ededed' }}>
+          {['Commodity','Origin','Hub','Package','FOB Low','FOB High','Movement'].map((h,i) => (
+            <span key={h} style={{ fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.05em',color:'#a3a3a3' }} className={i>3?'tbl-right':''}>{h}</span>
+          ))}
+        </div>
+        {filtered.slice(0,60).map((r, i) => (
+          <div key={i} onClick={() => onOpen(r.commodity.toLowerCase().replace(/[^a-z0-9]+/g,'-'))}
+            style={{ display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 1fr 1fr',padding:'10px 16px',borderBottom:'1px solid #f4f4f4',cursor:'pointer',background:i%2?'#fafafa':'#fff',alignItems:'center' }}
+            onMouseEnter={e => e.currentTarget.style.background='#f0fdf4'}
+            onMouseLeave={e => e.currentTarget.style.background=i%2?'#fafafa':'#fff'}>
+            <span style={{ fontSize:13.5,fontWeight:600 }}>{r.commodity}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.origin||'—'}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.market||'—'}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.package||'—'}</span>
+            <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13,fontWeight:600 }}>${parseFloat(r.price_low).toFixed(2)}</span>
+            <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13,color:'#737373' }}>{r.price_high?'$'+parseFloat(r.price_high).toFixed(2):'—'}</span>
+            <span style={{ textAlign:'right',fontSize:12,color:r.movement&&/higher/i.test(r.movement)?'#15803d':r.movement&&/lower/i.test(r.movement)?'#dc2626':'#737373' }}>{r.movement||'—'}</span>
+          </div>
+        ))}
+        {!filtered.length && <div style={{ padding:40,textAlign:'center',color:'#a3a3a3' }}>No FOB shipping point data</div>}
+      </div>
+      <div style={{ padding:'10px 0',fontSize:11,color:'#a3a3a3',fontFamily:'monospace' }}>{filtered.length} listings</div>
+    </div>
+  );
+}
+
+// ── Watchlist screen ────────────────────────────────────────────────────────────
+function WatchScreen({ comms, watchlist, toggleStar, onOpen, market, todayStr }) {
+  const items = comms.filter(c => watchlist[c.id]);
+  function fmt(v) { return v != null ? '$' + parseFloat(v).toFixed(2) : '—'; }
+  return (
+    <div className="page-content">
+      <div style={{ marginBottom:20 }}>
+        <h1 style={{ fontSize:24,fontWeight:700,letterSpacing:'-.02em' }}>Watchlist</h1>
+        <div style={{ fontSize:13,color:'#737373',marginTop:4 }}>{items.length} commodities tracked</div>
+      </div>
+      {!items.length ? (
+        <div style={{ border:'1px solid #ededed',borderRadius:14,padding:'40px 20px',textAlign:'center',color:'#a3a3a3' }}>
+          <div style={{ fontWeight:600,color:'#0a0a0a',marginBottom:6 }}>Nothing here yet</div>
+          Star any commodity in Markets to track it here
+        </div>
+      ) : (
+        <div style={{ border:'1px solid #ededed',borderRadius:14,overflow:'hidden' }}>
+          {items.map((c, i) => {
+            const p = priceFor(c, market);
+            const s = sigFor(c.trend);
+            return (
+              <div key={c.id} onClick={() => onOpen(c.id)}
+                style={{ display:'grid',gridTemplateColumns:'32px 2fr 1fr 1fr 1fr 1fr 1fr',padding:'12px 16px',borderBottom:'1px solid #f4f4f4',cursor:'pointer',alignItems:'center',background:i%2?'#fafafa':'#fff' }}>
+                <button className={'star-glyph on'} onClick={e => { e.stopPropagation(); toggleStar(c.id); }}>★</button>
+                <div><div style={{ fontSize:14,fontWeight:600 }}>{c.name}</div><div style={{ fontSize:11,color:'#a3a3a3' }}>{c.cat}</div></div>
+                <span style={{ fontSize:12,color:'#737373' }}>{c.origins[0]||'—'}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13 }}>{fmt(p.low)}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13 }}>{fmt(p.high)}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:14,fontWeight:700 }}>{fmt(p.mostly)}</span>
+                <span style={{ textAlign:'right' }}><span className={'tbl-delta-chip'} style={{ color:s.c,background:s.bg,fontSize:12,fontWeight:600,padding:'2px 7px',borderRadius:6,fontFamily:'monospace' }}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</span></span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ── Movement Screen ────────────────────────────────────────────────────────────
+function MovementScreen({ todayStr }) {
+  const [data, setData] = useState(null);
+  const [summary, setSummary] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedComm, setSelectedComm] = useState('all');
+  const [selectedMode, setSelectedMode] = useState('all');
+
+  useEffect(() => {
+    (async function() {
+      try {
+        const dates = await fetch(API + '/movement/dates').then(r => r.json());
+        if (!dates.length) { setLoading(false); return; }
+        const date = dates[0].date;
+        const [rows, summ] = await Promise.all([
+          fetch(API + '/movement/by-date/' + date).then(r => r.json()),
+          fetch(API + '/movement/summary/' + date).then(r => r.json()),
+        ]);
+        setData({ date, rows });
+        setSummary(summ);
+      } catch(e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  const fmtLbs = (n) => {
+    if (!n) return '—';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+    return n.toLocaleString();
+  };
+  const fmtUnits = (n) => n ? n.toLocaleString() : '—';
+
+  const filtered = useMemo(() => {
+    let list = summary;
+    if (selectedComm !== 'all') list = list.filter(c => c.commodity === selectedComm);
+    if (selectedMode !== 'all') {
+      list = list.filter(c => {
+        if (selectedMode === 'truck') return c.truck_pounds > 0;
+        if (selectedMode === 'air') return c.air_pounds > 0;
+        if (selectedMode === 'boat') return c.boat_pounds > 0;
+        return true;
+      });
+    }
+    return list;
+  }, [summary, selectedComm, selectedMode]);
+
+  // Aggregate totals
+  const totals = useMemo(() => {
+    const t = { lbs: 0, units: 0, truck: 0, air: 0, boat: 0, comms: summary.length };
+    summary.forEach(c => {
+      t.lbs += c.total_pounds || 0;
+      t.units += c.total_units || 0;
+      t.truck += c.truck_pounds || 0;
+      t.air += c.air_pounds || 0;
+      t.boat += c.boat_pounds || 0;
+    });
+    return t;
+  }, [summary]);
+
+  // Origin aggregation from raw rows
+  const origins = useMemo(() => {
+    if (!data) return [];
+    const byOrigin = {};
+    data.rows.forEach(r => {
+      const o = r.origin_code || 'OT';
+      if (!byOrigin[o]) byOrigin[o] = 0;
+      byOrigin[o] += r.total_pounds || 0;
+    });
+    const flags = { MX: '🇲🇽', US: '🇺🇸', CL: '🇨🇱', PE: '🇵🇪', GT: '🇬🇹', CR: '🇨🇷', CO: '🇨🇴', EC: '🇪🇨', OT: '🌐' };
+    const names = { MX: 'Mexico', US: 'Domestic', CL: 'Chile', PE: 'Peru', GT: 'Guatemala', CR: 'Costa Rica', CO: 'Colombia', EC: 'Ecuador', OT: 'Other' };
+    const colors = { MX: '#15803d', US: '#1d4ed8', CL: '#b45309', PE: '#d85a30', GT: '#7c3aed', CR: '#0e7490', CO: '#be185d', EC: '#d97706', OT: '#737373' };
+    return Object.entries(byOrigin)
+      .map(([code, lbs]) => ({ code, lbs, flag: flags[code] || '🌐', name: names[code] || code, color: colors[code] || '#737373' }))
+      .sort((a, b) => b.lbs - a.lbs)
+      .slice(0, 6);
+  }, [data]);
+
+  // Notable signals — commodities where volume signal is notable
+  const signals = useMemo(() => {
+    return filtered
+      .filter(c => c.total_pounds > 0)
+      .slice(0, 5)
+      .map(c => {
+        const truckPct = c.truck_pounds / (c.total_pounds || 1) * 100;
+        const boatPct = c.boat_pounds / (c.total_pounds || 1) * 100;
+        const airPct = c.air_pounds / (c.total_pounds || 1) * 100;
+        let signal = 'neu', direction = 'Normal volume';
+        if (airPct > 20) { signal = 'up'; direction = 'Air freight above 20% — tight ground supply'; }
+        else if (boatPct > 40) { signal = 'neu'; direction = 'Boat dominant — bulk import shipment'; }
+        else if (c.total_pounds > 5000000) { signal = 'up'; direction = 'High volume day'; }
+        else if (c.total_pounds < 500000) { signal = 'dn'; direction = 'Light volume'; }
+        return { ...c, signal, direction };
+      });
+  }, [filtered]);
+
+  const commSidebarItems = useMemo(() => {
+    return summary.slice(0, 10).map(c => {
+      const sig = c.total_pounds > 5000000 ? 'up' : c.total_pounds < 500000 ? 'dn' : 'neu';
+      return { name: c.commodity, sig };
+    });
+  }, [summary]);
+
+  if (loading) return <div className="mv-load">Loading movement data…</div>;
+  if (!data || !summary.length) return (
+    <div className="mv-load">
+      <div style={{ fontWeight: 600, marginBottom: 8 }}>No movement data available</div>
+      <div style={{ fontSize: 12 }}>Run the ingest to populate WA_FV175 data</div>
+    </div>
+  );
+
+  const truckPct = totals.lbs ? Math.round(totals.truck / totals.lbs * 100) : 0;
+  const airPct   = totals.lbs ? Math.round(totals.air   / totals.lbs * 100) : 0;
+  const boatPct  = totals.lbs ? Math.round(totals.boat  / totals.lbs * 100) : 0;
+  const topByLbs = [...filtered].sort((a, b) => (b.total_pounds || 0) - (a.total_pounds || 0)).slice(0, 6);
+  const originTotal = origins.reduce((s, o) => s + o.lbs, 0);
+
+  return (
+    <div>
+      {/* KPI strip */}
+      <div className="mv-kpi-row">
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Total volume</div>
+          <div className="mv-kpi-v">{fmtLbs(totals.lbs)}</div>
+          <div className="mv-kpi-s">lbs shipped today</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Standardized units</div>
+          <div className="mv-kpi-v">{fmtUnits(totals.units)}</div>
+          <div className="mv-kpi-s">× 10,000 lb units</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Commodities moving</div>
+          <div className="mv-kpi-v">{totals.comms}</div>
+          <div className="mv-kpi-s">with reported volume</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Dominant mode</div>
+          <div className="mv-kpi-v">{truckPct >= airPct && truckPct >= boatPct ? 'Truck' : boatPct >= airPct ? 'Boat' : 'Air'}</div>
+          <div className="mv-kpi-s">{Math.max(truckPct, airPct, boatPct)}% of volume</div>
+        </div>
+      </div>
+
+      <div className="mv-layout">
+        {/* Sidebar */}
+        <div className="mv-sidebar">
+          <div className="mv-sb-h">By commodity</div>
+          <div className={`mv-sb-item ${selectedComm === 'all' ? 'on' : ''}`} onClick={() => setSelectedComm('all')}>
+            All commodities
+            <span style={{ fontSize: 10, color: '#a3a3a3', fontFamily: 'monospace' }}>{summary.length}</span>
+          </div>
+          {commSidebarItems.map(c => (
+            <div key={c.name} className={`mv-sb-item ${selectedComm === c.name ? 'on' : ''}`}
+              onClick={() => setSelectedComm(c.name)}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{c.name}</span>
+              <span className={`mv-sb-signal ${c.sig}`}>{c.sig === 'up' ? '↑' : c.sig === 'dn' ? '↓' : '—'}</span>
+            </div>
+          ))}
+          <div className="mv-sb-div" />
+          <div className="mv-sb-h">Transport</div>
+          {[['all','All modes'],['truck','Truck'],['air','Air'],['boat','Boat']].map(([k,l]) => (
+            <div key={k} className={`mv-sb-item ${selectedMode === k ? 'on' : ''}`} onClick={() => setSelectedMode(k)}>{l}</div>
+          ))}
+        </div>
+
+        {/* Main */}
+        <div className="mv-main">
+          {/* Mode breakdown */}
+          <div className="mv-section">
+            <div className="mv-sec-h">Transport mode breakdown</div>
+            <div className="mv-mode-grid">
+              {[
+                { key:'t', label:'Truck', lbs:totals.truck, pct:truckPct },
+                { key:'b', label:'Boat',  lbs:totals.boat,  pct:boatPct  },
+                { key:'a', label:'Air',   lbs:totals.air,   pct:airPct   },
+              ].map(m => (
+                <div key={m.key} className="mv-mode-card">
+                  <div className="mv-mode-head">
+                    <div className={`mv-mode-ico ${m.key}`}>
+                      {m.key === 't' ? '🚛' : m.key === 'a' ? '✈️' : '🚢'}
+                    </div>
+                    <span className="mv-mode-lbl">{m.label}</span>
+                  </div>
+                  <div className="mv-mode-v">{fmtLbs(m.lbs)}</div>
+                  <div className="mv-mode-s">lbs · {m.pct}% of total</div>
+                  <div className="mv-mode-bar-wrap">
+                    <div className={`mv-mode-bar ${m.key}`} style={{ width: m.pct + '%' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Two-col */}
+          <div className="mv-two">
+            {/* Top commodities */}
+            <div>
+              <div className="mv-sec-h">Top commodities by volume</div>
+              <div className="mv-box">
+                <div style={{ display:'grid',gridTemplateColumns:'1.6fr 1fr 1fr 1fr',padding:'7px 12px',background:'#fafafa',borderBottom:'1px solid #ededed' }}>
+                  {['Commodity','Lbs','Units','Signal'].map((h,i) => (
+                    <span key={h} style={{ fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.05em',color:'#a3a3a3' }} className={i>0?'tbl-right':''}>{h}</span>
+                  ))}
+                </div>
+                {topByLbs.map((c, i) => {
+                  const airPct = c.total_pounds ? Math.round(c.air_pounds / c.total_pounds * 100) : 0;
+                  const sig = airPct > 20 ? 'up' : c.total_pounds < 500000 ? 'dn' : 'neu';
+                  const sigLabel = airPct > 20 ? '↑ Air heavy' : c.total_pounds < 500000 ? '↓ Light' : '— Normal';
+                  const mode = c.truck_pounds >= c.boat_pounds && c.truck_pounds >= c.air_pounds ? 'Truck'
+                    : c.boat_pounds >= c.air_pounds ? 'Boat' : 'Air';
+                  return (
+                    <div key={c.commodity} className="mv-comm-row">
+                      <div>
+                        <div className="mv-comm-name" style={{ fontSize:12.5,fontWeight:600,color:'#0a0a0a' }}>{c.commodity}</div>
+                        <div className="mv-comm-or" style={{ fontSize:11,color:'#a3a3a3' }}>
+                          {c.origins && c.origins[0] ? c.origins[0] : ''} · {mode}
+                        </div>
+                      </div>
+                      <div className="mv-num bold" style={{ textAlign:'right' }}>{fmtLbs(c.total_pounds)}</div>
+                      <div className="mv-num" style={{ textAlign:'right' }}>{fmtUnits(c.total_units)}</div>
+                      <div style={{ textAlign:'right' }}><span className={`mv-sig ${sig}`}>{sigLabel}</span></div>
+                    </div>
+                  );
+                })}
+                {!topByLbs.length && <div className="mv-load" style={{ padding:20 }}>No data</div>}
+              </div>
+            </div>
+
+            <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+              {/* Origin breakdown */}
+              <div>
+                <div className="mv-sec-h">Volume by origin</div>
+                <div className="mv-box">
+                  {origins.map(o => (
+                    <div key={o.code} className="mv-origin-row">
+                      <div className="mv-flag">{o.flag}</div>
+                      <div className="mv-origin-name">{o.name}</div>
+                      <div className="mv-origin-bar-wrap">
+                        <div className="mv-origin-bar" style={{ width: (originTotal ? o.lbs / originTotal * 100 : 0) + '%', background: o.color }} />
+                      </div>
+                      <div className="mv-origin-pct">{originTotal ? Math.round(o.lbs / originTotal * 100) : 0}%</div>
+                      <div className="mv-origin-lbs">{fmtLbs(o.lbs)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Signals */}
+              <div>
+                <div className="mv-sec-h">Notable signals</div>
+                <div className="mv-box">
+                  {signals.map(s => (
+                    <div key={s.commodity} className={`mv-note ${s.signal === 'dn' ? 'warn' : ''}`}>
+                      <b>{s.commodity}</b> — {s.direction}.
+                      {s.total_pounds > 0 && <span style={{ color:'#a3a3a3',marginLeft:6,fontFamily:'monospace',fontSize:11 }}>{fmtLbs(s.total_pounds)} lbs</span>}
+                    </div>
+                  ))}
+                  {!signals.length && <div className="mv-note">No notable signals today</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 // ── Loading screen ──────────────────────────────────────────────────────────
 function LoadScreen() {
   return (
@@ -1021,9 +1434,10 @@ function App() {
               ))}
             </div>
           </NavMenu>
-          <button className="nav-tab">Shipping points</button>
+          <button className={'nav-tab '+(screen==='shipping'?'on':'')} onClick={()=>setScreen('shipping')}>Shipping points</button>
+          <button className={'nav-tab '+(screen==='movement'?'on':'')} onClick={()=>setScreen('movement')}>Movement</button>
           <span className="nav-sep"/>
-          <button className="nav-tab" style={{color:watchCount?'#b45309':'inherit'}} onClick={goMarkets}>
+          <button className="nav-tab" style={{color:watchCount?'#b45309':'inherit'}} onClick={()=>setScreen('watchlist')}>
             ☆ Watchlist ({watchCount})
           </button>
         </div>
@@ -1041,6 +1455,9 @@ function App() {
       <main className="app-main">
         {screen==='markets' && <MarketsScreen comms={comms} market={market} setMarket={setMarket} watch={watch} toggleStar={toggleStar} onOpen={openComm} todayStr={todayStr} />}
         {screen==='detail' && selectedComm && <DetailScreen c={selectedComm} market={market} watch={watch} toggleStar={toggleStar} onBack={goMarkets} allComms={comms} onOpen={openComm} todayStr={todayStr} />}
+        {screen==='movement' && <MovementScreen todayStr={todayStr} />}
+        {screen==='shipping' && <ShipScreen allRows={allRows} todayStr={todayStr} onOpen={openComm} />}
+        {screen==='watchlist' && <WatchScreen comms={comms} watchlist={watch} toggleStar={toggleStar} onOpen={openComm} market={market} todayStr={todayStr} />}
       </main>
 
       {/* Status bar */}
@@ -1058,22 +1475,22 @@ function App() {
 
       {/* Mobile bottom nav */}
       <div className="mob-nav">
-        <button className={'mob-tab '+(screen==='markets'?'on':'')} onClick={goMarkets}>
-          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V11l8-6 8 6v8" stroke={screen==='markets'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 19v-5h6v5" stroke={screen==='markets'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <button className={'mob-tab '+(screen==='markets'||screen==='detail'?'on':'')} onClick={goMarkets}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V11l8-6 8 6v8" stroke={screen==='markets'||screen==='detail'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 19v-5h6v5" stroke={screen==='markets'||screen==='detail'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Markets
         </button>
         <button className="mob-tab" onClick={()=>setSearchOpen(true)}>
           <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-4-4" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
           Search
         </button>
-        <button className="mob-tab" style={{position:'relative'}} onClick={goMarkets}>
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l2.4 5 5.6.6-4 4 1 5.4-5-2.8-5 2.8 1-5.4-4-4 5.6-.6z" stroke="#a3a3a3" strokeWidth="1.8" strokeLinejoin="round"/></svg>
+        <button className={'mob-tab '+(screen==='movement'?'on':'')} style={{position:'relative'}} onClick={()=>setScreen('movement')}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M2 16l5-5 4 4 5-6 4 3" stroke={screen==='movement'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Movement
+        </button>
+        <button className={'mob-tab '+(screen==='watchlist'?'on':'')} onClick={()=>setScreen('watchlist')}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l2.4 5 5.6.6-4 4 1 5.4-5-2.8-5 2.8 1-5.4-4-4 5.6-.6z" stroke={screen==='watchlist'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinejoin="round"/></svg>
           Watchlist
           {watchCount>0 && <span className="mob-badge">{watchCount}</span>}
-        </button>
-        <button className="mob-tab">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M3 16V7h11v9M14 9h4l3 3v4h-7" stroke="#a3a3a3" strokeWidth="1.8" strokeLinejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="#a3a3a3" strokeWidth="1.8"/><circle cx="17" cy="17" r="1.6" stroke="#a3a3a3" strokeWidth="1.8"/></svg>
-          Shipping
         </button>
       </div>
 
