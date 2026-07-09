@@ -1,0 +1,61 @@
+/* ================================================================
+   agraX — API CLIENT
+   Wraps every endpoint from backend/api.py. No invented endpoints.
+   Config: set window.AGRAX_API_BASE before including this script,
+   or override via localStorage.setItem('agrax_api_base', '...')
+   ================================================================ */
+
+const API_BASE = (() => {
+  const fromLS = typeof localStorage !== 'undefined' && localStorage.getItem('agrax_api_base');
+  if (fromLS) return fromLS.replace(/\/$/, '');
+  if (typeof window !== 'undefined' && window.AGRAX_API_BASE) return window.AGRAX_API_BASE.replace(/\/$/, '');
+  return 'http://localhost:8000';
+})();
+
+async function _fetch(path, { signal } = {}) {
+  const url = `${API_BASE}${path}`;
+  const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
+const api = {
+  base: API_BASE,
+
+  // GET / — health
+  health: () => _fetch('/'),
+
+  // GET /dates → [{date, count}]
+  dates: () => _fetch('/dates'),
+
+  // GET /commodities/by-date/{date} → raw produce_prices rows
+  commoditiesByDate: (date) => _fetch(`/commodities/by-date/${encodeURIComponent(date)}`),
+
+  // GET /search?q=&limit=
+  search: (q, limit = 100) =>
+    _fetch(`/search?q=${encodeURIComponent(q)}&limit=${limit}`),
+
+  // GET /markets → [{market, type, count}]
+  markets: () => _fetch('/markets'),
+
+  // GET /reports/terminal?date=
+  reportTerminal: (date) =>
+    _fetch(`/reports/terminal${date ? `?date=${encodeURIComponent(date)}` : ''}`),
+
+  // GET /reports/shipping-points?date=
+  reportShippingPoints: (date) =>
+    _fetch(`/reports/shipping-points${date ? `?date=${encodeURIComponent(date)}` : ''}`),
+
+  // GET /reports/trends?date= — National Trends commentary
+  reportTrends: (date) =>
+    _fetch(`/reports/trends${date ? `?date=${encodeURIComponent(date)}` : ''}`),
+
+  // GET /stats → {total_records, commodities, markets, dates}
+  stats: () => _fetch('/stats'),
+};
+
+// Expose globally for non-module scripts
+if (typeof window !== 'undefined') window.agraxAPI = api;

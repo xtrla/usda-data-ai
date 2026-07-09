@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Movement</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="mtop-slot"></div>
+  <div id="side-slot"></div>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__bell">🔔</div>
+    </div>
+
+    <div class="page-head">
+      <div class="eyebrow">Physical volume · today</div>
+      <h1>Movement</h1>
+      <p>Where produce is flowing right now — a leading indicator for tomorrow's prices.</p>
+    </div>
+
+    <section class="card">
+      <div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:13px">
+        <div style="font-size:36px;color:var(--line-strong);margin-bottom:12px">◆</div>
+        <div style="font-weight:600;color:var(--ink);margin-bottom:6px">Movement endpoint pending</div>
+        <div>Add a <code style="font-family:var(--font-mono);background:var(--fill);padding:2px 6px;border-radius:4px">/movement/summary/{date}</code> route to <code style="font-family:var(--font-mono);background:var(--fill);padding:2px 6px;border-radius:4px">backend/api.py</code>. The migration file <code style="font-family:var(--font-mono);background:var(--fill);padding:2px 6px;border-radius:4px">migration_movement.sql</code> in your repo already sets up the table.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="mtabs-slot"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+  const shell = Shell.render('movement');
+  document.getElementById('mtop-slot').outerHTML = shell.mtop;
+  document.getElementById('side-slot').outerHTML = shell.side;
+  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+</script>
+</body>
+</html>

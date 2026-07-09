@@ -1,0 +1,22 @@
+{
+  "outputDirectory": "frontend",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/app", "destination": "/app/index.html" },
+    { "source": "/app/markets", "destination": "/app/markets/index.html" },
+    { "source": "/app/markets/(.*)", "destination": "/app/markets/index.html" },
+    { "source": "/app/shipping", "destination": "/app/shipping/index.html" },
+    { "source": "/app/movement", "destination": "/app/movement/index.html" },
+    { "source": "/app/watchlist", "destination": "/app/watchlist/index.html" },
+    { "source": "/app/alerts", "destination": "/app/alerts/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)\\.(css|js|jpg|jpeg|png|svg|woff2?)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

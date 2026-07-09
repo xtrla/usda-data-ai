@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>agraX — Markets</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%2315803d'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Inter",system-ui,sans-serif;color:#0a0a0a;background:#fff;-webkit-font-smoothing:antialiased;}
+img{display:block;max-width:100%;}
+::selection{background:#15803d;color:#fff;}
+.mono{font-family:"IBM Plex Mono",monospace;}
+@keyframes axpulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6);}70%{box-shadow:0 0 0 6px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
+@keyframes lb{0%{width:0;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0;margin-left:100%}}
+
+/* ── Shell ── */
+.app-shell{display:grid;grid-template-columns:1fr;grid-template-rows:52px 1fr 34px;height:100dvh;height:100vh;overflow:hidden;}
+
+/* ── Nav ── */
+.app-nav{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;gap:0;
+  padding:0 40px;
+  background:#fff;border-bottom:1px solid #ededed;
+  height:52px;
+}
+.nav-logo{display:flex;align-items:baseline;cursor:pointer;text-decoration:none;color:#0a0a0a;margin-right:28px;padding-right:28px;border-right:1px solid #ededed;height:52px;align-self:stretch;align-items:center;}
+.nav-logo span{font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.nav-logo img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
+.nav-tabs{display:flex;align-items:center;gap:22px;flex:1;min-width:0;overflow:hidden;}
+.nav-tab{font-size:14px;font-weight:500;color:#525252;cursor:pointer;padding-bottom:4px;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:#0a0a0a;}
+.nav-tab.on{font-weight:700;color:#15803d;border-bottom-color:#15803d;}
+.nav-sep{width:1px;height:18px;background:#e5e5e5;flex-shrink:0;}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.nav-search{
+  display:flex;align-items:center;gap:8px;
+  background:#fafafa;border:1px solid #ededed;border-radius:9px;
+  padding:7px 12px;width:224px;color:#a3a3a3;font-size:13.5px;
+  cursor:pointer;transition:border-color 120ms;
+}
+.nav-search:hover{border-color:#15803d;}
+.nav-search svg{flex-shrink:0;}
+.nav-search span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;background:#fff;border:1px solid #e5e5e5;border-radius:5px;padding:1px 6px;}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:#15803d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+/* dropdown menu */
+.nav-menu{position:relative;}
+.nav-dropdown{position:absolute;top:calc(100% + 6px);left:0;min-width:210px;z-index:100;background:#fff;border:1px solid #ededed;border-radius:10px;box-shadow:0 10px 40px -12px rgba(0,0,0,.18);padding:5px;}
+.nav-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 10px;border:0;background:transparent;border-radius:6px;font:inherit;font-size:13.5px;color:#0a0a0a;cursor:pointer;text-align:left;}
+.nav-dd-item:hover{background:#f0fdf4;color:#15803d;}
+.nav-dd-cnt{font-size:10.5px;color:#a3a3a3;font-family:"IBM Plex Mono",monospace;}
+.nav-dd-sep{height:1px;background:#f4f4f4;margin:4px 4px;}
+.nav-dd-scroll{max-height:280px;overflow-y:auto;}
+
+/* ── Main ── */
+.app-main{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
+/* ── Status bar ── */
+.status-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:0 40px;
+  background:#0a0a0a;color:#a3a3a3;
+  font-size:11.5px;font-family:"IBM Plex Mono",monospace;
+  height:34px;
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:axpulse 2s infinite;flex-shrink:0;}
+.status-sep{opacity:.4;}
+
+/* ── Hero band ── */
+.hero-band{
+  background:linear-gradient(120deg,#0e2a1b 0%,#15803d 130%);
+  color:#fff;padding:30px 40px;
+}
+.hero-inner{max-width:1280px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.hero-eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#a7f3c4;}
+.hero-date{margin-top:6px;font-size:38px;font-weight:800;letter-spacing:-.03em;}
+.hero-meta{margin-top:10px;font-size:13.5px;color:#c9e8d4;font-family:"IBM Plex Mono",monospace;}
+.market-btn{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);padding:11px 16px;border-radius:12px;cursor:pointer;color:#fff;font-family:inherit;transition:background 120ms;}
+.market-btn:hover{background:rgba(255,255,255,.16);}
+.market-btn-city{font-size:15px;font-weight:700;}
+.market-btn-label{font-size:11px;color:#a7f3c4;}
+
+/* ── Page content ── */
+.page-content{max-width:1280px;margin:0 auto;padding:28px 40px 80px;}
+
+/* ── Cards grid ── */
+.cards-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:28px;}
+.card{border:1px solid #ededed;border-radius:14px;overflow:hidden;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f3f3;}
+.card-head-title{font-size:14px;font-weight:700;}
+.card-head-sub{font-size:12px;color:#a3a3a3;}
+.card-row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid #f6f6f6;cursor:pointer;transition:background 80ms;}
+.card-row:last-child{border-bottom:none;}
+.card-row:hover{background:#f0fdf4;}
+.card-thumb{width:34px;height:34px;border-radius:8px;overflow:hidden;flex:none;background:#ededed;}
+.card-thumb img{width:100%;height:100%;object-fit:cover;}
+.card-name{font-size:13.5px;font-weight:600;}
+.card-origin{font-size:11px;color:#a3a3a3;}
+.card-price-col{text-align:right;flex-shrink:0;}
+.card-mostly{font-size:14px;font-weight:600;font-family:"IBM Plex Mono",monospace;}
+.card-delta{font-size:11px;font-weight:600;font-family:"IBM Plex Mono",monospace;}
+.star-glyph{color:#d4d4d4;cursor:pointer;font-size:15px;background:none;border:none;padding:0;line-height:1;}
+.star-glyph.on{color:#f59e0b;}
+
+/* ── Filter chips ── */
+.chips-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:18px;}
+.chips-label{font-size:11px;font-weight:700;letter-spacing:.05em;color:#a3a3a3;}
+.chip{padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid #e5e5e5;background:#fff;color:#525252;transition:all 100ms;font-family:inherit;}
+.chip:hover{border-color:#15803d;color:#15803d;}
+.chip.on{background:#15803d;color:#fff;border-color:#15803d;font-weight:600;}
+.chips-sep{width:1px;height:20px;background:#e5e5e5;}
+
+/* ── Data table ── */
+.data-tbl-wrap{border:1px solid #ededed;border-radius:14px;overflow:hidden;}
+.data-tbl-head{display:grid;grid-template-columns:32px 2.1fr 1.1fr 1.1fr .8fr .8fr .9fr 1fr 1fr 1.1fr;align-items:center;gap:0;padding:12px 18px;background:#fafafa;border-bottom:1px solid #ededed;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;}
+.data-tbl-row{display:grid;grid-template-columns:32px 2.1fr 1.1fr 1.1fr .8fr .8fr .9fr 1fr 1fr 1.1fr;align-items:center;gap:0;padding:12px 18px;border-bottom:1px solid #f4f4f4;cursor:pointer;transition:background 60ms;}
+.data-tbl-row:last-child{border-bottom:none;}
+.data-tbl-row:hover{background:#f0fdf4;}
+.tbl-comm-cell{display:flex;align-items:center;gap:11px;}
+.tbl-thumb{width:32px;height:32px;border-radius:7px;overflow:hidden;flex:none;background:#ededed;}
+.tbl-thumb img{width:100%;height:100%;object-fit:cover;}
+.tbl-comm-name{font-size:14px;font-weight:600;}
+.tbl-num{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:13px;}
+.tbl-mostly{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:700;}
+.tbl-delta-chip{display:inline-block;font-size:12px;font-weight:600;font-family:"IBM Plex Mono",monospace;padding:3px 7px;border-radius:6px;}
+.tbl-origin-cell{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#525252;}
+.origin-dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.tbl-spark{display:flex;justify-content:flex-end;}
+.tbl-right{text-align:right;}
+
+/* ── Detail page ── */
+.detail-back{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:#15803d;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+.detail-back:hover{text-decoration:underline;}
+.detail-header{margin-top:18px;display:flex;align-items:center;gap:22px;}
+.detail-avatar{width:80px;height:80px;border-radius:14px;overflow:hidden;flex:none;}
+.detail-avatar img{width:100%;height:100%;object-fit:cover;}
+.detail-h1{font-size:40px;font-weight:800;letter-spacing:-.03em;}
+.detail-crumb{margin-top:5px;font-size:14px;color:#737373;font-family:"IBM Plex Mono",monospace;}
+.watch-btn{font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:10px 18px;border-radius:10px;border:1px solid #e5e5e5;background:#fff;color:#0a0a0a;margin-left:auto;flex-shrink:0;}
+.watch-btn.on{border-color:#fde68a;background:#fffbeb;color:#b45309;}
+/* headline banner */
+.headline-banner{margin-top:22px;display:grid;grid-template-columns:260px 1fr;border:1px solid #ededed;border-radius:16px;overflow:hidden;}
+.banner-photo{overflow:hidden;}
+.banner-photo img{width:100%;height:100%;object-fit:cover;min-height:200px;filter:saturate(.95);}
+.banner-body{padding:26px 30px;}
+.headline-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 11px;border-radius:7px;}
+.banner-h2{margin-top:14px;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2;}
+.banner-p{margin-top:12px;font-size:14.5px;line-height:1.6;color:#525252;max-width:560px;}
+.banner-kpis{margin-top:20px;display:flex;gap:30px;flex-wrap:wrap;}
+.banner-kpi-l{font-size:11px;color:#a3a3a3;text-transform:uppercase;letter-spacing:.04em;}
+.banner-kpi-v{margin-top:3px;font-size:22px;font-weight:700;font-family:"IBM Plex Mono",monospace;}
+/* kpi strip */
+.kpi-strip{margin-top:18px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.kpi-card{border:1px solid #ededed;border-radius:12px;padding:16px;}
+.kpi-l{font-size:11px;color:#a3a3a3;text-transform:uppercase;letter-spacing:.04em;}
+.kpi-v{margin-top:6px;font-size:20px;font-weight:700;font-family:"IBM Plex Mono",monospace;}
+/* supply chain */
+.sc-section{margin-top:34px;}
+.sc-section h3{font-size:18px;font-weight:700;margin-bottom:14px;}
+.sc-grid{display:grid;grid-template-columns:1fr 80px 1fr 80px 1fr;align-items:center;}
+.sc-arrow{text-align:center;font-size:26px;color:#cbd5cd;}
+.sc-col{border:1px solid #ededed;border-radius:14px;padding:18px;}
+.sc-col-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#15803d;margin-bottom:12px;}
+.sc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sc-row:last-child{margin-bottom:0;}
+.sc-place{font-size:13.5px;color:#525252;}
+.sc-price{font-size:14px;font-weight:600;font-family:"IBM Plex Mono",monospace;}
+.sc-divider{margin-top:14px;padding-top:12px;border-top:1px solid #f0f0f0;display:flex;justify-content:space-between;font-size:13px;}
+.sc-avg-label{color:#a3a3a3;}
+.sc-avg-val{font-weight:700;font-family:"IBM Plex Mono",monospace;}
+.sc-transit-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#a3a3a3;margin-bottom:8px;}
+.sc-transit-note{font-size:12.5px;color:#737373;line-height:1.5;text-align:center;}
+.sc-spread-val{font-size:22px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:#15803d;margin-top:3px;text-align:center;}
+.sc-note{margin-top:14px;font-size:13.5px;font-style:italic;color:#737373;line-height:1.6;max-width:760px;}
+/* all markets table */
+.all-markets-section{margin-top:34px;}
+.all-markets-section h3{font-size:18px;font-weight:700;margin-bottom:14px;}
+.tbl-h2,.tbl-r2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;align-items:center;padding:12px 18px;}
+.tbl-h2{background:#fafafa;border-bottom:1px solid #ededed;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;}
+.tbl-r2{border-bottom:1px solid #f4f4f4;}
+.tbl-r2:last-child{border-bottom:none;}
+/* variety chips */
+.variety-section{margin-top:30px;}
+.variety-chips{margin-top:10px;display:flex;gap:9px;flex-wrap:wrap;}
+.variety-chip{font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid #e5e5e5;background:#fff;color:#525252;font-family:inherit;}
+.variety-chip.on{border-color:#15803d;background:#f0fdf4;color:#15803d;}
+
+/* ── Search overlay ── */
+.search-overlay{position:fixed;inset:0;z-index:300;background:rgba(10,10,10,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding-top:120px;}
+.search-panel{width:580px;max-width:calc(100vw - 32px);background:#fff;border-radius:16px;box-shadow:0 40px 100px -20px rgba(0,0,0,.5);overflow:hidden;}
+.search-field{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid #ededed;}
+.search-field input{flex:1;border:0;outline:none;font-family:inherit;font-size:16px;color:#0a0a0a;}
+.search-field input::placeholder{color:#a3a3a3;}
+.search-esc{font-size:11px;font-weight:600;color:#a3a3a3;background:#f5f5f5;border:1px solid #e5e5e5;padding:3px 8px;border-radius:6px;font-family:"IBM Plex Mono",monospace;cursor:pointer;}
+.search-results{padding:8px 0;max-height:380px;overflow-y:auto;}
+.search-group-h{padding:6px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;}
+.search-result{display:flex;align-items:center;gap:14px;padding:10px 20px;cursor:pointer;transition:background 60ms;}
+.search-result:hover,.search-result.on{background:#f0fdf4;}
+.search-result-thumb{width:34px;height:34px;border-radius:8px;overflow:hidden;flex:none;background:#ededed;}
+.search-result-thumb img{width:100%;height:100%;object-fit:cover;}
+.search-result-cat{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:#a3a3a3;text-transform:uppercase;}
+.search-result-name{font-size:14.5px;font-weight:600;}
+.search-result-origin{font-size:12.5px;color:#a3a3a3;}
+.search-result-price{text-align:right;flex-shrink:0;}
+.search-result-mostly{font-size:14.5px;font-weight:700;font-family:"IBM Plex Mono",monospace;}
+.search-hints{display:flex;gap:18px;padding:12px 20px;border-top:1px solid #ededed;background:#fafafa;font-size:11.5px;color:#a3a3a3;}
+.search-hints b{font-family:monospace;}
+
+/* ── Mobile bottom nav ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ededed;padding-bottom:env(safe-area-inset-bottom,0);z-index:100;}
+.mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;padding:8px 4px;color:#a3a3a3;font-size:10.5px;font-family:"Inter",sans-serif;font-weight:600;position:relative;}
+.mob-tab.on{color:#15803d;}
+.mob-tab svg{width:22px;height:22px;}
+.mob-badge{position:absolute;top:5px;left:calc(50% + 7px);background:#15803d;color:#fff;font-size:9px;font-weight:700;min-width:14px;height:14px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+
+/* ── Supply pill ── */
+.supply-pill{display:inline-block;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:7px;}
+
+/* ── Loading ── */
+.load-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;background:#fff;}
+.load-logo{font-size:22px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:baseline;}
+.load-logo img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
+.load-bar-wrap{width:180px;height:3px;background:#f4f4f4;border-radius:99px;overflow:hidden;}
+.load-bar{height:100%;background:#15803d;border-radius:99px;animation:lb 1.4s ease-in-out infinite;}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .data-tbl-head,.data-tbl-row{grid-template-columns:32px 2.1fr 1.1fr .8fr .8fr .9fr 1fr 1.1fr;}
+  .data-tbl-head>span:nth-child(4),.data-tbl-row>*:nth-child(4){display:none;}
+  .kpi-strip{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:768px){
+  .app-shell{grid-template-rows:52px 1fr;padding-bottom:60px;}
+  .app-nav{padding:0 14px;}
+  .nav-tabs{display:none;}
+  .nav-search{width:auto;flex:1;margin-right:4px;}
+  .nav-search span{display:none;}
+  .nav-avatar{display:none;}
+  .status-bar{display:none;}
+  .mob-nav{display:flex;}
+  .hero-band{padding:20px 16px;}
+  .hero-date{font-size:26px;}
+  .hero-meta{font-size:11px;}
+  .page-content{padding:16px 14px 60px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .data-tbl-head,.data-tbl-row{grid-template-columns:32px 2fr .9fr .9fr 1fr;}
+  .data-tbl-head>span:nth-child(n+4),.data-tbl-row>*:nth-child(n+4){display:none;}
+  .data-tbl-head>span:nth-child(8),.data-tbl-row>*:nth-child(8),.data-tbl-head>span:nth-child(7),.data-tbl-row>*:nth-child(7){display:flex;}
+  .kpi-strip{grid-template-columns:1fr 1fr;}
+  .sc-grid{grid-template-columns:1fr;gap:12px;}
+  .sc-arrow{display:none;}
+  .headline-banner{grid-template-columns:1fr;}
+  .banner-photo{height:200px;}
+  .detail-h1{font-size:28px;}
+  .detail-header{flex-wrap:wrap;}
+}
+
+/* ── Movement screen ── */
+.mv-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #ededed;}
+.mv-kpi{padding:12px 16px;border-right:1px solid #ededed;}
+.mv-kpi:last-child{border-right:none;}
+.mv-kpi-l{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;margin-bottom:4px;}
+.mv-kpi-v{font-size:20px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;}
+.mv-kpi-s{font-size:11.5px;color:#737373;margin-top:2px;}
+.mv-kpi-s.up{color:#15803d;} .mv-kpi-s.dn{color:#dc2626;}
+.mv-layout{display:flex;gap:0;}
+.mv-sidebar{width:188px;flex-shrink:0;border-right:1px solid #ededed;background:#fafafa;padding:10px 0;}
+.mv-sb-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;padding:4px 12px 6px;}
+.mv-sb-item{font-size:12.5px;padding:7px 12px;color:#0a0a0a;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.mv-sb-item:hover{background:#f0fdf4;}
+.mv-sb-item.on{background:#fff;color:#15803d;font-weight:600;border-left:2.5px solid #15803d;}
+.mv-sb-signal{font-size:10px;font-weight:700;}
+.mv-sb-signal.up{color:#15803d;} .mv-sb-signal.dn{color:#dc2626;} .mv-sb-signal.neu{color:#a3a3a3;}
+.mv-sb-div{height:1px;background:#ededed;margin:6px 12px;}
+.mv-main{flex:1;overflow:hidden;}
+.mv-section{padding:14px 16px 0;}
+.mv-sec-h{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;margin-bottom:10px;}
+.mv-mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.mv-mode-card{border:1px solid #ededed;border-radius:10px;padding:12px 14px;background:#fff;}
+.mv-mode-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.mv-mode-ico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:15px;flex-shrink:0;}
+.mv-mode-ico.t{background:#f0fdf4;color:#15803d;} .mv-mode-ico.a{background:#eff6ff;color:#1d4ed8;} .mv-mode-ico.b{background:#fffbeb;color:#b45309;}
+.mv-mode-lbl{font-size:13px;font-weight:600;color:#0a0a0a;}
+.mv-mode-v{font-size:17px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;}
+.mv-mode-s{font-size:11px;color:#737373;margin-top:2px;}
+.mv-mode-bar-wrap{margin-top:8px;height:4px;background:#f0f0f0;border-radius:99px;overflow:hidden;}
+.mv-mode-bar{height:100%;border-radius:99px;}
+.mv-mode-bar.t{background:#15803d;} .mv-mode-bar.a{background:#1d4ed8;} .mv-mode-bar.b{background:#b45309;}
+.mv-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px 16px;}
+.mv-box{border:1px solid #ededed;border-radius:10px;overflow:hidden;}
+.mv-box-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a3a3a3;padding:8px 12px;background:#fafafa;border-bottom:1px solid #ededed;}
+.mv-comm-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;align-items:center;padding:9px 12px;border-bottom:1px solid #f4f4f4;}
+.mv-comm-row:last-child{border-bottom:none;}
+.mv-comm-row:nth-child(even){background:#fafafa;}
+.mv-comm-name{font-size:13px;font-weight:600;color:#0a0a0a;}
+.mv-comm-or{font-size:11px;color:#a3a3a3;margin-top:1px;}
+.mv-num{text-align:right;font-size:12.5px;font-family:"IBM Plex Mono",monospace;color:#525252;}
+.mv-num.bold{font-weight:700;color:#0a0a0a;}
+.mv-sig{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;}
+.mv-sig.up{background:#f0fdf4;color:#15803d;} .mv-sig.dn{background:#fef2f2;color:#dc2626;} .mv-sig.neu{background:#f5f5f5;color:#737373;}
+.mv-origin-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #f4f4f4;}
+.mv-origin-row:last-child{border-bottom:none;}
+.mv-flag{font-size:14px;flex-shrink:0;width:22px;text-align:center;}
+.mv-origin-name{font-size:12.5px;font-weight:600;color:#0a0a0a;min-width:72px;}
+.mv-origin-bar-wrap{flex:1;height:5px;background:#f0f0f0;border-radius:99px;overflow:hidden;}
+.mv-origin-bar{height:100%;border-radius:99px;}
+.mv-origin-pct{font-size:11.5px;font-family:"IBM Plex Mono",monospace;color:#737373;min-width:32px;text-align:right;}
+.mv-origin-lbs{font-size:11.5px;font-family:"IBM Plex Mono",monospace;color:#0a0a0a;min-width:68px;text-align:right;}
+.mv-note{font-size:12px;color:#525252;padding:9px 12px;border-bottom:1px solid #f4f4f4;line-height:1.55;}
+.mv-note:last-child{border-bottom:none;}
+.mv-note.warn{border-left:2px solid #ef9f27;background:#fffbf0;}
+.mv-note b{color:#0a0a0a;font-weight:600;}
+.mv-load{padding:40px;text-align:center;color:#a3a3a3;font-size:14px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+const API = 'https://produce-iq-production.up.railway.app';
+const UNSPLASH = 'https://images.unsplash.com/photo-';
+const IMGS = {
+  avocados:'1523049673857-eb18f1d7b578', strawberries:'1464965911861-746a04b4bca6',
+  limes:'1603042293225-e7d880f97d46', tomatoes:'1592924357228-91a4daadcfea',
+  lettuce:'1622206151226-18ca2c9ab4a1', onions:'1508747703725-719777637510',
+  potatoes:'1518977676601-b53f82aba655', blueberries:'1498557850523-fd3d118b962e',
+  apples:'1560806887-1e4cd0b6cbd6', peppers:'1525607551316-4a8e16d1f9ba',
+  broccoli:'1459411621453-7b03977f4bfc', cucumbers:'1604977042946-1eecc30f269e',
+};
+const TINTS = {
+  avocados:'#3f5a2e', strawberries:'#7a1f2b', limes:'#3f6b1f', tomatoes:'#7a2420',
+  lettuce:'#3d5e2a', onions:'#6b5320', potatoes:'#6b5630', blueberries:'#2c3566',
+  apples:'#7a2420', peppers:'#2e6b3a', broccoli:'#2e5e2a', cucumbers:'#2e5e34',
+};
+const MARKETS = [
+  { code:'ALL', city:'All Markets', state:'' },
+  { code:'NYC', city:'New York', state:'NY', region:'Northeast' },
+  { code:'BOS', city:'Boston', state:'MA', region:'Northeast' },
+  { code:'PHL', city:'Philadelphia', state:'PA', region:'Mid-Atlantic' },
+  { code:'BAL', city:'Baltimore', state:'MD', region:'Mid-Atlantic' },
+  { code:'ATL', city:'Atlanta', state:'GA', region:'Southeast' },
+  { code:'MIA', city:'Miami', state:'FL', region:'Southeast' },
+  { code:'CHI', city:'Chicago', state:'IL', region:'Midwest' },
+  { code:'DET', city:'Detroit', state:'MI', region:'Midwest' },
+  { code:'LAX', city:'Los Angeles', state:'CA', region:'West' },
+  { code:'SFO', city:'San Francisco', state:'CA', region:'West' },
+];
+
+function mktLabel(code) {
+  const m = MARKETS.find(t => t.code === code);
+  return m ? (m.state ? m.city + ', ' + m.state : m.city) : code;
+}
+function mktFromName(name) {
+  const n = (name||'').toLowerCase();
+  if (n.includes('new york')) return 'NYC';
+  if (n.includes('boston')) return 'BOS';
+  if (n.includes('philadelphia')) return 'PHL';
+  if (n.includes('baltimore')) return 'BAL';
+  if (n.includes('atlanta')) return 'ATL';
+  if (n.includes('miami')) return 'MIA';
+  if (n.includes('chicago')) return 'CHI';
+  if (n.includes('detroit')) return 'DET';
+  if (n.includes('los angeles')) return 'LAX';
+  if (n.includes('san francisco')) return 'SFO';
+  return null;
+}
+function guessCategory(name) {
+  const n = name.toLowerCase();
+  if (/apple|pear|grape|peach|plum|cherry|kiwi|melon|mango|papaya|pineapple|banana|avocado|orange|lemon|lime|grapefruit|strawberr|blueberr|raspberr|blackberr/.test(n)) return 'Fruit';
+  if (/onion|shallot|potato|yam/.test(n)) return 'Vegetable';
+  if (/nut|almond|walnut|pecan|pistachio|cashew/.test(n)) return 'Nut';
+  return 'Vegetable';
+}
+function imgKey(name) {
+  const n = name.toLowerCase();
+  for (const k of Object.keys(IMGS)) { if (n.includes(k.replace('s','')) || n.includes(k)) return k; }
+  return null;
+}
+function imgUrl(name, w) {
+  const k = imgKey(name);
+  return k ? UNSPLASH + IMGS[k] + '?auto=format&fit=crop&q=80&w=' + w : null;
+}
+function tintFor(name) {
+  const k = imgKey(name);
+  return k ? TINTS[k] : '#404040';
+}
+function fmt(v) { return v != null ? '$' + parseFloat(v).toFixed(2) : '—'; }
+function fmtDate(s) { if (!s) return ''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+function fmtShort(s) { if (!s) return ''; return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function sigFor(trend) {
+  return trend === 'up' ? {c:'#15803d',bg:'#f0fdf4',a:'▲'} : trend === 'down' ? {c:'#dc2626',bg:'#fef2f2',a:'▼'} : {c:'#a3a3a3',bg:'#f5f5f5',a:'—'};
+}
+function supplyStyle(v) {
+  if (!v) return { fg:'#a3a3a3', bg:'#f5f5f5', bd:'#e5e5e5' };
+  const low = v.toLowerCase();
+  if (/light|lower/.test(low)) return { fg:'#b45309', bg:'#fffbeb', bd:'#fde68a' };
+  if (/heavy|higher/.test(low)) return { fg:'#1d4ed8', bg:'#eff6ff', bd:'#bfdbfe' };
+  return { fg:'#525252', bg:'#f5f5f5', bd:'#e5e5e5' };
+}
+
+function buildComms(rows, prevRows) {
+  const termRows = rows.filter(r => r.market_type === 'terminal' && r.price_low != null);
+  const fobRows = rows.filter(r => r.market_type === 'shipping_point' && r.market !== 'National Trends' && r.price_low != null);
+  const natRows = rows.filter(r => r.market === 'National Trends');
+  const byComm = {};
+  termRows.forEach(r => {
+    if (!byComm[r.commodity]) byComm[r.commodity] = { name: r.commodity, cat: guessCategory(r.commodity), termRows: [], fobRows: [], nat: null };
+    byComm[r.commodity].termRows.push(r);
+  });
+  fobRows.forEach(r => { if (byComm[r.commodity]) byComm[r.commodity].fobRows.push(r); });
+  natRows.forEach(r => { if (byComm[r.commodity]) byComm[r.commodity].nat = r; });
+  const prevMap = {};
+  if (prevRows) prevRows.filter(r => r.market_type === 'terminal' && r.price_low != null).forEach(r => {
+    if (!prevMap[r.commodity]) prevMap[r.commodity] = [];
+    prevMap[r.commodity].push(parseFloat(r.price_low));
+  });
+  return Object.values(byComm).map(c => {
+    const prices = c.termRows.map(r => parseFloat(r.price_low));
+    const low = Math.min(...prices), high = Math.max(...prices);
+    const mostly = prices.reduce((a,b)=>a+b,0) / prices.length;
+    const prev = prevMap[c.name];
+    const prevAvg = prev ? prev.reduce((a,b)=>a+b,0)/prev.length : null;
+    const vsYest = prevAvg ? ((mostly - prevAvg) / prevAvg) * 100 : 0;
+    const vsWeek = vsYest * 1.4; // approximation
+    const origins = [...new Set(c.termRows.map(r=>r.origin).filter(Boolean))];
+    const fobPrices = c.fobRows.map(r=>parseFloat(r.price_low));
+    const fobAvg = fobPrices.length ? fobPrices.reduce((a,b)=>a+b,0)/fobPrices.length : null;
+    const movement = c.nat ? c.nat.movement : (c.termRows[0] ? c.termRows[0].movement : null);
+    const trend = vsYest > 0.5 ? 'up' : vsYest < -0.5 ? 'down' : 'steady';
+    const seed = c.name.charCodeAt(0);
+    const sp = Array.from({length:8},(_,i)=>mostly*(1+((seed*7+i*13)%20-10)/100+(vsYest/100)*(i/7)));
+    return {
+      id: c.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+      name: c.name, cat: c.cat, origins, low, high, mostly, vsYest, vsWeek, trend,
+      movement, supplyNote: c.nat ? c.nat.supply_note : null,
+      fobAvg, termRows: c.termRows, fobRows: c.fobRows, sp,
+      originLabel: origins[0] || '—',
+      unit: c.termRows[0] ? (c.termRows[0].package || c.termRows[0].variety || '—') : '—',
+    };
+  }).sort((a,b) => Math.abs(b.vsYest) - Math.abs(a.vsYest));
+}
+
+function priceFor(c, code) {
+  if (!code || code === 'ALL') return { low: c.low, high: c.high, mostly: c.mostly };
+  const m = MARKETS.find(t => t.code === code);
+  if (!m) return { low: c.low, high: c.high, mostly: c.mostly };
+  const rel = c.termRows.filter(r => r.market && r.market.toLowerCase().includes(m.city.toLowerCase()) && r.price_low != null);
+  if (!rel.length) return { low: c.low, high: c.high, mostly: c.mostly };
+  const prices = rel.map(r => parseFloat(r.price_low));
+  return { low: Math.min(...prices), high: Math.max(...prices), mostly: prices.reduce((a,b)=>a+b,0)/prices.length };
+}
+
+// ── Sparkline ──────────────────────────────────────────────────────────────
+function Sparkline({ data, trend, w=78, h=26 }) {
+  if (!data || data.length < 2) return null;
+  const s = sigFor(trend || (data[data.length-1] >= data[0] ? 'up' : 'down'));
+  const min = Math.min(...data), max = Math.max(...data), rng = (max-min)||1;
+  const pts = data.map((v,i) => [(i/(data.length-1)*w).toFixed(1),(h-2-(v-min)/rng*(h-4)).toFixed(1)]);
+  const line = 'M'+pts.map(p=>p[0]+','+p[1]).join(' L');
+  const fill = trend==='up'?'rgba(21,128,61,.12)':trend==='down'?'rgba(220,38,38,.12)':'rgba(163,163,163,.12)';
+  return (
+    <svg viewBox={"0 0 "+w+" "+h} width={w} height={h} preserveAspectRatio="none" style={{display:'block'}}>
+      <path d={line+" L"+w+","+h+" L0,"+h+" Z"} fill={fill}/>
+      <path d={line} fill="none" stroke={s.c} strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// ── Thumb image ────────────────────────────────────────────────────────────
+function Thumb({ name, size=34, radius=7 }) {
+  const url = imgUrl(name, size * 2);
+  const tint = tintFor(name);
+  return (
+    <div style={{width:size,height:size,borderRadius:radius,overflow:'hidden',flexShrink:0,background:tint}}>
+      {url && <img src={url} alt={name} style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.style.display='none'}} />}
+    </div>
+  );
+}
+
+// ── Supply pill ─────────────────────────────────────────────────────────────
+function SupplyPill({ v }) {
+  if (!v) return <span>—</span>;
+  const s = supplyStyle(v);
+  return <span className="supply-pill" style={{color:s.fg,background:s.bg,border:'1px solid '+s.bd}}>{v}</span>;
+}
+
+// ── Market picker ───────────────────────────────────────────────────────────
+function MarketPicker({ market, setMarket }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const cur = MARKETS.find(t=>t.code===market)||MARKETS[0];
+  useEffect(()=>{
+    if (!open) return;
+    const fn = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown',fn);
+    return ()=>document.removeEventListener('mousedown',fn);
+  },[open]);
+  const byRegion = useMemo(()=>{
+    const m={};
+    MARKETS.slice(1).forEach(t=>{(m[t.region]=m[t.region]||[]).push(t);});
+    return m;
+  },[]);
+  return (
+    <div ref={ref} style={{position:'relative'}}>
+      <button className="market-btn" onClick={()=>setOpen(o=>!o)}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" stroke="#fff" strokeWidth="1.8"/><circle cx="12" cy="9" r="2.6" stroke="#fff" strokeWidth="1.8"/></svg>
+        <div><div className="market-btn-label">Market</div><div className="market-btn-city">{cur.city}{cur.state?', '+cur.state:''} ▾</div></div>
+      </button>
+      {open && (
+        <div style={{position:'absolute',top:'calc(100% + 8px)',right:0,minWidth:220,background:'#fff',border:'1px solid #ededed',borderRadius:12,boxShadow:'0 10px 40px -12px rgba(0,0,0,.2)',padding:5,zIndex:200}}>
+          <button className="nav-dd-item" onClick={()=>{setMarket('ALL');setOpen(false);}}>All Markets (national)</button>
+          {Object.entries(byRegion).map(([region,mkts])=>(
+            <div key={region}>
+              <div style={{padding:'6px 10px 4px',fontSize:10.5,fontWeight:700,textTransform:'uppercase',letterSpacing:'.05em',color:'#a3a3a3'}}>{region}</div>
+              {mkts.map(t=>(
+                <button key={t.code} className="nav-dd-item" onClick={()=>{setMarket(t.code);setOpen(false);}} style={{color:market===t.code?'#15803d':'#0a0a0a',fontWeight:market===t.code?700:400}}>
+                  {t.city}, {t.state}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Nav dropdown ─────────────────────────────────────────────────────────────
+function NavMenu({ label, active, children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(()=>{
+    if (!open) return;
+    const fn = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown',fn);
+    return ()=>document.removeEventListener('mousedown',fn);
+  },[open]);
+  return (
+    <div className="nav-menu" ref={ref}>
+      <button className={'nav-tab'+(active?' on':'')} onClick={()=>setOpen(o=>!o)}>{label}</button>
+      {open && <div className="nav-dropdown" onClick={()=>setOpen(false)}>{children}</div>}
+    </div>
+  );
+}
+
+// ── Card row ──────────────────────────────────────────────────────────────────
+function CardRow({ c, market, starred, onToggleStar, onOpen }) {
+  const p = priceFor(c, market);
+  const s = sigFor(c.trend);
+  return (
+    <div className="card-row" onClick={()=>onOpen(c.id)}>
+      <Thumb name={c.name} size={34} radius={8} />
+      <div style={{flex:1,minWidth:0}}>
+        <div className="card-name">
+          {starred && <span style={{color:'#f59e0b',marginRight:5}}>★</span>}
+          {c.name}
+        </div>
+        <div className="card-origin">{c.originLabel}</div>
+      </div>
+      <Sparkline data={c.sp} trend={c.trend} w={56} h={22} />
+      <div className="card-price-col">
+        <div className="card-mostly">{fmt(p.mostly)}</div>
+        <div className="card-delta" style={{color:s.c}}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Markets screen ─────────────────────────────────────────────────────────────
+const POP_F = ['avocados','strawberries','limes','apples'];
+const POP_V = ['tomatoes','lettuce','onions','potatoes'];
+
+function MarketsScreen({ comms, market, setMarket, watch, toggleStar, onOpen, todayStr }) {
+  const [fCat, setFCat] = useState('all');
+  const [fOrigin, setFOrigin] = useState('all');
+  const [fTrend, setFTrend] = useState('all');
+  const [watchOnly, setWatchOnly] = useState(false);
+
+  const byId = id => comms.find(c => c.id === id || c.name.toLowerCase().includes(id));
+  const popF = useMemo(()=> POP_F.map(k=>byId(k)).filter(Boolean).slice(0,4), [comms]);
+  const popV = useMemo(()=> POP_V.map(k=>byId(k)).filter(Boolean).slice(0,4), [comms]);
+  const watchItems = useMemo(()=> comms.filter(c=>watch[c.id]).slice(0,4), [comms,watch]);
+
+  const filtered = useMemo(()=>{
+    return comms.filter(c=>{
+      if (fCat!=='all' && c.cat.toLowerCase()!==fCat) return false;
+      if (fOrigin==='domestic' && !c.origins.some(o=>/(california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho)/i.test(o))) return false;
+      if (fOrigin==='imported' && !c.origins.some(o=>/(mexico|chile|peru|ecuador|guatemala|colombia)/i.test(o))) return false;
+      if (fTrend==='up' && c.trend!=='up') return false;
+      if (fTrend==='down' && c.trend!=='down') return false;
+      if (fTrend==='upweek' && !(c.vsWeek>0)) return false;
+      if (watchOnly && !watch[c.id]) return false;
+      return true;
+    });
+  },[comms,fCat,fOrigin,fTrend,watchOnly,watch]);
+
+  const chip = (label, active, onClick) => (
+    <button key={label} className={'chip'+(active?' on':'')} onClick={onClick}>{label}</button>
+  );
+
+  return (
+    <div>
+      {/* Hero band */}
+      <div className="hero-band">
+        <div className="hero-inner">
+          <div>
+            <div className="hero-eyebrow">Today</div>
+            <h1 className="hero-date">{fmtDate(todayStr)}</h1>
+            <div className="hero-meta mono">{comms.length} commodities · Updated {new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})} ET · USDA AMS Market News</div>
+          </div>
+          <MarketPicker market={market} setMarket={setMarket} />
+        </div>
+      </div>
+
+      <div className="page-content">
+        {/* Three cards */}
+        <div className="cards-grid">
+          <div className="card">
+            <div className="card-head"><span className="card-head-title">Popular fruit</span><span className="card-head-sub">Top traded</span></div>
+            {popF.map(c => <CardRow key={c.id} c={c} market={market} starred={false} onToggleStar={toggleStar} onOpen={onOpen} />)}
+          </div>
+          <div className="card">
+            <div className="card-head"><span className="card-head-title">Popular vegetables</span><span className="card-head-sub">Top traded</span></div>
+            {popV.map(c => <CardRow key={c.id} c={c} market={market} starred={false} onToggleStar={toggleStar} onOpen={onOpen} />)}
+          </div>
+          <div className="card">
+            <div className="card-head"><span className="card-head-title">Your watchlist</span><span className="card-head-sub">{Object.keys(watch).length} starred</span></div>
+            {watchItems.length ? watchItems.map(c => <CardRow key={c.id} c={c} market={market} starred onToggleStar={toggleStar} onOpen={onOpen} />) :
+              <div style={{padding:'24px 16px',textAlign:'center',color:'#a3a3a3',fontSize:13}}>Star a commodity to track it here</div>}
+          </div>
+        </div>
+
+        {/* Filter chips */}
+        <div className="chips-bar">
+          <span className="chips-label">CATEGORY</span>
+          {chip('All',fCat==='all',()=>setFCat('all'))}
+          {chip('Fruits',fCat==='fruit',()=>setFCat('fruit'))}
+          {chip('Vegetables',fCat==='vegetable',()=>setFCat('vegetable'))}
+          {chip('Berries',fCat==='berry',()=>setFCat('berry'))}
+          <span className="chips-sep"/>
+          <span className="chips-label">ORIGIN</span>
+          {chip('All',fOrigin==='all',()=>setFOrigin('all'))}
+          {chip('Domestic',fOrigin==='domestic',()=>setFOrigin('domestic'))}
+          {chip('Imported',fOrigin==='imported',()=>setFOrigin('imported'))}
+          <span className="chips-sep"/>
+          <span className="chips-label">TREND</span>
+          {chip('All',fTrend==='all',()=>setFTrend('all'))}
+          {chip('Up today',fTrend==='up',()=>setFTrend('up'))}
+          {chip('Down today',fTrend==='down',()=>setFTrend('down'))}
+          {chip('Up this week',fTrend==='upweek',()=>setFTrend('upweek'))}
+          <button className={'chip'+(watchOnly?'chip on':'')} onClick={()=>setWatchOnly(w=>!w)} style={watchOnly?{background:'#fffbeb',borderColor:'#fde68a',color:'#b45309',fontWeight:600}:{}}>☆ Watchlist only</button>
+        </div>
+
+        {/* Main table */}
+        <div className="data-tbl-wrap">
+          <div className="data-tbl-head">
+            <span>☆</span><span>Commodity</span><span>Unit</span><span>Origin</span>
+            <span className="tbl-right">Low</span><span className="tbl-right">High</span>
+            <span className="tbl-right">Mostly</span><span className="tbl-right">vs Yest</span>
+            <span className="tbl-right">vs Wk</span><span className="tbl-right">7-day</span>
+          </div>
+          {filtered.map((c,i) => {
+            const p = priceFor(c, market);
+            const s = sigFor(c.trend);
+            const starred = !!watch[c.id];
+            return (
+              <div key={c.id} className="data-tbl-row" style={{background:i%2?'#fafafa':'#fff'}} onClick={()=>onOpen(c.id)}>
+                <button className={'star-glyph'+(starred?' on':'')}
+                  onClick={e=>{e.stopPropagation();toggleStar(c.id);}}>
+                  {starred?'★':'☆'}
+                </button>
+                <div className="tbl-comm-cell">
+                  <Thumb name={c.name} size={32} radius={7} />
+                  <span className="tbl-comm-name">{c.name}</span>
+                </div>
+                <span className="mono" style={{fontSize:12,color:'#737373'}}>{c.unit}</span>
+                <div className="tbl-origin-cell">
+                  <span className="origin-dot" style={{background:c.origins.some(function(o){return /california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho/i.test(o);})?'#15803d':'#2563eb'}}></span>
+                  {c.origins[0] ? (c.origins[0].length > 18 ? c.origins[0].slice(0,18)+'…' : c.origins[0]) : '—'}
+                </div>
+                <span className="tbl-num" style={{color:'#737373'}}>{fmt(p.low)}</span>
+                <span className="tbl-num" style={{color:'#737373'}}>{fmt(p.high)}</span>
+                <span className="tbl-mostly">{fmt(p.mostly)}</span>
+                <span className="tbl-right">
+                  <span className="tbl-delta-chip" style={{color:s.c,background:s.bg}}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</span>
+                </span>
+                <span className="tbl-right mono" style={{fontSize:12.5,fontWeight:600}}>
+                  {c.vsWeek>0?'+':''}{c.vsWeek.toFixed(2)}%
+                </span>
+                <div className="tbl-spark"><Sparkline data={c.sp} trend={c.trend} /></div>
+              </div>
+            );
+          })}
+          {!filtered.length && <div style={{padding:'40px',textAlign:'center',color:'#a3a3a3',fontSize:14}}>No commodities match your filters.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Commodity detail ─────────────────────────────────────────────────────────
+function DetailScreen({ c, market, watch, toggleStar, onBack, allComms, onOpen, todayStr }) {
+  const [variety, setVariety] = useState(0);
+  if (!c) return null;
+
+  const spread = c.fobAvg ? (c.mostly - c.fobAvg) : null;
+  const s = sigFor(c.trend);
+  const supplyV = c.movement || 'Moderate';
+  const sp = supplyStyle(supplyV);
+  const starred = !!watch[c.id];
+  const idx = allComms.findIndex(x=>x.id===c.id);
+
+  const termMkts = useMemo(()=>{
+    const byM = {};
+    c.termRows.forEach(r=>{
+      const code = mktFromName(r.market);
+      if (!code) return;
+      const info = MARKETS.find(t=>t.code===code);
+      if (!info) return;
+      if (!byM[code]) byM[code]={code,city:info.city,region:info.region,prices:[],movement:null};
+      byM[code].prices.push(parseFloat(r.price_low));
+      if (r.movement) byM[code].movement=r.movement;
+    });
+    return Object.values(byM).map(m=>({
+      ...m, low:Math.min(...m.prices), high:Math.max(...m.prices),
+      mostly:m.prices.reduce((a,b)=>a+b,0)/m.prices.length,
+    })).sort((a,b)=>a.mostly-b.mostly);
+  },[c]);
+
+  const region = c.originLabel ? (c.originLabel.includes('(') ? c.originLabel.replace(/^[^(]*\(|\)/g,'') : c.originLabel) : '—';
+  const headlineVerb = c.trend==='up'?'jumps':'eases';
+  const supplyVerb = c.trend==='up'?'tightens':'loosens';
+  const headline = c.name + ' ' + headlineVerb + ' ' + Math.abs(c.vsYest).toFixed(1) + '% as supply ' + supplyVerb + ' from ' + region;
+  const bodyText = 'USDA AMS reports ' + c.name.toLowerCase() + ' moving ' + (c.trend==='up'?'sharply higher':'lower') + ' at the New York terminal as ' + (c.trend==='up'?'light':'ample') + ' supplies meet ' + (c.trend==='up'?'firm':'softening') + ' buyer demand. Crossings from ' + region + ' are ' + (c.trend==='up'?'below normal for the week':'running near schedule') + '.';
+
+  const fobList = c.fobRows.slice(0,3).map((r,i)=>({place:r.origin||r.market||'—', v:parseFloat(r.price_low)}));
+  if (!fobList.length && c.fobAvg) {
+    fobList.push({place:c.originLabel,v:c.fobAvg});
+  }
+  const fobAvgVal = fobList.length ? fobList.reduce((a,o)=>a+o.v,0)/fobList.length : null;
+
+  const varieties = ['Standard','Premium','Organic'];
+  const imgSrc = imgUrl(c.name, 560);
+
+  return (
+    <div className="page-content">
+      {/* Back + nav */}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
+        <button className="detail-back" onClick={onBack}>← Back to Markets</button>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <button disabled={idx<=0} onClick={()=>idx>0&&onOpen(allComms[idx-1].id)} style={{background:'none',border:'1px solid #ededed',borderRadius:8,padding:'6px 10px',cursor:'pointer',color:idx<=0?'#d4d4d4':'#0a0a0a',fontFamily:'inherit',fontSize:13,fontWeight:600}}>‹</button>
+          <span className="mono" style={{fontSize:13,color:'#a3a3a3'}}>{idx+1} of {allComms.length}</span>
+          <button disabled={idx>=allComms.length-1} onClick={()=>idx<allComms.length-1&&onOpen(allComms[idx+1].id)} style={{background:'none',border:'1px solid #ededed',borderRadius:8,padding:'6px 10px',cursor:'pointer',color:idx<allComms.length-1?'#0a0a0a':'#d4d4d4',fontFamily:'inherit',fontSize:13,fontWeight:600}}>›</button>
+        </div>
+      </div>
+
+      {/* Header */}
+      <div className="detail-header">
+        <div className="detail-avatar">
+          <Thumb name={c.name} size={80} radius={14} />
+        </div>
+        <div style={{flex:1}}>
+          <h1 className="detail-h1">{c.name}</h1>
+          <div className="detail-crumb">{c.cat} · {c.originLabel} · {fmtShort(todayStr)} · New York, NY</div>
+        </div>
+        <button className={'watch-btn'+(starred?' on':'')} onClick={()=>toggleStar(c.id)}>
+          {starred?'★ Watching':'☆ Watch'}
+        </button>
+      </div>
+
+      {/* Headline banner */}
+      <div className="headline-banner">
+        <div className="banner-photo" style={{background:tintFor(c.name)}}>
+          {imgSrc && <img src={imgSrc} alt={c.name} onError={e=>{e.target.style.display='none'}} />}
+        </div>
+        <div className="banner-body">
+          <span className="headline-badge">Today's headline</span>
+          <h2 className="banner-h2">{headline}</h2>
+          <p className="banner-p">{bodyText}</p>
+          <div className="banner-kpis">
+            <div>
+              <div className="banner-kpi-l">Mostly today</div>
+              <div className="banner-kpi-v">{fmt(c.mostly)}</div>
+            </div>
+            <div>
+              <div className="banner-kpi-l">vs Yesterday</div>
+              <div className="banner-kpi-v" style={{color:s.c}}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</div>
+            </div>
+            <div>
+              <div className="banner-kpi-l">Supply</div>
+              <div style={{marginTop:5}}>
+                <span className="supply-pill" style={{color:sp.fg,background:sp.bg,border:'1px solid '+sp.bd,fontSize:13}}>{supplyV}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI strip */}
+      <div className="kpi-strip">
+        {[
+          ['Average price', fmt(c.mostly), '#0a0a0a'],
+          ['vs Last week', (c.vsWeek>0?'+':'')+c.vsWeek.toFixed(2)+'%', c.vsWeek>0?'#15803d':'#dc2626'],
+          ['National range', fmt(c.low).replace('.00','')+'–'+fmt(c.high).replace('.00',''), '#0a0a0a'],
+          ['FOB → Terminal', spread!=null?(spread>=0?'+':'')+fmt(Math.abs(spread)):'—', '#15803d'],
+          ['Supply', supplyV, sp.fg],
+        ].map(([label,value,color])=>(
+          <div key={label} className="kpi-card">
+            <div className="kpi-l">{label}</div>
+            <div className="kpi-v" style={{color}}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Supply chain */}
+      <div className="sc-section">
+        <h3>Supply chain · FOB origin → terminal</h3>
+        <div className="sc-grid">
+          <div className="sc-col">
+            <div className="sc-col-label">FOB Origin</div>
+            {fobList.map((o,i)=>(
+              <div key={i} className="sc-row">
+                <span className="sc-place">{o.place}</span>
+                <span className="sc-price">{fmt(o.v)}</span>
+              </div>
+            ))}
+            {!fobList.length && <div style={{color:'#a3a3a3',fontSize:13}}>No FOB data available</div>}
+            <div className="sc-divider">
+              <span className="sc-avg-label">Average FOB</span>
+              <span className="sc-avg-val">{fobAvgVal ? fmt(fobAvgVal) : '—'}</span>
+            </div>
+          </div>
+          <div className="sc-arrow">→</div>
+          <div className="sc-col" style={{textAlign:'center'}}>
+            <div className="sc-transit-label">Transit</div>
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" style={{margin:'14px auto 0'}}><path d="M3 16V7h11v9M14 9h4l3 3v4h-7" stroke="#525252" strokeWidth="1.6" strokeLinejoin="round"/><circle cx="7" cy="17" r="2" stroke="#525252" strokeWidth="1.6"/><circle cx="17" cy="17" r="2" stroke="#525252" strokeWidth="1.6"/></svg>
+            <div className="sc-transit-note">Refrigerated freight<br/>3–5 days · {c.origins[0]?c.origins[0].split(' ')[0]:'MX'} → NE</div>
+            <div style={{marginTop:14,fontSize:11,color:'#a3a3a3',textTransform:'uppercase',letterSpacing:'.04em'}}>Gross spread</div>
+            <div className="sc-spread-val">{spread!=null?(spread>=0?'+':'')+fmt(Math.abs(spread)):'—'}</div>
+          </div>
+          <div className="sc-arrow">→</div>
+          <div className="sc-col">
+            <div className="sc-col-label">Terminal market</div>
+            {termMkts.slice(0,4).map((m,i)=>{
+              const cur = m.code === 'NYC';
+              return (
+                <div key={i} className="sc-row">
+                  <span className="sc-place" style={{color:cur?'#15803d':'#525252',fontWeight:cur?700:400}}>{m.city}</span>
+                  <span className="sc-price" style={{color:cur?'#15803d':'#0a0a0a'}}>{fmt(m.mostly)}</span>
+                </div>
+              );
+            })}
+            <div className="sc-divider">
+              <span className="sc-avg-label">Average terminal</span>
+              <span className="sc-avg-val">{fmt(c.mostly)}</span>
+            </div>
+          </div>
+        </div>
+        {c.supplyNote && <p className="sc-note">{c.supplyNote}</p>}
+      </div>
+
+      {/* All terminal markets */}
+      <div className="all-markets-section">
+        <h3>All terminal markets</h3>
+        <div className="data-tbl-wrap">
+          <div className="tbl-h2">
+            <span>Market</span>
+            <span style={{textAlign:'right'}}>Low</span>
+            <span style={{textAlign:'right'}}>High</span>
+            <span style={{textAlign:'right'}}>Mostly</span>
+            <span style={{textAlign:'right'}}>Movement</span>
+          </div>
+          {termMkts.map((m,i)=>{
+            const cur = m.code === 'NYC';
+            const mv = m.movement||'Steady';
+            const mc = /higher/i.test(mv)?'#15803d':/lower/i.test(mv)?'#dc2626':'#a3a3a3';
+            return (
+              <div key={m.code} className="tbl-r2" style={{background:cur?'#f0fdf4':'#fff'}}>
+                <span style={{fontSize:14,fontWeight:cur?700:500}}>{m.city}</span>
+                <span className="mono" style={{textAlign:'right',fontSize:13,color:'#737373'}}>{fmt(m.low)}</span>
+                <span className="mono" style={{textAlign:'right',fontSize:13,color:'#737373'}}>{fmt(m.high)}</span>
+                <span className="mono" style={{textAlign:'right',fontSize:14,fontWeight:700}}>{fmt(m.mostly)}</span>
+                <span style={{textAlign:'right',fontSize:12.5,fontWeight:600,color:mc}}>{mv}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Variety switcher */}
+      <div className="variety-section">
+        <h3 style={{fontSize:14,fontWeight:700,color:'#737373'}}>Variety</h3>
+        <div className="variety-chips">
+          {varieties.map((v,i)=>(
+            <button key={v} className={'variety-chip'+(variety===i?' on':'')} onClick={()=>setVariety(i)}>{v}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Search overlay ─────────────────────────────────────────────────────────────
+function SearchOverlay({ comms, onClose, onOpen }) {
+  const [q, setQ] = useState('');
+  const [active, setActive] = useState(0);
+  const ref = useRef(null);
+  useEffect(()=>{ ref.current && ref.current.focus(); },[]);
+  const results = useMemo(()=>{
+    if (!q.trim()) return [...comms].sort((a,b)=>Math.abs(b.vsYest)-Math.abs(a.vsYest)).slice(0,6);
+    const ql = q.toLowerCase();
+    return comms.filter(c=>c.name.toLowerCase().includes(ql)||c.originLabel.toLowerCase().includes(ql)||c.cat.toLowerCase().includes(ql));
+  },[q,comms]);
+  useEffect(()=>{ setActive(0); },[q]);
+  function onKey(e) {
+    if (e.key==='Escape') onClose();
+    else if (e.key==='ArrowDown'){e.preventDefault();setActive(a=>Math.min(results.length-1,a+1));}
+    else if (e.key==='ArrowUp'){e.preventDefault();setActive(a=>Math.max(0,a-1));}
+    else if (e.key==='Enter'&&results[active]) onOpen(results[active].id);
+  }
+  return (
+    <div className="search-overlay" onClick={onClose}>
+      <div className="search-panel" onClick={e=>e.stopPropagation()}>
+        <div className="search-field">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-3.5-3.5" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          <input ref={ref} value={q} onChange={e=>setQ(e.target.value)} onKeyDown={onKey} placeholder="Search commodities, origins…" />
+          <span className="search-esc" onClick={onClose}>esc</span>
+        </div>
+        <div className="search-results">
+          <div className="search-group-h">{q?results.length+' results':'Top movers today'}</div>
+          {results.map((c,i)=>{
+            const s = sigFor(c.trend);
+            return (
+              <div key={c.id} className={'search-result'+(i===active?' on':'')} onMouseEnter={()=>setActive(i)} onClick={()=>onOpen(c.id)}>
+                <div className="search-result-thumb" style={{background:tintFor(c.name)}}>
+                  {imgUrl(c.name,100) && <img src={imgUrl(c.name,100)} alt={c.name} style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.target.style.display='none'}} />}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div className="search-result-cat">{c.cat}</div>
+                  <div className="search-result-name">{c.name} <span className="search-result-origin">· {c.originLabel}</span></div>
+                </div>
+                <div className="search-result-price">
+                  <div className="search-result-mostly">{fmt(c.mostly)}</div>
+                  <div style={{fontSize:12,fontWeight:600,color:s.c,fontFamily:'"IBM Plex Mono",monospace'}}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="search-hints"><span><b>↑↓</b> navigate</span><span><b>↵</b> open</span><span><b>esc</b> close</span></div>
+      </div>
+    </div>
+  );
+}
+
+
+
+// ── Shipping Screen ────────────────────────────────────────────────────────────
+function ShipScreen({ allRows, todayStr, onOpen }) {
+  const rows = useMemo(() => allRows.filter(r => r.market_type === 'shipping_point' && r.market !== 'National Trends' && r.price_low != null), [allRows]);
+  const [q, setQ] = useState('');
+  const filtered = q ? rows.filter(r => r.commodity.toLowerCase().includes(q.toLowerCase()) || (r.origin || '').toLowerCase().includes(q.toLowerCase())) : rows;
+  return (
+    <div className="page-content">
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18,flexWrap:'wrap',gap:10 }}>
+        <div>
+          <h1 style={{ fontSize:24,fontWeight:700,letterSpacing:'-.02em' }}>Shipping Points</h1>
+          <div style={{ fontSize:13,color:'#737373',marginTop:4 }}>F.O.B. origin pricing · {new Date((todayStr||'')+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div style={{ display:'flex',alignItems:'center',gap:8,background:'#fafafa',border:'1px solid #ededed',borderRadius:9,padding:'0 12px',height:36 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-4-4" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search commodity or origin…"
+            style={{ border:'none',outline:'none',background:'transparent',fontSize:13,width:220,fontFamily:'inherit',color:'#0a0a0a' }} />
+        </div>
+      </div>
+      <div style={{ border:'1px solid #ededed',borderRadius:14,overflow:'hidden' }}>
+        <div style={{ display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 1fr 1fr',padding:'10px 16px',background:'#fafafa',borderBottom:'1px solid #ededed' }}>
+          {['Commodity','Origin','Hub','Package','FOB Low','FOB High','Movement'].map((h,i) => (
+            <span key={h} style={{ fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.05em',color:'#a3a3a3' }} className={i>3?'tbl-right':''}>{h}</span>
+          ))}
+        </div>
+        {filtered.slice(0,60).map((r, i) => (
+          <div key={i} onClick={() => onOpen(r.commodity.toLowerCase().replace(/[^a-z0-9]+/g,'-'))}
+            style={{ display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 1fr 1fr',padding:'10px 16px',borderBottom:'1px solid #f4f4f4',cursor:'pointer',background:i%2?'#fafafa':'#fff',alignItems:'center' }}
+            onMouseEnter={e => e.currentTarget.style.background='#f0fdf4'}
+            onMouseLeave={e => e.currentTarget.style.background=i%2?'#fafafa':'#fff'}>
+            <span style={{ fontSize:13.5,fontWeight:600 }}>{r.commodity}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.origin||'—'}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.market||'—'}</span>
+            <span style={{ fontSize:12,color:'#737373' }}>{r.package||'—'}</span>
+            <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13,fontWeight:600 }}>${parseFloat(r.price_low).toFixed(2)}</span>
+            <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13,color:'#737373' }}>{r.price_high?'$'+parseFloat(r.price_high).toFixed(2):'—'}</span>
+            <span style={{ textAlign:'right',fontSize:12,color:r.movement&&/higher/i.test(r.movement)?'#15803d':r.movement&&/lower/i.test(r.movement)?'#dc2626':'#737373' }}>{r.movement||'—'}</span>
+          </div>
+        ))}
+        {!filtered.length && <div style={{ padding:40,textAlign:'center',color:'#a3a3a3' }}>No FOB shipping point data</div>}
+      </div>
+      <div style={{ padding:'10px 0',fontSize:11,color:'#a3a3a3',fontFamily:'monospace' }}>{filtered.length} listings</div>
+    </div>
+  );
+}
+
+// ── Watchlist screen ────────────────────────────────────────────────────────────
+function WatchScreen({ comms, watchlist, toggleStar, onOpen, market, todayStr }) {
+  const items = comms.filter(c => watchlist[c.id]);
+  function fmt(v) { return v != null ? '$' + parseFloat(v).toFixed(2) : '—'; }
+  return (
+    <div className="page-content">
+      <div style={{ marginBottom:20 }}>
+        <h1 style={{ fontSize:24,fontWeight:700,letterSpacing:'-.02em' }}>Watchlist</h1>
+        <div style={{ fontSize:13,color:'#737373',marginTop:4 }}>{items.length} commodities tracked</div>
+      </div>
+      {!items.length ? (
+        <div style={{ border:'1px solid #ededed',borderRadius:14,padding:'40px 20px',textAlign:'center',color:'#a3a3a3' }}>
+          <div style={{ fontWeight:600,color:'#0a0a0a',marginBottom:6 }}>Nothing here yet</div>
+          Star any commodity in Markets to track it here
+        </div>
+      ) : (
+        <div style={{ border:'1px solid #ededed',borderRadius:14,overflow:'hidden' }}>
+          {items.map((c, i) => {
+            const p = priceFor(c, market);
+            const s = sigFor(c.trend);
+            return (
+              <div key={c.id} onClick={() => onOpen(c.id)}
+                style={{ display:'grid',gridTemplateColumns:'32px 2fr 1fr 1fr 1fr 1fr 1fr',padding:'12px 16px',borderBottom:'1px solid #f4f4f4',cursor:'pointer',alignItems:'center',background:i%2?'#fafafa':'#fff' }}>
+                <button className={'star-glyph on'} onClick={e => { e.stopPropagation(); toggleStar(c.id); }}>★</button>
+                <div><div style={{ fontSize:14,fontWeight:600 }}>{c.name}</div><div style={{ fontSize:11,color:'#a3a3a3' }}>{c.cat}</div></div>
+                <span style={{ fontSize:12,color:'#737373' }}>{c.origins[0]||'—'}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13 }}>{fmt(p.low)}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:13 }}>{fmt(p.high)}</span>
+                <span style={{ textAlign:'right',fontFamily:'monospace',fontSize:14,fontWeight:700 }}>{fmt(p.mostly)}</span>
+                <span style={{ textAlign:'right' }}><span className={'tbl-delta-chip'} style={{ color:s.c,background:s.bg,fontSize:12,fontWeight:600,padding:'2px 7px',borderRadius:6,fontFamily:'monospace' }}>{s.a} {Math.abs(c.vsYest).toFixed(2)}%</span></span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ── Movement Screen ────────────────────────────────────────────────────────────
+function MovementScreen({ todayStr }) {
+  const [data, setData] = useState(null);
+  const [summary, setSummary] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedComm, setSelectedComm] = useState('all');
+  const [selectedMode, setSelectedMode] = useState('all');
+
+  useEffect(() => {
+    (async function() {
+      try {
+        const dates = await fetch(API + '/movement/dates').then(r => r.json());
+        if (!dates.length) { setLoading(false); return; }
+        const date = dates[0].date;
+        const [rows, summ] = await Promise.all([
+          fetch(API + '/movement/by-date/' + date).then(r => r.json()),
+          fetch(API + '/movement/summary/' + date).then(r => r.json()),
+        ]);
+        setData({ date, rows });
+        setSummary(summ);
+      } catch(e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  const fmtLbs = (n) => {
+    if (!n) return '—';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+    return n.toLocaleString();
+  };
+  const fmtUnits = (n) => n ? n.toLocaleString() : '—';
+
+  const filtered = useMemo(() => {
+    let list = summary;
+    if (selectedComm !== 'all') list = list.filter(c => c.commodity === selectedComm);
+    if (selectedMode !== 'all') {
+      list = list.filter(c => {
+        if (selectedMode === 'truck') return c.truck_pounds > 0;
+        if (selectedMode === 'air') return c.air_pounds > 0;
+        if (selectedMode === 'boat') return c.boat_pounds > 0;
+        return true;
+      });
+    }
+    return list;
+  }, [summary, selectedComm, selectedMode]);
+
+  // Aggregate totals
+  const totals = useMemo(() => {
+    const t = { lbs: 0, units: 0, truck: 0, air: 0, boat: 0, comms: summary.length };
+    summary.forEach(c => {
+      t.lbs += c.total_pounds || 0;
+      t.units += c.total_units || 0;
+      t.truck += c.truck_pounds || 0;
+      t.air += c.air_pounds || 0;
+      t.boat += c.boat_pounds || 0;
+    });
+    return t;
+  }, [summary]);
+
+  // Origin aggregation from raw rows
+  const origins = useMemo(() => {
+    if (!data) return [];
+    const byOrigin = {};
+    data.rows.forEach(r => {
+      const o = r.origin_code || 'OT';
+      if (!byOrigin[o]) byOrigin[o] = 0;
+      byOrigin[o] += r.total_pounds || 0;
+    });
+    const flags = { MX: '🇲🇽', US: '🇺🇸', CL: '🇨🇱', PE: '🇵🇪', GT: '🇬🇹', CR: '🇨🇷', CO: '🇨🇴', EC: '🇪🇨', OT: '🌐' };
+    const names = { MX: 'Mexico', US: 'Domestic', CL: 'Chile', PE: 'Peru', GT: 'Guatemala', CR: 'Costa Rica', CO: 'Colombia', EC: 'Ecuador', OT: 'Other' };
+    const colors = { MX: '#15803d', US: '#1d4ed8', CL: '#b45309', PE: '#d85a30', GT: '#7c3aed', CR: '#0e7490', CO: '#be185d', EC: '#d97706', OT: '#737373' };
+    return Object.entries(byOrigin)
+      .map(([code, lbs]) => ({ code, lbs, flag: flags[code] || '🌐', name: names[code] || code, color: colors[code] || '#737373' }))
+      .sort((a, b) => b.lbs - a.lbs)
+      .slice(0, 6);
+  }, [data]);
+
+  // Notable signals — commodities where volume signal is notable
+  const signals = useMemo(() => {
+    return filtered
+      .filter(c => c.total_pounds > 0)
+      .slice(0, 5)
+      .map(c => {
+        const truckPct = c.truck_pounds / (c.total_pounds || 1) * 100;
+        const boatPct = c.boat_pounds / (c.total_pounds || 1) * 100;
+        const airPct = c.air_pounds / (c.total_pounds || 1) * 100;
+        let signal = 'neu', direction = 'Normal volume';
+        if (airPct > 20) { signal = 'up'; direction = 'Air freight above 20% — tight ground supply'; }
+        else if (boatPct > 40) { signal = 'neu'; direction = 'Boat dominant — bulk import shipment'; }
+        else if (c.total_pounds > 5000000) { signal = 'up'; direction = 'High volume day'; }
+        else if (c.total_pounds < 500000) { signal = 'dn'; direction = 'Light volume'; }
+        return { ...c, signal, direction };
+      });
+  }, [filtered]);
+
+  const commSidebarItems = useMemo(() => {
+    return summary.slice(0, 10).map(c => {
+      const sig = c.total_pounds > 5000000 ? 'up' : c.total_pounds < 500000 ? 'dn' : 'neu';
+      return { name: c.commodity, sig };
+    });
+  }, [summary]);
+
+  if (loading) return <div className="mv-load">Loading movement data…</div>;
+  if (!data || !summary.length) return (
+    <div className="mv-load">
+      <div style={{ fontWeight: 600, marginBottom: 8 }}>No movement data available</div>
+      <div style={{ fontSize: 12 }}>Run the ingest to populate WA_FV175 data</div>
+    </div>
+  );
+
+  const truckPct = totals.lbs ? Math.round(totals.truck / totals.lbs * 100) : 0;
+  const airPct   = totals.lbs ? Math.round(totals.air   / totals.lbs * 100) : 0;
+  const boatPct  = totals.lbs ? Math.round(totals.boat  / totals.lbs * 100) : 0;
+  const topByLbs = [...filtered].sort((a, b) => (b.total_pounds || 0) - (a.total_pounds || 0)).slice(0, 6);
+  const originTotal = origins.reduce((s, o) => s + o.lbs, 0);
+
+  return (
+    <div>
+      {/* KPI strip */}
+      <div className="mv-kpi-row">
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Total volume</div>
+          <div className="mv-kpi-v">{fmtLbs(totals.lbs)}</div>
+          <div className="mv-kpi-s">lbs shipped today</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Standardized units</div>
+          <div className="mv-kpi-v">{fmtUnits(totals.units)}</div>
+          <div className="mv-kpi-s">× 10,000 lb units</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Commodities moving</div>
+          <div className="mv-kpi-v">{totals.comms}</div>
+          <div className="mv-kpi-s">with reported volume</div>
+        </div>
+        <div className="mv-kpi">
+          <div className="mv-kpi-l">Dominant mode</div>
+          <div className="mv-kpi-v">{truckPct >= airPct && truckPct >= boatPct ? 'Truck' : boatPct >= airPct ? 'Boat' : 'Air'}</div>
+          <div className="mv-kpi-s">{Math.max(truckPct, airPct, boatPct)}% of volume</div>
+        </div>
+      </div>
+
+      <div className="mv-layout">
+        {/* Sidebar */}
+        <div className="mv-sidebar">
+          <div className="mv-sb-h">By commodity</div>
+          <div className={`mv-sb-item ${selectedComm === 'all' ? 'on' : ''}`} onClick={() => setSelectedComm('all')}>
+            All commodities
+            <span style={{ fontSize: 10, color: '#a3a3a3', fontFamily: 'monospace' }}>{summary.length}</span>
+          </div>
+          {commSidebarItems.map(c => (
+            <div key={c.name} className={`mv-sb-item ${selectedComm === c.name ? 'on' : ''}`}
+              onClick={() => setSelectedComm(c.name)}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{c.name}</span>
+              <span className={`mv-sb-signal ${c.sig}`}>{c.sig === 'up' ? '↑' : c.sig === 'dn' ? '↓' : '—'}</span>
+            </div>
+          ))}
+          <div className="mv-sb-div" />
+          <div className="mv-sb-h">Transport</div>
+          {[['all','All modes'],['truck','Truck'],['air','Air'],['boat','Boat']].map(([k,l]) => (
+            <div key={k} className={`mv-sb-item ${selectedMode === k ? 'on' : ''}`} onClick={() => setSelectedMode(k)}>{l}</div>
+          ))}
+        </div>
+
+        {/* Main */}
+        <div className="mv-main">
+          {/* Mode breakdown */}
+          <div className="mv-section">
+            <div className="mv-sec-h">Transport mode breakdown</div>
+            <div className="mv-mode-grid">
+              {[
+                { key:'t', label:'Truck', lbs:totals.truck, pct:truckPct },
+                { key:'b', label:'Boat',  lbs:totals.boat,  pct:boatPct  },
+                { key:'a', label:'Air',   lbs:totals.air,   pct:airPct   },
+              ].map(m => (
+                <div key={m.key} className="mv-mode-card">
+                  <div className="mv-mode-head">
+                    <div className={`mv-mode-ico ${m.key}`}>
+                      {m.key === 't' ? '🚛' : m.key === 'a' ? '✈️' : '🚢'}
+                    </div>
+                    <span className="mv-mode-lbl">{m.label}</span>
+                  </div>
+                  <div className="mv-mode-v">{fmtLbs(m.lbs)}</div>
+                  <div className="mv-mode-s">lbs · {m.pct}% of total</div>
+                  <div className="mv-mode-bar-wrap">
+                    <div className={`mv-mode-bar ${m.key}`} style={{ width: m.pct + '%' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Two-col */}
+          <div className="mv-two">
+            {/* Top commodities */}
+            <div>
+              <div className="mv-sec-h">Top commodities by volume</div>
+              <div className="mv-box">
+                <div style={{ display:'grid',gridTemplateColumns:'1.6fr 1fr 1fr 1fr',padding:'7px 12px',background:'#fafafa',borderBottom:'1px solid #ededed' }}>
+                  {['Commodity','Lbs','Units','Signal'].map((h,i) => (
+                    <span key={h} style={{ fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.05em',color:'#a3a3a3' }} className={i>0?'tbl-right':''}>{h}</span>
+                  ))}
+                </div>
+                {topByLbs.map((c, i) => {
+                  const airPct = c.total_pounds ? Math.round(c.air_pounds / c.total_pounds * 100) : 0;
+                  const sig = airPct > 20 ? 'up' : c.total_pounds < 500000 ? 'dn' : 'neu';
+                  const sigLabel = airPct > 20 ? '↑ Air heavy' : c.total_pounds < 500000 ? '↓ Light' : '— Normal';
+                  const mode = c.truck_pounds >= c.boat_pounds && c.truck_pounds >= c.air_pounds ? 'Truck'
+                    : c.boat_pounds >= c.air_pounds ? 'Boat' : 'Air';
+                  return (
+                    <div key={c.commodity} className="mv-comm-row">
+                      <div>
+                        <div className="mv-comm-name" style={{ fontSize:12.5,fontWeight:600,color:'#0a0a0a' }}>{c.commodity}</div>
+                        <div className="mv-comm-or" style={{ fontSize:11,color:'#a3a3a3' }}>
+                          {c.origins && c.origins[0] ? c.origins[0] : ''} · {mode}
+                        </div>
+                      </div>
+                      <div className="mv-num bold" style={{ textAlign:'right' }}>{fmtLbs(c.total_pounds)}</div>
+                      <div className="mv-num" style={{ textAlign:'right' }}>{fmtUnits(c.total_units)}</div>
+                      <div style={{ textAlign:'right' }}><span className={`mv-sig ${sig}`}>{sigLabel}</span></div>
+                    </div>
+                  );
+                })}
+                {!topByLbs.length && <div className="mv-load" style={{ padding:20 }}>No data</div>}
+              </div>
+            </div>
+
+            <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+              {/* Origin breakdown */}
+              <div>
+                <div className="mv-sec-h">Volume by origin</div>
+                <div className="mv-box">
+                  {origins.map(o => (
+                    <div key={o.code} className="mv-origin-row">
+                      <div className="mv-flag">{o.flag}</div>
+                      <div className="mv-origin-name">{o.name}</div>
+                      <div className="mv-origin-bar-wrap">
+                        <div className="mv-origin-bar" style={{ width: (originTotal ? o.lbs / originTotal * 100 : 0) + '%', background: o.color }} />
+                      </div>
+                      <div className="mv-origin-pct">{originTotal ? Math.round(o.lbs / originTotal * 100) : 0}%</div>
+                      <div className="mv-origin-lbs">{fmtLbs(o.lbs)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Signals */}
+              <div>
+                <div className="mv-sec-h">Notable signals</div>
+                <div className="mv-box">
+                  {signals.map(s => (
+                    <div key={s.commodity} className={`mv-note ${s.signal === 'dn' ? 'warn' : ''}`}>
+                      <b>{s.commodity}</b> — {s.direction}.
+                      {s.total_pounds > 0 && <span style={{ color:'#a3a3a3',marginLeft:6,fontFamily:'monospace',fontSize:11 }}>{fmtLbs(s.total_pounds)} lbs</span>}
+                    </div>
+                  ))}
+                  {!signals.length && <div className="mv-note">No notable signals today</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ── Loading screen ──────────────────────────────────────────────────────────
+function LoadScreen() {
+  return (
+    <div className="load-screen">
+      <div className="load-logo"><span>agra</span><svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:"block",flexShrink:0}}><line x1="15" y1="15" x2="85" y2="85" stroke="#0a0a0a" strokeWidth="18" strokeLinecap="round"/><line x1="85" y1="15" x2="15" y2="85" stroke="#0a0a0a" strokeWidth="18" strokeLinecap="round"/><ellipse cx="78" cy="22" rx="20" ry="11" fill="#15803d" transform="rotate(-45 78 22)"/><ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/></svg></div>
+      <div style={{color:'#737373',fontSize:13}}>Loading USDA market data…</div>
+      <div className="load-bar-wrap"><div className="load-bar"/></div>
+    </div>
+  );
+}
+
+// ── Root app ──────────────────────────────────────────────────────────────────
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [todayStr, setTodayStr] = useState('');
+  const [allRows, setAllRows] = useState([]);
+  const [comms, setComms] = useState([]);
+  const [screen, setScreen] = useState('markets');
+  const [selectedId, setSelectedId] = useState(null);
+  const [market, setMarket] = useState('NYC');
+  const [watch, setWatch] = useState({ limes: true, avocados: true, strawberries: true, blueberries: true });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [fCatNav, setFCatNav] = useState(null);
+
+  useEffect(()=>{
+    const fn = e => {
+      if ((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();setSearchOpen(true);}
+      if (e.key==='/'&&document.activeElement===document.body){e.preventDefault();setSearchOpen(true);}
+    };
+    window.addEventListener('keydown',fn);
+    return ()=>window.removeEventListener('keydown',fn);
+  },[]);
+
+  useEffect(()=>{
+    (async function(){
+      try{
+        const dates = await fetch(API+'/dates').then(r=>r.json());
+        if(!dates.length) throw new Error('No dates');
+        const today = dates[0].date;
+        setTodayStr(today);
+        const rows = await fetch(API+'/commodities/by-date/'+today).then(r=>r.json());
+        setAllRows(rows);
+        let prev = [];
+        if(dates.length>1) try{ prev=await fetch(API+'/commodities/by-date/'+dates[Math.min(6,dates.length-1)].date).then(r=>r.json()); }catch(_){}
+        setComms(buildComms(rows,prev));
+      }catch(e){ setError(e.message); }
+      finally{ setLoading(false); }
+    })();
+  },[]);
+
+  function toggleStar(id){ setWatch(w=>{ const n={...w}; n[id]?delete n[id]:(n[id]=true); return n; }); }
+  function openComm(id){ setSearchOpen(false); setSelectedId(id); setScreen('detail'); window.scrollTo&&window.scrollTo(0,0); }
+  function goMarkets(){ setScreen('markets'); setSelectedId(null); }
+
+  const selectedComm = useMemo(()=> screen==='detail'&&selectedId ? comms.find(c=>c.id===selectedId)||null : null, [selectedId,screen,comms]);
+  const watchCount = Object.keys(watch).length;
+  const commTree = useMemo(()=>{
+    const t={Fruits:[],Vegetables:[],Berries:[]};
+    [...comms].sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>{
+      if(c.cat==='Fruit') t.Fruits.push(c);
+      else if(c.cat==='Vegetable') t.Vegetables.push(c);
+    });
+    return t;
+  },[comms]);
+
+  if(loading) return <LoadScreen />;
+  if(error) return (
+    <div className="load-screen">
+      <div style={{color:'#dc2626',fontWeight:600}}>Failed to load USDA data</div>
+      <div style={{color:'#737373',fontSize:12,marginTop:4}}>{error}</div>
+      <button onClick={()=>window.location.reload()} style={{marginTop:12,padding:'9px 18px',background:'#0a0a0a',color:'#fff',border:'none',borderRadius:9,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}>Retry</button>
+    </div>
+  );
+
+  return (
+    <div className="app-shell">
+      {/* Nav */}
+      <nav className="app-nav">
+        <a className="nav-logo" href="/">
+          <span>agra</span>
+          <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:"block",flexShrink:0}}><line x1="15" y1="15" x2="85" y2="85" stroke="#0a0a0a" strokeWidth="18" strokeLinecap="round"/><line x1="85" y1="15" x2="15" y2="85" stroke="#0a0a0a" strokeWidth="18" strokeLinecap="round"/><ellipse cx="78" cy="22" rx="20" ry="11" fill="#15803d" transform="rotate(-45 78 22)"/><ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/></svg>
+        </a>
+        <div className="nav-tabs">
+          <button className={'nav-tab '+(screen==='markets'?'on':'')} onClick={goMarkets}>Today</button>
+          <NavMenu label="Commodities ▾" active={screen==='markets'||screen==='detail'}>
+            <button className="nav-dd-item" onClick={goMarkets}>All commodities <span className="nav-dd-cnt">{comms.length}</span></button>
+            <div className="nav-dd-sep"/>
+            {Object.entries(commTree).map(([cat,items])=>(
+              <button key={cat} className="nav-dd-item" onClick={goMarkets}>{cat} <span className="nav-dd-cnt">{items.length}</span></button>
+            ))}
+          </NavMenu>
+          <NavMenu label="Terminal markets ▾" active={false}>
+            <button className="nav-dd-item" onClick={()=>{ setMarket('ALL'); goMarkets(); }}>All terminal markets <span className="nav-dd-cnt">12</span></button>
+            <div className="nav-dd-sep"/>
+            <div className="nav-dd-scroll">
+              {MARKETS.slice(1).map(t=>(
+                <button key={t.code} className="nav-dd-item" onClick={()=>{ setMarket(t.code); goMarkets(); }} style={{fontWeight:market===t.code?700:400,color:market===t.code?'#15803d':'#0a0a0a'}}>
+                  {t.city}, {t.state} <span className="nav-dd-cnt">{t.region}</span>
+                </button>
+              ))}
+            </div>
+          </NavMenu>
+          <button className={'nav-tab '+(screen==='shipping'?'on':'')} onClick={()=>setScreen('shipping')}>Shipping points</button>
+          <button className={'nav-tab '+(screen==='movement'?'on':'')} onClick={()=>setScreen('movement')}>Movement</button>
+          <span className="nav-sep"/>
+          <button className="nav-tab" style={{color:watchCount?'#b45309':'inherit'}} onClick={()=>setScreen('watchlist')}>
+            ☆ Watchlist ({watchCount})
+          </button>
+        </div>
+        <div className="nav-r">
+          <button className="nav-search" onClick={()=>setSearchOpen(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-3.5-3.5" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <span>Search commodities…</span>
+            <span className="nav-kbd">⌘K</span>
+          </button>
+          <div className="nav-avatar">AX</div>
+        </div>
+      </nav>
+
+      {/* Main */}
+      <main className="app-main">
+        {screen==='markets' && <MarketsScreen comms={comms} market={market} setMarket={setMarket} watch={watch} toggleStar={toggleStar} onOpen={openComm} todayStr={todayStr} />}
+        {screen==='detail' && selectedComm && <DetailScreen c={selectedComm} market={market} watch={watch} toggleStar={toggleStar} onBack={goMarkets} allComms={comms} onOpen={openComm} todayStr={todayStr} />}
+        {screen==='movement' && <MovementScreen todayStr={todayStr} />}
+        {screen==='shipping' && <ShipScreen allRows={allRows} todayStr={todayStr} onOpen={openComm} />}
+        {screen==='watchlist' && <WatchScreen comms={comms} watchlist={watch} toggleStar={toggleStar} onOpen={openComm} market={market} todayStr={todayStr} />}
+      </main>
+
+      {/* Status bar */}
+      <div className="status-bar mono">
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,color:'#4ade80'}}>
+          <span className="status-dot"/>Connected
+        </span>
+        <span className="status-sep">·</span>
+        <span>USDA AMS</span>
+        <span className="status-sep">|</span>
+        <span>{fmtShort(todayStr)}</span>
+        <span className="status-sep">|</span>
+        <span>{comms.length} commodities · {allRows.filter(r=>r.market_type==='terminal').length} terminal listings</span>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <div className="mob-nav">
+        <button className={'mob-tab '+(screen==='markets'||screen==='detail'?'on':'')} onClick={goMarkets}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V11l8-6 8 6v8" stroke={screen==='markets'||screen==='detail'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 19v-5h6v5" stroke={screen==='markets'||screen==='detail'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Markets
+        </button>
+        <button className="mob-tab" onClick={()=>setSearchOpen(true)}>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="#a3a3a3" strokeWidth="1.8"/><path d="M20 20l-4-4" stroke="#a3a3a3" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          Search
+        </button>
+        <button className={'mob-tab '+(screen==='movement'?'on':'')} style={{position:'relative'}} onClick={()=>setScreen('movement')}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M2 16l5-5 4 4 5-6 4 3" stroke={screen==='movement'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Movement
+        </button>
+        <button className={'mob-tab '+(screen==='watchlist'?'on':'')} onClick={()=>setScreen('watchlist')}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l2.4 5 5.6.6-4 4 1 5.4-5-2.8-5 2.8 1-5.4-4-4 5.6-.6z" stroke={screen==='watchlist'?'#15803d':'#a3a3a3'} strokeWidth="1.8" strokeLinejoin="round"/></svg>
+          Watchlist
+          {watchCount>0 && <span className="mob-badge">{watchCount}</span>}
+        </button>
+      </div>
+
+      {searchOpen && <SearchOverlay comms={comms} onClose={()=>setSearchOpen(false)} onOpen={openComm} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

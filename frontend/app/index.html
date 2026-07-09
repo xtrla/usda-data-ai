@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- SHELL slots -->
+  <div id="mtop-slot"></div>
+  <div id="side-slot"></div>
+
+  <main class="main">
+    <div class="msub">
+      <div class="msub__chip"><span class="dot"></span><span id="mkt-mobile">New York</span> ▾</div>
+      <div class="msub__chip" style="color:var(--sub)"><span id="date-mobile">—</span> ▾</div>
+      <div class="msub__chip" style="color:var(--sub)">🔍 Search</div>
+    </div>
+
+    <div class="topbar">
+      <div class="topbar__search">
+        <span>🔍</span>Search commodities, markets…
+        <span class="topbar__kbd">⌘K</span>
+      </div>
+      <div class="topbar__selector">
+        <span class="topbar__dot"></span>
+        <span style="font-weight:500" id="mkt-desktop">New York</span>
+        <span class="topbar__chev">▾</span>
+      </div>
+      <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
+      <div class="topbar__bell" role="button" aria-label="Notifications">🔔</div>
+    </div>
+
+    <!-- Verdict + mood + KPI row -->
+    <div class="stack stack--two-cols">
+      <section class="card card--mint" style="padding:18px 22px" id="verdict-card">
+        <span class="mood-pill" id="verdict-pill">● Loading</span>
+        <h2 class="verdict" id="verdict-headline">Loading today's read…</h2>
+        <p class="verdict__sub" id="verdict-sub">Pulling the latest USDA report.</p>
+      </section>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="gauge-card">
+          <div class="gauge">
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#EFEFEC" stroke-width="6"/>
+              <circle id="gauge-arc" cx="32" cy="32" r="26" fill="none" stroke="#15A24A" stroke-width="6" stroke-dasharray="0 163" stroke-linecap="round"/>
+            </svg>
+            <div class="gauge__txt" id="gauge-num">—</div>
+          </div>
+          <div>
+            <div style="font-size:9.5px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Market mood</div>
+            <div style="font-size:14px;font-weight:600" id="mood-label">—</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi kpi--pos"><div class="kpi__lbl">Down</div><div class="kpi__val" id="k-down">—</div></div>
+          <div class="kpi kpi--neg"><div class="kpi__lbl">Up</div><div class="kpi__val" id="k-up">—</div></div>
+          <div class="kpi"><div class="kpi__lbl">Items</div><div class="kpi__val" id="k-count">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watchlist + Best buy + Alerts -->
+    <div class="stack stack--two-cols">
+      <section class="card card--flush">
+        <div style="padding:11px 14px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid var(--line-soft)">
+          <span style="color:var(--pop)">★</span>
+          <span style="font-size:12.5px;font-weight:600">Your watchlist</span>
+          <span style="font-size:11px;color:var(--muted)" id="watch-count">0 items</span>
+          <a href="/app/markets" style="margin-left:auto;font-size:11.5px;color:var(--pop);font-weight:500">+ Add</a>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr><th>Commodity</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly</th></tr>
+            </thead>
+            <tbody id="watch-tbody">
+              <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <section class="card card--dark" id="bestbuy-card">
+          <div class="best__tag">Best buy today</div>
+          <div class="best__name" id="best-name">—</div>
+          <div><span class="best__price" id="best-price">—</span><span class="best__delta" id="best-delta"></span></div>
+          <div style="font-size:11px;color:var(--dark-fg-muted);margin-top:2px" id="best-sub"></div>
+        </section>
+        <section class="card">
+          <div class="card-title"><span class="card-title__ico">⚡</span>Active alerts<span class="card-title__meta" id="alerts-meta">0 today</span></div>
+          <div id="alerts-body">
+            <div style="font-size:12px;color:var(--muted);padding:8px 0">Set alerts on your watchlist commodities to see them here.</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Movement snapshot: since /movement endpoints don't exist in api.py, hide until backend supports it -->
+    <section class="card" id="movement-card" style="display:none">
+      <div class="card-title">
+        <span class="eyebrow muted">Movement · today</span>
+        <a href="/app/movement" class="card-title__link">View full →</a>
+      </div>
+      <div id="movement-body"></div>
+    </section>
+
+  </main>
+
+  <div id="mtabs-slot"></div>
+</div>
+
+<div id="err-slot"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+(async function() {
+  const U = window.agraxUtil;
+
+  // 1. Render shell
+  const shell = Shell.render('dashboard');
+  document.getElementById('mtop-slot').outerHTML = shell.mtop;
+  document.getElementById('side-slot').outerHTML = shell.side;
+  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+
+  // 2. Fetch data
+  let latestDate = null;
+  let terminalRows = [];
+  let prevRows = [];
+  try {
+    const dates = await agraxAPI.dates();
+    if (!dates || !dates.length) throw new Error('No dates returned from API');
+    latestDate = dates[0].date;
+    const prevDate = dates[1]?.date;
+    document.getElementById('date-desktop').textContent = fmtDate(latestDate);
+    document.getElementById('date-mobile').textContent = fmtDate(latestDate);
+
+    terminalRows = await agraxAPI.reportTerminal(latestDate);
+    if (prevDate) {
+      prevRows = await agraxAPI.reportTerminal(prevDate);
+    }
+  } catch (err) {
+    showError(err);
+    return;
+  }
+
+  // 3. Filter to selected market (default: first available)
+  const availableMarkets = U.uniq(terminalRows.map(r => r.market));
+  let market = U.selMarket();
+  if (!availableMarkets.includes(market)) {
+    market = availableMarkets[0] || 'New York';
+    U.setSelMarket(market);
+  }
+  document.getElementById('mkt-desktop').textContent = market;
+  document.getElementById('mkt-mobile').textContent = market;
+
+  const todayInMarket = terminalRows.filter(r => r.market === market);
+  const prevInMarket = prevRows.filter(r => r.market === market);
+
+  // 4. Aggregate per commodity for today
+  const todayByCommodity = groupByName(todayInMarket);
+  const prevByCommodity = groupByName(prevInMarket);
+
+  // 5. Compute verdict + KPIs
+  const changes = []; // {name, cat, todayMostly, prevMostly, pct}
+  for (const [name, rows] of todayByCommodity) {
+    const agg = U.aggregateCommodity(rows);
+    const prev = prevByCommodity.get(name);
+    const prevAgg = prev ? U.aggregateCommodity(prev) : null;
+    const d = U.delta(agg.mostly, prevAgg?.mostly);
+    changes.push({
+      name,
+      cat: rows[0]?.commodity_type,
+      today: agg,
+      prev: prevAgg,
+      pct: d.pct,
+      dir: d.dir,
+    });
+  }
+  const withChg = changes.filter(c => c.pct != null);
+  const down = withChg.filter(c => c.dir === 'down').length;
+  const up = withChg.filter(c => c.dir === 'up').length;
+  const avgChg = withChg.length ? withChg.reduce((s, c) => s + c.pct, 0) / withChg.length : null;
+  const mood = U.moodFromAvgChg(avgChg);
+
+  document.getElementById('k-down').textContent = down;
+  document.getElementById('k-up').textContent = up;
+  document.getElementById('k-count').textContent = changes.length;
+  document.getElementById('gauge-num').textContent = mood.score;
+  // Circle: 2πr = 2*π*26 ≈ 163.36. Fill = score/100 * 163.36
+  const fill = (mood.score / 100) * 163.36;
+  document.getElementById('gauge-arc').setAttribute('stroke-dasharray', `${fill} ${163.36 - fill}`);
+  document.getElementById('mood-label').textContent = `${mood.label} · avg ${U.fmtPct(avgChg)}`;
+
+  // Verdict headline: biggest drop → "Load up on X". Biggest rise → "Skip the Y".
+  withChg.sort((a, b) => a.pct - b.pct);
+  const biggestDrop = withChg[0];
+  const biggestRise = withChg[withChg.length - 1];
+  const pill = document.getElementById('verdict-pill');
+  const head = document.getElementById('verdict-headline');
+  const sub = document.getElementById('verdict-sub');
+  pill.textContent = `● ${mood.label}`;
+  if (mood.mod === 'up') pill.classList.add('mood-pill--warn');
+
+  if (biggestDrop && biggestRise && biggestDrop.pct < -3 && biggestRise.pct > 3) {
+    head.innerHTML = `Load up on <span class="verdict__hl">${biggestDrop.name.toLowerCase()}</span>. Skip the ${biggestRise.name.toLowerCase()}.`;
+    sub.textContent = `${cap(biggestDrop.name)} down ${Math.abs(biggestDrop.pct).toFixed(0)}%, ${biggestRise.name.toLowerCase()} up ${biggestRise.pct.toFixed(0)}%.`;
+  } else if (biggestDrop && biggestDrop.pct < -5) {
+    head.innerHTML = `Load up on <span class="verdict__hl">${biggestDrop.name.toLowerCase()}</span>.`;
+    sub.textContent = `Down ${Math.abs(biggestDrop.pct).toFixed(0)}% vs yesterday.`;
+  } else {
+    head.textContent = `Steady across the board today.`;
+    sub.textContent = withChg.length ? `Avg movement ${U.fmtPct(avgChg)} across ${withChg.length} commodities.` : `No comparison available yet.`;
+  }
+
+  // 6. Best buy card = biggest drop
+  if (biggestDrop && biggestDrop.pct < -1) {
+    document.getElementById('best-name').textContent = biggestDrop.name;
+    document.getElementById('best-price').textContent = U.fmtPrice(biggestDrop.today.mostly);
+    document.getElementById('best-delta').textContent = ' ' + U.fmtDelta(biggestDrop.pct).text;
+    document.getElementById('best-sub').textContent = biggestDrop.prev
+      ? `vs ${U.fmtPrice(biggestDrop.prev.mostly)} yesterday`
+      : '';
+  } else {
+    document.getElementById('best-name').textContent = 'No standout deals today';
+    document.getElementById('best-price').textContent = '—';
+    document.getElementById('best-sub').textContent = 'Prices are steady across commodities.';
+  }
+
+  // 7. Watchlist table
+  const watch = U.watchList();
+  document.getElementById('watch-count').textContent = `${watch.length} item${watch.length === 1 ? '' : 's'}`;
+  const wt = document.getElementById('watch-tbody');
+  if (!watch.length) {
+    wt.innerHTML = `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">
+      No commodities watched yet. <a href="/app/markets" style="color:var(--pop)">Browse markets →</a>
+    </td></tr>`;
+  } else {
+    wt.innerHTML = watch.slice(0, 6).map(name => {
+      const c = changes.find(x => x.name === name);
+      if (!c) return `<tr><td>${escape(name)}</td><td colspan="3" class="r" style="color:var(--muted)">No data</td></tr>`;
+      const chg = U.fmtDelta(c.pct);
+      const chgCls = chg.dir === 'down' ? 'chg-down' : chg.dir === 'up' ? 'chg-up' : 'chg-flat';
+      return `<tr>
+        <td class="strong"><div>${escape(name)}</div><div class="data__sub">${escape(c.today.packs[0] || '')}</div></td>
+        <td class="r">${U.fmtPrice(c.today.low)}</td>
+        <td class="r">${U.fmtPrice(c.today.high)}</td>
+        <td class="r strong">${U.fmtPrice(c.today.mostly)} <span class="${chgCls}" style="font-size:10px;margin-left:4px">${chg.text}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // 8. Alerts (localStorage-based; feature preview since backend doesn't have alerts yet)
+  // Show alerts that would fire today based on watchlist and simple threshold rules
+  // For now: any watched commodity that dropped >10% today triggers a "buy" alert
+  const triggered = watch.map(name => changes.find(c => c.name === name)).filter(c => c && c.pct != null && c.pct < -10);
+  document.getElementById('alerts-meta').textContent = `${triggered.length} today`;
+  const alertsBody = document.getElementById('alerts-body');
+  if (triggered.length) {
+    alertsBody.innerHTML = triggered.slice(0, 3).map(c =>
+      `<div class="alert alert--pos"><span class="alert__icn">!</span>${escape(c.name)} dropped ${Math.abs(c.pct).toFixed(0)}% · ${escape(market)}</div>`
+    ).join('');
+  }
+
+  // ── helpers ──
+  function groupByName(rows) {
+    return U.groupBy(rows, r => r.commodity);
+  }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function showError(err) {
+    const banner = document.createElement('div');
+    banner.className = 'err-banner';
+    banner.style.margin = '16px';
+    banner.innerHTML = `<span class="err-banner__icn">!</span>
+      <span><b>Couldn't load data.</b> ${escape(String(err.message || err))}
+      <br><span style="color:var(--muted);font-size:11px">API base: ${escape(agraxAPI.base)}</span></span>`;
+    document.getElementById('err-slot').appendChild(banner);
+  }
+})();
+</script>
+</body>
+</html>

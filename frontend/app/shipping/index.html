@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Shipping Points</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
+<style>
+  table.cmp-tbl { width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px; }
+  table.cmp-tbl thead tr { color:var(--muted); background:var(--card-alt); border-bottom:0.5px solid var(--line-soft); }
+  table.cmp-tbl th { text-align:left; font-weight:500; padding:9px 16px; white-space:nowrap; font-size:11.5px; }
+  table.cmp-tbl th.r { text-align:right; }
+  table.cmp-tbl td { padding:11px 16px; border-top:0.5px solid var(--line-softer); }
+  table.cmp-tbl td.r { text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.cmp-tbl td.strong { font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="mtop-slot"></div>
+  <div id="side-slot"></div>
+
+  <main class="main">
+    <div class="msub">
+      <div class="msub__chip" style="color:var(--sub)"><span id="date-mobile">—</span> ▾</div>
+    </div>
+
+    <div class="topbar">
+      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
+      <div class="topbar__bell">🔔</div>
+    </div>
+
+    <div class="page-head">
+      <div class="eyebrow">FOB origin · at-the-source pricing</div>
+      <h1>Shipping points</h1>
+      <p>What growers receive at origin — before freight, at the packing shed.</p>
+    </div>
+
+    <div class="split">
+      <aside class="clist">
+        <div class="clist__search">
+          <div class="clist__search-wrap">
+            <span>🔍</span>
+            <input id="cl-search" placeholder="Search commodities…" />
+          </div>
+        </div>
+        <div class="clist__cats" id="cl-cats">
+          <span class="cat-chip is-active" data-cat="all">All <span class="cat-chip__count" id="cnt-all">—</span></span>
+          <span class="cat-chip" data-cat="vegetables"><span class="cat-dot cat-dot--veg"></span>Veg</span>
+          <span class="cat-chip" data-cat="fruits"><span class="cat-dot cat-dot--fruit"></span>Fruit</span>
+          <span class="cat-chip" data-cat="onions_potatoes"><span class="cat-dot cat-dot--op"></span>Onions</span>
+          <span class="cat-chip" data-cat="nuts"><span class="cat-dot cat-dot--nut"></span>Nuts</span>
+        </div>
+        <div class="clist__scroll" id="cl-scroll">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
+        </div>
+      </aside>
+
+      <section class="cmp">
+        <div class="cmp__head">
+          <div class="cmp__head-content">
+            <div>
+              <span class="cmp__cat-tag"><span class="cat-dot" style="background:var(--pop)"></span><span id="cmp-cat">—</span></span>
+              <h2 class="cmp__title" id="cmp-title">Select a commodity</h2>
+              <div class="cmp__sub" id="cmp-sub">FOB prices from every shipping-point origin</div>
+            </div>
+          </div>
+        </div>
+        <div class="cmp__summary">
+          <div class="kpi"><div class="kpi__lbl">Avg FOB</div><div class="kpi__val" id="s-avg">—</div></div>
+          <div class="kpi kpi--pos"><div class="kpi__lbl">Cheapest origin</div><div class="kpi__val" id="s-low">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-low-city"></div></div>
+          <div class="kpi kpi--neg"><div class="kpi__lbl">Highest origin</div><div class="kpi__val" id="s-high">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-high-city"></div></div>
+          <div class="kpi"><div class="kpi__lbl">Origins</div><div class="kpi__val" id="s-count">—</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="cmp-tbl">
+            <thead>
+              <tr><th>Origin</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly ▲</th><th class="r">Lots</th></tr>
+            </thead>
+            <tbody id="cmp-tbody">
+              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Select a commodity from the list.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="err-slot"></div>
+  </main>
+
+  <div id="mtabs-slot"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+(async function() {
+  const U = window.agraxUtil;
+  const shell = Shell.render('shipping');
+  document.getElementById('mtop-slot').outerHTML = shell.mtop;
+  document.getElementById('side-slot').outerHTML = shell.side;
+  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+
+  let rows = [];
+  try {
+    const dates = await agraxAPI.dates();
+    const latest = dates[0]?.date;
+    if (!latest) throw new Error('No data');
+    document.getElementById('date-desktop').textContent = fmtDate(latest);
+    document.getElementById('date-mobile').textContent = fmtDate(latest);
+    rows = await agraxAPI.reportShippingPoints(latest);
+  } catch (err) { return showError(err); }
+
+  const byName = U.groupBy(rows, r => r.commodity);
+  const commodities = [];
+  for (const [name, rs] of byName) {
+    commodities.push({ name, cat: rs[0]?.commodity_type, mostly: U.aggregateCommodity(rs).mostly, watched: U.watchHas(name) });
+  }
+  commodities.sort((a, b) => a.name.localeCompare(b.name));
+  document.getElementById('cnt-all').textContent = commodities.length;
+
+  let selectedCat = 'all', searchQ = '', selectedName = commodities[0]?.name;
+  renderList();
+  if (selectedName) renderPanel(selectedName);
+
+  document.getElementById('cl-cats').addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-cat]'); if (!chip) return;
+    selectedCat = chip.dataset.cat;
+    document.querySelectorAll('#cl-cats .cat-chip').forEach(c => c.classList.toggle('is-active', c === chip));
+    renderList();
+  });
+  document.getElementById('cl-search').addEventListener('input', (e) => { searchQ = e.target.value.toLowerCase(); renderList(); });
+  document.getElementById('cl-scroll').addEventListener('click', (e) => {
+    const item = e.target.closest('.cl-item'); if (!item) return;
+    selectedName = item.dataset.name;
+    document.querySelectorAll('.cl-item').forEach(el => el.classList.toggle('is-active', el === item));
+    renderPanel(selectedName);
+  });
+
+  function renderList() {
+    let filtered = commodities;
+    if (selectedCat !== 'all') filtered = filtered.filter(c => c.cat === selectedCat);
+    if (searchQ) filtered = filtered.filter(c => c.name.toLowerCase().includes(searchQ));
+    const html = filtered.map(c => {
+      const active = c.name === selectedName ? ' is-active' : '';
+      return `<div class="cl-item${active}" data-name="${escape(c.name)}">
+        <span class="cat-dot cat-dot--${U.catClass(c.cat)}"></span>
+        <span class="cl-item__name">${escape(c.name)}</span>
+        <span class="cl-item__price">${U.fmtPrice(c.mostly)}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('cl-scroll').innerHTML = html || `<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No matches.</div>`;
+  }
+
+  function renderPanel(name) {
+    const cRows = byName.get(name) || [];
+    const byOrigin = U.groupBy(cRows, r => r.market);
+    const perOrigin = [];
+    for (const [origin, rs] of byOrigin) {
+      perOrigin.push({ origin, ...U.aggregateCommodity(rs) });
+    }
+    perOrigin.sort((a, b) => (a.mostly ?? Infinity) - (b.mostly ?? Infinity));
+
+    document.getElementById('cmp-cat').textContent = U.catLabel(cRows[0]?.commodity_type);
+    document.getElementById('cmp-title').textContent = name;
+    document.getElementById('cmp-sub').textContent = `${perOrigin.length} shipping-point origins`;
+
+    const withPrice = perOrigin.filter(r => r.mostly != null);
+    if (withPrice.length) {
+      const avg = withPrice.reduce((s, r) => s + r.mostly, 0) / withPrice.length;
+      document.getElementById('s-avg').textContent = U.fmtPrice(avg);
+      document.getElementById('s-low').textContent = U.fmtPrice(withPrice[0].mostly);
+      document.getElementById('s-low-city').textContent = withPrice[0].origin;
+      document.getElementById('s-high').textContent = U.fmtPrice(withPrice[withPrice.length-1].mostly);
+      document.getElementById('s-high-city').textContent = withPrice[withPrice.length-1].origin;
+    }
+    document.getElementById('s-count').textContent = perOrigin.length;
+
+    document.getElementById('cmp-tbody').innerHTML = perOrigin.map((r, idx) => {
+      const isBest = idx === 0 && r.mostly != null;
+      return `<tr class="${isBest ? 'is-best' : ''}">
+        <td><span class="city-name"><span class="city-name__pin"></span>${escape(r.origin)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
+        <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
+        <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
+        <td class="r strong">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
+        <td class="r">${r.lotCount}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function showError(err) {
+    const el = document.createElement('div');
+    el.className = 'err-banner';
+    el.innerHTML = `<span class="err-banner__icn">!</span><span><b>Couldn't load.</b> ${escape(String(err.message || err))}</span>`;
+    document.getElementById('err-slot').appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>

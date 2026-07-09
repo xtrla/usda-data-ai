@@ -1,557 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>agraX — Commodity data for the produce supply chain.</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%2315803d'/%3E%3C/svg%3E"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Commodity data for the produce supply chain</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Inter",system-ui,sans-serif;color:#0a0a0a;background:#fff;-webkit-font-smoothing:antialiased;}
-::selection{background:#15803d;color:#fff;}
-img{display:block;max-width:100%;}
-@keyframes axpulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6);}70%{box-shadow:0 0 0 6px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
-.mono{font-family:"IBM Plex Mono",monospace;}
-
-/* ── NAV ── */
-.lp-nav{
-  position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;gap:32px;
-  padding:16px 40px;
-  background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
-  border-bottom:1px solid #ededed;
-}
-.lp-logo{display:flex;align-items:baseline;gap:0;text-decoration:none;color:#0a0a0a;}
-.lp-logo span{font-size:22px;font-weight:800;letter-spacing:-.02em;}
-.lp-logo img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
-.lp-nav nav{display:flex;gap:24px;font-size:14px;font-weight:500;color:#525252;}
-.lp-nav nav a{color:inherit;text-decoration:none;cursor:pointer;}
-.lp-nav nav a:hover{color:#0a0a0a;}
-.lp-nav-r{margin-left:auto;display:flex;align-items:center;gap:14px;}
-.lp-nav-r .signin{font-size:14px;font-weight:500;color:#0a0a0a;text-decoration:none;cursor:pointer;}
-.lp-btn-dark{font-family:inherit;font-size:14px;font-weight:600;color:#fff;background:#0a0a0a;border:0;padding:9px 16px;border-radius:9px;cursor:pointer;text-decoration:none;display:inline-block;}
-.lp-btn-dark:hover{background:#171717;}
-
-/* ── HERO ── */
-.lp-hero{
-  position:relative;min-height:640px;
-  display:flex;align-items:center;overflow:hidden;
-  background:#0c1f14;
-}
-.lp-hero img.bg{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;
-  filter:saturate(.85) contrast(1.02) brightness(.85);
-}
-.lp-hero-scrim{
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(8,20,13,.94) 0%,rgba(8,20,13,.78) 38%,rgba(8,20,13,.30) 72%,rgba(8,20,13,.55) 100%);
-}
-.lp-hero-inner{
-  position:relative;z-index:2;width:100%;
-  max-width:1240px;margin:0 auto;padding:0 40px;
-  display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;
-}
-.lp-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 12px;border-radius:999px;
-  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
-  font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#d1fae5;
-}
-.lp-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:axpulse 2s infinite;}
-.lp-h1{margin-top:22px;font-size:60px;line-height:1.04;font-weight:800;letter-spacing:-.035em;color:#fff;}
-.lp-lead{margin-top:22px;font-size:19px;line-height:1.55;color:#cbd5cd;max-width:480px;}
-.lp-ctas{margin-top:30px;display:flex;gap:13px;flex-wrap:wrap;}
-.btn-hero-solid{font-family:inherit;font-size:15px;font-weight:600;color:#0a0a0a;background:#fff;border:0;padding:13px 22px;border-radius:11px;cursor:pointer;text-decoration:none;display:inline-block;}
-.btn-hero-solid:hover{background:#f5f5f5;}
-.btn-hero-ghost{font-family:inherit;font-size:15px;font-weight:600;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);padding:13px 22px;border-radius:11px;cursor:pointer;text-decoration:none;display:inline-block;}
-.btn-hero-ghost:hover{background:rgba(255,255,255,.14);}
-.lp-tagline{margin-top:26px;display:flex;align-items:center;gap:10px;font-size:13px;color:#9fb3a6;}
-
-/* ── PRICE CONSOLE ── */
-.price-console{
-  background:#0e2a1b;border:1px solid rgba(74,222,128,.22);
-  border-radius:18px;padding:22px;
-  box-shadow:0 30px 80px -20px rgba(0,0,0,.6);
-}
-.pc-head{display:flex;align-items:flex-start;justify-content:space-between;}
-.pc-comm-row{display:flex;align-items:center;gap:9px;}
-.pc-comm-name{font-size:18px;font-weight:700;color:#fff;}
-.pc-comm-sub{margin-top:3px;font-size:12px;color:#86a394;font-family:"IBM Plex Mono",monospace;}
-.pc-delta{font-size:11px;font-weight:600;color:#fca5a5;background:rgba(220,38,38,.16);padding:4px 9px;border-radius:7px;font-family:"IBM Plex Mono",monospace;}
-.pc-price{margin-top:16px;display:flex;align-items:baseline;gap:8px;}
-.pc-price-val{font-size:44px;font-weight:700;color:#fff;font-family:"IBM Plex Mono",monospace;letter-spacing:-.02em;}
-.pc-price-unit{font-size:13px;color:#86a394;}
-.pc-tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px;}
-.pc-tag{font-size:11.5px;color:#cbe8d6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);padding:4px 9px;border-radius:7px;}
-.pc-tag.amber{color:#fcd34d;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.25);}
-.pc-tag.green{color:#86efac;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);}
-.pc-btn{margin-top:16px;width:100%;font-family:inherit;font-size:13.5px;font-weight:600;color:#0a0a0a;background:#4ade80;border:0;padding:11px;border-radius:10px;cursor:pointer;}
-.pc-btn:hover{background:#22c55e;}
-
-/* ── TRUST STRIP ── */
-.lp-trust{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;border-bottom:1px solid #ededed;background:#fff;}
-.lp-trust-item{flex:1;min-width:160px;padding:22px 26px;text-align:center;border-right:1px solid #f0f0f0;}
-.lp-trust-item:last-child{border-right:none;}
-.lp-trust-v{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#0a0a0a;font-family:"IBM Plex Mono",monospace;}
-.lp-trust-l{margin-top:4px;font-size:12.5px;color:#737373;font-weight:500;}
-
-/* ── LIVE TABLE ── */
-.lp-live{max-width:1180px;margin:0 auto;padding:80px 40px 20px;}
-.lp-live-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap;}
-.lp-live-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#15803d;}
-.lp-live-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:axpulse 2s infinite;}
-.lp-live-h h2{margin-top:10px;font-size:34px;font-weight:800;letter-spacing:-.03em;}
-.btn-open{font-family:inherit;font-size:14px;font-weight:600;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;}
-.btn-open:hover{background:#dcfce7;}
-.lp-table-wrap{border:1px solid #ededed;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px -24px rgba(0,0,0,.25);}
-.lp-tbl-head{display:grid;grid-template-columns:2.4fr 1fr 1.1fr 1fr 1.1fr;gap:0;padding:13px 22px;background:#fafafa;border-bottom:1px solid #ededed;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#a3a3a3;}
-.lp-tbl-head span:not(:first-child){text-align:right;}
-.lp-tbl-row{display:grid;grid-template-columns:2.4fr 1fr 1.1fr 1fr 1.1fr;align-items:center;gap:0;padding:13px 22px;border-bottom:1px solid #f3f3f3;cursor:pointer;transition:background 100ms;}
-.lp-tbl-row:last-child{border-bottom:none;}
-.lp-tbl-row:hover{background:#f0fdf4;}
-.lp-tbl-row:nth-child(even){background:#fafafa;}
-.lp-tbl-row:nth-child(even):hover{background:#f0fdf4;}
-.lp-comm-cell{display:flex;align-items:center;gap:12px;}
-.lp-thumb{width:38px;height:38px;border-radius:9px;overflow:hidden;flex:none;}
-.lp-comm-name{font-size:14.5px;font-weight:600;}
-.lp-comm-unit{font-size:11.5px;color:#a3a3a3;font-family:"IBM Plex Mono",monospace;}
-.lp-origin-cell{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
-.lp-origin-dot{width:7px;height:7px;border-radius:50%;flex:none;}
-.lp-origin-label{font-size:12.5px;color:#525252;}
-.lp-mostly{font-size:15px;font-weight:600;font-family:"IBM Plex Mono",monospace;text-align:right;}
-.lp-delta{text-align:right;}
-.lp-delta-chip{display:inline-block;font-size:12px;font-weight:600;font-family:"IBM Plex Mono",monospace;padding:3px 8px;border-radius:6px;}
-.lp-spark-cell{display:flex;justify-content:flex-end;}
-
-/* ── FEATURES ── */
-.lp-features{max-width:1180px;margin:0 auto;padding:90px 40px;}
-.lp-features h2{font-size:34px;font-weight:800;letter-spacing:-.03em;max-width:620px;}
-.lp-features .lead{margin-top:12px;font-size:17px;color:#525252;max-width:560px;}
-.feat-grid{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-.feat-card{border:1px solid #ededed;border-radius:16px;overflow:hidden;background:#fff;}
-.feat-photo{height:210px;overflow:hidden;position:relative;}
-.feat-photo img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.02);}
-.feat-tag{position:absolute;top:14px;left:14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:rgba(10,10,10,.55);backdrop-filter:blur(4px);padding:5px 10px;border-radius:7px;}
-.feat-body{padding:24px;}
-.feat-body h3{font-size:19px;font-weight:700;letter-spacing:-.01em;}
-.feat-body p{margin-top:9px;font-size:14.5px;line-height:1.55;color:#525252;}
-
-/* ── PRICING ── */
-.lp-pricing{background:#fafafa;border-top:1px solid #ededed;border-bottom:1px solid #ededed;}
-.lp-pricing-inner{max-width:1180px;margin:0 auto;padding:90px 40px;}
-.lp-pricing-inner h2{font-size:34px;font-weight:800;letter-spacing:-.03em;text-align:center;}
-.lp-pricing-inner .sub{display:block;margin-top:12px;font-size:17px;color:#525252;text-align:center;}
-.plan-grid{margin-top:44px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;align-items:start;}
-.plan-card{position:relative;border-radius:16px;padding:30px 26px;background:#fff;border:1px solid #ededed;}
-.plan-card.featured{background:#0a0a0a;border-color:#0a0a0a;box-shadow:0 30px 70px -25px rgba(0,0,0,.5);}
-.plan-ribbon{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#0a0a0a;background:#4ade80;padding:5px 12px;border-radius:999px;white-space:nowrap;}
-.plan-name{font-size:14px;font-weight:600;color:#737373;}
-.plan-card.featured .plan-name{color:#a3a3a3;}
-.plan-price{margin-top:12px;display:flex;align-items:baseline;gap:5px;font-family:"IBM Plex Mono",monospace;}
-.plan-price .amount{font-size:42px;font-weight:800;letter-spacing:-.03em;color:#0a0a0a;}
-.plan-card.featured .plan-price .amount{color:#fff;}
-.plan-price .per{font-size:14px;color:#737373;}
-.plan-card.featured .plan-price .per{color:#a3a3a3;}
-.plan-blurb{margin-top:10px;font-size:13.5px;color:#737373;min-height:38px;}
-.plan-card.featured .plan-blurb{color:#a3a3a3;}
-.plan-btn{font-family:inherit;width:100%;margin-top:18px;font-size:14px;font-weight:600;cursor:pointer;padding:12px;border-radius:10px;border:1px solid #d4d4d4;background:#fff;color:#0a0a0a;}
-.plan-btn:hover{background:#f5f5f5;}
-.plan-btn.featured{background:#4ade80;border-color:#4ade80;color:#0a0a0a;}
-.plan-btn.featured:hover{background:#22c55e;}
-.plan-feats{margin-top:22px;display:flex;flex-direction:column;gap:11px;}
-.plan-feat{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#0a0a0a;}
-.plan-card.featured .plan-feat{color:#fff;}
-.plan-feat svg{flex:none;margin-top:1px;}
-
-/* ── FINAL CTA ── */
-.lp-cta-section{background:#0a0a0a;color:#fff;}
-.lp-cta-inner{max-width:1000px;margin:0 auto;padding:100px 40px;text-align:center;}
-.lp-cta-inner h2{font-size:46px;line-height:1.08;font-weight:800;letter-spacing:-.035em;}
-.lp-cta-inner h2 em{color:#4ade80;font-style:normal;}
-.lp-cta-inner p{margin-top:20px;font-size:18px;color:#a3a3a3;max-width:560px;margin-left:auto;margin-right:auto;}
-.lp-cta-inner .ctas{margin-top:32px;display:flex;gap:13px;justify-content:center;flex-wrap:wrap;}
-
-/* ── FOOTER ── */
-.lp-footer{background:#0a0a0a;color:#a3a3a3;border-top:1px solid #1f1f1f;}
-.lp-footer-inner{max-width:1180px;margin:0 auto;padding:56px 40px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;}
-.lp-footer-brand{display:flex;align-items:baseline;}
-.lp-footer-brand span{font-size:22px;font-weight:800;letter-spacing:-.02em;color:#fff;}
-.lp-footer-brand img{height:19px;width:auto;display:block;margin:0 0 0 -2px;}
-.lp-footer-tagline{margin-top:14px;font-size:13.5px;line-height:1.6;max-width:280px;}
-.lp-footer-col-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;margin-bottom:14px;}
-.lp-footer-col a{display:block;font-size:13.5px;color:#a3a3a3;text-decoration:none;margin-bottom:10px;cursor:pointer;}
-.lp-footer-col a:hover{color:#fff;}
-.lp-footer-legal{border-top:1px solid #1f1f1f;padding:20px 40px;max-width:1180px;margin:0 auto;font-size:12.5px;font-family:"IBM Plex Mono",monospace;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .lp-hero-inner{grid-template-columns:1fr;padding:40px 24px;}
-  .lp-h1{font-size:42px;}
-  .lp-nav{padding:14px 24px;gap:16px;}
-  .lp-nav nav{display:none;}
-  .feat-grid,.plan-grid{grid-template-columns:1fr;}
-  .lp-footer-inner{grid-template-columns:1fr 1fr;gap:28px;}
-  .lp-live,.lp-features,.lp-pricing-inner,.lp-cta-inner{padding-left:24px;padding-right:24px;}
-}
-@media(max-width:560px){
-  .lp-h1{font-size:34px;}
-  .lp-lead{font-size:16px;}
-  .btn-hero-solid,.btn-hero-ghost{padding:11px 18px;font-size:14px;}
-  .lp-tbl-head span:nth-child(n+4),.lp-tbl-row>*:nth-child(n+4){display:none;}
-  .lp-tbl-head,.lp-tbl-row{grid-template-columns:2.4fr 1fr 1.1fr;}
-  .lp-footer-inner{grid-template-columns:1fr;}
-}
+  body { background: var(--page-warm); }
+  .lp-wrap { max-width: 820px; margin: 0 auto; padding: 40px 24px; }
+  .lp-nav { display: flex; align-items: center; gap: 10px; padding: 8px 0 32px; }
+  .lp-nav__mark { width: 22px; height: 22px; border-radius: 6px; background: var(--dark-1); display:flex; align-items:center; justify-content:center; }
+  .lp-nav__mark span { width: 8px; height: 8px; border-radius: 50%; background: var(--pop); }
+  .lp-nav__word { font-size: 16px; font-weight: 600; letter-spacing: -0.03em; }
+  .lp-nav a { margin-left: auto; font-size: 13px; font-weight: 500; color: #fff; background: var(--dark-1); padding: 8px 15px; border-radius: 8px; }
+  .lp-hero { text-align: center; padding: 40px 0 24px; position: relative; }
+  .lp-hero::before {
+    content:''; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(ellipse 700px 380px at 50% 0%, var(--pop-tint) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .lp-hero > * { position: relative; z-index: 1; }
+  .lp-hero h1 {
+    font-size: 44px; line-height: 1.02; font-weight: 600;
+    letter-spacing: var(--ls-display-xl); margin: 16px auto 0; max-width: 720px;
+  }
+  .lp-hero p { font-size: 15.5px; color: var(--sub); max-width: 500px; margin: 16px auto 24px; }
+  .lp-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--card); border: 0.5px solid var(--line); border-radius: 20px;
+    padding: 5px 12px; font-size: 11px; font-weight: 500; color: var(--sub);
+  }
+  .lp-pill__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pop); box-shadow: 0 0 0 3px rgba(21,162,74,.13); }
+  .lp-cta { display: inline-flex; gap: 8px; margin-top: 8px; }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<header class="lp-nav">
-  <a href="/" class="lp-logo">
-    <span>agra</span>
-    <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;">
-  <!-- X strokes -->
-  <line x1="15" y1="15" x2="85" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
-  <line x1="85" y1="15" x2="15" y2="85" stroke="#0a0a0a" stroke-width="18" stroke-linecap="round"/>
-  <!-- Leaf growing from upper-right arm -->
-  <ellipse cx="78" cy="22" rx="20" ry="11" fill="#15803d" transform="rotate(-45 78 22)"/>
-  <ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/>
-</svg>
-  </a>
-  <nav>
-    <a href="#live">Markets</a>
-    <a href="#features">Commodities</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#">Data sources</a>
-  </nav>
-  <div class="lp-nav-r">
-    <a href="/app" class="signin">Sign in</a>
-    <a href="/app" class="lp-btn-dark">Start free →</a>
+<div class="lp-wrap">
+  <div class="lp-nav">
+    <div class="lp-nav__mark"><span></span></div>
+    <div class="lp-nav__word">agraX</div>
+    <a href="/app">Open app →</a>
   </div>
-</header>
-
-<!-- HERO -->
-<section class="lp-hero">
-  <img class="bg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1700" alt="aerial farmland" loading="eager">
-  <div class="lp-hero-scrim"></div>
-  <div class="lp-hero-inner">
-    <div>
-      <div class="lp-eyebrow">
-        <span class="dot"></span>
-        Wholesale Produce Intelligence
-      </div>
-      <h1 class="lp-h1">Commodity data for the produce supply chain.</h1>
-      <p class="lp-lead">Live USDA terminal-market data for every buyer, broker, and grower. Read the market before you pick up the phone.</p>
-      <div class="lp-ctas">
-        <a href="/app" class="btn-hero-solid">Start free →</a>
-        <a href="#live" class="btn-hero-ghost">See live data</a>
-      </div>
-      <div class="lp-tagline">
-        <span class="mono">USDA AMS Market News</span>
-        <span style="opacity:.4">·</span>
-        <span>No card required</span>
-      </div>
+  <section class="lp-hero">
+    <div class="lp-pill"><span class="lp-pill__dot"></span>USDA Market News · updated daily 10am ET</div>
+    <h1>Commodity data for the produce supply chain.</h1>
+    <p>agraX turns the official USDA Market News feed into a single clean view of the day's wholesale market — for buyers, growers, shippers, and analysts.</p>
+    <div class="lp-cta">
+      <a href="/app" class="btn btn--dark">Open the app →</a>
     </div>
-
-    <!-- Price console -->
-    <div class="price-console">
-      <div class="pc-head">
-        <div>
-          <div class="pc-comm-row">
-            <span style="font-size:21px">🥑</span>
-            <span class="pc-comm-name">Avocados</span>
-          </div>
-          <div class="pc-comm-sub">Hass · ctn 2-layer · LA terminal</div>
-        </div>
-        <span class="pc-delta">▼ 5.66%</span>
-      </div>
-      <div class="pc-price">
-        <span class="pc-price-val">$52.94</span>
-        <span class="pc-price-unit">/ ctn</span>
-      </div>
-      <svg viewBox="0 0 320 80" preserveAspectRatio="none" style="margin-top:14px;width:100%;height:80px;display:block;">
-        <defs><linearGradient id="hg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(220,38,38,.35)"/><stop offset="1" stop-color="rgba(220,38,38,0)"/></linearGradient></defs>
-        <path d="M0,18 L40,22 L80,15 L120,30 L160,28 L200,42 L240,50 L280,58 L320,66 L320,80 L0,80 Z" fill="url(#hg)"/>
-        <path d="M0,18 L40,22 L80,15 L120,30 L160,28 L200,42 L240,50 L280,58 L320,66" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-      </svg>
-      <div class="pc-tags">
-        <span class="pc-tag">ctn 2 layer</span>
-        <span class="pc-tag amber">Supply Moderate</span>
-        <span class="pc-tag green">Trend Higher</span>
-      </div>
-      <a href="/app" class="pc-btn" style="display:block;text-align:center;text-decoration:none;">Full report →</a>
-    </div>
-  </div>
-</section>
-
-<!-- TRUST STRIP -->
-<div class="lp-trust">
-  <div class="lp-trust-item"><div class="lp-trust-v mono">12</div><div class="lp-trust-l">Terminal markets</div></div>
-  <div class="lp-trust-item"><div class="lp-trust-v mono" id="ts-comms">257+</div><div class="lp-trust-l">Commodities</div></div>
-  <div class="lp-trust-item"><div class="lp-trust-v mono">3×</div><div class="lp-trust-l">Daily refreshes</div></div>
-  <div class="lp-trust-item"><div class="lp-trust-v mono">USDA</div><div class="lp-trust-l">AMS Market News</div></div>
-  <div class="lp-trust-item"><div class="lp-trust-v mono" style="color:#15803d">Live</div><div class="lp-trust-l" id="ts-date">Jun 8, 2026</div></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:24px">
+      Full landing page from the design brief coming next — this is the working entry to the app shell for now.
+    </p>
+  </section>
 </div>
 
-<!-- LIVE DATA PREVIEW -->
-<section id="live" class="lp-live">
-  <div class="lp-live-h">
-    <div>
-      <div class="lp-live-eyebrow"><span class="dot"></span> Live now</div>
-      <h2>Today's New York wholesale prices</h2>
-    </div>
-    <a href="/app" class="btn-open">Open full markets →</a>
-  </div>
-  <div class="lp-table-wrap">
-    <div class="lp-tbl-head">
-      <span>Commodity</span>
-      <span>Origin</span>
-      <span>Mostly</span>
-      <span>Move</span>
-      <span>7-day</span>
-    </div>
-    <div id="live-table-body">
-      <!-- populated by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features" class="lp-features">
-  <h2>Everything the produce desk checks before 10am.</h2>
-  <p class="lead">Twelve terminal markets, refreshed three times daily, straight from USDA AMS — structured, charted, and searchable.</p>
-  <div class="feat-grid">
-    <div class="feat-card">
-      <div class="feat-photo">
-        <img src="https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&q=80&w=900" alt="terminal markets network" onerror="this.parentElement.style.background='#1a1f2e'">
-        <span class="feat-tag">Network</span>
-      </div>
-      <div class="feat-body">
-        <h3>12 terminal markets, one view.</h3>
-        <p>Los Angeles to Boston — every USDA terminal market refreshed three times a day, normalized into one comparable price grid.</p>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-photo">
-        <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&q=80&w=900" alt="USDA data source" onerror="this.parentElement.style.background='#3a3424'">
-        <span class="feat-tag">Source</span>
-      </div>
-      <div class="feat-body">
-        <h3>Straight from USDA AMS.</h3>
-        <p>No scraping, no guesswork. Official Agricultural Marketing Service Market News, structured and charted the moment it publishes.</p>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-photo">
-        <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=900" alt="warehouse field ready" onerror="this.parentElement.style.background='#2a3326'">
-        <span class="feat-tag">Field-ready</span>
-      </div>
-      <div class="feat-body">
-        <h3>Built for the warehouse floor.</h3>
-        <p>Check a price from the dock, the truck, or the buying desk. Watchlists and alerts keep your commodities one tap away.</p>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-photo">
-        <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=900" alt="supply chain logistics" onerror="this.parentElement.style.background='#2e2a22'">
-        <span class="feat-tag">Supply chain</span>
-      </div>
-      <div class="feat-body">
-        <h3>FOB to terminal, end to end.</h3>
-        <p>See origin pricing, freight spread, and terminal mostly side by side — so you know exactly where the margin is.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing" class="lp-pricing">
-  <div class="lp-pricing-inner">
-    <h2>Pricing that pays for itself in one call.</h2>
-    <span class="sub">Start free. Upgrade when the market gets interesting.</span>
-    <div class="plan-grid">
-
-      <div class="plan-card">
-        <div class="plan-name">Free</div>
-        <div class="plan-price"><span class="amount">$0</span><span class="per">/mo</span></div>
-        <div class="plan-blurb">For growers and brokers tracking a handful of commodities.</div>
-        <button class="plan-btn" onclick="location.href='/app'">Start free</button>
-        <div class="plan-feats">
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>1 terminal market</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>10 watchlist items</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily price refresh</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Email summary</div>
-        </div>
-      </div>
-
-      <div class="plan-card featured">
-        <div class="plan-ribbon">Most popular</div>
-        <div class="plan-name">Pro</div>
-        <div class="plan-price"><span class="amount">$29</span><span class="per">/mo</span></div>
-        <div class="plan-blurb">For buyers who price their day on the market.</div>
-        <button class="plan-btn featured" onclick="location.href='/app'">Start Pro →</button>
-        <div class="plan-feats">
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>All 12 terminal markets</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited watchlists</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>3× daily refresh + alerts</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>FOB → terminal spreads</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Full commodity history</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>CSV & API export</div>
-        </div>
-      </div>
-
-      <div class="plan-card">
-        <div class="plan-name">Team</div>
-        <div class="plan-price"><span class="amount" style="font-size:28px;letter-spacing:-.01em">Custom</span></div>
-        <div class="plan-blurb">For desks and co-ops with multiple seats.</div>
-        <button class="plan-btn" onclick="location.href='/app'">Talk to sales</button>
-        <div class="plan-feats">
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Pro</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Shared team watchlists</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>SSO & admin controls</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority data SLAs</div>
-          <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-10" stroke="#15803d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated support</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- FINAL CTA -->
-<section class="lp-cta-section">
-  <div class="lp-cta-inner">
-    <h2>Read the produce market in <em>30 seconds</em>, every morning.</h2>
-    <p>Join the buyers, brokers, and growers who price their day with agraX.</p>
-    <div class="ctas">
-      <a href="/app" class="btn-hero-solid">Start free →</a>
-      <a href="/app" class="btn-hero-ghost">Talk to sales</a>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="lp-footer">
-  <div class="lp-footer-inner">
-    <div>
-      <div class="lp-footer-brand">
-        <span>agra</span>
-        <svg width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;">
-  <line x1="15" y1="15" x2="85" y2="85" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
-  <line x1="85" y1="15" x2="15" y2="85" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
-  <ellipse cx="78" cy="22" rx="20" ry="11" fill="#4ade80" transform="rotate(-45 78 22)"/>
-  <ellipse cx="78" cy="22" rx="10" ry="5.5" fill="#0a0a0a" transform="rotate(-45 78 22)"/>
-</svg>
-      </div>
-      <p class="lp-footer-tagline">Commodity price intelligence for the wholesale produce supply chain.</p>
-    </div>
-    <div class="lp-footer-col">
-      <div class="lp-footer-col-head">Product</div>
-      <a href="/app">Markets</a><a href="/app">Commodities</a><a href="/app">Terminal markets</a><a href="/app">Watchlists</a><a href="#">API</a>
-    </div>
-    <div class="lp-footer-col">
-      <div class="lp-footer-col-head">Company</div>
-      <a href="#">About</a><a href="#">Data sources</a><a href="#">Careers</a><a href="#">Contact</a>
-    </div>
-    <div class="lp-footer-col">
-      <div class="lp-footer-col-head">Legal</div>
-      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Disclaimer</a>
-    </div>
-  </div>
-  <div class="lp-footer-legal">© 2026 agraX, Inc. · Data via USDA AMS Market News · Not investment advice.</div>
-</footer>
-
-<script>
-const API = 'https://produce-iq-production.up.railway.app';
-const UNSPLASH = 'https://images.unsplash.com/photo-';
-const IMGS = {
-  avocados:    '1523049673857-eb18f1d7b578',
-  strawberries:'1464965911861-746a04b4bca6',
-  limes:       '1603042293225-e7d880f97d46',
-  tomatoes:    '1592924357228-91a4daadcfea',
-  lettuce:     '1622206151226-18ca2c9ab4a1',
-  onions:      '1508747703725-719777637510',
-  potatoes:    '1518977676601-b53f82aba655',
-  blueberries: '1498557850523-fd3d118b962e',
-};
-const TINTS = { avocados:'#3f5a2e', strawberries:'#7a1f2b', limes:'#3f6b1f', tomatoes:'#7a2420', lettuce:'#3d5e2a', onions:'#6b5320', potatoes:'#6b5630', blueberries:'#2c3566' };
-const PREVIEW_ORDER = ['avocados','strawberries','limes','tomatoes','lettuce','onions','potatoes','blueberries'];
-
-function $ (v) { return '$' + parseFloat(v).toFixed(2); }
-function signalFor(r) {
-  const m = (r.movement || '').toLowerCase();
-  if (m.includes('higher')) return { c:'#15803d', bg:'#f0fdf4', a:'▲', label: r.movement };
-  if (m.includes('lower'))  return { c:'#dc2626', bg:'#fef2f2', a:'▼', label: r.movement };
-  return { c:'#a3a3a3', bg:'#f5f5f5', a:'—', label: r.movement || 'Steady' };
-}
-function sparkSVG(vals, trend) {
-  const up = trend === 'up', down = trend === 'down';
-  const col = up ? '#15803d' : down ? '#dc2626' : '#a3a3a3';
-  const fill = up ? 'rgba(21,128,61,.12)' : down ? 'rgba(220,38,38,.12)' : 'rgba(163,163,163,.12)';
-  const w = 78, h = 26;
-  const min = Math.min(...vals), max = Math.max(...vals), rng = (max - min) || 1;
-  const pts = vals.map((v, i) => [(i / (vals.length - 1) * w).toFixed(1), (h - 2 - (v - min) / rng * (h - 4)).toFixed(1)]);
-  const line = 'M' + pts.map(p => p[0] + ',' + p[1]).join(' L');
-  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '" preserveAspectRatio="none" style="display:block">' +
-    '<path d="' + line + ' L' + w + ',' + h + ' L0,' + h + ' Z" fill="' + fill + '"/>' +
-    '<path d="' + line + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
-}
-
-(async function () {
-  try {
-    const dates = await fetch(API + '/dates').then(r => r.json());
-    if (!dates.length) return;
-    const today = dates[0].date;
-    // update trust strip date
-    const d = new Date(today + 'T12:00:00');
-    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const el = document.getElementById('ts-date'); if (el) el.textContent = dateStr;
-
-    const rows = await fetch(API + '/commodities/by-date/' + today).then(r => r.json());
-    const termRows = rows.filter(r => r.market_type === 'terminal' && r.price_low != null && r.market && r.market.toLowerCase().includes('new york'));
-
-    // dedupe by commodity, take first row per commodity
-    const byComm = {};
-    termRows.forEach(r => { if (!byComm[r.commodity]) byComm[r.commodity] = r; });
-
-    // update trust strip commodity count
-    const allComms = rows.filter(r => r.market_type === 'terminal' && r.price_low != null);
-    const commCount = new Set(allComms.map(r => r.commodity)).size;
-    const tsComms = document.getElementById('ts-comms'); if (tsComms) tsComms.textContent = commCount + '+';
-
-    // build the live table
-    const ORDER_MAP = { avocados:'Avocados', strawberries:'Strawberries', limes:'Limes', tomatoes:'Tomatoes', lettuce:'Iceberg Lettuce', onions:'Onions', potatoes:'Potatoes', blueberries:'Blueberries' };
-    const html = PREVIEW_ORDER.map((key, i) => {
-      const commName = ORDER_MAP[key];
-      const r = Object.values(byComm).find(x => x.commodity.toLowerCase().includes(commName.toLowerCase().split(' ')[0]));
-      if (!r) return '';
-      const s = signalFor(r);
-      const isDom = /(california|florida|washington|arizona|texas|georgia|oregon|michigan|idaho)/i.test(r.origin || '');
-      const dotColor = isDom ? '#15803d' : '#2563eb';
-      const imgSrc = UNSPLASH + (IMGS[key] || IMGS.avocados) + '?auto=format&fit=crop&q=80&w=200';
-      const tint = TINTS[key] || '#3f5a2e';
-      const unit = r.package || r.variety || '—';
-      const spVals = Array.from({length: 8}, (_, idx) => parseFloat(r.price_low) * (1 + ((key.charCodeAt(0) * 7 + idx * 13) % 20 - 10) / 100));
-      const trend = s.a === '▲' ? 'up' : s.a === '▼' ? 'down' : 'steady';
-      return '<div class="lp-tbl-row" onclick="location.href=\'/app\'">' +
-        '<div class="lp-comm-cell"><div class="lp-thumb" style="background:' + tint + '"><img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div>' +
-        '<div><div class="lp-comm-name">' + r.commodity + '</div><div class="lp-comm-unit">' + unit + '</div></div></div>' +
-        '<div class="lp-origin-cell"><span class="lp-origin-dot" style="background:' + dotColor + '"></span><span class="lp-origin-label">' + (r.origin || '—') + '</span></div>' +
-        '<div class="lp-mostly">' + $(r.price_low) + '</div>' +
-        '<div class="lp-delta"><span class="lp-delta-chip" style="color:' + s.c + ';background:' + s.bg + '">' + s.a + ' ' + (s.label || '—') + '</span></div>' +
-        '<div class="lp-spark-cell">' + sparkSVG(spVals, trend) + '</div></div>';
-    }).join('');
-    const tbody = document.getElementById('live-table-body');
-    if (tbody) tbody.innerHTML = html || '<div style="padding:32px;text-align:center;color:#a3a3a3">Live data loading…</div>';
-  } catch (e) {
-    const tbody = document.getElementById('live-table-body');
-    if (tbody) tbody.innerHTML = '<div style="padding:32px;text-align:center;color:#a3a3a3">Live data temporarily unavailable</div>';
-  }
-})();
-</script>
 </body>
 </html>

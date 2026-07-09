@@ -1,0 +1,227 @@
+/* ================================================================
+   agraX — DESIGN TOKENS (single source of truth)
+   ================================================================
+   Extracted verbatim from the approved mockups. Every component
+   MUST consume these variables. No hardcoded colors, fonts, or
+   spacing values anywhere else. Adding a new color? Add it here.
+   ================================================================ */
+
+:root{
+  /* ── TYPOGRAPHY ─────────────────────────────────────── */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --fs-xs: 10px;
+  --fs-2xs: 10.5px;
+  --fs-sm: 11.5px;
+  --fs-base: 12.5px;
+  --fs-md: 13px;
+  --fs-lg: 14px;
+  --fs-xl: 16px;
+  --fs-2xl: 22px;
+  --fs-3xl: 26px;
+  --fs-4xl: 32px;
+  --fs-hero: 46px;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.15;
+  --lh-normal: 1.5;
+
+  --ls-eyebrow: 0.14em;
+  --ls-eyebrow-sm: 0.12em;
+  --ls-eyebrow-lg: 0.14em;
+  --ls-display: -0.025em;
+  --ls-display-lg: -0.03em;
+  --ls-display-xl: -0.035em;
+  --ls-num: -0.02em;
+
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* ── COLOR ─────────────────────────────────────────── */
+  /* Ink & surfaces */
+  --ink: #0A0B0A;
+  --sub: #4a5045;
+  --muted: #8b8f80;
+  --line: #E7E7E4;
+  --line-strong: #D8DBCE;
+  --line-soft: #EFEFEC;
+  --line-softer: #F0F0ED;
+
+  --page: #F5F6F1;
+  --page-warm: #FAFAF7;
+  --card: #FFFFFF;
+  --card-alt: #FBFBF8;
+  --card-mint: #F6FAF2;
+  --fill: #F2F1EC;
+
+  /* Accent — the ONE accent color */
+  --pop: #15A24A;
+  --pop-light: #7ED957;
+  --pop-deep: #0d7a36;
+  --pop-tint: #EAF7E5;
+  --pop-glow: #B7E39A;
+
+  /* Accent tints (alpha) */
+  --pop-04: rgba(21,162,74,0.04);
+  --pop-06: rgba(21,162,74,0.06);
+  --pop-08: rgba(21,162,74,0.08);
+  --pop-09: rgba(21,162,74,0.09);
+  --pop-13: rgba(21,162,74,0.13);
+  --pop-14: rgba(21,162,74,0.14);
+  --pop-15: rgba(21,162,74,0.15);
+  --pop-20: rgba(21,162,74,0.20);
+  --pop-22: rgba(21,162,74,0.22);
+  --pop-33: rgba(21,162,74,0.33);
+  --pop-35: rgba(21,162,74,0.35);
+  --pop-44: rgba(21,162,74,0.44);
+  --pop-55: rgba(21,162,74,0.55);
+  --pop-border: rgba(21,162,74,0.40);
+  --pop-border-strong: rgba(21,162,74,0.66);
+
+  /* Semantic — up = price rose (bad for buyer) */
+  --up: #B91C1C;
+  --up-08: rgba(185,28,28,0.08);
+  --up-10: rgba(185,28,28,0.10);
+  --up-14: rgba(185,28,28,0.14);
+  --up-border: rgba(185,28,28,0.40);
+  --up-border-strong: rgba(185,28,28,0.66);
+
+  /* Category dots */
+  --cat-veg: #15A24A;
+  --cat-fruit: #B91C1C;
+  --cat-op: #B87A0B;
+  --cat-nut: #7d5a3a;
+
+  /* Dark surfaces */
+  --dark-1: #0A0B0A;
+  --dark-2: #12140F;
+  --dark-3: #132817;
+  --dark-4: #141712;
+  --dark-5: #1a1e18;
+  --dark-6: #2a2e26;
+  --dark-fg: #e8e8e2;
+  --dark-fg-muted: #a3a89a;
+
+  /* ── RADIUS ─────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 5px;
+  --r-md: 7px;
+  --r-lg: 8px;
+  --r-btn: 9px;
+  --r-card: 12px;
+  --r-card-lg: 14px;
+  --r-hero: 16px;
+  --r-pill: 20px;
+  --r-full: 9999px;
+
+  /* ── SPACING (used sparingly, prefer natural gaps) ── */
+  --sp-1: 4px;
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 10px;
+  --sp-5: 12px;
+  --sp-6: 14px;
+  --sp-7: 16px;
+  --sp-8: 18px;
+  --sp-9: 20px;
+  --sp-10: 22px;
+  --sp-12: 28px;
+  --sp-14: 36px;
+
+  /* ── ELEVATION ─────────────────────────────────────── */
+  /* Green-tinted shadows only — no harsh black */
+  --shadow-sm: 0 1px 3px rgba(10,15,5,.08);
+  --shadow-md: 0 4px 12px rgba(21,162,74,.08);
+  --shadow-lg: 0 12px 32px rgba(21,162,74,.10);
+  --shadow-xl: 0 20px 60px rgba(10,15,5,.08);
+  --shadow-glow: 0 24px 60px rgba(21,162,74,.12), 0 8px 20px rgba(10,15,5,.06);
+  --shadow-dark: 0 20px 40px rgba(0,0,0,.25);
+
+  /* Inset borders */
+  --inset-hairline: inset 0 0 0 0.5px var(--line);
+  --inset-dark: inset 0 0 0 0.5px var(--dark-6);
+
+  /* ── GRADIENTS ─────────────────────────────────────── */
+  --grad-card-mint: linear-gradient(135deg, var(--card) 0%, var(--card-mint) 100%);
+  --grad-page-mint: linear-gradient(180deg, var(--card) 0%, var(--card-mint) 100%);
+  --grad-card-alt: linear-gradient(180deg, var(--card) 0%, var(--card-alt) 100%);
+
+  --grad-dark: linear-gradient(160deg, var(--dark-1) 0%, var(--dark-4) 60%, var(--dark-3) 100%);
+  --grad-dark-2: linear-gradient(160deg, var(--dark-1) 0%, var(--dark-3) 100%);
+  --grad-side: linear-gradient(180deg, var(--dark-1), var(--dark-2));
+  --grad-nav-active: linear-gradient(90deg, var(--pop-20), transparent);
+  --grad-trial: linear-gradient(135deg, var(--pop-13), rgba(126,217,87,.06));
+
+  --grad-btn-dark: linear-gradient(180deg, #101210, #000);
+  --grad-btn-pop: linear-gradient(135deg, var(--pop), var(--pop-deep));
+  --grad-pop-light: linear-gradient(135deg, var(--pop), var(--pop-light));
+
+  --grad-text-dark: linear-gradient(180deg, var(--ink), var(--dark-6));
+  --grad-text-pop: linear-gradient(180deg, #fff, var(--pop-glow));
+
+  --grad-mood-mint: linear-gradient(180deg, var(--card) 0%, var(--card-mint) 100%);
+  --grad-mood-bg: linear-gradient(135deg, var(--card), var(--card-mint));
+
+  --grad-alert-pop: linear-gradient(90deg, var(--pop-08), transparent);
+  --grad-alert-up: linear-gradient(90deg, var(--up-08), transparent);
+
+  --grad-bar-pop: linear-gradient(90deg, var(--pop), var(--pop-light));
+
+  /* Hero radial glows (compose with layered backgrounds) */
+  --glow-hero-top: radial-gradient(ellipse 900px 500px at 50% 0%, #DFF4D3 0%, transparent 65%);
+  --glow-hero-l: radial-gradient(ellipse 400px 250px at 20% 40%, var(--pop-15) 0%, transparent 70%);
+  --glow-hero-r: radial-gradient(ellipse 400px 250px at 80% 60%, rgba(183,227,154,.22) 0%, transparent 70%);
+  --glow-corner: radial-gradient(circle, var(--pop-22) 0%, transparent 65%);
+  --glow-corner-soft: radial-gradient(circle, var(--pop-14) 0%, transparent 65%);
+  --glow-corner-strong: radial-gradient(circle, var(--pop-55) 0%, transparent 70%);
+
+  /* Dot-grid texture */
+  --dotgrid: radial-gradient(rgba(10,11,10,.06) 1px, transparent 1px);
+  --dotgrid-size: 22px 22px;
+  --dotgrid-dark: radial-gradient(var(--pop-44) 1px, transparent 1px);
+  --dotgrid-dark-size: 14px 14px;
+
+  /* Chart pattern */
+  --dotgrid-chart-size: 18px 18px;
+
+  /* ── SIDES / DIMENSIONS ─────────────────────────────── */
+  --side-w: 220px;
+  --topbar-h: 34px;
+  --mtabs-h: 68px;
+  --max-content: 1200px;
+
+  /* Breakpoints (documentation only — media queries use raw values) */
+  --bp-sm: 640px;
+  --bp-md: 900px;
+  --bp-lg: 1000px;
+
+  /* ── ANIMATION ─────────────────────────────────────── */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-fast: 150ms;
+  --dur-med: 240ms;
+}
+
+/* ─────────── RESET (minimal) ─────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--page);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
+input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--pop); color: #fff; }
+
+/* Utility: mono numerals everywhere */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: var(--fs-2xs); font-weight: var(--fw-semibold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--pop); }
+.eyebrow.muted { color: var(--muted); }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }

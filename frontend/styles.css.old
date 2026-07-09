@@ -1,0 +1,131 @@
+/* agraX Design System — unified tokens */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* fonts */
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* brand green */
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --green-800: #166534;
+  --green-900: #14532d;
+  --green-ink:   #0e2a1b;
+  --green-ink-2: #0c1f14;
+
+  /* neutrals */
+  --black:    #0a0a0a;
+  --gray-900: #171717;
+  --gray-700: #404040;
+  --gray-600: #525252;
+  --gray-500: #737373;
+  --gray-400: #a3a3a3;
+  --gray-300: #d4d4d4;
+  --gray-200: #e5e5e5;
+  --gray-150: #ededed;
+  --gray-100: #f4f4f4;
+  --gray-75:  #fafafa;
+  --white:    #ffffff;
+
+  /* signals */
+  --up: #15803d; --up-bg: #f0fdf4;
+  --down: #dc2626; --down-bg: #fef2f2;
+  --steady: #a3a3a3; --steady-bg: #f5f5f5;
+
+  /* origin */
+  --origin-domestic: #15803d;
+  --origin-imported: #2563eb;
+
+  /* supply */
+  --supply-light-fg: #b45309; --supply-light-bg: #fffbeb; --supply-light-bd: #fde68a;
+  --supply-heavy-fg: #1d4ed8; --supply-heavy-bg: #eff6ff; --supply-heavy-bd: #bfdbfe;
+  --supply-mod-fg:   #525252; --supply-mod-bg:   #f5f5f5; --supply-mod-bd:   #e5e5e5;
+
+  /* semantic */
+  --brand: var(--green-700);
+  --brand-accent: var(--green-400);
+  --text-primary: var(--black);
+  --text-muted: var(--gray-600);
+  --text-faint: var(--gray-400);
+  --surface-page: var(--white);
+  --surface-card: var(--white);
+  --surface-sunken: var(--gray-75);
+  --surface-dark: var(--black);
+  --surface-console: var(--green-ink);
+  --border-card: var(--gray-150);
+  --border-control: var(--gray-200);
+  --border-hairline: var(--gray-100);
+
+  /* type scale */
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --fs-hero: 60px;
+  --fs-h1: 40px;
+  --fs-h2: 34px;
+  --fs-h3: 26px;
+  --fs-title: 19px;
+  --fs-lg: 17px;
+  --fs-body: 15px;
+  --fs-sm: 14px;
+  --fs-data: 14px;
+  --fs-caption: 12.5px;
+  --fs-micro: 11px;
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700; --fw-heavy: 800;
+  --lh-tight: 1.05; --lh-snug: 1.2; --lh-body: 1.55;
+  --ls-display: -0.035em; --ls-tight: -0.02em; --ls-label: 0.05em;
+
+  /* spacing */
+  --space-1: 4px; --space-2: 6px; --space-3: 8px; --space-4: 10px;
+  --space-5: 12px; --space-6: 14px; --space-7: 18px; --space-8: 22px;
+  --space-9: 28px; --space-10: 40px; --space-12: 56px;
+  --page-max: 1280px; --content-max: 1180px; --gutter: 40px;
+
+  /* radii */
+  --radius-pill: 999px; --radius-xs: 6px; --radius-sm: 8px;
+  --radius-md: 10px; --radius-lg: 14px; --radius-xl: 16px;
+  --radius-2xl: 18px; --radius-phone: 44px;
+
+  /* borders */
+  --border: 1px solid var(--border-card);
+  --border-strong: 1px solid var(--border-control);
+
+  /* shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-table: 0 10px 40px -24px rgba(0,0,0,.25);
+  --shadow-console: 0 30px 80px -20px rgba(0,0,0,.6);
+  --shadow-modal: 0 40px 100px -20px rgba(0,0,0,.5);
+  --shadow-pricing: 0 30px 70px -25px rgba(0,0,0,.5);
+
+  /* overlays */
+  --scrim: rgba(10,10,10,.55);
+  --scrim-blur: blur(3px);
+  --glass: rgba(255,255,255,.86);
+  --glass-blur: blur(10px);
+
+  /* motion */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+}
+
+@keyframes ax-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+  70%  { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+
+/* reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+img { display: block; max-width: 100%; }
+::selection { background: var(--green-700); color: #fff; }
+
+/* scrollbar */
+.ax-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.ax-scroll::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 8px; }

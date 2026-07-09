@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Terminal Markets</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
+<style>
+  /* Additional inline styles for cross-market table (specific to this page) */
+  table.cmp-tbl { width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px; }
+  table.cmp-tbl thead tr { color:var(--muted); background:var(--card-alt); border-bottom:0.5px solid var(--line-soft); }
+  table.cmp-tbl th { text-align:left; font-weight:500; padding:9px 16px; white-space:nowrap; font-size:11.5px; }
+  table.cmp-tbl th.r { text-align:right; }
+  table.cmp-tbl td { padding:11px 16px; border-top:0.5px solid var(--line-softer); cursor:pointer; }
+  table.cmp-tbl tbody tr:hover { background:#FBFDF9; }
+  table.cmp-tbl td.r { text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.cmp-tbl td.strong { font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="mtop-slot"></div>
+  <div id="side-slot"></div>
+
+  <main class="main">
+    <div class="msub">
+      <div class="msub__chip" style="color:var(--sub)"><span id="date-mobile">—</span> ▾</div>
+      <div class="msub__chip" style="color:var(--sub)">🔍 Search</div>
+    </div>
+
+    <div class="topbar">
+      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
+      <div class="topbar__bell" role="button" aria-label="Notifications">🔔</div>
+    </div>
+
+    <div class="page-head">
+      <div class="page-head__row">
+        <div>
+          <div class="eyebrow"><span id="stat-markets">—</span> markets · <span id="stat-commodities">—</span> commodities</div>
+          <h1>Terminal markets</h1>
+          <p>Pick a commodity, see prices across every U.S. terminal at once.</p>
+        </div>
+        <div class="view-toggle">
+          <span class="view-toggle__opt is-active"><span class="view-toggle__ico">◆</span>By commodity</span>
+          <a href="/app/markets/cities" class="view-toggle__opt"><span class="view-toggle__ico">◈</span>By city</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="split">
+      <!-- LEFT: commodity list -->
+      <aside class="clist">
+        <div class="clist__search">
+          <div class="clist__search-wrap">
+            <span>🔍</span>
+            <input id="cl-search" placeholder="Search commodities…" />
+          </div>
+        </div>
+        <div class="clist__cats" id="cl-cats">
+          <span class="cat-chip is-active" data-cat="all">All <span class="cat-chip__count" id="cnt-all">—</span></span>
+          <span class="cat-chip" data-cat="vegetables"><span class="cat-dot cat-dot--veg"></span>Veg <span class="cat-chip__count" id="cnt-veg">—</span></span>
+          <span class="cat-chip" data-cat="fruits"><span class="cat-dot cat-dot--fruit"></span>Fruit <span class="cat-chip__count" id="cnt-fruit">—</span></span>
+          <span class="cat-chip" data-cat="onions_potatoes"><span class="cat-dot cat-dot--op"></span>Onions <span class="cat-chip__count" id="cnt-op">—</span></span>
+          <span class="cat-chip" data-cat="nuts"><span class="cat-dot cat-dot--nut"></span>Nuts <span class="cat-chip__count" id="cnt-nut">—</span></span>
+        </div>
+        <div class="clist__scroll" id="cl-scroll">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading commodities…</div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: cross-market panel -->
+      <section class="cmp">
+        <div class="cmp__head">
+          <div class="cmp__head-content">
+            <div>
+              <span class="cmp__cat-tag"><span class="cat-dot" style="background:var(--pop)"></span><span id="cmp-cat">—</span></span>
+              <h2 class="cmp__title" id="cmp-title">Select a commodity</h2>
+              <div class="cmp__sub" id="cmp-sub">Choose from the list to see cross-market prices</div>
+            </div>
+            <div class="cmp__actions">
+              <button class="btn btn--tiny btn--ghost" id="cmp-watch">★ Watch</button>
+              <button class="btn btn--tiny btn--dark" id="cmp-alert">⚡ Set alert</button>
+            </div>
+          </div>
+        </div>
+        <div class="cmp__summary">
+          <div class="kpi"><div class="kpi__lbl">National avg</div><div class="kpi__val" id="s-avg">—</div></div>
+          <div class="kpi kpi--pos"><div class="kpi__lbl">Cheapest</div><div class="kpi__val" id="s-low">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-low-city"></div></div>
+          <div class="kpi kpi--neg"><div class="kpi__lbl">Highest</div><div class="kpi__val" id="s-high">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-high-city"></div></div>
+          <div class="kpi"><div class="kpi__lbl">Spread</div><div class="kpi__val" id="s-spread">—</div></div>
+        </div>
+        <div class="cmp__filters" id="cmp-packs">
+          <div class="cmp__sort">Sort by <b>Mostly ↑</b></div>
+        </div>
+        <div class="table-wrap">
+          <table class="cmp-tbl">
+            <thead>
+              <tr>
+                <th>Market</th>
+                <th class="r">Low</th>
+                <th class="r">High</th>
+                <th class="r">Mostly ▲</th>
+                <th class="r">Lots</th>
+              </tr>
+            </thead>
+            <tbody id="cmp-tbody">
+              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Select a commodity from the list.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="err-slot"></div>
+  </main>
+
+  <div id="mtabs-slot"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+(async function() {
+  const U = window.agraxUtil;
+  const shell = Shell.render('markets');
+  document.getElementById('mtop-slot').outerHTML = shell.mtop;
+  document.getElementById('side-slot').outerHTML = shell.side;
+  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+
+  let rows = [];
+  let latestDate = null;
+  try {
+    const dates = await agraxAPI.dates();
+    if (!dates.length) throw new Error('No dates in database');
+    latestDate = dates[0].date;
+    document.getElementById('date-desktop').textContent = fmtDate(latestDate);
+    document.getElementById('date-mobile').textContent = fmtDate(latestDate);
+    rows = await agraxAPI.reportTerminal(latestDate);
+  } catch (err) { return showError(err); }
+
+  // Group per commodity, collect all rows across all markets
+  const byName = U.groupBy(rows, r => r.commodity);
+  const markets = U.uniq(rows.map(r => r.market));
+
+  // Build commodity list items with per-category counts
+  const catCounts = { all: byName.size, vegetables:0, fruits:0, onions_potatoes:0, nuts:0 };
+  const commodities = []; // {name, cat, mostlyAvg, watched}
+  for (const [name, rs] of byName) {
+    const cat = rs[0]?.commodity_type || null;
+    if (cat && catCounts[cat] != null) catCounts[cat]++;
+    const agg = U.aggregateCommodity(rs);
+    commodities.push({ name, cat, mostly: agg.mostly, watched: U.watchHas(name) });
+  }
+  commodities.sort((a, b) => a.name.localeCompare(b.name));
+
+  document.getElementById('stat-markets').textContent = markets.length;
+  document.getElementById('stat-commodities').textContent = byName.size;
+  document.getElementById('cnt-all').textContent = catCounts.all;
+  document.getElementById('cnt-veg').textContent = catCounts.vegetables;
+  document.getElementById('cnt-fruit').textContent = catCounts.fruits;
+  document.getElementById('cnt-op').textContent = catCounts.onions_potatoes;
+  document.getElementById('cnt-nut').textContent = catCounts.nuts;
+
+  let selectedCat = 'all';
+  let searchQ = '';
+  let selectedName = commodities.find(c => c.watched)?.name || commodities[0]?.name;
+
+  renderList();
+  if (selectedName) renderCrossMarket(selectedName);
+
+  // Category filter
+  document.getElementById('cl-cats').addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-cat]');
+    if (!chip) return;
+    selectedCat = chip.dataset.cat;
+    document.querySelectorAll('#cl-cats .cat-chip').forEach(c => c.classList.toggle('is-active', c === chip));
+    renderList();
+  });
+
+  // Search
+  document.getElementById('cl-search').addEventListener('input', (e) => {
+    searchQ = e.target.value.trim().toLowerCase();
+    renderList();
+  });
+
+  // Click a commodity
+  document.getElementById('cl-scroll').addEventListener('click', (e) => {
+    const item = e.target.closest('.cl-item');
+    if (!item) return;
+    selectedName = item.dataset.name;
+    document.querySelectorAll('.cl-item').forEach(el => el.classList.toggle('is-active', el === item));
+    renderCrossMarket(selectedName);
+  });
+
+  // Watch toggle
+  document.getElementById('cmp-watch').addEventListener('click', () => {
+    if (!selectedName) return;
+    U.watchToggle(selectedName);
+    updateWatchBtn();
+    renderList();
+  });
+
+  function renderList() {
+    const scroll = document.getElementById('cl-scroll');
+    let filtered = commodities;
+    if (selectedCat !== 'all') filtered = filtered.filter(c => c.cat === selectedCat);
+    if (searchQ) filtered = filtered.filter(c => c.name.toLowerCase().includes(searchQ));
+
+    // Section: Watchlist (only if any)
+    const watched = filtered.filter(c => c.watched);
+    const others = filtered.filter(c => !c.watched);
+
+    let html = '';
+    if (watched.length) {
+      html += `<div class="clist__section-hd">★ Watchlist</div>`;
+      html += watched.map(itemHTML).join('');
+    }
+    if (others.length) {
+      // Group others by cat for headers when "all" filter is active
+      if (selectedCat === 'all') {
+        const groups = U.groupBy(others, c => c.cat || 'other');
+        const catOrder = ['fruits', 'vegetables', 'onions_potatoes', 'nuts', 'other'];
+        for (const cat of catOrder) {
+          const items = groups.get(cat);
+          if (!items?.length) continue;
+          html += `<div class="clist__section-hd">${escape(U.catLabel(cat))}</div>`;
+          html += items.map(itemHTML).join('');
+        }
+      } else {
+        html += others.map(itemHTML).join('');
+      }
+    }
+    if (!html) html = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No commodities match.</div>`;
+    scroll.innerHTML = html;
+  }
+
+  function itemHTML(c) {
+    const active = c.name === selectedName ? ' is-active' : '';
+    const cls = U.catClass(c.cat);
+    return `<div class="cl-item${active}" data-name="${escape(c.name)}">
+      <span class="cat-dot cat-dot--${cls}"></span>
+      <span class="cl-item__name">${escape(c.name)}</span>
+      <span class="cl-item__price">${U.fmtPrice(c.mostly)}</span>
+    </div>`;
+  }
+
+  function renderCrossMarket(name) {
+    const commodityRows = byName.get(name) || [];
+    if (!commodityRows.length) return;
+
+    // Build per-market aggregate for this commodity
+    const perMarket = [];
+    const byMarket = U.groupBy(commodityRows, r => r.market);
+    for (const [mkt, rs] of byMarket) {
+      const agg = U.aggregateCommodity(rs);
+      perMarket.push({ market: mkt, ...agg });
+    }
+    perMarket.sort((a, b) => (a.mostly ?? Infinity) - (b.mostly ?? Infinity));
+
+    const cat = commodityRows[0]?.commodity_type;
+    const packs = U.uniq(commodityRows.map(r => r.package).filter(Boolean));
+    const origins = U.uniq(commodityRows.map(r => r.origin).filter(Boolean));
+
+    document.getElementById('cmp-cat').textContent = U.catLabel(cat);
+    document.getElementById('cmp-title').textContent = name;
+    document.getElementById('cmp-sub').textContent =
+      `${packs.slice(0, 2).join(', ') || '—'} · ${origins.slice(0, 2).join(', ') || '—'} · across ${perMarket.length} terminals`;
+
+    // Summary tiles
+    const withPrice = perMarket.filter(r => r.mostly != null);
+    if (withPrice.length) {
+      const avg = withPrice.reduce((s, r) => s + r.mostly, 0) / withPrice.length;
+      const low = withPrice[0];
+      const high = withPrice[withPrice.length - 1];
+      const spread = high.mostly - low.mostly;
+      document.getElementById('s-avg').textContent = U.fmtPrice(avg);
+      document.getElementById('s-low').textContent = U.fmtPrice(low.mostly);
+      document.getElementById('s-low-city').textContent = low.market;
+      document.getElementById('s-high').textContent = U.fmtPrice(high.mostly);
+      document.getElementById('s-high-city').textContent = high.market;
+      document.getElementById('s-spread').textContent = U.fmtPrice(spread);
+    } else {
+      ['s-avg','s-low','s-high','s-spread'].forEach(id => document.getElementById(id).textContent = '—');
+    }
+
+    // Pack chips
+    const packsEl = document.getElementById('cmp-packs');
+    const chipHtml = packs.slice(0, 4).map((p, i) =>
+      `<span class="chip ${i === 0 ? 'is-active' : ''}">${escape(p)}</span>`
+    ).join('');
+    packsEl.innerHTML = chipHtml + `<div class="cmp__sort">Sort by <b>Mostly ↑</b></div>`;
+
+    // Table
+    const tbody = document.getElementById('cmp-tbody');
+    if (!perMarket.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No market data for this commodity today.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = perMarket.map((r, idx) => {
+      const isBest = idx === 0 && r.mostly != null;
+      return `<tr class="${isBest ? 'is-best' : ''}">
+        <td><span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
+        <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
+        <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
+        <td class="r strong">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
+        <td class="r">${r.lotCount}</td>
+      </tr>`;
+    }).join('');
+
+    updateWatchBtn();
+  }
+
+  function updateWatchBtn() {
+    const btn = document.getElementById('cmp-watch');
+    if (!selectedName) return;
+    const w = U.watchHas(selectedName);
+    btn.textContent = w ? '★ Watching' : '★ Watch';
+    btn.classList.toggle('btn--dark', w);
+    btn.classList.toggle('btn--ghost', !w);
+  }
+
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function showError(err) {
+    const el = document.createElement('div');
+    el.className = 'err-banner';
+    el.innerHTML = `<span class="err-banner__icn">!</span><span><b>Couldn't load.</b> ${escape(String(err.message || err))}</span>`;
+    document.getElementById('err-slot').appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>
