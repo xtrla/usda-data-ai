@@ -134,6 +134,39 @@ function setSelMarket(m) { localStorage.setItem(SEL_MARKET_KEY, m); }
 function selDate() { return localStorage.getItem(SEL_DATE_KEY) || null; }
 function setSelDate(d) { localStorage.setItem(SEL_DATE_KEY, d); }
 
+// ── URL slug helpers for /app/commodity route ──
+function slugify(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+function detailURL({ commodity, variety, origin, size, package: pkg, market } = {}) {
+  const base = `/app/commodity/${slugify(commodity || '')}`;
+  const params = new URLSearchParams();
+  if (variety) params.set('variety', variety);
+  if (origin) params.set('origin', origin);
+  if (size) params.set('size', size);
+  if (pkg) params.set('pkg', pkg);
+  if (market) params.set('market', market);
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+// Parse the current window path/qs back into filter params
+function readDetailFilters() {
+  const path = window.location.pathname;
+  const m = path.match(/\/app\/commodity\/([^\/]+)/);
+  const slug = m ? m[1] : '';
+  const p = new URLSearchParams(window.location.search);
+  return {
+    slug,
+    variety: p.get('variety') || null,
+    origin: p.get('origin') || null,
+    size: p.get('size') || null,
+    package: p.get('pkg') || null,
+    market: p.get('market') || null,
+  };
+}
+
 // Expose
 if (typeof window !== 'undefined') {
   window.agraxUtil = {
@@ -142,5 +175,6 @@ if (typeof window !== 'undefined') {
     catClass, catLabel, moodFromAvgChg,
     watchList, watchToggle, watchHas,
     selMarket, setSelMarket, selDate, setSelDate,
+    slugify, detailURL, readDetailFilters,
   };
 }

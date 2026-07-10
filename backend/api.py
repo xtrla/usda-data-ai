@@ -134,6 +134,37 @@ def get_national_trends(date: str = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ─────────────────────────────────────────────────────────────
+# HISTORY — time series for one commodity/variety/origin/size/market
+# ─────────────────────────────────────────────────────────────
+
+@app.get("/history")
+def get_history(
+    commodity: str,
+    market: str = None,
+    variety: str = None,
+    origin: str = None,
+    size: str = None,
+    package: str = None,
+    days: int = 90,
+):
+    """Return time-series rows for the given SKU filters, most recent first."""
+    try:
+        from datetime import date, timedelta
+        cutoff = (date.today() - timedelta(days=days)).isoformat()
+
+        q = supabase.table(TABLE).select("*").eq("commodity", commodity).gte("report_date", cutoff)
+        if market:  q = q.eq("market", market)
+        if variety: q = q.eq("variety", variety)
+        if origin:  q = q.eq("origin", origin)
+        if size:    q = q.eq("size", size)
+        if package: q = q.eq("package", package)
+
+        result = q.order("report_date", desc=True).limit(10000).execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ─────────────────────────────────────────────────────────────
 # MOVEMENT (produce_movement — USDA WA_FV175 truck/air/boat data)
 # ─────────────────────────────────────────────────────────────
 

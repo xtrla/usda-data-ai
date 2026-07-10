@@ -6,6 +6,8 @@
     { "source": "/app", "destination": "/app/index.html" },
     { "source": "/app/markets", "destination": "/app/markets/index.html" },
     { "source": "/app/markets/(.*)", "destination": "/app/markets/index.html" },
+    { "source": "/app/commodity", "destination": "/app/commodity/index.html" },
+    { "source": "/app/commodity/(.*)", "destination": "/app/commodity/index.html" },
     { "source": "/app/shipping", "destination": "/app/shipping/index.html" },
     { "source": "/app/movement", "destination": "/app/movement/index.html" },
     { "source": "/app/watchlist", "destination": "/app/watchlist/index.html" },

@@ -367,8 +367,15 @@
     tbody.innerHTML = perMarket.map((r, idx) => {
       const isBest = idx === 0 && r.mostly != null;
       const marketKey = r.market;
+      const detailUrl = window.agraxUtil.detailURL({
+        commodity: selectedName,
+        market: marketKey,
+      });
       return `<tr class="expand-row" data-mkt="${escape(marketKey)}">
-        <td><span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
+        <td>
+          <span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}
+          <a href="${detailUrl}" onclick="event.stopPropagation()" style="margin-left:8px;font-size:10.5px;color:var(--pop);font-weight:500;text-decoration:none">detail →</a>
+        </td>
         <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
         <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
         <td class="r strong">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
@@ -384,6 +391,21 @@
   }
 
   function onExpandClick(e) {
+    // Sub-row click → navigate to detail page
+    const subRow = e.target.closest('tr.sub-row');
+    if (subRow) {
+      const url = window.agraxUtil.detailURL({
+        commodity: selectedName,
+        variety: subRow.dataset.variety || null,
+        origin: subRow.dataset.origin || null,
+        size: subRow.dataset.size || null,
+        package: subRow.dataset.pkg || null,
+        market: subRow.dataset.mkt || null,
+      });
+      window.location.href = url;
+      return;
+    }
+
     const row = e.target.closest('tr.expand-row');
     if (!row) return;
     const tbody = row.parentElement;
@@ -445,8 +467,8 @@
         const highTxt = rr.price_high != null ? Number(rr.price_high).toFixed(2) : '—';
         const variety = rr.variety || '';
         const label = [variety, pack].filter(Boolean).join(' · ');
-        subFragments.push(`<tr class="sub-row">
-          <td><span class="sub-tag">${escape(size)}</span>${escape(label)}${qual}${grade ? `<span class="sub-tag--qual">${escape(grade)}</span>` : ''}</td>
+        subFragments.push(`<tr class="sub-row" data-mkt="${escape(mkt)}" data-variety="${escape(rr.variety || '')}" data-origin="${escape(rr.origin || '')}" data-size="${escape(rr.size || '')}" data-pkg="${escape(rr.package || '')}" style="cursor:pointer">
+          <td><span class="sub-tag">${escape(size)}</span>${escape(label)}${qual}${grade ? `<span class="sub-tag--qual">${escape(grade)}</span>` : ''} <span style="color:var(--pop);font-size:10px;margin-left:4px">→</span></td>
           <td class="r">${lowTxt}</td>
           <td class="r">${highTxt}</td>
           <td class="r">${mostlyTxt}</td>

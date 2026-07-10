@@ -53,6 +53,21 @@ const api = {
   reportTrends: (date) =>
     _fetch(`/reports/trends${date ? `?date=${encodeURIComponent(date)}` : ''}`),
 
+  // GET /history?commodity=&market=&variety=&origin=&size=&package=&days=
+  history: (params = {}) => {
+    const q = Object.entries(params)
+      .filter(([, v]) => v != null && v !== '')
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&');
+    return _fetch(`/history${q ? `?${q}` : ''}`);
+  },
+
+  // GET /movement/latest
+  movementLatest: () => _fetch('/movement/latest'),
+
+  // GET /movement/summary/{date}
+  movementSummary: (date) => _fetch(`/movement/summary/${encodeURIComponent(date)}`),
+
   // GET /stats → {total_records, commodities, markets, dates}
   stats: () => _fetch('/stats'),
 };
