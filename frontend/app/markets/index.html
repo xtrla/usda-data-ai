@@ -16,10 +16,61 @@
   table.cmp-tbl thead tr { color:var(--muted); background:var(--card-alt); border-bottom:0.5px solid var(--line-soft); }
   table.cmp-tbl th { text-align:left; font-weight:500; padding:9px 16px; white-space:nowrap; font-size:11.5px; }
   table.cmp-tbl th.r { text-align:right; }
-  table.cmp-tbl td { padding:11px 16px; border-top:0.5px solid var(--line-softer); cursor:pointer; }
-  table.cmp-tbl tbody tr:hover { background:#FBFDF9; }
+  table.cmp-tbl td { padding:11px 16px; border-top:0.5px solid var(--line-softer); }
+  table.cmp-tbl tbody tr.expand-row { cursor:pointer; }
+  table.cmp-tbl tbody tr.expand-row:hover { background:#FBFDF9; }
   table.cmp-tbl td.r { text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
   table.cmp-tbl td.strong { font-weight:600; }
+
+  /* Expand caret on first cell */
+  table.cmp-tbl tr.expand-row td:first-child { padding-left:32px; position:relative; }
+  table.cmp-tbl tr.expand-row td:first-child::before {
+    content:'▸'; position:absolute; left:14px; top:14px;
+    color:var(--muted); font-size:10px; transition:transform .15s;
+  }
+  table.cmp-tbl tr.expand-row.is-open td:first-child::before { content:'▾'; color:var(--pop); }
+
+  /* Sub-row grouping */
+  table.cmp-tbl tr.sub-hd td {
+    background:var(--pop-04);
+    padding:6px 14px 6px 40px;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-weight:600;
+    color:var(--muted);
+    border-top:0.5px solid var(--pop-13);
+  }
+  table.cmp-tbl tr.sub-row td {
+    background:var(--pop-04);
+    padding:7px 14px 7px 40px;
+    font-size:11.5px;
+    color:var(--sub);
+    border-top:0.5px solid var(--line-softer);
+  }
+  table.cmp-tbl tr.sub-row td.r { color:var(--ink); font-weight:500; }
+  table.cmp-tbl tr.sub-row td:first-child { padding-left:52px; }
+  .sub-tag {
+    display:inline-block;
+    font-size:9.5px;
+    padding:1px 7px;
+    border-radius:4px;
+    background:var(--card);
+    border:0.5px solid var(--line-soft);
+    color:var(--sub);
+    margin-right:6px;
+    font-family:var(--font-mono);
+    font-weight:500;
+  }
+  .sub-tag--qual {
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-family:var(--font-body);
+    font-style:italic;
+    padding:0;
+    margin-left:4px;
+  }
 </style>
 </head>
 <body>
@@ -300,14 +351,23 @@
     packsEl.innerHTML = chipHtml + `<div class="cmp__sort">Sort by <b>Mostly ↑</b></div>`;
 
     // Table
-    const tbody = document.getElementById('cmp-tbody');
+    const tbodyOld = document.getElementById('cmp-tbody');
+    // Clone-replace to drop any previously attached listeners
+    const tbody = tbodyOld.cloneNode(false);
+    tbody.id = 'cmp-tbody';
+    tbodyOld.parentNode.replaceChild(tbody, tbodyOld);
+
     if (!perMarket.length) {
       tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No market data for this commodity today.</td></tr>`;
       return;
     }
+    // Group raw rows by market so we can expand on demand
+    const rawByMarket = byMarket; // Map<market, rows[]>
+
     tbody.innerHTML = perMarket.map((r, idx) => {
       const isBest = idx === 0 && r.mostly != null;
-      return `<tr class="${isBest ? 'is-best' : ''}">
+      const marketKey = r.market;
+      return `<tr class="expand-row" data-mkt="${escape(marketKey)}">
         <td><span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
         <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
         <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
@@ -316,7 +376,87 @@
       </tr>`;
     }).join('');
 
+    // Wire expand/collapse
+    tbody._rawByMarket = rawByMarket;
+    tbody.addEventListener('click', onExpandClick);
+
     updateWatchBtn();
+  }
+
+  function onExpandClick(e) {
+    const row = e.target.closest('tr.expand-row');
+    if (!row) return;
+    const tbody = row.parentElement;
+    const mkt = row.dataset.mkt;
+    const isOpen = row.classList.contains('is-open');
+
+    // Remove any existing sub-rows for this market
+    let sib = row.nextElementSibling;
+    while (sib && (sib.classList.contains('sub-row') || sib.classList.contains('sub-hd'))) {
+      const next = sib.nextElementSibling;
+      sib.remove();
+      sib = next;
+    }
+
+    if (isOpen) {
+      row.classList.remove('is-open');
+      return;
+    }
+    // Close any other open row (accordion behavior)
+    tbody.querySelectorAll('tr.expand-row.is-open').forEach(r => r.classList.remove('is-open'));
+    // Re-scan and remove other stale sub-rows
+    tbody.querySelectorAll('tr.sub-row, tr.sub-hd').forEach(r => r.remove());
+
+    row.classList.add('is-open');
+
+    // Build sub-rows: group this market's rows by origin, then list sizes
+    const rows = tbody._rawByMarket.get(mkt) || [];
+    const byOrigin = window.agraxUtil.groupBy(rows, r => r.origin || 'Unspecified');
+    const insertAfter = row;
+    const subFragments = [];
+
+    // Sort origins by best price ascending
+    const originAggs = [];
+    for (const [origin, rs] of byOrigin) {
+      const agg = window.agraxUtil.aggregateCommodity(rs);
+      originAggs.push({ origin, rows: rs, agg });
+    }
+    originAggs.sort((a, b) => (a.agg.mostly ?? a.agg.low ?? Infinity) - (b.agg.mostly ?? b.agg.low ?? Infinity));
+
+    for (const { origin, rows: originRows } of originAggs) {
+      subFragments.push(`<tr class="sub-hd"><td colspan="5">${escape(origin)} · ${originRows.length} lot${originRows.length === 1 ? '' : 's'}</td></tr>`);
+      // Sort sizes by price
+      const sorted = [...originRows].sort((a, b) => {
+        const am = window.agraxUtil.rowMostly(a) ?? Infinity;
+        const bm = window.agraxUtil.rowMostly(b) ?? Infinity;
+        return am - bm;
+      });
+      for (const rr of sorted) {
+        const size = rr.size || rr.variety || '—';
+        const pack = rr.package || '';
+        const qual = rr.quality_note ? `<span class="sub-tag--qual">${escape(rr.quality_note)}</span>` : '';
+        const grade = rr.grade || '';
+        const mLow = window.agraxUtil.num(rr.price_mostly_low);
+        const mHigh = window.agraxUtil.num(rr.price_mostly_high);
+        const mostlyTxt = (mLow != null && mHigh != null)
+          ? (mLow === mHigh ? mLow.toFixed(2) : `${mLow.toFixed(2)}–${mHigh.toFixed(2)}`)
+          : (mLow != null ? mLow.toFixed(2) : (mHigh != null ? mHigh.toFixed(2) : '—'));
+        const lowTxt = rr.price_low != null ? Number(rr.price_low).toFixed(2) : '—';
+        const highTxt = rr.price_high != null ? Number(rr.price_high).toFixed(2) : '—';
+        const variety = rr.variety || '';
+        const label = [variety, pack].filter(Boolean).join(' · ');
+        subFragments.push(`<tr class="sub-row">
+          <td><span class="sub-tag">${escape(size)}</span>${escape(label)}${qual}${grade ? `<span class="sub-tag--qual">${escape(grade)}</span>` : ''}</td>
+          <td class="r">${lowTxt}</td>
+          <td class="r">${highTxt}</td>
+          <td class="r">${mostlyTxt}</td>
+          <td class="r" style="color:var(--muted)">—</td>
+        </tr>`);
+      }
+    }
+
+    // Insert after clicked row
+    insertAfter.insertAdjacentHTML('afterend', subFragments.join(''));
   }
 
   function updateWatchBtn() {
