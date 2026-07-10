@@ -478,6 +478,7 @@ body { background: var(--page-warm); overflow-x: hidden; }
   </div>
 </footer>
 
+<script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/util.js"></script>
 <script>
@@ -494,6 +495,10 @@ body { background: var(--page-warm); overflow-x: hidden; }
   } catch (err) {
     document.getElementById('ticker').innerHTML =
       `<span class="tk-live"><span class="tk-live__dot"></span>Live · USDA</span><span class="tk-item">Data feed connecting…</span>`;
+    console.error('[agraX] API fetch failed:', err, 'base:', agraxAPI.base);
+    // Also surface a small visible hint in the hero so you know when it's broken
+    const heroMood = document.getElementById('hero-mood');
+    if (heroMood) heroMood.textContent = 'API unreachable';
     return;
   }
 
