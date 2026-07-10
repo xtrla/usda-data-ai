@@ -140,25 +140,26 @@ function slugify(s) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+// Values USDA uses to mean "unspecified" — treat as no-op in URLs
+const PLACEHOLDER_VALS = new Set(['', 'N/A', 'n/a', 'None', 'Unknown', 'null']);
+function isReal(v) { return v != null && !PLACEHOLDER_VALS.has(String(v).trim()); }
+
 function detailURL({ commodity, variety, origin, size, package: pkg, market } = {}) {
-  const base = `/app/commodity/${slugify(commodity || '')}`;
   const params = new URLSearchParams();
-  if (variety) params.set('variety', variety);
-  if (origin) params.set('origin', origin);
-  if (size) params.set('size', size);
-  if (pkg) params.set('pkg', pkg);
-  if (market) params.set('market', market);
+  if (commodity) params.set('c', commodity);
+  if (isReal(variety)) params.set('variety', variety);
+  if (isReal(origin)) params.set('origin', origin);
+  if (isReal(size)) params.set('size', size);
+  if (isReal(pkg)) params.set('pkg', pkg);
+  if (isReal(market)) params.set('market', market);
   const qs = params.toString();
-  return qs ? `${base}?${qs}` : base;
+  return `/app/commodity${qs ? `?${qs}` : ''}`;
 }
 // Parse the current window path/qs back into filter params
 function readDetailFilters() {
-  const path = window.location.pathname;
-  const m = path.match(/\/app\/commodity\/([^\/]+)/);
-  const slug = m ? m[1] : '';
   const p = new URLSearchParams(window.location.search);
   return {
-    slug,
+    commodity: p.get('c') || null,
     variety: p.get('variety') || null,
     origin: p.get('origin') || null,
     size: p.get('size') || null,

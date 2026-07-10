@@ -270,8 +270,14 @@
   document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
 
   const filters = U.readDetailFilters();
-  // The URL slug is a slugified commodity name — we need the actual name.
-  // Strategy: fetch latest terminal data, match commodity by slug.
+
+  // No commodity in URL? Send them back to markets to pick something.
+  if (!filters.commodity) {
+    window.location.replace('/app/markets');
+    return;
+  }
+
+  // Fetch latest data
   let latestDate, terminalRows = [], prevRows = [];
   try {
     const dates = await agraxAPI.dates();
@@ -281,11 +287,12 @@
     if (dates[1]) prevRows = await agraxAPI.reportTerminal(dates[1].date);
   } catch (err) { return showError(err); }
 
-  // Resolve slug → actual commodity name
+  // Match commodity by name (case-insensitive)
   const commodityNames = U.uniq(terminalRows.map(r => r.commodity));
-  const commodity = commodityNames.find(n => U.slugify(n) === filters.slug);
+  const commodity = commodityNames.find(n => n.toLowerCase() === filters.commodity.toLowerCase())
+    || commodityNames.find(n => U.slugify(n) === U.slugify(filters.commodity));
   if (!commodity) {
-    return showError({ message: `Unknown commodity: ${filters.slug}` });
+    return showError({ message: `Unknown commodity: ${filters.commodity}` });
   }
 
   // All rows for this commodity today
