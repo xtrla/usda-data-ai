@@ -255,9 +255,9 @@
       const chgCls = chg.dir === 'down' ? 'chg-down' : chg.dir === 'up' ? 'chg-up' : 'chg-flat';
       return `<tr>
         <td class="strong"><div>${escape(name)}</div><div class="data__sub">${escape(c.today.packs[0] || '')}</div></td>
-        <td class="r">${U.fmtPrice(c.today.low)}</td>
-        <td class="r">${U.fmtPrice(c.today.high)}</td>
-        <td class="r strong">${U.fmtPrice(c.today.mostly)} <span class="${chgCls}" style="font-size:10px;margin-left:4px">${chg.text}</span></td>
+        <td class="r" data-label="Low">${U.fmtPrice(c.today.low)}</td>
+        <td class="r" data-label="High">${U.fmtPrice(c.today.high)}</td>
+        <td class="r strong" data-label="Mostly">${U.fmtPrice(c.today.mostly)} <span class="${chgCls}" style="font-size:10px;margin-left:4px">${chg.text}</span></td>
       </tr>`;
     }).join('');
   }

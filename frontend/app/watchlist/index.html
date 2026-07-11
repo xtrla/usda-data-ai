@@ -141,10 +141,10 @@
       <td class="strong">
         <div style="display:flex;align-items:center;gap:6px"><span class="cat-dot cat-dot--${U.catClass(r.cat)}"></span>${escape(r.name)}</div>
       </td>
-      <td class="r">${r.agg.low != null ? r.agg.low.toFixed(2) : '—'}</td>
-      <td class="r">${r.agg.high != null ? r.agg.high.toFixed(2) : '—'}</td>
-      <td class="r strong">${U.fmtPrice(r.agg.mostly)}</td>
-      <td class="r ${chgCls}">${chg.text}</td>
+      <td class="r" data-label="Low">${r.agg.low != null ? r.agg.low.toFixed(2) : '—'}</td>
+      <td class="r" data-label="High">${r.agg.high != null ? r.agg.high.toFixed(2) : '—'}</td>
+      <td class="r strong" data-label="Mostly">${U.fmtPrice(r.agg.mostly)}</td>
+      <td class="r ${chgCls}" data-label="Chg">${chg.text}</td>
       <td class="r"><button class="btn btn--tiny btn--ghost" data-remove="${escape(r.name)}">Remove</button></td>
     </tr>`;
   }).join('');

@@ -418,10 +418,10 @@
           <span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}
           <a href="${detailUrl}" onclick="event.stopPropagation()" style="margin-left:8px;font-size:10.5px;color:var(--pop);font-weight:500;text-decoration:none">detail →</a>
         </td>
-        <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
-        <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
-        <td class="r strong">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
-        <td class="r">${r.lotCount}</td>
+        <td class="r" data-label="Low">${r.low != null ? r.low.toFixed(2) : '—'}</td>
+        <td class="r" data-label="High">${r.high != null ? r.high.toFixed(2) : '—'}</td>
+        <td class="r strong" data-label="Mostly">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
+        <td class="r" data-label="Lots">${r.lotCount}</td>
       </tr>`;
     }).join('');
 
@@ -511,10 +511,10 @@
         const label = [variety, pack].filter(Boolean).join(' · ');
         subFragments.push(`<tr class="sub-row" data-mkt="${escape(mkt)}" data-variety="${escape(rr.variety || '')}" data-origin="${escape(rr.origin || '')}" data-size="${escape(rr.size || '')}" data-pkg="${escape(rr.package || '')}" style="cursor:pointer">
           <td><span class="sub-tag">${escape(size)}</span>${escape(label)}${qual}${grade ? `<span class="sub-tag--qual">${escape(grade)}</span>` : ''} <span style="color:var(--pop);font-size:10px;margin-left:4px">→</span></td>
-          <td class="r">${lowTxt}</td>
-          <td class="r">${highTxt}</td>
-          <td class="r">${mostlyTxt}</td>
-          <td class="r" style="color:var(--muted)">—</td>
+          <td class="r" data-label="Low">${lowTxt}</td>
+          <td class="r" data-label="High">${highTxt}</td>
+          <td class="r" data-label="Mostly">${mostlyTxt}</td>
+          <td class="r" data-label="Lots" style="color:var(--muted)">—</td>
         </tr>`);
       }
     }

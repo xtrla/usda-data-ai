@@ -218,10 +218,10 @@
       const isBest = idx === 0 && r.mostly != null;
       return `<tr class="${isBest ? 'is-best' : ''}">
         <td><span class="city-name"><span class="city-name__pin"></span>${escape(r.origin)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
-        <td class="r">${r.low != null ? r.low.toFixed(2) : '—'}</td>
-        <td class="r">${r.high != null ? r.high.toFixed(2) : '—'}</td>
-        <td class="r strong">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
-        <td class="r">${r.lotCount}</td>
+        <td class="r" data-label="Low">${r.low != null ? r.low.toFixed(2) : '—'}</td>
+        <td class="r" data-label="High">${r.high != null ? r.high.toFixed(2) : '—'}</td>
+        <td class="r strong" data-label="Mostly">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
+        <td class="r" data-label="Lots">${r.lotCount}</td>
       </tr>`;
     }).join('');
   }
