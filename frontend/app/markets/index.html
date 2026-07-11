@@ -128,6 +128,10 @@
 
       <!-- RIGHT: cross-market panel -->
       <section class="cmp">
+        <div class="pushnav-back">
+          <button class="pushnav-back__btn" id="pushnav-back">← Markets</button>
+          <span class="pushnav-back__title" id="pushnav-title">—</span>
+        </div>
         <div class="cmp__head">
           <div class="cmp__head-content">
             <div>
@@ -250,7 +254,45 @@
     selectedName = item.dataset.name;
     document.querySelectorAll('.cl-item').forEach(el => el.classList.toggle('is-active', el === item));
     renderCrossMarket(selectedName);
+    enterDetailView(selectedName);
   });
+
+  // Back button in mobile push nav
+  document.getElementById('pushnav-back').addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 899px)').matches) {
+      // Use browser back if we pushed a state, otherwise just exit detail view
+      if (history.state && history.state.pushnav) {
+        history.back();
+      } else {
+        exitDetailView();
+      }
+    }
+  });
+
+  // Handle browser back button on mobile
+  window.addEventListener('popstate', (e) => {
+    if (window.matchMedia('(max-width: 899px)').matches) {
+      exitDetailView();
+    }
+  });
+
+  function isMobile() { return window.matchMedia('(max-width: 899px)').matches; }
+  function enterDetailView(name) {
+    if (!isMobile()) return;
+    document.querySelector('.split').classList.add('is-detail');
+    document.body.classList.add('pushnav-detail');
+    document.getElementById('pushnav-title').textContent = name;
+    // Push a state so browser back button returns to the list
+    if (!history.state || !history.state.pushnav) {
+      history.pushState({ pushnav: true, commodity: name }, '', window.location.href);
+    }
+    // Scroll to top of the new view
+    window.scrollTo(0, 0);
+  }
+  function exitDetailView() {
+    document.querySelector('.split').classList.remove('is-detail');
+    document.body.classList.remove('pushnav-detail');
+  }
 
   // Watch toggle
   document.getElementById('cmp-watch').addEventListener('click', () => {

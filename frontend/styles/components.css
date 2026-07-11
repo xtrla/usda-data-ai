@@ -941,6 +941,67 @@ table.data td.strong { font-weight: var(--fw-semibold); }
   border-radius: var(--r-card);
   overflow: hidden;
 }
+
+/* ── MOBILE PUSH NAVIGATION ────────────────────────
+   On mobile, the list and detail are separate full-screen views.
+   Tap a commodity → the whole page swaps to detail with a back button.
+   Desktop: no change, both panels always show.
+   ─────────────────────────────────────────────────── */
+.pushnav-back {
+  display: none;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--dark-1);
+  color: #fff;
+  border-bottom: 0.5px solid var(--dark-5);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.pushnav-back__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-md);
+  color: var(--pop);
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.pushnav-back__title {
+  margin-left: auto;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+@media(max-width: 899px){
+  /* Default (list view): show list, hide cmp */
+  .split .clist { display: flex; }
+  .split .cmp { display: none; }
+
+  /* Detail view: hide list, show cmp + back bar */
+  .split.is-detail .clist { display: none; }
+  .split.is-detail .cmp { display: block; }
+  .split.is-detail .pushnav-back { display: flex; }
+
+  /* When body is in detail mode, hide page-head and topbar so cmp gets full screen */
+  body.pushnav-detail .page-head,
+  body.pushnav-detail .msub,
+  body.pushnav-detail .topbar { display: none; }
+  body.pushnav-detail .main { padding-top: 0; }
+}
+@media(min-width: 900px){
+  /* Desktop: back bar never shows even if class is set */
+  .pushnav-back { display: none !important; }
+}
 .cmp__head {
   padding: var(--sp-7) var(--sp-9);
   border-bottom: 0.5px solid var(--line-soft);

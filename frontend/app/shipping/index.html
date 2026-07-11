@@ -64,6 +64,10 @@
       </aside>
 
       <section class="cmp">
+        <div class="pushnav-back">
+          <button class="pushnav-back__btn" id="pushnav-back">← Shipping points</button>
+          <span class="pushnav-back__title" id="pushnav-title">—</span>
+        </div>
         <div class="cmp__head">
           <div class="cmp__head-content">
             <div>
@@ -144,7 +148,32 @@
     selectedName = item.dataset.name;
     document.querySelectorAll('.cl-item').forEach(el => el.classList.toggle('is-active', el === item));
     renderPanel(selectedName);
+    enterDetailView(selectedName);
   });
+
+  document.getElementById('pushnav-back').addEventListener('click', () => {
+    if (isMobile()) {
+      if (history.state && history.state.pushnav) history.back();
+      else exitDetailView();
+    }
+  });
+  window.addEventListener('popstate', () => { if (isMobile()) exitDetailView(); });
+
+  function isMobile() { return window.matchMedia('(max-width: 899px)').matches; }
+  function enterDetailView(name) {
+    if (!isMobile()) return;
+    document.querySelector('.split').classList.add('is-detail');
+    document.body.classList.add('pushnav-detail');
+    document.getElementById('pushnav-title').textContent = name;
+    if (!history.state || !history.state.pushnav) {
+      history.pushState({ pushnav: true, commodity: name }, '', window.location.href);
+    }
+    window.scrollTo(0, 0);
+  }
+  function exitDetailView() {
+    document.querySelector('.split').classList.remove('is-detail');
+    document.body.classList.remove('pushnav-detail');
+  }
 
   function renderList() {
     let filtered = commodities;
