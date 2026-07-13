@@ -3,123 +3,494 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>agraX — Dashboard</title>
+<title>agraX — Home</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/styles/tokens.css" />
 <link rel="stylesheet" href="/styles/components.css" />
+<style>
+/* HERO SEARCH */
+.hero-search {
+  position: relative;
+  background: var(--grad-card-mint);
+  border: 0.5px solid #E4EBD6;
+  border-radius: var(--r-hero);
+  padding: var(--sp-9) var(--sp-8) var(--sp-8);
+  margin-bottom: var(--sp-6);
+  overflow: hidden;
+}
+@media(min-width: 640px){
+  .hero-search { padding: var(--sp-12) var(--sp-10) var(--sp-9); }
+}
+.hero-search::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: var(--glow-corner-soft);
+  pointer-events: none;
+}
+.hero-search > * { position: relative; }
+
+.hero-eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pop);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-eyebrow .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--pop);
+  box-shadow: 0 0 0 3px rgba(21,162,74,.15);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.hero-search h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-top: var(--sp-3);
+  line-height: 1.05;
+}
+@media(min-width: 640px){ .hero-search h1 { font-size: 34px; } }
+
+.hero-search__sub {
+  font-size: 13.5px;
+  color: var(--sub);
+  margin-top: 6px;
+  max-width: 520px;
+}
+
+/* The search input */
+.search-box {
+  margin-top: var(--sp-6);
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(21,162,74,.10);
+  max-width: 640px;
+  position: relative;
+  z-index: 2;
+}
+.search-box:focus-within {
+  border-color: var(--pop);
+  box-shadow: 0 8px 32px rgba(21,162,74,.18);
+}
+.search-box__ico { color: var(--pop); font-size: 18px; }
+.search-box__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink);
+  background: transparent;
+  padding: 2px 0;
+  min-width: 0;
+}
+.search-box__input::placeholder { color: var(--muted); }
+.search-box__kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  background: var(--fill);
+  padding: 3px 8px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  display: none;
+}
+@media(min-width: 640px){ .search-box__kbd { display: inline; } }
+
+/* Autocomplete dropdown */
+.autocomplete {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  padding: 6px;
+  z-index: 30;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+}
+.autocomplete.is-open { display: block; }
+.ac-item {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.ac-item:hover, .ac-item.is-hover { background: var(--pop-04); }
+.ac-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-item__spec { font-size: 11px; color: var(--muted); }
+.ac-item__price { font-family: var(--font-mono); font-weight: 600; flex-shrink: 0; }
+.ac-item__price.dn { color: var(--pop); }
+.ac-item__price.up { color: var(--up); }
+.ac-item__delta { font-family: var(--font-mono); font-size: 10.5px; flex-shrink: 0; margin-left: 4px; font-weight: 600; }
+.ac-item__delta.dn { color: var(--pop); }
+.ac-item__delta.up { color: var(--up); }
+.ac-empty { padding: 20px; text-align: center; font-size: 12.5px; color: var(--muted); }
+
+/* Recent + market chip row */
+.search-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--sp-5);
+  flex-wrap: wrap;
+  max-width: 640px;
+}
+.search-meta__label {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+.recent-chip {
+  font-size: 11.5px;
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  color: var(--sub);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+}
+.recent-chip:hover { border-color: var(--pop-border); color: var(--ink); }
+.recent-chip .p { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.recent-chip .d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; }
+.recent-chip .d.dn { color: var(--pop); }
+.recent-chip .d.up { color: var(--up); }
+
+.market-picker {
+  font-size: 11.5px;
+  color: var(--sub);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: auto;
+}
+.market-picker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pop); }
+
+/* ── MOOD strip (demoted) ── */
+.mood-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: 12px 16px;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-lg);
+  font-size: 12px;
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}
+.mood-strip__gauge { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+.mood-strip__gauge svg { transform: rotate(-90deg); }
+.mood-strip__num {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--pop);
+}
+.mood-strip__item { display: flex; align-items: center; gap: 8px; }
+.mood-strip__item .lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.mood-strip__item .val { font-family: var(--font-mono); font-weight: 600; }
+.mood-strip__item.pos .val { color: var(--pop); }
+.mood-strip__item.neg .val { color: var(--up); }
+.mood-strip__sep { width: 1px; height: 20px; background: var(--line); }
+.mood-strip__more { margin-left: auto; font-size: 11px; color: var(--muted); }
+
+/* ── DASHBOARD CARDS ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+@media(min-width: 900px){
+  .dash-grid { grid-template-columns: 1.5fr 1fr; }
+}
+
+.dash-card {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.dash-card__hd {
+  padding: 14px 18px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 0.5px solid var(--line-soft);
+}
+.dash-card__hd .ico { color: var(--pop); }
+.dash-card__hd .title { font-size: 12.5px; font-weight: 600; }
+.dash-card__hd .meta { margin-left: auto; font-size: 11px; color: var(--muted); }
+.dash-card__hd .link { margin-left: auto; font-size: 11px; color: var(--pop); font-weight: 500; text-decoration: none; }
+
+/* Watchlist rows */
+.wl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-top: 0.5px solid var(--line-softer);
+  font-size: 12.5px;
+  text-decoration: none;
+  color: inherit;
+}
+.wl-row:first-child { border-top: none; }
+.wl-row:hover { background: var(--pop-04); }
+.wl-row__star { color: var(--pop); font-size: 10px; }
+.wl-row__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wl-row__name b { font-weight: 500; }
+.wl-row__spec { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.wl-row__price { font-family: var(--font-mono); font-weight: 600; font-size: 13px; }
+.wl-row__delta { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; min-width: 50px; text-align: right; }
+.wl-row__delta.dn { color: var(--pop); }
+.wl-row__delta.up { color: var(--up); }
+.wl-row__delta.fl { color: var(--muted); }
+.wl-empty {
+  padding: 20px 18px;
+  font-size: 12px;
+  color: var(--sub);
+  text-align: center;
+  border-top: 0.5px solid var(--line-softer);
+}
+.wl-empty a { color: var(--pop); font-weight: 500; }
+
+/* Best buy (dark card) */
+.dash-best {
+  background: var(--grad-dark-2);
+  color: #fff;
+  border-radius: var(--r-card);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-best::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--glow-corner-strong);
+  pointer-events: none;
+}
+.dash-best > * { position: relative; }
+.dash-best__tag {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pop);
+  font-weight: 600;
+}
+.dash-best__name { font-size: 16px; font-weight: 600; margin-top: 4px; letter-spacing: -0.02em; color: #fff; }
+.dash-best__price {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-top: 6px;
+}
+.dash-best__delta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--pop-glow);
+  margin-left: 6px;
+}
+.dash-best__sub { font-size: 11px; color: var(--dark-fg-muted); margin-top: 4px; }
+.dash-best__cta { font-size: 11px; color: var(--pop-glow); margin-top: 12px; display: inline-block; font-weight: 500; text-decoration: none; }
+
+/* Alert rows */
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-top: 0.5px solid var(--line-softer);
+  font-size: 12px;
+}
+.alert-row:first-child { border-top: none; }
+.alert-row__icn {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.alert-row__icn.pos { background: var(--pop); }
+.alert-row__icn.neg { background: var(--up); }
+.alert-row__body { flex: 1; }
+.alert-row__body b { font-weight: 600; }
+.alert-empty {
+  padding: 18px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Signals slot (future AI card) */
+.signals-slot {
+  background: linear-gradient(135deg, var(--dark-1), var(--dark-2));
+  color: #fff;
+  border-radius: var(--r-card);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--sp-5);
+  display: none; /* uncomment when ready */
+}
+</style>
 </head>
 <body>
 
-<div class="app" id="app">
-  <!-- SHELL slots -->
+<div class="app">
   <div id="mtop-slot"></div>
   <div id="side-slot"></div>
 
   <main class="main">
-    <div class="msub">
-      <div class="msub__chip"><span class="dot"></span><span id="mkt-mobile">New York</span> ▾</div>
-      <div class="msub__chip" style="color:var(--sub)"><span id="date-mobile">—</span> ▾</div>
-      <div class="msub__chip" style="color:var(--sub)">🔍 Search</div>
-    </div>
-
     <div class="topbar">
-      <div class="topbar__search">
-        <span>🔍</span>Search commodities, markets…
-        <span class="topbar__kbd">⌘K</span>
-      </div>
-      <div class="topbar__selector">
-        <span class="topbar__dot"></span>
-        <span style="font-weight:500" id="mkt-desktop">New York</span>
-        <span class="topbar__chev">▾</span>
-      </div>
+      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__selector"><span class="topbar__dot"></span><span id="mkt-desktop">—</span><span class="topbar__chev">▾</span></div>
       <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
-      <div class="topbar__bell" role="button" aria-label="Notifications">🔔</div>
+      <div class="topbar__bell">🔔</div>
     </div>
 
-    <!-- Verdict + mood + KPI row -->
-    <div class="stack stack--two-cols">
-      <section class="card card--mint" style="padding:18px 22px" id="verdict-card">
-        <span class="mood-pill" id="verdict-pill">● Loading</span>
-        <h2 class="verdict" id="verdict-headline">Loading today's read…</h2>
-        <p class="verdict__sub" id="verdict-sub">Pulling the latest USDA report.</p>
-      </section>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div class="gauge-card">
-          <div class="gauge">
-            <svg viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="#EFEFEC" stroke-width="6"/>
-              <circle id="gauge-arc" cx="32" cy="32" r="26" fill="none" stroke="#15A24A" stroke-width="6" stroke-dasharray="0 163" stroke-linecap="round"/>
-            </svg>
-            <div class="gauge__txt" id="gauge-num">—</div>
-          </div>
-          <div>
-            <div style="font-size:9.5px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Market mood</div>
-            <div style="font-size:14px;font-weight:600" id="mood-label">—</div>
-          </div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi kpi--pos"><div class="kpi__lbl">Down</div><div class="kpi__val" id="k-down">—</div></div>
-          <div class="kpi kpi--neg"><div class="kpi__lbl">Up</div><div class="kpi__val" id="k-up">—</div></div>
-          <div class="kpi"><div class="kpi__lbl">Items</div><div class="kpi__val" id="k-count">—</div></div>
-        </div>
-      </div>
-    </div>
+    <div id="err-slot"></div>
 
-    <!-- Watchlist + Best buy + Alerts -->
-    <div class="stack stack--two-cols">
-      <section class="card card--flush">
-        <div style="padding:11px 14px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid var(--line-soft)">
-          <span style="color:var(--pop)">★</span>
-          <span style="font-size:12.5px;font-weight:600">Your watchlist</span>
-          <span style="font-size:11px;color:var(--muted)" id="watch-count">0 items</span>
-          <a href="/app/markets" style="margin-left:auto;font-size:11.5px;color:var(--pop);font-weight:500">+ Add</a>
-        </div>
-        <div class="table-wrap">
-          <table class="data">
-            <thead>
-              <tr><th>Commodity</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly</th></tr>
-            </thead>
-            <tbody id="watch-tbody">
-              <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- HERO SEARCH                                       -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section class="hero-search">
+      <div class="hero-eyebrow"><span class="dot"></span>USDA Market News · <span id="date-eyebrow">—</span></div>
+      <h1>What are you buying today?</h1>
+      <p class="hero-search__sub">Type a commodity, variety, or size. Get today's wholesale price from the official USDA report.</p>
 
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <section class="card card--dark" id="bestbuy-card">
-          <div class="best__tag">Best buy today</div>
-          <div class="best__name" id="best-name">—</div>
-          <div><span class="best__price" id="best-price">—</span><span class="best__delta" id="best-delta"></span></div>
-          <div style="font-size:11px;color:var(--dark-fg-muted);margin-top:2px" id="best-sub"></div>
-        </section>
-        <section class="card">
-          <div class="card-title"><span class="card-title__ico">⚡</span>Active alerts<span class="card-title__meta" id="alerts-meta">0 today</span></div>
-          <div id="alerts-body">
-            <div style="font-size:12px;color:var(--muted);padding:8px 0">Set alerts on your watchlist commodities to see them here.</div>
-          </div>
-        </section>
+      <div class="search-box">
+        <span class="search-box__ico">🔍</span>
+        <input
+          class="search-box__input"
+          id="search-input"
+          placeholder="hass avocados, strawberries, 48s…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <span class="search-box__kbd">↵ Enter</span>
+        <div class="autocomplete" id="autocomplete"></div>
       </div>
-    </div>
 
-    <!-- Movement snapshot: since /movement endpoints don't exist in api.py, hide until backend supports it -->
-    <section class="card" id="movement-card" style="display:none">
-      <div class="card-title">
-        <span class="eyebrow muted">Movement · today</span>
-        <a href="/app/movement" class="card-title__link">View full →</a>
+      <div class="search-meta">
+        <span class="search-meta__label">Recent</span>
+        <div id="recent-chips" style="display:contents"></div>
+        <a href="/app/markets" class="market-picker"><span class="dot"></span><span id="mkt-picker">—</span> ▾</a>
       </div>
-      <div id="movement-body"></div>
     </section>
 
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- MOOD STRIP (demoted)                              -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="mood-strip" id="mood-strip" style="display:none">
+      <div class="mood-strip__gauge">
+        <svg width="32" height="32" viewBox="0 0 32 32">
+          <circle cx="16" cy="16" r="13" fill="none" stroke="#EFEFEC" stroke-width="3"/>
+          <circle id="mood-arc" cx="16" cy="16" r="13" fill="none" stroke="#15A24A" stroke-width="3" stroke-dasharray="0 82" stroke-linecap="round"/>
+        </svg>
+        <div class="mood-strip__num" id="mood-num">—</div>
+      </div>
+      <div class="mood-strip__item"><span class="lbl">Mood</span><span class="val" id="mood-label">—</span></div>
+      <div class="mood-strip__sep"></div>
+      <div class="mood-strip__item pos"><span class="lbl">Down</span><span class="val" id="k-down">—</span></div>
+      <div class="mood-strip__item neg"><span class="lbl">Up</span><span class="val" id="k-up">—</span></div>
+      <div class="mood-strip__item"><span class="lbl">Tracked</span><span class="val" id="k-count">—</span></div>
+      <span class="mood-strip__more" id="mood-market">—</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- DASHBOARD CARDS                                   -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="dash-grid">
+      <!-- Watchlist -->
+      <section class="dash-card">
+        <div class="dash-card__hd">
+          <span class="ico">★</span>
+          <span class="title">Your watchlist</span>
+          <span class="meta" id="wl-count">—</span>
+          <a href="/app/watchlist" class="link">Manage →</a>
+        </div>
+        <div id="wl-body">
+          <div class="wl-empty">Loading…</div>
+        </div>
+      </section>
+
+      <!-- Right column: best buy + alerts stacked -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <section class="dash-best" id="best-card">
+          <div class="dash-best__tag">Best buy today</div>
+          <div class="dash-best__name" id="best-name">—</div>
+          <div>
+            <span class="dash-best__price" id="best-price">—</span>
+            <span class="dash-best__delta" id="best-delta"></span>
+          </div>
+          <div class="dash-best__sub" id="best-sub"></div>
+          <a class="dash-best__cta" id="best-cta" style="display:none">See detail →</a>
+        </section>
+
+        <section class="dash-card">
+          <div class="dash-card__hd">
+            <span class="ico">⚡</span>
+            <span class="title">Active alerts</span>
+            <span class="meta" id="alerts-meta">—</span>
+          </div>
+          <div id="alerts-body">
+            <div class="alert-empty">Loading…</div>
+          </div>
+        </section>
+      </div>
+    </div>
   </main>
 
   <div id="mtabs-slot"></div>
 </div>
-
-<div id="err-slot"></div>
 
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
@@ -128,67 +499,230 @@
 <script>
 (async function() {
   const U = window.agraxUtil;
-
-  // 1. Render shell
   const shell = Shell.render('dashboard');
   document.getElementById('mtop-slot').outerHTML = shell.mtop;
   document.getElementById('side-slot').outerHTML = shell.side;
   document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
 
-  // 2. Fetch data
-  let latestDate = null;
-  let terminalRows = [];
-  let prevRows = [];
+  // Recent lookups helpers
+  const RECENT_KEY = 'agrax:recent';
+  function getRecent() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; } }
+  function pushRecent(item) {
+    // item: {commodity, variety, origin, size, package, market, price, delta}
+    const list = getRecent().filter(x => !(x.commodity === item.commodity && x.variety === item.variety && x.size === item.size && x.market === item.market));
+    list.unshift(item);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 4)));
+  }
+  window.pushRecent = pushRecent;
+
+  // ── FETCH ──
+  let today = [], prev = [], latestDate = null;
   try {
     const dates = await agraxAPI.dates();
-    if (!dates || !dates.length) throw new Error('No dates returned from API');
+    if (!dates?.length) throw new Error('No data available');
     latestDate = dates[0].date;
-    const prevDate = dates[1]?.date;
+    document.getElementById('date-eyebrow').textContent = fmtDateLong(latestDate);
     document.getElementById('date-desktop').textContent = fmtDate(latestDate);
-    document.getElementById('date-mobile').textContent = fmtDate(latestDate);
+    today = await agraxAPI.reportTerminal(latestDate);
+    if (dates[1]) prev = await agraxAPI.reportTerminal(dates[1].date);
+  } catch (err) { return showError(err); }
 
-    terminalRows = await agraxAPI.reportTerminal(latestDate);
-    if (prevDate) {
-      prevRows = await agraxAPI.reportTerminal(prevDate);
-    }
-  } catch (err) {
-    showError(err);
-    return;
-  }
-
-  // 3. Filter to selected market (default: first available)
-  const availableMarkets = U.uniq(terminalRows.map(r => r.market));
+  const availableMarkets = U.uniq(today.map(r => r.market));
   let market = U.selMarket();
   if (!availableMarkets.includes(market)) {
-    market = availableMarkets[0] || 'New York';
+    market = availableMarkets.sort()[0] || 'New York';
     U.setSelMarket(market);
   }
   document.getElementById('mkt-desktop').textContent = market;
-  document.getElementById('mkt-mobile').textContent = market;
+  document.getElementById('mkt-picker').textContent = market;
 
-  const todayInMarket = terminalRows.filter(r => r.market === market);
-  const prevInMarket = prevRows.filter(r => r.market === market);
+  // Filter to selected market
+  const todayInMkt = today.filter(r => r.market === market);
+  const prevInMkt = prev.filter(r => r.market === market);
+  const todayBy = U.groupBy(todayInMkt, r => r.commodity);
+  const prevBy = U.groupBy(prevInMkt, r => r.commodity);
 
-  // 4. Aggregate per commodity for today
-  const todayByCommodity = groupByName(todayInMarket);
-  const prevByCommodity = groupByName(prevInMarket);
-
-  // 5. Compute verdict + KPIs
-  const changes = []; // {name, cat, todayMostly, prevMostly, pct}
-  for (const [name, rows] of todayByCommodity) {
-    const agg = U.aggregateCommodity(rows);
-    const prev = prevByCommodity.get(name);
-    const prevAgg = prev ? U.aggregateCommodity(prev) : null;
+  // Compute changes for the market
+  const changes = [];
+  for (const [name, rs] of todayBy) {
+    const agg = U.aggregateCommodity(rs);
+    const prevAgg = prevBy.has(name) ? U.aggregateCommodity(prevBy.get(name)) : null;
     const d = U.delta(agg.mostly, prevAgg?.mostly);
-    changes.push({
-      name,
-      cat: rows[0]?.commodity_type,
-      today: agg,
-      prev: prevAgg,
-      pct: d.pct,
-      dir: d.dir,
+    changes.push({ name, cat: rs[0]?.commodity_type, today: agg, prev: prevAgg, pct: d.pct, dir: d.dir, rows: rs });
+  }
+
+  // ── AUTOCOMPLETE index (based on today's data) ──
+  // Build a searchable list: one entry per unique commodity+variety+origin+size+package combo
+  const searchIndex = [];
+  for (const r of todayInMkt) {
+    searchIndex.push({
+      commodity: r.commodity,
+      variety: r.variety || null,
+      origin: r.origin || null,
+      size: r.size || null,
+      package: r.package || null,
+      row: r,
     });
   }
+  // Also a commodity-level entry for each unique commodity
+  const commodityLevel = [];
+  for (const [name, rs] of todayBy) {
+    commodityLevel.push({
+      commodity: name,
+      variety: null, origin: null, size: null, package: null,
+      row: null,
+      agg: U.aggregateCommodity(rs),
+      commodityLevel: true,
+    });
+  }
+
+  const input = document.getElementById('search-input');
+  const ac = document.getElementById('autocomplete');
+  let hoverIdx = -1;
+  let currentResults = [];
+
+  function searchQuery(q) {
+    const s = q.toLowerCase().trim();
+    if (!s) return [];
+    // Commodity-level matches first
+    const commodityMatches = commodityLevel
+      .filter(x => x.commodity.toLowerCase().includes(s))
+      .slice(0, 3);
+    // SKU-level matches
+    const skuMatches = searchIndex.filter(x => {
+      const hay = [x.commodity, x.variety, x.origin, x.size, x.package].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(s);
+    }).slice(0, 6);
+    return [...commodityMatches, ...skuMatches];
+  }
+
+  function renderAutocomplete(results) {
+    currentResults = results;
+    hoverIdx = results.length ? 0 : -1;
+    if (!results.length) {
+      ac.innerHTML = `<div class="ac-empty">No matches. Try a shorter query.</div>`;
+    } else {
+      ac.innerHTML = results.map((r, i) => {
+        let priceHtml = '', deltaHtml = '', specHtml = '';
+        if (r.commodityLevel) {
+          const price = r.agg.mostly ?? r.agg.low;
+          if (price != null) priceHtml = `<span class="ac-item__price">$${price.toFixed(2)}</span>`;
+          specHtml = `<span class="ac-item__spec">All varieties · ${market}</span>`;
+        } else {
+          const row = r.row;
+          const price = U.rowMostly(row);
+          if (price != null) priceHtml = `<span class="ac-item__price">$${price.toFixed(2)}</span>`;
+          const specParts = [r.variety, r.origin, r.size, r.package].filter(Boolean);
+          specHtml = `<span class="ac-item__spec">${specParts.join(' · ') || '—'}</span>`;
+        }
+        return `<a class="ac-item ${i === hoverIdx ? 'is-hover' : ''}" data-idx="${i}" href="${detailURLFor(r)}">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--pop);flex-shrink:0"></div>
+          <div style="flex:1;overflow:hidden">
+            <div class="ac-item__name">${escape(r.commodity)}</div>
+            ${specHtml}
+          </div>
+          ${priceHtml}
+        </a>`;
+      }).join('');
+    }
+    ac.classList.add('is-open');
+  }
+
+  function detailURLFor(r) {
+    return U.detailURL({
+      commodity: r.commodity,
+      variety: r.variety,
+      origin: r.origin,
+      size: r.size,
+      package: r.package,
+      market: r.commodityLevel ? market : market,
+    });
+  }
+
+  input.addEventListener('input', (e) => {
+    const q = e.target.value;
+    if (!q.trim()) {
+      ac.classList.remove('is-open');
+      return;
+    }
+    renderAutocomplete(searchQuery(q));
+  });
+  input.addEventListener('focus', (e) => {
+    if (e.target.value.trim()) renderAutocomplete(searchQuery(e.target.value));
+  });
+  input.addEventListener('keydown', (e) => {
+    if (!currentResults.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      hoverIdx = (hoverIdx + 1) % currentResults.length;
+      updateHover();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      hoverIdx = (hoverIdx - 1 + currentResults.length) % currentResults.length;
+      updateHover();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const r = currentResults[hoverIdx] || currentResults[0];
+      if (r) {
+        savRecent(r);
+        window.location.href = detailURLFor(r);
+      }
+    } else if (e.key === 'Escape') {
+      ac.classList.remove('is-open');
+    }
+  });
+  ac.addEventListener('mousedown', (e) => {
+    const item = e.target.closest('.ac-item');
+    if (!item) return;
+    const r = currentResults[parseInt(item.dataset.idx, 10)];
+    if (r) savRecent(r);
+    // Let the anchor navigate
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) ac.classList.remove('is-open');
+  });
+  function updateHover() {
+    ac.querySelectorAll('.ac-item').forEach((el, i) => el.classList.toggle('is-hover', i === hoverIdx));
+  }
+  function savRecent(r) {
+    const rowMostly = r.commodityLevel ? r.agg?.mostly : (r.row ? U.rowMostly(r.row) : null);
+    pushRecent({
+      commodity: r.commodity,
+      variety: r.variety,
+      origin: r.origin,
+      size: r.size,
+      package: r.package,
+      market,
+      price: rowMostly,
+    });
+  }
+
+  // ── RECENT CHIPS ──
+  function renderRecents() {
+    const chips = document.getElementById('recent-chips');
+    const recent = getRecent();
+    if (!recent.length) {
+      // Auto-populate with top movers if empty
+      const auto = [...changes].filter(c => c.pct != null).sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct)).slice(0, 3);
+      chips.innerHTML = auto.map(c => {
+        const url = U.detailURL({ commodity: c.name, market });
+        const dCls = c.pct < 0 ? 'dn' : 'up';
+        const arrow = c.pct < 0 ? '▼' : '▲';
+        return `<a class="recent-chip" href="${url}">${escape(c.name)}<span class="p">$${(c.today.mostly ?? c.today.low ?? 0).toFixed(2)}</span><span class="d ${dCls}">${arrow}${Math.abs(c.pct).toFixed(1)}%</span></a>`;
+      }).join('');
+    } else {
+      chips.innerHTML = recent.map(r => {
+        const url = U.detailURL({
+          commodity: r.commodity, variety: r.variety, origin: r.origin, size: r.size, package: r.package, market: r.market,
+        });
+        const shortName = r.variety ? `${r.variety.split(/[ ,]/)[0]} ${r.commodity}` : r.commodity;
+        return `<a class="recent-chip" href="${url}">${escape(shortName)}${r.size ? ` ${escape(r.size)}` : ''}${r.price != null ? `<span class="p">$${r.price.toFixed(2)}</span>` : ''}</a>`;
+      }).join('');
+    }
+  }
+  renderRecents();
+
+  // ── MOOD STRIP ──
   const withChg = changes.filter(c => c.pct != null);
   const down = withChg.filter(c => c.dir === 'down').length;
   const up = withChg.filter(c => c.dir === 'up').length;
@@ -198,102 +732,95 @@
   document.getElementById('k-down').textContent = down;
   document.getElementById('k-up').textContent = up;
   document.getElementById('k-count').textContent = changes.length;
-  document.getElementById('gauge-num').textContent = mood.score;
-  // Circle: 2πr = 2*π*26 ≈ 163.36. Fill = score/100 * 163.36
-  const fill = (mood.score / 100) * 163.36;
-  document.getElementById('gauge-arc').setAttribute('stroke-dasharray', `${fill} ${163.36 - fill}`);
-  document.getElementById('mood-label').textContent = `${mood.label} · avg ${U.fmtPct(avgChg)}`;
+  document.getElementById('mood-num').textContent = mood.score;
+  document.getElementById('mood-label').textContent = mood.label;
+  document.getElementById('mood-market').textContent = `${market} · ${fmtDate(latestDate)}`;
+  const circ = 2 * Math.PI * 13;
+  const fill = (mood.score / 100) * circ;
+  document.getElementById('mood-arc').setAttribute('stroke-dasharray', `${fill.toFixed(1)} ${(circ - fill).toFixed(1)}`);
+  document.getElementById('mood-strip').style.display = 'flex';
 
-  // Verdict headline: biggest drop → "Load up on X". Biggest rise → "Skip the Y".
-  withChg.sort((a, b) => a.pct - b.pct);
-  const biggestDrop = withChg[0];
-  const biggestRise = withChg[withChg.length - 1];
-  const pill = document.getElementById('verdict-pill');
-  const head = document.getElementById('verdict-headline');
-  const sub = document.getElementById('verdict-sub');
-  pill.textContent = `● ${mood.label}`;
-  if (mood.mod === 'up') pill.classList.add('mood-pill--warn');
-
-  if (biggestDrop && biggestRise && biggestDrop.pct < -3 && biggestRise.pct > 3) {
-    head.innerHTML = `Load up on <span class="verdict__hl">${biggestDrop.name.toLowerCase()}</span>. Skip the ${biggestRise.name.toLowerCase()}.`;
-    sub.textContent = `${cap(biggestDrop.name)} down ${Math.abs(biggestDrop.pct).toFixed(0)}%, ${biggestRise.name.toLowerCase()} up ${biggestRise.pct.toFixed(0)}%.`;
-  } else if (biggestDrop && biggestDrop.pct < -5) {
-    head.innerHTML = `Load up on <span class="verdict__hl">${biggestDrop.name.toLowerCase()}</span>.`;
-    sub.textContent = `Down ${Math.abs(biggestDrop.pct).toFixed(0)}% vs yesterday.`;
+  // ── WATCHLIST ──
+  const watch = U.watchList();
+  document.getElementById('wl-count').textContent = `${watch.length} item${watch.length === 1 ? '' : 's'} · ${market}`;
+  const wlBody = document.getElementById('wl-body');
+  if (!watch.length) {
+    wlBody.innerHTML = `<div class="wl-empty">
+      No commodities watched yet. <a href="/app/markets">Browse markets →</a>
+    </div>`;
   } else {
-    head.textContent = `Steady across the board today.`;
-    sub.textContent = withChg.length ? `Avg movement ${U.fmtPct(avgChg)} across ${withChg.length} commodities.` : `No comparison available yet.`;
+    const rows = watch.slice(0, 6).map(name => {
+      const c = changes.find(x => x.name === name);
+      if (!c) {
+        return `<div class="wl-row" style="opacity:0.6">
+          <span class="wl-row__star">★</span>
+          <div class="wl-row__name"><b>${escape(name)}</b><div class="wl-row__spec">No data in ${escape(market)}</div></div>
+        </div>`;
+      }
+      const chg = U.fmtDelta(c.pct);
+      const cls = chg.dir === 'down' ? 'dn' : chg.dir === 'up' ? 'up' : 'fl';
+      const url = U.detailURL({ commodity: name, market });
+      return `<a href="${url}" class="wl-row">
+        <span class="wl-row__star">★</span>
+        <div class="wl-row__name"><b>${escape(name)}</b><div class="wl-row__spec">${escape(c.today.packs[0] || '')}</div></div>
+        <span class="wl-row__price">${U.fmtPrice(c.today.mostly)}</span>
+        <span class="wl-row__delta ${cls}">${chg.text}</span>
+      </a>`;
+    }).join('');
+    wlBody.innerHTML = rows;
   }
 
-  // 6. Best buy card = biggest drop
+  // ── BEST BUY (biggest drop) ──
+  const sorted = [...withChg].sort((a, b) => a.pct - b.pct);
+  const biggestDrop = sorted[0];
   if (biggestDrop && biggestDrop.pct < -1) {
     document.getElementById('best-name').textContent = biggestDrop.name;
     document.getElementById('best-price').textContent = U.fmtPrice(biggestDrop.today.mostly);
     document.getElementById('best-delta').textContent = ' ' + U.fmtDelta(biggestDrop.pct).text;
     document.getElementById('best-sub').textContent = biggestDrop.prev
-      ? `vs ${U.fmtPrice(biggestDrop.prev.mostly)} yesterday`
-      : '';
+      ? `vs ${U.fmtPrice(biggestDrop.prev.mostly)} yesterday · ${market}`
+      : `in ${market}`;
+    const cta = document.getElementById('best-cta');
+    cta.href = U.detailURL({ commodity: biggestDrop.name, market });
+    cta.style.display = 'inline-block';
   } else {
-    document.getElementById('best-name').textContent = 'No standout deals today';
+    document.getElementById('best-name').textContent = 'Steady across the board';
     document.getElementById('best-price').textContent = '—';
-    document.getElementById('best-sub').textContent = 'Prices are steady across commodities.';
+    document.getElementById('best-sub').textContent = `No standout drops in ${market} today.`;
   }
 
-  // 7. Watchlist table
-  const watch = U.watchList();
-  document.getElementById('watch-count').textContent = `${watch.length} item${watch.length === 1 ? '' : 's'}`;
-  const wt = document.getElementById('watch-tbody');
-  if (!watch.length) {
-    wt.innerHTML = `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">
-      No commodities watched yet. <a href="/app/markets" style="color:var(--pop)">Browse markets →</a>
-    </td></tr>`;
+  // ── ALERTS ──
+  const triggered = watch
+    .map(name => changes.find(c => c.name === name))
+    .filter(c => c && c.pct != null && Math.abs(c.pct) > 5);
+  document.getElementById('alerts-meta').textContent = `${triggered.length} today`;
+  const alertsBody = document.getElementById('alerts-body');
+  if (!triggered.length) {
+    alertsBody.innerHTML = `<div class="alert-empty">No alerts firing.<br>Watched items with >5% moves show up here.</div>`;
   } else {
-    wt.innerHTML = watch.slice(0, 6).map(name => {
-      const c = changes.find(x => x.name === name);
-      if (!c) return `<tr><td>${escape(name)}</td><td colspan="3" class="r" style="color:var(--muted)">No data</td></tr>`;
-      const chg = U.fmtDelta(c.pct);
-      const chgCls = chg.dir === 'down' ? 'chg-down' : chg.dir === 'up' ? 'chg-up' : 'chg-flat';
-      return `<tr>
-        <td class="strong"><div>${escape(name)}</div><div class="data__sub">${escape(c.today.packs[0] || '')}</div></td>
-        <td class="r" data-label="Low">${U.fmtPrice(c.today.low)}</td>
-        <td class="r" data-label="High">${U.fmtPrice(c.today.high)}</td>
-        <td class="r strong" data-label="Mostly">${U.fmtPrice(c.today.mostly)} <span class="${chgCls}" style="font-size:10px;margin-left:4px">${chg.text}</span></td>
-      </tr>`;
+    alertsBody.innerHTML = triggered.slice(0, 4).map(c => {
+      const isDrop = c.pct < 0;
+      const url = U.detailURL({ commodity: c.name, market });
+      return `<a href="${url}" class="alert-row" style="text-decoration:none;color:inherit">
+        <span class="alert-row__icn ${isDrop ? 'pos' : 'neg'}">!</span>
+        <div class="alert-row__body"><b>${escape(c.name)}</b> ${isDrop ? 'dropped' : 'rose'} ${Math.abs(c.pct).toFixed(0)}% in ${escape(market)}</div>
+      </a>`;
     }).join('');
   }
 
-  // 8. Alerts (localStorage-based; feature preview since backend doesn't have alerts yet)
-  // Show alerts that would fire today based on watchlist and simple threshold rules
-  // For now: any watched commodity that dropped >10% today triggers a "buy" alert
-  const triggered = watch.map(name => changes.find(c => c.name === name)).filter(c => c && c.pct != null && c.pct < -10);
-  document.getElementById('alerts-meta').textContent = `${triggered.length} today`;
-  const alertsBody = document.getElementById('alerts-body');
-  if (triggered.length) {
-    alertsBody.innerHTML = triggered.slice(0, 3).map(c =>
-      `<div class="alert alert--pos"><span class="alert__icn">!</span>${escape(c.name)} dropped ${Math.abs(c.pct).toFixed(0)}% · ${escape(market)}</div>`
-    ).join('');
+  // Focus search input on desktop after load
+  if (window.matchMedia('(min-width: 900px)').matches) {
+    setTimeout(() => input.focus(), 100);
   }
 
-  // ── helpers ──
-  function groupByName(rows) {
-    return U.groupBy(rows, r => r.commodity);
-  }
-  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  function fmtDateLong(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
   function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function fmtDate(iso) {
-    if (!iso) return '—';
-    const d = new Date(iso);
-    if (isNaN(d)) return iso;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
   function showError(err) {
-    const banner = document.createElement('div');
-    banner.className = 'err-banner';
-    banner.style.margin = '16px';
-    banner.innerHTML = `<span class="err-banner__icn">!</span>
-      <span><b>Couldn't load data.</b> ${escape(String(err.message || err))}
-      <br><span style="color:var(--muted);font-size:11px">API base: ${escape(agraxAPI.base)}</span></span>`;
-    document.getElementById('err-slot').appendChild(banner);
+    const el = document.createElement('div');
+    el.className = 'err-banner';
+    el.innerHTML = `<span class="err-banner__icn">!</span><span><b>Couldn't load.</b> ${escape(String(err.message || err))}</span>`;
+    document.getElementById('err-slot').appendChild(el);
   }
 })();
 </script>
