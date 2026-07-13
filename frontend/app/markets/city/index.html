@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agraX — Market Read</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/tokens.css" />
+<link rel="stylesheet" href="/styles/components.css" />
+<style>
+/* Report header (city-scoped) */
+.report-head {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  padding: var(--sp-7);
+  margin-bottom: var(--sp-5);
+  position: relative;
+  overflow: hidden;
+}
+.report-head::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: var(--glow-corner-soft);
+  pointer-events: none;
+}
+.report-head > * { position: relative; }
+.report-head__top { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+.report-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-decoration: none;
+}
+.report-back:hover { color: var(--pop); }
+.report-head__title { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+.report-head__title .grn { color: var(--pop); }
+@media(min-width: 640px){ .report-head__title { font-size: 28px; } }
+.report-head__sub { font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.5; max-width: 620px; }
+.report-head__right { margin-left: auto; text-align: left; }
+@media(min-width: 640px){ .report-head__right { text-align: right; } }
+.report-head__report-lbl { font-size: 9.5px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
+.report-head__date { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; margin-top: 2px; }
+.report-head__date-picker {
+  font-size: 10.5px;
+  color: var(--pop);
+  margin-top: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.report-head__actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  flex-wrap: wrap;
+}
+.btn-tiny {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn-tiny:hover { border-color: var(--pop-border); }
+.btn-tiny--dark { background: var(--grad-btn-dark); color: #fff; border: none; }
+
+/* Legend */
+.legend {
+  margin-top: var(--sp-6);
+  padding: 12px 16px;
+  background: var(--card-alt);
+  border: 0.5px solid var(--line-soft);
+  border-radius: var(--r-lg);
+  display: flex;
+  gap: var(--sp-5);
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--sub);
+}
+.legend__lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; margin-right: 4px; }
+.legend__pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--r-pill); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.legend__pill.up { background: var(--up-08); color: var(--up); }
+.legend__pill.dn { background: var(--pop-09); color: var(--pop); }
+.legend__pill.st { background: var(--fill); color: var(--muted); }
+.legend__sep { width: 1px; height: 14px; background: var(--line); display: none; }
+@media(min-width: 640px){ .legend__sep { display: block; } }
+
+/* Filter row */
+.filter-row {
+  padding: 0;
+  margin-bottom: var(--sp-5);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-row-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+.filter-row .chip { flex-shrink: 0; }
+
+/* Report body */
+.report-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-7);
+}
+@media(min-width: 1000px){
+  .report-body { grid-template-columns: 1fr 190px; gap: var(--sp-7); align-items: start; }
+}
+.report-main {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  padding: var(--sp-7);
+}
+
+.cat-section { margin-bottom: var(--sp-12); }
+.cat-section:last-child { margin-bottom: 0; }
+.cat-header {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pop);
+  border-bottom: 0.5px solid var(--pop);
+  padding-bottom: 8px;
+  margin-bottom: var(--sp-7);
+}
+
+.com-block { margin-bottom: var(--sp-10); }
+.com-block:last-child { margin-bottom: 0; }
+.com-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.com-header__name {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+@media(min-width: 640px){ .com-header__name { font-size: 22px; } }
+.mood {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mood.up { background: var(--up-08); color: var(--up); }
+.mood.dn { background: var(--pop-09); color: var(--pop); }
+.mood.st { background: var(--fill); color: var(--muted); }
+.com-header__count { margin-left: auto; font-size: 10.5px; color: var(--muted); font-family: var(--font-mono); }
+
+/* Report table (desktop) */
+.rep-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.rep-tbl thead tr { border-bottom: 0.5px solid var(--line); }
+.rep-tbl th {
+  text-align: left;
+  padding: 6px 12px 6px 0;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rep-tbl tbody tr {
+  border-bottom: 0.5px solid var(--line-softer);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.rep-tbl tbody tr:hover { background: var(--pop-04); }
+.rep-tbl tbody tr:last-child { border-bottom: none; }
+.rep-tbl td { padding: 10px 12px 10px 0; vertical-align: top; }
+.rep-tbl td.variety { font-weight: 600; color: var(--ink); }
+.rep-tbl td.origin { color: var(--ink); }
+.rep-tbl td.pack { color: var(--sub); font-size: 11.5px; }
+.rep-tbl td.size { color: var(--sub); font-size: 11.5px; }
+.rep-tbl td.grade { color: var(--sub); font-size: 10.5px; font-style: italic; }
+.rep-tbl td.price {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.rep-tbl td.price .dash { color: var(--muted); margin: 0 1px; }
+.rep-tbl td.price .mostly { display: block; font-size: 10.5px; color: var(--pop); margin-top: 2px; }
+.rep-tbl td.note { color: var(--sub); font-size: 11px; font-style: italic; }
+.rep-tbl .row-arrow { color: transparent; font-size: 11px; transition: color 0.15s; text-align: right; }
+.rep-tbl tr:hover .row-arrow { color: var(--pop); }
+
+/* Report table — mobile card layout */
+@media(max-width: 899px){
+  .rep-tbl { display: block; }
+  .rep-tbl thead { display: none; }
+  .rep-tbl tbody { display: block; }
+  .rep-tbl tr {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--line-softer);
+    position: relative;
+  }
+  .rep-tbl td { display: inline; padding: 0; vertical-align: baseline; }
+  .rep-tbl td.variety,
+  .rep-tbl td.origin {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .rep-tbl td.variety::after { content: ' · '; color: var(--muted); font-weight: 400; }
+  .rep-tbl td.variety:empty::after,
+  .rep-tbl td.variety[data-empty="1"]::after { content: ''; }
+  .rep-tbl td.variety[data-empty="1"] { display: none; }
+  .rep-tbl td::after {}
+  .rep-tbl td.pack,
+  .rep-tbl td.size,
+  .rep-tbl td.grade {
+    display: block;
+    font-size: 11px;
+    margin-top: 3px;
+    color: var(--muted);
+  }
+  .rep-tbl td.grade { font-style: italic; }
+  .rep-tbl td.grade:empty,
+  .rep-tbl td.grade[data-empty="1"] { display: none; }
+  .rep-tbl td.pack::before { content: ''; }
+  .rep-tbl td.size { display: inline; margin-left: 4px; }
+  .rep-tbl td.size::before { content: '· '; color: var(--muted); }
+  .rep-tbl td.size[data-empty="1"] { display: none; }
+  .rep-tbl td.price {
+    display: block;
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .rep-tbl td.price .mostly { display: inline; margin-top: 0; margin-left: 8px; }
+  .rep-tbl td.note {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+  .rep-tbl td.note[data-empty="1"] { display: none; }
+  .rep-tbl td.row-arrow {
+    position: absolute;
+    top: 12px; right: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .rep-tbl tr:hover .row-arrow { color: var(--pop); }
+}
+
+/* Jump nav (right rail) */
+.report-nav {
+  padding: var(--sp-6);
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  font-size: 11.5px;
+  align-self: start;
+}
+@media(min-width: 1000px){
+  .report-nav { position: sticky; top: var(--sp-5); }
+}
+@media(max-width: 999px){
+  .report-nav { display: none; }
+}
+.report-nav__lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+.report-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 0;
+  color: var(--sub);
+  cursor: pointer;
+  text-decoration: none;
+}
+.report-nav__item:hover { color: var(--ink); }
+.report-nav__count { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+.empty-msg {
+  padding: var(--sp-8);
+  text-align: center;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="mtop-slot"></div>
+  <div id="side-slot"></div>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__bell">🔔</div>
+    </div>
+
+    <!-- Report header -->
+    <div class="report-head">
+      <div class="report-head__top">
+        <div>
+          <a class="report-back" href="/app/markets">← Terminal markets</a>
+          <div class="report-head__title"><span class="grn" id="rh-city">Loading</span> · Market Read</div>
+          <div class="report-head__sub" id="rh-sub">—</div>
+
+          <div class="report-head__actions">
+            <a class="btn-tiny" href="/app/markets">◇ Change market</a>
+            <button class="btn-tiny" id="btn-pdf">↓ Download PDF</button>
+            <button class="btn-tiny" id="btn-csv">↗ Export CSV</button>
+            <a class="btn-tiny btn-tiny--dark" href="/app/markets/compare">◈ Compare markets</a>
+          </div>
+        </div>
+        <div class="report-head__right">
+          <div class="report-head__report-lbl">Report</div>
+          <div class="report-head__date" id="rh-date">—</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span class="legend__lbl">How to read</span>
+        <span class="legend__pill up">Higher</span>
+        <span class="legend__pill dn">Lower</span>
+        <span class="legend__pill st">Steady</span>
+        <span class="legend__sep"></span>
+        <span><b style="color:var(--ink)">Price</b> = low–high per pack unit</span>
+        <span>· <b style="color:var(--ink)">mostly</b> = typical trade</span>
+        <span>· <b style="color:var(--ink)">Note</b> = appearance / condition</span>
+      </div>
+    </div>
+
+    <div id="err-slot"></div>
+
+    <!-- Filter chip row -->
+    <div class="filter-row">
+      <div class="filter-row-inner" id="filter-chips">
+        <span class="chip is-active" data-cat="all">All <span class="chip__count" id="cnt-all">—</span></span>
+      </div>
+    </div>
+
+    <!-- Report body -->
+    <div class="report-body">
+      <div class="report-main" id="report-main">
+        <div class="empty-msg">Loading…</div>
+      </div>
+
+      <aside class="report-nav" id="report-nav">
+        <div class="report-nav__lbl">Jump to</div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="mtabs-slot"></div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/shell.js"></script>
+<script>
+(async function() {
+  const U = window.agraxUtil;
+  const shell = Shell.render('markets');
+  document.getElementById('mtop-slot').outerHTML = shell.mtop;
+  document.getElementById('side-slot').outerHTML = shell.side;
+  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+
+  // Read market from URL: ?m=New+York
+  const params = new URLSearchParams(window.location.search);
+  const market = params.get('m');
+  if (!market) {
+    window.location.replace('/app/markets');
+    return;
+  }
+
+  // Remember selected market
+  U.setSelMarket(market);
+
+  let today = [], prev = [], latestDate = null;
+  try {
+    const dates = await agraxAPI.dates();
+    if (!dates?.length) throw new Error('No data available');
+    latestDate = dates[0].date;
+    today = await agraxAPI.reportTerminal(latestDate);
+    if (dates[1]) prev = await agraxAPI.reportTerminal(dates[1].date);
+  } catch (err) { return showError(err); }
+
+  // Filter to this market
+  const rows = today.filter(r => r.market === market);
+  const prevRows = prev.filter(r => r.market === market);
+
+  if (!rows.length) {
+    showError({ message: `No data for ${market} on ${latestDate}` });
+    return;
+  }
+
+  // Header
+  document.getElementById('rh-city').textContent = market;
+  const reportCodes = U.uniq(rows.map(r => r.source_report).filter(Boolean));
+  const marketType = 'Terminal Market';
+  document.getElementById('rh-sub').textContent =
+    `${market} ${marketType}${reportCodes.length ? ` — ${reportCodes.join(', ')}` : ''} · Wholesale, primary-receiver sales, good merchantable quality unless noted`;
+  document.getElementById('rh-date').textContent = fmtDateLong(latestDate);
+
+  // Category grouping
+  const CATS = [
+    { id: 'vegetables',       label: 'Vegetables',       cls: 'veg' },
+    { id: 'fruits',           label: 'Fruits',           cls: 'fruit' },
+    { id: 'onions_potatoes',  label: 'Onions & Potatoes', cls: 'op' },
+    { id: 'nuts',             label: 'Nuts',              cls: 'nut' },
+  ];
+  const byCatByCom = new Map(); // Map<cat, Map<commodity, rows[]>>
+  const catCounts = { all: 0, vegetables: 0, fruits: 0, onions_potatoes: 0, nuts: 0 };
+  const commodityRows = U.groupBy(rows, r => r.commodity);
+  for (const [name, rs] of commodityRows) {
+    const cat = rs[0]?.commodity_type || 'other';
+    if (!byCatByCom.has(cat)) byCatByCom.set(cat, new Map());
+    byCatByCom.get(cat).set(name, rs);
+    catCounts.all++;
+    if (catCounts[cat] != null) catCounts[cat]++;
+  }
+
+  // Filter chips
+  const chipEl = document.getElementById('filter-chips');
+  chipEl.innerHTML = `<span class="chip is-active" data-cat="all">All <span class="chip__count">${catCounts.all}</span></span>`;
+  for (const c of CATS) {
+    if (!catCounts[c.id]) continue;
+    chipEl.innerHTML += `<span class="chip" data-cat="${c.id}"><span class="cat-dot cat-dot--${c.cls}"></span>${c.label} <span class="chip__count">${catCounts[c.id]}</span></span>`;
+  }
+  chipEl.innerHTML += `<span class="chip" data-toggle="movers">Only movers</span>`;
+  chipEl.innerHTML += `<span class="chip" data-toggle="watchlist">★ Watchlist only</span>`;
+
+  let activeCat = 'all';
+  let onlyMovers = false;
+  let onlyWatchlist = false;
+
+  chipEl.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    if (chip.dataset.cat) {
+      activeCat = chip.dataset.cat;
+      chipEl.querySelectorAll('.chip[data-cat]').forEach(c => c.classList.toggle('is-active', c === chip));
+    } else if (chip.dataset.toggle === 'movers') {
+      onlyMovers = !onlyMovers;
+      chip.classList.toggle('is-active', onlyMovers);
+    } else if (chip.dataset.toggle === 'watchlist') {
+      onlyWatchlist = !onlyWatchlist;
+      chip.classList.toggle('is-active', onlyWatchlist);
+    }
+    renderReport();
+  });
+
+  renderReport();
+  renderJumpNav();
+
+  function renderReport() {
+    const main = document.getElementById('report-main');
+    main.innerHTML = '';
+    let renderedAny = false;
+
+    for (const cat of CATS) {
+      if (activeCat !== 'all' && activeCat !== cat.id) continue;
+      const commodities = byCatByCom.get(cat.id);
+      if (!commodities || !commodities.size) continue;
+
+      const sortedNames = [...commodities.keys()].sort();
+      const commodityBlocks = [];
+
+      for (const name of sortedNames) {
+        const rs = commodities.get(name);
+        const prevRs = prevRows.filter(r => r.commodity === name);
+        const agg = U.aggregateCommodity(rs);
+        const prevAgg = prevRs.length ? U.aggregateCommodity(prevRs) : null;
+        const d = U.delta(agg.mostly, prevAgg?.mostly);
+        const mood = U.moodFromAvgChg(d.pct);
+
+        if (onlyMovers && (d.pct == null || Math.abs(d.pct) < 2)) continue;
+        if (onlyWatchlist && !U.watchHas(name)) continue;
+
+        // Sort rows within a commodity: variety, origin, size
+        const sortedRows = [...rs].sort((a, b) => {
+          return (a.variety || '').localeCompare(b.variety || '')
+              || (a.origin || '').localeCompare(b.origin || '')
+              || (a.size || '').localeCompare(b.size || '');
+        });
+
+        const moodCls = mood.mod === 'up' ? 'up' : mood.mod === 'down' ? 'dn' : 'st';
+        const moodTxt = mood.mod === 'up' ? '▲ Higher' : mood.mod === 'down' ? '▼ Lower' : '· Steady';
+
+        commodityBlocks.push(`
+          <div class="com-block" data-com="${escape(name)}">
+            <div class="com-header">
+              <div class="com-header__name">${escape(name)}</div>
+              <span class="mood ${moodCls}">${moodTxt}</span>
+              <span class="com-header__count">${sortedRows.length} lot${sortedRows.length === 1 ? '' : 's'}</span>
+            </div>
+            ${renderTable(name, sortedRows)}
+          </div>
+        `);
+      }
+
+      if (!commodityBlocks.length) continue;
+      renderedAny = true;
+
+      main.innerHTML += `
+        <div class="cat-section" id="cat-${cat.id}">
+          <div class="cat-header">${cat.label}</div>
+          ${commodityBlocks.join('')}
+        </div>
+      `;
+    }
+
+    if (!renderedAny) {
+      main.innerHTML = `<div class="empty-msg">No commodities match your filters.</div>`;
+    }
+
+    // Wire row clicks
+    main.querySelectorAll('tr[data-url]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        window.location.href = tr.dataset.url;
+      });
+    });
+  }
+
+  function renderTable(commodityName, rs) {
+    return `
+      <table class="rep-tbl">
+        <thead>
+          <tr>
+            <th>Variety</th>
+            <th>Origin</th>
+            <th>Grade</th>
+            <th>Pack</th>
+            <th>Size</th>
+            <th>Price / Unit ($)</th>
+            <th>Note</th>
+            <th style="width:16px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rs.map(r => {
+            const priceHtml = formatPriceCell(r);
+            const url = U.detailURL({
+              commodity: commodityName,
+              variety: r.variety || null,
+              origin: r.origin || null,
+              size: r.size || null,
+              package: r.package || null,
+              market: market,
+            });
+            return `<tr data-url="${url}">
+              <td class="variety" ${!r.variety || r.variety === '—' ? 'data-empty="1"' : ''}>${escape(r.variety || '—')}</td>
+              <td class="origin">${escape(r.origin || '—')}</td>
+              <td class="grade" ${!r.grade ? 'data-empty="1"' : ''}>${escape(r.grade || '')}</td>
+              <td class="pack">${escape(r.package || '—')}</td>
+              <td class="size" ${!r.size ? 'data-empty="1"' : ''}>${escape(r.size || '')}</td>
+              <td class="price">${priceHtml}</td>
+              <td class="note" ${!r.quality_note ? 'data-empty="1"' : ''}>${escape(r.quality_note || '')}</td>
+              <td class="row-arrow">→</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function formatPriceCell(r) {
+    const low = U.num(r.price_low);
+    const high = U.num(r.price_high);
+    const mLow = U.num(r.price_mostly_low);
+    const mHigh = U.num(r.price_mostly_high);
+    let priceTxt = '—';
+    if (low != null && high != null) {
+      priceTxt = low === high ? low.toFixed(2) : `${low.toFixed(2)}<span class="dash">–</span>${high.toFixed(2)}`;
+    } else if (low != null) {
+      priceTxt = low.toFixed(2);
+    } else if (high != null) {
+      priceTxt = high.toFixed(2);
+    }
+    let mostlyTxt = '';
+    if (mLow != null && mHigh != null) {
+      mostlyTxt = `<span class="mostly">mostly ${mLow === mHigh ? mLow.toFixed(2) : `${mLow.toFixed(2)}–${mHigh.toFixed(2)}`}</span>`;
+    } else if (mLow != null) {
+      mostlyTxt = `<span class="mostly">mostly ${mLow.toFixed(2)}</span>`;
+    }
+    return priceTxt + mostlyTxt;
+  }
+
+  function renderJumpNav() {
+    const nav = document.getElementById('report-nav');
+    let html = '<div class="report-nav__lbl">Jump to</div>';
+    for (const c of CATS) {
+      if (!catCounts[c.id]) continue;
+      html += `<a class="report-nav__item" href="#cat-${c.id}">
+        <span class="cat-dot cat-dot--${c.cls}"></span>${c.label}
+        <span class="report-nav__count">${catCounts[c.id]}</span>
+      </a>`;
+    }
+    nav.innerHTML = html;
+  }
+
+  // CSV export
+  document.getElementById('btn-csv').addEventListener('click', () => {
+    const cols = ['commodity', 'commodity_type', 'variety', 'origin', 'grade', 'package', 'size', 'price_low', 'price_high', 'price_mostly_low', 'price_mostly_high', 'quality_note', 'organic'];
+    const header = cols.join(',');
+    const lines = rows.map(r => cols.map(c => {
+      const v = r[c];
+      if (v == null) return '';
+      const s = String(v);
+      return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+    }).join(','));
+    const csv = header + '\n' + lines.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `agrax-${market.replace(/\s+/g, '-').toLowerCase()}-${latestDate}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('btn-pdf').addEventListener('click', () => {
+    window.print();
+  });
+
+  function fmtDateLong(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? iso : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function showError(err) {
+    const el = document.createElement('div');
+    el.className = 'err-banner';
+    el.innerHTML = `<span class="err-banner__icn">!</span><span><b>Couldn't load.</b> ${escape(String(err.message || err))}</span>`;
+    document.getElementById('err-slot').appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>

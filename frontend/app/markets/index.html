@@ -11,66 +11,194 @@
 <link rel="stylesheet" href="/styles/tokens.css" />
 <link rel="stylesheet" href="/styles/components.css" />
 <style>
-  /* Additional inline styles for cross-market table (specific to this page) */
-  table.cmp-tbl { width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px; }
-  table.cmp-tbl thead tr { color:var(--muted); background:var(--card-alt); border-bottom:0.5px solid var(--line-soft); }
-  table.cmp-tbl th { text-align:left; font-weight:500; padding:9px 16px; white-space:nowrap; font-size:11.5px; }
-  table.cmp-tbl th.r { text-align:right; }
-  table.cmp-tbl td { padding:11px 16px; border-top:0.5px solid var(--line-softer); }
-  table.cmp-tbl tbody tr.expand-row { cursor:pointer; }
-  table.cmp-tbl tbody tr.expand-row:hover { background:#FBFDF9; }
-  table.cmp-tbl td.r { text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
-  table.cmp-tbl td.strong { font-weight:600; }
+/* Overview-specific layout */
+.overview-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-6);
+}
+@media(min-width: 1000px){
+  .overview-body { grid-template-columns: 1fr 260px; gap: var(--sp-7); }
+}
 
-  /* Expand caret on first cell */
-  table.cmp-tbl tr.expand-row td:first-child { padding-left:32px; position:relative; }
-  table.cmp-tbl tr.expand-row td:first-child::before {
-    content:'▸'; position:absolute; left:14px; top:14px;
-    color:var(--muted); font-size:10px; transition:transform .15s;
-  }
-  table.cmp-tbl tr.expand-row.is-open td:first-child::before { content:'▾'; color:var(--pop); }
+.section-hd {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: var(--sp-3) 0 var(--sp-5);
+}
 
-  /* Sub-row grouping */
-  table.cmp-tbl tr.sub-hd td {
-    background:var(--pop-04);
-    padding:6px 14px 6px 40px;
-    font-size:10.5px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    font-weight:600;
-    color:var(--muted);
-    border-top:0.5px solid var(--pop-13);
-  }
-  table.cmp-tbl tr.sub-row td {
-    background:var(--pop-04);
-    padding:7px 14px 7px 40px;
-    font-size:11.5px;
-    color:var(--sub);
-    border-top:0.5px solid var(--line-softer);
-  }
-  table.cmp-tbl tr.sub-row td.r { color:var(--ink); font-weight:500; }
-  table.cmp-tbl tr.sub-row td:first-child { padding-left:52px; }
-  .sub-tag {
-    display:inline-block;
-    font-size:9.5px;
-    padding:1px 7px;
-    border-radius:4px;
-    background:var(--card);
-    border:0.5px solid var(--line-soft);
-    color:var(--sub);
-    margin-right:6px;
-    font-family:var(--font-mono);
-    font-weight:500;
-  }
-  .sub-tag--qual {
-    background:transparent;
-    border:none;
-    color:var(--muted);
-    font-family:var(--font-body);
-    font-style:italic;
-    padding:0;
-    margin-left:4px;
-  }
+.mgrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+}
+@media(min-width: 640px){ .mgrid { grid-template-columns: 1fr 1fr; } }
+
+.mcard {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  padding: var(--sp-6) var(--sp-7);
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  position: relative;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+.mcard:hover { border-color: var(--pop-border); transform: translateY(-1px); }
+.mcard--feat {
+  background: var(--grad-card-mint);
+  border-color: #E4EBD6;
+}
+.mcard--feat::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--glow-corner-soft);
+  pointer-events: none;
+}
+.mcard > * { position: relative; }
+.mcard__top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.mcard__pin { width: 8px; height: 8px; border-radius: 50%; background: var(--pop); box-shadow: 0 0 6px var(--pop); flex-shrink: 0; }
+.mcard__city { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+.mcard__code { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-left: 4px; }
+.mcard__mood {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.mcard__mood.up { background: var(--up-08); color: var(--up); }
+.mcard__mood.dn { background: var(--pop-09); color: var(--pop); }
+.mcard__mood.st { background: var(--fill); color: var(--muted); }
+
+.mcard__meta {
+  display: flex; align-items: center; gap: var(--sp-5);
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+.mcard__meta b { color: var(--sub); font-weight: 500; }
+
+.mcard__movers-lbl {
+  font-size: 9.5px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: var(--sp-3);
+}
+.mcard__movers { display: flex; flex-wrap: wrap; gap: 5px; }
+.mover-chip {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--sub);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+.mover-chip .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; }
+.mover-chip .p { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.mover-chip .d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; }
+.mover-chip .d.dn { color: var(--pop); }
+.mover-chip .d.up { color: var(--up); }
+
+.mcard__foot {
+  display: flex; align-items: center;
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 0.5px solid var(--line-softer);
+  font-size: 11px;
+  color: var(--sub);
+}
+.mcard__cta { margin-left: auto; color: var(--pop); font-weight: 500; }
+
+/* Right rail */
+.rail { display: flex; flex-direction: column; gap: var(--sp-5); }
+@media(max-width: 999px){
+  /* On mobile the rail sits underneath, use two-column grid for compact display */
+  .rail { display: grid; grid-template-columns: 1fr; gap: var(--sp-4); }
+}
+@media(min-width: 640px) and (max-width: 999px){
+  .rail { grid-template-columns: 1fr 1fr; }
+}
+.rail-card {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-card);
+  padding: var(--sp-6);
+}
+.rail-card--wl {
+  background: var(--grad-card-mint);
+  border-color: #E4EBD6;
+  position: relative;
+  overflow: hidden;
+}
+.rail-card--wl::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--glow-corner-soft);
+  pointer-events: none;
+}
+.rail-card--wl > * { position: relative; }
+.rail-card__hd {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pop);
+  margin-bottom: var(--sp-4);
+  display: flex; align-items: center; gap: 6px;
+}
+.rail-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0;
+  font-size: 12px;
+  border-top: 0.5px solid var(--line-softer);
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+.rail-row:first-child { border-top: none; padding-top: 4px; }
+.rail-row__idx { font-family: var(--font-mono); font-size: 10px; color: var(--muted); width: 12px; flex-shrink: 0; }
+.rail-row__name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rail-row__meta { font-size: 10.5px; color: var(--muted); font-family: var(--font-mono); flex-shrink: 0; }
+.rail-row__d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; flex-shrink: 0; }
+.rail-row__d.dn { color: var(--pop); }
+.rail-row__d.up { color: var(--up); }
+.rail-card__foot {
+  font-size: 11px;
+  color: var(--pop);
+  margin-top: var(--sp-4);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Loading skeletons */
+.skel { background: var(--fill); border-radius: 6px; display: inline-block; }
+.skel-line { height: 12px; border-radius: 3px; background: linear-gradient(90deg, var(--fill) 0%, var(--card-alt) 50%, var(--fill) 100%); background-size: 200% 100%; animation: skel 1.4s ease-in-out infinite; }
+@keyframes skel { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 </style>
 </head>
 <body>
@@ -80,100 +208,45 @@
   <div id="side-slot"></div>
 
   <main class="main">
-    <div class="msub">
-      <div class="msub__chip" style="color:var(--sub)"><span id="date-mobile">—</span> ▾</div>
-      <div class="msub__chip" style="color:var(--sub)">🔍 Search</div>
-    </div>
-
     <div class="topbar">
       <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
       <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
-      <div class="topbar__bell" role="button" aria-label="Notifications">🔔</div>
+      <div class="topbar__bell">🔔</div>
     </div>
 
     <div class="page-head">
       <div class="page-head__row">
         <div>
-          <div class="eyebrow"><span id="stat-markets">—</span> markets · <span id="stat-commodities">—</span> commodities</div>
+          <div class="eyebrow"><span id="stat-markets">—</span> markets · <span id="stat-lots">—</span> lots · <span id="date-eyebrow">—</span></div>
           <h1>Terminal markets</h1>
-          <p>Pick a commodity, see prices across every U.S. terminal at once.</p>
+          <p>Pick a city to open its full market read.</p>
         </div>
         <div class="view-toggle">
-          <span class="view-toggle__opt is-active"><span class="view-toggle__ico">◆</span>By commodity</span>
-          <a href="/app/markets/cities" class="view-toggle__opt"><span class="view-toggle__ico">◈</span>By city</a>
+          <span class="view-toggle__opt is-active"><span class="view-toggle__ico">◈</span>By city</span>
+          <a href="/app/markets/compare" class="view-toggle__opt"><span class="view-toggle__ico">◆</span>By commodity</a>
         </div>
       </div>
     </div>
 
-    <div class="split">
-      <!-- LEFT: commodity list -->
-      <aside class="clist">
-        <div class="clist__search">
-          <div class="clist__search-wrap">
-            <span>🔍</span>
-            <input id="cl-search" placeholder="Search commodities…" />
-          </div>
-        </div>
-        <div class="clist__cats" id="cl-cats">
-          <span class="cat-chip is-active" data-cat="all">All <span class="cat-chip__count" id="cnt-all">—</span></span>
-          <span class="cat-chip" data-cat="vegetables"><span class="cat-dot cat-dot--veg"></span>Veg <span class="cat-chip__count" id="cnt-veg">—</span></span>
-          <span class="cat-chip" data-cat="fruits"><span class="cat-dot cat-dot--fruit"></span>Fruit <span class="cat-chip__count" id="cnt-fruit">—</span></span>
-          <span class="cat-chip" data-cat="onions_potatoes"><span class="cat-dot cat-dot--op"></span>Onions <span class="cat-chip__count" id="cnt-op">—</span></span>
-          <span class="cat-chip" data-cat="nuts"><span class="cat-dot cat-dot--nut"></span>Nuts <span class="cat-chip__count" id="cnt-nut">—</span></span>
-        </div>
-        <div class="clist__scroll" id="cl-scroll">
-          <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading commodities…</div>
-        </div>
-      </aside>
-
-      <!-- RIGHT: cross-market panel -->
-      <section class="cmp">
-        <div class="pushnav-back">
-          <button class="pushnav-back__btn" id="pushnav-back">← Markets</button>
-          <span class="pushnav-back__title" id="pushnav-title">—</span>
-        </div>
-        <div class="cmp__head">
-          <div class="cmp__head-content">
-            <div>
-              <span class="cmp__cat-tag"><span class="cat-dot" style="background:var(--pop)"></span><span id="cmp-cat">—</span></span>
-              <h2 class="cmp__title" id="cmp-title">Select a commodity</h2>
-              <div class="cmp__sub" id="cmp-sub">Choose from the list to see cross-market prices</div>
-            </div>
-            <div class="cmp__actions">
-              <button class="btn btn--tiny btn--ghost" id="cmp-watch">★ Watch</button>
-              <button class="btn btn--tiny btn--dark" id="cmp-alert">⚡ Set alert</button>
-            </div>
-          </div>
-        </div>
-        <div class="cmp__summary">
-          <div class="kpi"><div class="kpi__lbl">National avg</div><div class="kpi__val" id="s-avg">—</div></div>
-          <div class="kpi kpi--pos"><div class="kpi__lbl">Cheapest</div><div class="kpi__val" id="s-low">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-low-city"></div></div>
-          <div class="kpi kpi--neg"><div class="kpi__lbl">Highest</div><div class="kpi__val" id="s-high">—</div><div style="font-size:10px;color:var(--muted);margin-top:1px" id="s-high-city"></div></div>
-          <div class="kpi"><div class="kpi__lbl">Spread</div><div class="kpi__val" id="s-spread">—</div></div>
-        </div>
-        <div class="cmp__filters" id="cmp-packs">
-          <div class="cmp__sort">Sort by <b>Mostly ↑</b></div>
-        </div>
-        <div class="table-wrap">
-          <table class="cmp-tbl">
-            <thead>
-              <tr>
-                <th>Market</th>
-                <th class="r">Low</th>
-                <th class="r">High</th>
-                <th class="r">Mostly ▲</th>
-                <th class="r">Lots</th>
-              </tr>
-            </thead>
-            <tbody id="cmp-tbody">
-              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Select a commodity from the list.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-
     <div id="err-slot"></div>
+
+    <div class="overview-body">
+      <!-- LEFT: mood strip + market cards -->
+      <div id="left-col">
+        <div class="loading-skel" style="height:56px;margin-bottom:16px"></div>
+        <div class="mgrid">
+          <div class="loading-skel" style="height:200px"></div>
+          <div class="loading-skel" style="height:200px"></div>
+          <div class="loading-skel" style="height:200px"></div>
+          <div class="loading-skel" style="height:200px"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT RAIL -->
+      <div class="rail" id="rail">
+        <div class="loading-skel" style="height:180px"></div>
+      </div>
+    </div>
   </main>
 
   <div id="mtabs-slot"></div>
@@ -191,351 +264,268 @@
   document.getElementById('side-slot').outerHTML = shell.side;
   document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
 
-  let rows = [];
-  let latestDate = null;
+  // Region mapping
+  const REGIONS = [
+    { name: 'Northeast', markets: ['New York', 'Boston', 'Philadelphia', 'Baltimore'] },
+    { name: 'Midwest',   markets: ['Chicago', 'Detroit'] },
+    { name: 'Southeast', markets: ['Atlanta', 'Miami', 'Raleigh', 'Columbia', 'Asheville'] },
+    { name: 'West',      markets: ['Los Angeles', 'San Francisco', 'Dallas'] },
+  ];
+  // Fallback: any market not in a region goes to "Other markets"
+
+  let today = [], prev = [], latestDate = null;
   try {
     const dates = await agraxAPI.dates();
-    if (!dates.length) throw new Error('No dates in database');
+    if (!dates?.length) throw new Error('No data available');
     latestDate = dates[0].date;
     document.getElementById('date-desktop').textContent = fmtDate(latestDate);
-    document.getElementById('date-mobile').textContent = fmtDate(latestDate);
-    rows = await agraxAPI.reportTerminal(latestDate);
+    document.getElementById('date-eyebrow').textContent = fmtDateLong(latestDate);
+    today = await agraxAPI.reportTerminal(latestDate);
+    if (dates[1]) prev = await agraxAPI.reportTerminal(dates[1].date);
   } catch (err) { return showError(err); }
 
-  // Group per commodity, collect all rows across all markets
-  const byName = U.groupBy(rows, r => r.commodity);
-  const markets = U.uniq(rows.map(r => r.market));
+  // Group by market
+  const byMarket = U.groupBy(today, r => r.market);
+  const prevByMarket = U.groupBy(prev, r => r.market);
+  const allMarkets = Array.from(byMarket.keys());
 
-  // Build commodity list items with per-category counts
-  const catCounts = { all: byName.size, vegetables:0, fruits:0, onions_potatoes:0, nuts:0 };
-  const commodities = []; // {name, cat, mostlyAvg, watched}
-  for (const [name, rs] of byName) {
-    const cat = rs[0]?.commodity_type || null;
-    if (cat && catCounts[cat] != null) catCounts[cat]++;
-    const agg = U.aggregateCommodity(rs);
-    commodities.push({ name, cat, mostly: agg.mostly, watched: U.watchHas(name) });
-  }
-  commodities.sort((a, b) => a.name.localeCompare(b.name));
+  document.getElementById('stat-markets').textContent = allMarkets.length;
+  document.getElementById('stat-lots').textContent = today.length.toLocaleString();
 
-  document.getElementById('stat-markets').textContent = markets.length;
-  document.getElementById('stat-commodities').textContent = byName.size;
-  document.getElementById('cnt-all').textContent = catCounts.all;
-  document.getElementById('cnt-veg').textContent = catCounts.vegetables;
-  document.getElementById('cnt-fruit').textContent = catCounts.fruits;
-  document.getElementById('cnt-op').textContent = catCounts.onions_potatoes;
-  document.getElementById('cnt-nut').textContent = catCounts.nuts;
+  // Featured market: user's selected market, else first alphabetical
+  const featuredMkt = U.selMarket() && byMarket.has(U.selMarket()) ? U.selMarket() : allMarkets.sort()[0];
 
-  let selectedCat = 'all';
-  let searchQ = '';
-  let selectedName = commodities.find(c => c.watched)?.name || commodities[0]?.name;
+  // Build market summaries
+  const marketData = new Map();
+  for (const market of allMarkets) {
+    const rows = byMarket.get(market) || [];
+    const prevRows = prevByMarket.get(market) || [];
+    const byCom = U.groupBy(rows, r => r.commodity);
+    const prevByCom = U.groupBy(prevRows, r => r.commodity);
 
-  renderList();
-  if (selectedName) renderCrossMarket(selectedName);
-
-  // Category filter
-  document.getElementById('cl-cats').addEventListener('click', (e) => {
-    const chip = e.target.closest('[data-cat]');
-    if (!chip) return;
-    selectedCat = chip.dataset.cat;
-    document.querySelectorAll('#cl-cats .cat-chip').forEach(c => c.classList.toggle('is-active', c === chip));
-    renderList();
-  });
-
-  // Search
-  document.getElementById('cl-search').addEventListener('input', (e) => {
-    searchQ = e.target.value.trim().toLowerCase();
-    renderList();
-  });
-
-  // Click a commodity
-  document.getElementById('cl-scroll').addEventListener('click', (e) => {
-    const item = e.target.closest('.cl-item');
-    if (!item) return;
-    selectedName = item.dataset.name;
-    document.querySelectorAll('.cl-item').forEach(el => el.classList.toggle('is-active', el === item));
-    renderCrossMarket(selectedName);
-    enterDetailView(selectedName);
-  });
-
-  // Back button in mobile push nav
-  document.getElementById('pushnav-back').addEventListener('click', () => {
-    if (window.matchMedia('(max-width: 899px)').matches) {
-      // Use browser back if we pushed a state, otherwise just exit detail view
-      if (history.state && history.state.pushnav) {
-        history.back();
-      } else {
-        exitDetailView();
-      }
-    }
-  });
-
-  // Handle browser back button on mobile
-  window.addEventListener('popstate', (e) => {
-    if (window.matchMedia('(max-width: 899px)').matches) {
-      exitDetailView();
-    }
-  });
-
-  function isMobile() { return window.matchMedia('(max-width: 899px)').matches; }
-  function enterDetailView(name) {
-    if (!isMobile()) return;
-    document.querySelector('.split').classList.add('is-detail');
-    document.body.classList.add('pushnav-detail');
-    document.getElementById('pushnav-title').textContent = name;
-    // Push a state so browser back button returns to the list
-    if (!history.state || !history.state.pushnav) {
-      history.pushState({ pushnav: true, commodity: name }, '', window.location.href);
-    }
-    // Scroll to top of the new view
-    window.scrollTo(0, 0);
-  }
-  function exitDetailView() {
-    document.querySelector('.split').classList.remove('is-detail');
-    document.body.classList.remove('pushnav-detail');
-  }
-
-  // Watch toggle
-  document.getElementById('cmp-watch').addEventListener('click', () => {
-    if (!selectedName) return;
-    U.watchToggle(selectedName);
-    updateWatchBtn();
-    renderList();
-  });
-
-  function renderList() {
-    const scroll = document.getElementById('cl-scroll');
-    let filtered = commodities;
-    if (selectedCat !== 'all') filtered = filtered.filter(c => c.cat === selectedCat);
-    if (searchQ) filtered = filtered.filter(c => c.name.toLowerCase().includes(searchQ));
-
-    // Section: Watchlist (only if any)
-    const watched = filtered.filter(c => c.watched);
-    const others = filtered.filter(c => !c.watched);
-
-    let html = '';
-    if (watched.length) {
-      html += `<div class="clist__section-hd">★ Watchlist</div>`;
-      html += watched.map(itemHTML).join('');
-    }
-    if (others.length) {
-      // Group others by cat for headers when "all" filter is active
-      if (selectedCat === 'all') {
-        const groups = U.groupBy(others, c => c.cat || 'other');
-        const catOrder = ['fruits', 'vegetables', 'onions_potatoes', 'nuts', 'other'];
-        for (const cat of catOrder) {
-          const items = groups.get(cat);
-          if (!items?.length) continue;
-          html += `<div class="clist__section-hd">${escape(U.catLabel(cat))}</div>`;
-          html += items.map(itemHTML).join('');
-        }
-      } else {
-        html += others.map(itemHTML).join('');
-      }
-    }
-    if (!html) html = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No commodities match.</div>`;
-    scroll.innerHTML = html;
-  }
-
-  function itemHTML(c) {
-    const active = c.name === selectedName ? ' is-active' : '';
-    const cls = U.catClass(c.cat);
-    return `<div class="cl-item${active}" data-name="${escape(c.name)}">
-      <span class="cat-dot cat-dot--${cls}"></span>
-      <span class="cl-item__name">${escape(c.name)}</span>
-      <span class="cl-item__price">${U.fmtPrice(c.mostly)}</span>
-    </div>`;
-  }
-
-  function renderCrossMarket(name) {
-    const commodityRows = byName.get(name) || [];
-    if (!commodityRows.length) return;
-
-    // Build per-market aggregate for this commodity
-    const perMarket = [];
-    const byMarket = U.groupBy(commodityRows, r => r.market);
-    for (const [mkt, rs] of byMarket) {
+    const comChanges = [];
+    for (const [name, rs] of byCom) {
       const agg = U.aggregateCommodity(rs);
-      perMarket.push({ market: mkt, ...agg });
+      const prevAgg = prevByCom.has(name) ? U.aggregateCommodity(prevByCom.get(name)) : null;
+      const d = U.delta(agg.mostly, prevAgg?.mostly);
+      comChanges.push({ name, mostly: agg.mostly, pct: d.pct });
     }
-    perMarket.sort((a, b) => (a.mostly ?? Infinity) - (b.mostly ?? Infinity));
-
-    const cat = commodityRows[0]?.commodity_type;
-    const packs = U.uniq(commodityRows.map(r => r.package).filter(Boolean));
-    const origins = U.uniq(commodityRows.map(r => r.origin).filter(Boolean));
-
-    document.getElementById('cmp-cat').textContent = U.catLabel(cat);
-    document.getElementById('cmp-title').textContent = name;
-    document.getElementById('cmp-sub').textContent =
-      `${packs.slice(0, 2).join(', ') || '—'} · ${origins.slice(0, 2).join(', ') || '—'} · across ${perMarket.length} terminals`;
-
-    // Summary tiles
-    const withPrice = perMarket.filter(r => r.mostly != null);
-    if (withPrice.length) {
-      const avg = withPrice.reduce((s, r) => s + r.mostly, 0) / withPrice.length;
-      const low = withPrice[0];
-      const high = withPrice[withPrice.length - 1];
-      const spread = high.mostly - low.mostly;
-      document.getElementById('s-avg').textContent = U.fmtPrice(avg);
-      document.getElementById('s-low').textContent = U.fmtPrice(low.mostly);
-      document.getElementById('s-low-city').textContent = low.market;
-      document.getElementById('s-high').textContent = U.fmtPrice(high.mostly);
-      document.getElementById('s-high-city').textContent = high.market;
-      document.getElementById('s-spread').textContent = U.fmtPrice(spread);
-    } else {
-      ['s-avg','s-low','s-high','s-spread'].forEach(id => document.getElementById(id).textContent = '—');
-    }
-
-    // Pack chips
-    const packsEl = document.getElementById('cmp-packs');
-    const chipHtml = packs.slice(0, 4).map((p, i) =>
-      `<span class="chip ${i === 0 ? 'is-active' : ''}">${escape(p)}</span>`
-    ).join('');
-    packsEl.innerHTML = chipHtml + `<div class="cmp__sort">Sort by <b>Mostly ↑</b></div>`;
-
-    // Table
-    const tbodyOld = document.getElementById('cmp-tbody');
-    // Clone-replace to drop any previously attached listeners
-    const tbody = tbodyOld.cloneNode(false);
-    tbody.id = 'cmp-tbody';
-    tbodyOld.parentNode.replaceChild(tbody, tbodyOld);
-
-    if (!perMarket.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No market data for this commodity today.</td></tr>`;
-      return;
-    }
-    // Group raw rows by market so we can expand on demand
-    const rawByMarket = byMarket; // Map<market, rows[]>
-
-    tbody.innerHTML = perMarket.map((r, idx) => {
-      const isBest = idx === 0 && r.mostly != null;
-      const marketKey = r.market;
-      const detailUrl = window.agraxUtil.detailURL({
-        commodity: selectedName,
-        market: marketKey,
-      });
-      return `<tr class="expand-row" data-mkt="${escape(marketKey)}">
-        <td>
-          <span class="city-name"><span class="city-name__pin"></span>${escape(r.market)}</span>${isBest ? '<span class="best-tag">Best</span>' : ''}
-          <a href="${detailUrl}" onclick="event.stopPropagation()" style="margin-left:8px;font-size:10.5px;color:var(--pop);font-weight:500;text-decoration:none">detail →</a>
-        </td>
-        <td class="r" data-label="Low">${r.low != null ? r.low.toFixed(2) : '—'}</td>
-        <td class="r" data-label="High">${r.high != null ? r.high.toFixed(2) : '—'}</td>
-        <td class="r strong" data-label="Mostly">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
-        <td class="r" data-label="Lots">${r.lotCount}</td>
-      </tr>`;
-    }).join('');
-
-    // Wire expand/collapse
-    tbody._rawByMarket = rawByMarket;
-    tbody.addEventListener('click', onExpandClick);
-
-    updateWatchBtn();
+    const withChg = comChanges.filter(c => c.pct != null);
+    const avgChg = withChg.length ? withChg.reduce((s, c) => s + c.pct, 0) / withChg.length : null;
+    const mood = U.moodFromAvgChg(avgChg);
+    const movers = [...withChg]
+      .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
+      .slice(0, 4);
+    marketData.set(market, {
+      commodityCount: byCom.size,
+      lotCount: rows.length,
+      mood,
+      movers,
+    });
   }
 
-  function onExpandClick(e) {
-    // Sub-row click → navigate to detail page
-    const subRow = e.target.closest('tr.sub-row');
-    if (subRow) {
-      const url = window.agraxUtil.detailURL({
-        commodity: selectedName,
-        variety: subRow.dataset.variety || null,
-        origin: subRow.dataset.origin || null,
-        size: subRow.dataset.size || null,
-        package: subRow.dataset.pkg || null,
-        market: subRow.dataset.mkt || null,
-      });
-      window.location.href = url;
-      return;
+  // Render market cards, grouped by region
+  const leftCol = document.getElementById('left-col');
+  leftCol.innerHTML = '';
+
+  // National mood strip
+  const nationalChanges = today.map(r => r).flatMap(() => []);
+  // Compute overall mood from all commodities across all markets
+  let downN = 0, upN = 0, totalChg = 0, chgCount = 0;
+  for (const md of marketData.values()) {
+    const movers = md.movers;
+    for (const m of movers) {
+      if (m.pct == null) continue;
+      totalChg += m.pct;
+      chgCount++;
+      if (m.pct < -0.5) downN++;
+      else if (m.pct > 0.5) upN++;
     }
+  }
+  const avgAll = chgCount ? totalChg / chgCount : null;
+  const nationalMood = U.moodFromAvgChg(avgAll);
+  const circ = 2 * Math.PI * 13;
+  const fill = (nationalMood.score / 100) * circ;
 
-    const row = e.target.closest('tr.expand-row');
-    if (!row) return;
-    const tbody = row.parentElement;
-    const mkt = row.dataset.mkt;
-    const isOpen = row.classList.contains('is-open');
+  leftCol.innerHTML = `
+    <div style="display:flex;align-items:center;gap:20px;padding:12px 16px;background:var(--card);border:0.5px solid var(--line);border-radius:10px;font-size:12px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="position:relative;width:32px;height:32px;flex-shrink:0">
+        <svg width="32" height="32" viewBox="0 0 32 32" style="transform:rotate(-90deg)">
+          <circle cx="16" cy="16" r="13" fill="none" stroke="#EFEFEC" stroke-width="3"/>
+          <circle cx="16" cy="16" r="13" fill="none" stroke="var(--pop)" stroke-width="3" stroke-dasharray="${fill.toFixed(1)} ${(circ-fill).toFixed(1)}" stroke-linecap="round"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--pop)">${nationalMood.score}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;font-weight:600">National mood</span><span style="font-family:var(--font-mono);font-weight:600">${nationalMood.label}</span></div>
+      <div style="width:1px;height:20px;background:var(--line)"></div>
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;font-weight:600">Down</span><span style="font-family:var(--font-mono);font-weight:600;color:var(--pop)">${downN}</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;font-weight:600">Up</span><span style="font-family:var(--font-mono);font-weight:600;color:var(--up)">${upN}</span></div>
+      <span style="margin-left:auto;font-size:11px;color:var(--muted)">Updated ${fmtDate(latestDate)}</span>
+    </div>
+  `;
 
-    // Remove any existing sub-rows for this market
-    let sib = row.nextElementSibling;
-    while (sib && (sib.classList.contains('sub-row') || sib.classList.contains('sub-hd'))) {
-      const next = sib.nextElementSibling;
-      sib.remove();
-      sib = next;
+  const usedMarkets = new Set();
+
+  for (const region of REGIONS) {
+    const regionMarkets = region.markets.filter(m => byMarket.has(m));
+    if (!regionMarkets.length) continue;
+
+    const secHd = document.createElement('div');
+    secHd.className = 'section-hd';
+    secHd.textContent = region.name;
+    leftCol.appendChild(secHd);
+
+    const grid = document.createElement('div');
+    grid.className = 'mgrid';
+    regionMarkets.forEach(market => {
+      usedMarkets.add(market);
+      grid.appendChild(renderCard(market, marketData.get(market), market === featuredMkt));
+    });
+    leftCol.appendChild(grid);
+  }
+
+  // Any markets not mapped to a region
+  const other = allMarkets.filter(m => !usedMarkets.has(m));
+  if (other.length) {
+    const secHd = document.createElement('div');
+    secHd.className = 'section-hd';
+    secHd.textContent = 'Other markets';
+    leftCol.appendChild(secHd);
+
+    const grid = document.createElement('div');
+    grid.className = 'mgrid';
+    other.forEach(market => {
+      grid.appendChild(renderCard(market, marketData.get(market), false));
+    });
+    leftCol.appendChild(grid);
+  }
+
+  // Render right rail
+  renderRail();
+
+  function renderCard(market, data, featured) {
+    const a = document.createElement('a');
+    a.className = 'mcard' + (featured ? ' mcard--feat' : '');
+    a.href = `/app/markets/city?m=${encodeURIComponent(market)}`;
+
+    const moodCls = data.mood.mod === 'up' ? 'up' : data.mood.mod === 'down' ? 'dn' : 'st';
+    const moodTxt = data.mood.mod === 'up' ? '▲ Higher' : data.mood.mod === 'down' ? '▼ Lower' : '· Steady';
+
+    a.innerHTML = `
+      <div class="mcard__top">
+        <span class="mcard__pin"></span>
+        <span class="mcard__city">${escape(market)}</span>
+        <span class="mcard__mood ${moodCls}">${moodTxt}</span>
+      </div>
+      <div class="mcard__meta">
+        <span><b>${data.commodityCount}</b> commodities</span>
+        <span>· <b>${data.lotCount.toLocaleString()}</b> lots</span>
+      </div>
+      ${data.movers.length ? `
+        <div class="mcard__movers-lbl">Top movers today</div>
+        <div class="mcard__movers">
+          ${data.movers.map(m => {
+            const arrow = m.pct < 0 ? '▼' : m.pct > 0 ? '▲' : '—';
+            const cls = m.pct < 0 ? 'dn' : m.pct > 0 ? 'up' : '';
+            return `<span class="mover-chip"><span class="n">${escape(m.name)}</span>${m.mostly != null ? `<span class="p">$${m.mostly.toFixed(0)}</span>` : ''}${m.pct != null ? `<span class="d ${cls}">${arrow}${Math.abs(m.pct).toFixed(0)}%</span>` : ''}</span>`;
+          }).join('')}
+        </div>
+      ` : '<div class="mcard__movers-lbl" style="color:var(--muted)">No movement data</div>'}
+      <div class="mcard__foot">
+        <span>${fmtDate(latestDate)}</span>
+        <span class="mcard__cta">Open report →</span>
+      </div>
+    `;
+    return a;
+  }
+
+  function renderRail() {
+    const rail = document.getElementById('rail');
+    rail.innerHTML = '';
+
+    // Watchlist quick jump
+    const watch = U.watchList();
+    const wlHtml = watch.length ? watch.slice(0, 4).map((name, i) => {
+      // find price/delta for watched commodity in featured market
+      const rows = today.filter(r => r.commodity === name && r.market === featuredMkt);
+      const prevRows = prev.filter(r => r.commodity === name && r.market === featuredMkt);
+      const agg = rows.length ? U.aggregateCommodity(rows) : null;
+      const prevAgg = prevRows.length ? U.aggregateCommodity(prevRows) : null;
+      const d = agg && prevAgg ? U.delta(agg.mostly, prevAgg.mostly) : { pct: null };
+      const cls = d.pct == null ? '' : (d.pct < 0 ? 'dn' : d.pct > 0 ? 'up' : '');
+      const arrow = d.pct == null ? '—' : (d.pct < 0 ? '▼' : d.pct > 0 ? '▲' : '—');
+      const url = U.detailURL({ commodity: name, market: featuredMkt });
+      return `<a class="rail-row" href="${url}">
+        <span class="rail-row__idx">${i+1}</span>
+        <span class="rail-row__name">${escape(name)}</span>
+        <span class="rail-row__d ${cls}">${d.pct != null ? `${arrow}${Math.abs(d.pct).toFixed(1)}%` : '—'}</span>
+      </a>`;
+    }).join('') : `<div style="font-size:11.5px;color:var(--sub);padding:8px 0">
+      No commodities watched yet. Star items to track them here.
+    </div>`;
+
+    // Popular hubs — by lot count
+    const hubs = [...marketData.entries()]
+      .map(([m, d]) => ({ market: m, lots: d.lotCount }))
+      .sort((a, b) => b.lots - a.lots)
+      .slice(0, 5);
+
+    // Popular commodities across all markets — most common
+    const comCount = new Map();
+    for (const r of today) {
+      const n = r.commodity;
+      comCount.set(n, (comCount.get(n) || 0) + 1);
     }
-
-    if (isOpen) {
-      row.classList.remove('is-open');
-      return;
-    }
-    // Close any other open row (accordion behavior)
-    tbody.querySelectorAll('tr.expand-row.is-open').forEach(r => r.classList.remove('is-open'));
-    // Re-scan and remove other stale sub-rows
-    tbody.querySelectorAll('tr.sub-row, tr.sub-hd').forEach(r => r.remove());
-
-    row.classList.add('is-open');
-
-    // Build sub-rows: group this market's rows by origin, then list sizes
-    const rows = tbody._rawByMarket.get(mkt) || [];
-    const byOrigin = window.agraxUtil.groupBy(rows, r => r.origin || 'Unspecified');
-    const insertAfter = row;
-    const subFragments = [];
-
-    // Sort origins by best price ascending
-    const originAggs = [];
-    for (const [origin, rs] of byOrigin) {
-      const agg = window.agraxUtil.aggregateCommodity(rs);
-      originAggs.push({ origin, rows: rs, agg });
-    }
-    originAggs.sort((a, b) => (a.agg.mostly ?? a.agg.low ?? Infinity) - (b.agg.mostly ?? b.agg.low ?? Infinity));
-
-    for (const { origin, rows: originRows } of originAggs) {
-      subFragments.push(`<tr class="sub-hd"><td colspan="5">${escape(origin)} · ${originRows.length} lot${originRows.length === 1 ? '' : 's'}</td></tr>`);
-      // Sort sizes by price
-      const sorted = [...originRows].sort((a, b) => {
-        const am = window.agraxUtil.rowMostly(a) ?? Infinity;
-        const bm = window.agraxUtil.rowMostly(b) ?? Infinity;
-        return am - bm;
-      });
-      for (const rr of sorted) {
-        const size = rr.size || rr.variety || '—';
-        const pack = rr.package || '';
-        const qual = rr.quality_note ? `<span class="sub-tag--qual">${escape(rr.quality_note)}</span>` : '';
-        const grade = rr.grade || '';
-        const mLow = window.agraxUtil.num(rr.price_mostly_low);
-        const mHigh = window.agraxUtil.num(rr.price_mostly_high);
-        const mostlyTxt = (mLow != null && mHigh != null)
-          ? (mLow === mHigh ? mLow.toFixed(2) : `${mLow.toFixed(2)}–${mHigh.toFixed(2)}`)
-          : (mLow != null ? mLow.toFixed(2) : (mHigh != null ? mHigh.toFixed(2) : '—'));
-        const lowTxt = rr.price_low != null ? Number(rr.price_low).toFixed(2) : '—';
-        const highTxt = rr.price_high != null ? Number(rr.price_high).toFixed(2) : '—';
-        const variety = rr.variety || '';
-        const label = [variety, pack].filter(Boolean).join(' · ');
-        subFragments.push(`<tr class="sub-row" data-mkt="${escape(mkt)}" data-variety="${escape(rr.variety || '')}" data-origin="${escape(rr.origin || '')}" data-size="${escape(rr.size || '')}" data-pkg="${escape(rr.package || '')}" style="cursor:pointer">
-          <td><span class="sub-tag">${escape(size)}</span>${escape(label)}${qual}${grade ? `<span class="sub-tag--qual">${escape(grade)}</span>` : ''} <span style="color:var(--pop);font-size:10px;margin-left:4px">→</span></td>
-          <td class="r" data-label="Low">${lowTxt}</td>
-          <td class="r" data-label="High">${highTxt}</td>
-          <td class="r" data-label="Mostly">${mostlyTxt}</td>
-          <td class="r" data-label="Lots" style="color:var(--muted)">—</td>
-        </tr>`);
+    // Compute avg change per commodity for the price signal
+    const comAvgChg = new Map();
+    for (const [name, count] of comCount) {
+      // sample average change across markets
+      const chgs = [];
+      for (const [m, d] of marketData) {
+        const mover = d.movers.find(mv => mv.name === name);
+        if (mover?.pct != null) chgs.push(mover.pct);
       }
+      const avg = chgs.length ? chgs.reduce((s, x) => s + x, 0) / chgs.length : null;
+      comAvgChg.set(name, avg);
     }
+    const popularCom = [...comCount.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
 
-    // Insert after clicked row
-    insertAfter.insertAdjacentHTML('afterend', subFragments.join(''));
+    rail.innerHTML = `
+      <div class="rail-card rail-card--wl">
+        <div class="rail-card__hd">★ Your watchlist</div>
+        ${wlHtml}
+        <a class="rail-card__foot" href="/app/watchlist">Manage watchlist →</a>
+      </div>
+
+      <div class="rail-card">
+        <div class="rail-card__hd">Popular hubs · today</div>
+        ${hubs.map((h, i) => `<a class="rail-row" href="/app/markets/city?m=${encodeURIComponent(h.market)}">
+          <span class="rail-row__idx">${i+1}</span>
+          <span class="rail-row__name">${escape(h.market)}</span>
+          <span class="rail-row__meta">${h.lots.toLocaleString()} lots</span>
+        </a>`).join('')}
+      </div>
+
+      <div class="rail-card">
+        <div class="rail-card__hd">Popular commodities</div>
+        ${popularCom.map(([name, count], i) => {
+          const pct = comAvgChg.get(name);
+          const cls = pct == null ? '' : (pct < 0 ? 'dn' : pct > 0 ? 'up' : '');
+          const arrow = pct == null ? '' : (pct < 0 ? '▼' : pct > 0 ? '▲' : '—');
+          return `<a class="rail-row" href="${U.detailURL({ commodity: name })}">
+            <span class="rail-row__idx">${i+1}</span>
+            <span class="rail-row__name">${escape(name)}</span>
+            <span class="rail-row__d ${cls}">${pct != null ? `${arrow}${Math.abs(pct).toFixed(1)}%` : ''}</span>
+          </a>`;
+        }).join('')}
+      </div>
+    `;
   }
 
-  function updateWatchBtn() {
-    const btn = document.getElementById('cmp-watch');
-    if (!selectedName) return;
-    const w = U.watchHas(selectedName);
-    btn.textContent = w ? '★ Watching' : '★ Watch';
-    btn.classList.toggle('btn--dark', w);
-    btn.classList.toggle('btn--ghost', !w);
-  }
-
-  function fmtDate(iso) {
-    const d = new Date(iso);
-    return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
+  function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  function fmtDateLong(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
   function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function showError(err) {
     const el = document.createElement('div');

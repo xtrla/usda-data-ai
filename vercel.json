@@ -5,7 +5,8 @@
   "rewrites": [
     { "source": "/app", "destination": "/app/index.html" },
     { "source": "/app/markets", "destination": "/app/markets/index.html" },
-    { "source": "/app/markets/(.*)", "destination": "/app/markets/index.html" },
+    { "source": "/app/markets/city", "destination": "/app/markets/city/index.html" },
+    { "source": "/app/markets/compare", "destination": "/app/markets/compare/index.html" },
     { "source": "/app/commodity", "destination": "/app/commodity/index.html" },
     { "source": "/app/shipping", "destination": "/app/shipping/index.html" },
     { "source": "/app/movement", "destination": "/app/movement/index.html" },
