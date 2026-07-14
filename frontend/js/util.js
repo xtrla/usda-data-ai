@@ -82,6 +82,25 @@ function fmtDelta(pct) {
   return { text: `${arrow} ${Math.abs(pct).toFixed(1)}%`, dir };
 }
 
+// Parse "YYYY-MM-DD" as a LOCAL date (not UTC).
+// new Date("2026-07-13") is UTC midnight → shifted back a day in negative UTC offsets.
+// This helper builds the date in the user's own timezone so the label matches the report.
+function parseLocalDate(iso) {
+  if (!iso) return null;
+  const s = String(iso).slice(0, 10);
+  const [y, m, d] = s.split('-').map(Number);
+  if (!y || !m || !d) return new Date(iso); // fallback
+  return new Date(y, m - 1, d);
+}
+function fmtDate(iso) {
+  const d = parseLocalDate(iso);
+  return !d || isNaN(d) ? String(iso) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function fmtDateLong(iso) {
+  const d = parseLocalDate(iso);
+  return !d || isNaN(d) ? String(iso) : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
 // Category → CSS modifier class
 function catClass(commodity_type) {
   const map = {
@@ -172,7 +191,7 @@ function readDetailFilters() {
 if (typeof window !== 'undefined') {
   window.agraxUtil = {
     rowMostly, num, groupBy, aggregateCommodity, uniq,
-    delta, fmtPrice, fmtPct, fmtDelta,
+    delta, fmtPrice, fmtPct, fmtDelta, fmtDate, fmtDateLong, parseLocalDate,
     catClass, catLabel, moodFromAvgChg,
     watchList, watchToggle, watchHas,
     selMarket, setSelMarket, selDate, setSelDate,

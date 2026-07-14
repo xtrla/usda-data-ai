@@ -527,8 +527,8 @@
     `;
   }
 
-  function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-  function fmtDateLong(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
+  function fmtDate(iso) { return U.fmtDate(iso); }
+  function fmtDateLong(iso) { return U.fmtDateLong(iso); }
   function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function showError(err) {
     const el = document.createElement('div');

@@ -156,7 +156,7 @@
     location.reload();
   });
 
-  function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  function fmtDate(iso) { return U.fmtDate(iso); }
   function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function showError(err) {
     const el = document.createElement('div');
