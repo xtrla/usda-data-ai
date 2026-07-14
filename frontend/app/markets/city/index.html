@@ -491,6 +491,22 @@
   renderReport();
   renderJumpNav();
 
+  // If URL has a #com-<slug> hash, scroll to it and highlight
+  if (window.location.hash) {
+    setTimeout(() => {
+      const el = document.querySelector(window.location.hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.style.transition = 'background 0.5s';
+        el.style.background = 'var(--pop-09)';
+        el.style.borderRadius = 'var(--r-lg)';
+        el.style.padding = 'var(--sp-4)';
+        el.style.margin = 'calc(var(--sp-4) * -1)';
+        setTimeout(() => { el.style.background = 'transparent'; }, 1600);
+      }
+    }, 100);
+  }
+
   function renderReport() {
     const main = document.getElementById('report-main');
     main.innerHTML = '';
@@ -526,7 +542,7 @@
         const moodTxt = mood.mod === 'up' ? '▲ Higher' : mood.mod === 'down' ? '▼ Lower' : '· Steady';
 
         commodityBlocks.push(`
-          <div class="com-block" data-com="${escape(name)}">
+          <div class="com-block" id="com-${U.slugify(name)}" data-com="${escape(name)}">
             <div class="com-header">
               <div class="com-header__name">${escape(name)}</div>
               <span class="mood ${moodCls}">${moodTxt}</span>

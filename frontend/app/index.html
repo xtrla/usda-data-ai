@@ -11,20 +11,18 @@
 <link rel="stylesheet" href="/styles/tokens.css" />
 <link rel="stylesheet" href="/styles/components.css" />
 <style>
-/* HERO SEARCH */
-.hero-search {
+/* ── PRICE CHECK HERO ───────────────────────────────── */
+.pc-hero {
   position: relative;
   background: var(--grad-card-mint);
   border: 0.5px solid #E4EBD6;
   border-radius: var(--r-hero);
-  padding: var(--sp-9) var(--sp-8) var(--sp-8);
+  padding: var(--sp-8) var(--sp-7) var(--sp-8);
   margin-bottom: var(--sp-6);
   overflow: hidden;
 }
-@media(min-width: 640px){
-  .hero-search { padding: var(--sp-12) var(--sp-10) var(--sp-9); }
-}
-.hero-search::before {
+@media(min-width: 640px){ .pc-hero { padding: var(--sp-10) var(--sp-9) var(--sp-9); } }
+.pc-hero::before {
   content: '';
   position: absolute;
   top: -80px; right: -80px;
@@ -33,9 +31,8 @@
   background: var(--glow-corner-soft);
   pointer-events: none;
 }
-.hero-search > * { position: relative; }
-
-.hero-eyebrow {
+.pc-hero > * { position: relative; }
+.pc-eyebrow {
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -45,7 +42,7 @@
   align-items: center;
   gap: 6px;
 }
-.hero-eyebrow .dot {
+.pc-eyebrow .dot {
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--pop);
@@ -54,120 +51,144 @@
 }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-.hero-search h1 {
-  font-size: 26px;
+.pc-hero h1 {
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.03em;
   margin-top: var(--sp-3);
   line-height: 1.05;
 }
-@media(min-width: 640px){ .hero-search h1 { font-size: 34px; } }
-
-.hero-search__sub {
+@media(min-width: 640px){ .pc-hero h1 { font-size: 30px; } }
+.pc-hero__sub {
   font-size: 13.5px;
   color: var(--sub);
   margin-top: 6px;
   max-width: 520px;
 }
 
-/* The search input */
-.search-box {
+.pc-form {
   margin-top: var(--sp-6);
   background: var(--card);
   border: 0.5px solid var(--line);
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  border-radius: var(--r-lg);
+  padding: var(--sp-3);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-2);
   box-shadow: 0 8px 24px rgba(21,162,74,.10);
-  max-width: 640px;
-  position: relative;
-  z-index: 2;
+  max-width: 720px;
+  align-items: stretch;
 }
-.search-box:focus-within {
-  border-color: var(--pop);
-  box-shadow: 0 8px 32px rgba(21,162,74,.18);
+@media(min-width: 720px){
+  .pc-form { grid-template-columns: 1fr 1fr auto; }
 }
-.search-box__ico { color: var(--pop); font-size: 18px; }
-.search-box__input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-family: var(--font-body);
-  font-size: 16px;
-  color: var(--ink);
+.pc-field {
+  padding: 10px 14px;
+  border-radius: var(--r-md);
   background: transparent;
-  padding: 2px 0;
+  position: relative;
+  cursor: pointer;
   min-width: 0;
 }
-.search-box__input::placeholder { color: var(--muted); }
-.search-box__kbd {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--muted);
-  background: var(--fill);
-  padding: 3px 8px;
-  border-radius: 5px;
-  flex-shrink: 0;
-  display: none;
+.pc-field:hover { background: var(--pop-04); }
+.pc-field + .pc-field { border-top: 0.5px solid var(--line-softer); }
+@media(min-width: 720px){
+  .pc-field + .pc-field { border-top: none; border-left: 0.5px solid var(--line-softer); }
 }
-@media(min-width: 640px){ .search-box__kbd { display: inline; } }
+.pc-field__lbl {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.pc-field__val {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pc-field__val--muted { color: var(--muted); font-weight: 400; }
+.pc-field__val .chev { color: var(--muted); font-size: 10px; margin-left: auto; }
+.pc-field__val .pin { width: 6px; height: 6px; border-radius: 50%; background: var(--pop); }
+.pc-btn {
+  background: var(--dark-1);
+  color: #fff;
+  border: 0;
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-7);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 48px;
+}
+.pc-btn:hover { background: #12140F; }
+.pc-btn:disabled { background: var(--muted); cursor: not-allowed; }
 
-/* Autocomplete dropdown */
-.autocomplete {
+/* Combobox dropdown */
+.combo {
   position: absolute;
-  top: calc(100% + 6px);
-  left: 0; right: 0;
+  top: calc(100% + 4px);
+  left: -1px; right: -1px;
   background: var(--card);
   border: 0.5px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   box-shadow: 0 12px 32px rgba(0,0,0,0.12);
   padding: 6px;
   z-index: 30;
-  max-height: 400px;
+  max-height: 320px;
   overflow-y: auto;
   display: none;
 }
-.autocomplete.is-open { display: block; }
-.ac-item {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-radius: 8px;
+.combo.is-open { display: block; }
+.combo__input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 10px;
+  background: var(--fill);
+  border-radius: var(--r-sm);
+  margin-bottom: 6px;
+}
+.combo__item {
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
   font-size: 13px;
   cursor: pointer;
-  text-decoration: none;
-  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.ac-item:hover, .ac-item.is-hover { background: var(--pop-04); }
-.ac-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ac-item__spec { font-size: 11px; color: var(--muted); }
-.ac-item__price { font-family: var(--font-mono); font-weight: 600; flex-shrink: 0; }
-.ac-item__price.dn { color: var(--pop); }
-.ac-item__price.up { color: var(--up); }
-.ac-item__delta { font-family: var(--font-mono); font-size: 10.5px; flex-shrink: 0; margin-left: 4px; font-weight: 600; }
-.ac-item__delta.dn { color: var(--pop); }
-.ac-item__delta.up { color: var(--up); }
-.ac-empty { padding: 20px; text-align: center; font-size: 12.5px; color: var(--muted); }
+.combo__item:hover, .combo__item.is-hover { background: var(--pop-04); }
+.combo__item .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pop); }
+.combo__item.is-selected { background: var(--pop-09); font-weight: 500; }
+.combo__meta { margin-left: auto; font-size: 10.5px; color: var(--muted); font-family: var(--font-mono); }
+.combo__empty { padding: 16px; text-align: center; font-size: 12.5px; color: var(--muted); }
 
-/* Recent + market chip row */
-.search-meta {
+/* Quick recents chips below form */
+.pc-recent {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: var(--sp-5);
   flex-wrap: wrap;
-  max-width: 640px;
 }
-.search-meta__label {
+.pc-recent__lbl {
   font-size: 10.5px;
   color: var(--muted);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-right: 2px;
 }
 .recent-chip {
   font-size: 11.5px;
@@ -184,202 +205,155 @@
 }
 .recent-chip:hover { border-color: var(--pop-border); color: var(--ink); }
 .recent-chip .p { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
-.recent-chip .d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; }
-.recent-chip .d.dn { color: var(--pop); }
-.recent-chip .d.up { color: var(--up); }
 
-.market-picker {
-  font-size: 11.5px;
-  color: var(--sub);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--card);
-  border: 0.5px solid var(--line);
-  padding: 5px 11px;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  text-decoration: none;
-  margin-left: auto;
-}
-.market-picker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pop); }
-
-/* ── MOOD strip (demoted) ── */
-.mood-strip {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-6);
-  padding: 12px 16px;
-  background: var(--card);
-  border: 0.5px solid var(--line);
-  border-radius: var(--r-lg);
-  font-size: 12px;
-  margin-bottom: var(--sp-6);
-  flex-wrap: wrap;
-}
-.mood-strip__gauge { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
-.mood-strip__gauge svg { transform: rotate(-90deg); }
-.mood-strip__num {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--pop);
-}
-.mood-strip__item { display: flex; align-items: center; gap: 8px; }
-.mood-strip__item .lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
-.mood-strip__item .val { font-family: var(--font-mono); font-weight: 600; }
-.mood-strip__item.pos .val { color: var(--pop); }
-.mood-strip__item.neg .val { color: var(--up); }
-.mood-strip__sep { width: 1px; height: 20px; background: var(--line); }
-.mood-strip__more { margin-left: auto; font-size: 11px; color: var(--muted); }
-
-/* ── DASHBOARD CARDS ── */
-.dash-grid {
+/* ── HUB CARDS GRID ─────────────────────────────────── */
+.hub-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--sp-5);
   margin-bottom: var(--sp-5);
 }
-@media(min-width: 900px){
-  .dash-grid { grid-template-columns: 1.5fr 1fr; }
-}
+@media(min-width: 640px){ .hub-grid { grid-template-columns: 1fr 1fr; } }
+@media(min-width: 1100px){ .hub-grid { grid-template-columns: 1fr 1fr 1fr; } }
 
-.dash-card {
+.hub-card {
   background: var(--card);
   border: 0.5px solid var(--line);
   border-radius: var(--r-card);
-  overflow: hidden;
-}
-.dash-card__hd {
-  padding: 14px 18px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 0.5px solid var(--line-soft);
-}
-.dash-card__hd .ico { color: var(--pop); }
-.dash-card__hd .title { font-size: 12.5px; font-weight: 600; }
-.dash-card__hd .meta { margin-left: auto; font-size: 11px; color: var(--muted); }
-.dash-card__hd .link { margin-left: auto; font-size: 11px; color: var(--pop); font-weight: 500; text-decoration: none; }
-
-/* Watchlist rows */
-.wl-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-top: 0.5px solid var(--line-softer);
-  font-size: 12.5px;
-  text-decoration: none;
+  padding: var(--sp-6);
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
   color: inherit;
-}
-.wl-row:first-child { border-top: none; }
-.wl-row:hover { background: var(--pop-04); }
-.wl-row__star { color: var(--pop); font-size: 10px; }
-.wl-row__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wl-row__name b { font-weight: 500; }
-.wl-row__spec { font-size: 10px; color: var(--muted); margin-top: 1px; }
-.wl-row__price { font-family: var(--font-mono); font-weight: 600; font-size: 13px; }
-.wl-row__delta { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; min-width: 50px; text-align: right; }
-.wl-row__delta.dn { color: var(--pop); }
-.wl-row__delta.up { color: var(--up); }
-.wl-row__delta.fl { color: var(--muted); }
-.wl-empty {
-  padding: 20px 18px;
-  font-size: 12px;
-  color: var(--sub);
-  text-align: center;
-  border-top: 0.5px solid var(--line-softer);
-}
-.wl-empty a { color: var(--pop); font-weight: 500; }
-
-/* Best buy (dark card) */
-.dash-best {
-  background: var(--grad-dark-2);
-  color: #fff;
-  border-radius: var(--r-card);
-  padding: 18px 20px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 210px;
   position: relative;
   overflow: hidden;
 }
-.dash-best::before {
+.hub-card:hover { border-color: var(--pop-border); transform: translateY(-1px); }
+.hub-card__hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--sp-4);
+}
+.hub-card__ico {
+  width: 32px; height: 32px;
+  border-radius: var(--r-md);
+  background: var(--pop-09);
+  color: var(--pop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.hub-card__title { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+.hub-card__meta { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+
+.hub-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.hub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 5px 0;
+  color: var(--sub);
+}
+.hub-row .n { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 500; }
+.hub-row .p { font-family: var(--font-mono); font-weight: 600; font-size: 11.5px; }
+.hub-row .d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; min-width: 42px; text-align: right; }
+.hub-row .d.dn { color: var(--pop); }
+.hub-row .d.up { color: var(--up); }
+.hub-row .meta { font-size: 10.5px; color: var(--muted); font-family: var(--font-mono); }
+.hub-row__star { color: var(--pop); font-size: 10px; flex-shrink: 0; }
+
+.hub-card__foot {
+  margin-top: auto;
+  padding-top: var(--sp-4);
+  border-top: 0.5px solid var(--line-softer);
+  font-size: 11px;
+  color: var(--pop);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Featured dark hub card */
+.hub-card--dark {
+  background: var(--grad-dark-2);
+  color: #fff;
+  border: none;
+}
+.hub-card--dark::before {
   content: '';
   position: absolute;
-  top: -30px; right: -30px;
-  width: 120px; height: 120px;
+  top: -40px; right: -40px;
+  width: 140px; height: 140px;
   border-radius: 50%;
   background: var(--glow-corner-strong);
   pointer-events: none;
 }
-.dash-best > * { position: relative; }
-.dash-best__tag {
-  font-size: 9.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--pop);
-  font-weight: 600;
-}
-.dash-best__name { font-size: 16px; font-weight: 600; margin-top: 4px; letter-spacing: -0.02em; color: #fff; }
-.dash-best__price {
-  font-family: var(--font-mono);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin-top: 6px;
-}
-.dash-best__delta {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--pop-glow);
-  margin-left: 6px;
-}
-.dash-best__sub { font-size: 11px; color: var(--dark-fg-muted); margin-top: 4px; }
-.dash-best__cta { font-size: 11px; color: var(--pop-glow); margin-top: 12px; display: inline-block; font-weight: 500; text-decoration: none; }
+.hub-card--dark > * { position: relative; }
+.hub-card--dark .hub-card__title { color: #fff; }
+.hub-card--dark .hub-card__meta { color: var(--dark-fg-muted); }
+.hub-card--dark .hub-card__ico { background: rgba(21,162,74,0.15); color: var(--pop-glow); }
+.hub-card--dark .hub-card__foot { color: var(--pop-glow); border-top-color: rgba(255,255,255,0.08); }
+.hub-card--dark .hub-row { color: var(--dark-fg-muted); }
+.hub-card--dark .hub-row .n { color: #fff; }
 
-/* Alert rows */
-.alert-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-top: 0.5px solid var(--line-softer);
-  font-size: 12px;
-}
-.alert-row:first-child { border-top: none; }
-.alert-row__icn {
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.alert-row__icn.pos { background: var(--pop); }
-.alert-row__icn.neg { background: var(--up); }
-.alert-row__body { flex: 1; }
-.alert-row__body b { font-weight: 600; }
-.alert-empty {
-  padding: 18px;
-  font-size: 12px;
+.hub-card__empty {
+  padding: var(--sp-5);
+  font-size: 11.5px;
   color: var(--muted);
   text-align: center;
+  border-radius: var(--r-md);
+  background: var(--card-alt);
 }
 
-/* Signals slot (future AI card) */
-.signals-slot {
-  background: linear-gradient(135deg, var(--dark-1), var(--dark-2));
-  color: #fff;
-  border-radius: var(--r-card);
-  padding: 20px 22px;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: var(--sp-5);
-  display: none; /* uncomment when ready */
+/* Insights/news card (placeholder) */
+.insights-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
+
+/* Mood mini strip */
+.mood-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: 10px 14px;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--r-lg);
+  font-size: 11.5px;
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+.mood-strip__item { display: flex; align-items: center; gap: 6px; }
+.mood-strip__item .lbl { font-size: 9.5px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.mood-strip__item .val { font-family: var(--font-mono); font-weight: 600; }
+.mood-strip__item.pos .val { color: var(--pop); }
+.mood-strip__item.neg .val { color: var(--up); }
+.mood-strip__sep { width: 1px; height: 16px; background: var(--line); }
+.mood-strip__more { margin-left: auto; font-size: 10.5px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -390,7 +364,7 @@
 
   <main class="main">
     <div class="topbar">
-      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
+      <div class="topbar__search"><span>🔍</span>Quick jump…<span class="topbar__kbd">⌘K</span></div>
       <div class="topbar__selector"><span class="topbar__dot"></span><span id="mkt-desktop">—</span><span class="topbar__chev">▾</span></div>
       <div class="topbar__selector" style="color:var(--sub)"><span id="date-desktop">—</span> ▾</div>
       <div class="topbar__bell">🔔</div>
@@ -399,93 +373,167 @@
     <div id="err-slot"></div>
 
     <!-- ═══════════════════════════════════════════════ -->
-    <!-- HERO SEARCH                                       -->
+    <!-- PRICE CHECK HERO                                  -->
     <!-- ═══════════════════════════════════════════════ -->
-    <section class="hero-search">
-      <div class="hero-eyebrow"><span class="dot"></span>USDA Market News · <span id="date-eyebrow">—</span></div>
-      <h1>What are you buying today?</h1>
-      <p class="hero-search__sub">Type a commodity, variety, or size. Get today's wholesale price from the official USDA report.</p>
+    <section class="pc-hero">
+      <div class="pc-eyebrow"><span class="dot"></span>USDA Market News · <span id="date-eyebrow">—</span></div>
+      <h1>Price check</h1>
+      <p class="pc-hero__sub">Pick a commodity and terminal market. Get today's wholesale prices from the official USDA report.</p>
 
-      <div class="search-box">
-        <span class="search-box__ico">🔍</span>
-        <input
-          class="search-box__input"
-          id="search-input"
-          placeholder="hass avocados, strawberries, 48s…"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <span class="search-box__kbd">↵ Enter</span>
-        <div class="autocomplete" id="autocomplete"></div>
+      <div class="pc-form">
+        <!-- Commodity picker -->
+        <div class="pc-field" id="pc-com-field">
+          <div class="pc-field__lbl">Commodity</div>
+          <div class="pc-field__val pc-field__val--muted" id="pc-com-val">
+            Any commodity <span class="chev">▾</span>
+          </div>
+          <div class="combo" id="pc-com-combo">
+            <input type="text" class="combo__input" id="pc-com-input" placeholder="Type to filter…" />
+            <div id="pc-com-list"></div>
+          </div>
+        </div>
+
+        <!-- Market picker -->
+        <div class="pc-field" id="pc-mkt-field">
+          <div class="pc-field__lbl">Terminal market</div>
+          <div class="pc-field__val" id="pc-mkt-val">
+            <span class="pin"></span><span id="pc-mkt-txt">—</span> <span class="chev">▾</span>
+          </div>
+          <div class="combo" id="pc-mkt-combo">
+            <div id="pc-mkt-list"></div>
+          </div>
+        </div>
+
+        <button class="pc-btn" id="pc-check" disabled>Check price →</button>
       </div>
 
-      <div class="search-meta">
-        <span class="search-meta__label">Recent</span>
-        <div id="recent-chips" style="display:contents"></div>
-        <a href="/app/markets" class="market-picker"><span class="dot"></span><span id="mkt-picker">—</span> ▾</a>
+      <div class="pc-recent" id="pc-recent-wrap" style="display:none">
+        <span class="pc-recent__lbl">Recent</span>
+        <div id="pc-recent" style="display:contents"></div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════ -->
-    <!-- MOOD STRIP (demoted)                              -->
+    <!-- MOOD STRIP                                        -->
     <!-- ═══════════════════════════════════════════════ -->
     <div class="mood-strip" id="mood-strip" style="display:none">
-      <div class="mood-strip__gauge">
-        <svg width="32" height="32" viewBox="0 0 32 32">
-          <circle cx="16" cy="16" r="13" fill="none" stroke="#EFEFEC" stroke-width="3"/>
-          <circle id="mood-arc" cx="16" cy="16" r="13" fill="none" stroke="#15A24A" stroke-width="3" stroke-dasharray="0 82" stroke-linecap="round"/>
-        </svg>
-        <div class="mood-strip__num" id="mood-num">—</div>
-      </div>
-      <div class="mood-strip__item"><span class="lbl">Mood</span><span class="val" id="mood-label">—</span></div>
+      <div class="mood-strip__item"><span class="lbl">National</span><span class="val" id="mood-label">—</span></div>
       <div class="mood-strip__sep"></div>
       <div class="mood-strip__item pos"><span class="lbl">Down</span><span class="val" id="k-down">—</span></div>
       <div class="mood-strip__item neg"><span class="lbl">Up</span><span class="val" id="k-up">—</span></div>
-      <div class="mood-strip__item"><span class="lbl">Tracked</span><span class="val" id="k-count">—</span></div>
-      <span class="mood-strip__more" id="mood-market">—</span>
+      <div class="mood-strip__item"><span class="lbl">Commodities</span><span class="val" id="k-count">—</span></div>
+      <div class="mood-strip__item"><span class="lbl">Markets</span><span class="val" id="k-markets">—</span></div>
+      <span class="mood-strip__more" id="mood-date">—</span>
     </div>
 
     <!-- ═══════════════════════════════════════════════ -->
-    <!-- DASHBOARD CARDS                                   -->
+    <!-- HUB NAVIGATION CARDS                              -->
     <!-- ═══════════════════════════════════════════════ -->
-    <div class="dash-grid">
-      <!-- Watchlist -->
-      <section class="dash-card">
-        <div class="dash-card__hd">
-          <span class="ico">★</span>
-          <span class="title">Your watchlist</span>
-          <span class="meta" id="wl-count">—</span>
-          <a href="/app/watchlist" class="link">Manage →</a>
-        </div>
-        <div id="wl-body">
-          <div class="wl-empty">Loading…</div>
-        </div>
-      </section>
-
-      <!-- Right column: best buy + alerts stacked -->
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <section class="dash-best" id="best-card">
-          <div class="dash-best__tag">Best buy today</div>
-          <div class="dash-best__name" id="best-name">—</div>
+    <div class="hub-grid">
+      <!-- Terminal Markets card -->
+      <a href="/app/markets" class="hub-card">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">◈</div>
           <div>
-            <span class="dash-best__price" id="best-price">—</span>
-            <span class="dash-best__delta" id="best-delta"></span>
+            <div class="hub-card__title">Terminal markets</div>
+            <div class="hub-card__meta"><span id="hub-mkt-count">—</span> cities · <span id="hub-lots">—</span> lots today</div>
           </div>
-          <div class="dash-best__sub" id="best-sub"></div>
-          <a class="dash-best__cta" id="best-cta" style="display:none">See detail →</a>
-        </section>
+        </div>
+        <div class="hub-card__body" id="hub-mkt-body">
+          <div class="hub-card__empty">Loading…</div>
+        </div>
+        <div class="hub-card__foot">Browse all cities →</div>
+      </a>
 
-        <section class="dash-card">
-          <div class="dash-card__hd">
-            <span class="ico">⚡</span>
-            <span class="title">Active alerts</span>
-            <span class="meta" id="alerts-meta">—</span>
+      <!-- Commodities card -->
+      <a href="/app/markets/compare" class="hub-card">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">◆</div>
+          <div>
+            <div class="hub-card__title">Commodities</div>
+            <div class="hub-card__meta"><span id="hub-com-count">—</span> tracked · biggest movers</div>
           </div>
-          <div id="alerts-body">
-            <div class="alert-empty">Loading…</div>
+        </div>
+        <div class="hub-card__body" id="hub-com-body">
+          <div class="hub-card__empty">Loading…</div>
+        </div>
+        <div class="hub-card__foot">Compare across markets →</div>
+      </a>
+
+      <!-- Shipping points card -->
+      <a href="/app/shipping" class="hub-card">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">→</div>
+          <div>
+            <div class="hub-card__title">Shipping points</div>
+            <div class="hub-card__meta">FOB prices from growing regions</div>
           </div>
-        </section>
-      </div>
+        </div>
+        <div class="hub-card__body" id="hub-shp-body">
+          <div class="hub-card__empty">Loading…</div>
+        </div>
+        <div class="hub-card__foot">Open shipping →</div>
+      </a>
+
+      <!-- Watchlist card -->
+      <a href="/app/watchlist" class="hub-card">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">★</div>
+          <div>
+            <div class="hub-card__title">Watchlist</div>
+            <div class="hub-card__meta" id="hub-wl-meta">—</div>
+          </div>
+        </div>
+        <div class="hub-card__body" id="hub-wl-body">
+          <div class="hub-card__empty">Loading…</div>
+        </div>
+        <div class="hub-card__foot">Manage watchlist →</div>
+      </a>
+
+      <!-- Alerts card -->
+      <a href="/app/alerts" class="hub-card">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">⚡</div>
+          <div>
+            <div class="hub-card__title">Alerts</div>
+            <div class="hub-card__meta" id="hub-alerts-meta">—</div>
+          </div>
+        </div>
+        <div class="hub-card__body" id="hub-alerts-body">
+          <div class="hub-card__empty">Loading…</div>
+        </div>
+        <div class="hub-card__foot">Manage alerts →</div>
+      </a>
+
+      <!-- Industry insights (dark) -->
+      <a href="#" class="hub-card hub-card--dark">
+        <div class="hub-card__hd">
+          <div class="hub-card__ico">◇</div>
+          <div>
+            <div class="hub-card__title">Industry insights</div>
+            <div class="hub-card__meta">
+              <span class="insights-tag" style="background:rgba(255,255,255,.08);color:var(--pop-glow)">Coming soon</span>
+            </div>
+          </div>
+        </div>
+        <div class="hub-card__body">
+          <div class="hub-row" style="color:var(--dark-fg-muted)">
+            <div style="line-height:1.5;font-size:11.5px">
+              AI-curated news and forecasts pulled from USDA reports, weather patterns, and freight data.
+            </div>
+          </div>
+          <div class="hub-row" style="color:var(--dark-fg-muted);font-size:11px;opacity:.7">
+            · Weather impact on tree fruit
+          </div>
+          <div class="hub-row" style="color:var(--dark-fg-muted);font-size:11px;opacity:.7">
+            · Mexican avocado supply
+          </div>
+          <div class="hub-row" style="color:var(--dark-fg-muted);font-size:11px;opacity:.7">
+            · CA leafy greens harvest
+          </div>
+        </div>
+        <div class="hub-card__foot">In development</div>
+      </a>
     </div>
   </main>
 
@@ -504,16 +552,21 @@
   document.getElementById('side-slot').outerHTML = shell.side;
   document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
 
-  // Recent lookups helpers
+  // The 12 USDA terminal markets
+  const ALL_MARKETS = [
+    'New York', 'Boston', 'Philadelphia', 'Baltimore',
+    'Chicago', 'Detroit',
+    'Atlanta', 'Miami', 'Raleigh', 'Columbia', 'Asheville',
+    'Los Angeles',
+  ];
+
   const RECENT_KEY = 'agrax:recent';
   function getRecent() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; } }
   function pushRecent(item) {
-    // item: {commodity, variety, origin, size, package, market, price, delta}
-    const list = getRecent().filter(x => !(x.commodity === item.commodity && x.variety === item.variety && x.size === item.size && x.market === item.market));
+    const list = getRecent().filter(x => !(x.commodity === item.commodity && x.market === item.market));
     list.unshift(item);
     localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 4)));
   }
-  window.pushRecent = pushRecent;
 
   // ── FETCH ──
   let today = [], prev = [], latestDate = null;
@@ -527,292 +580,258 @@
     if (dates[1]) prev = await agraxAPI.reportTerminal(dates[1].date);
   } catch (err) { return showError(err); }
 
-  const availableMarkets = U.uniq(today.map(r => r.market));
-  let market = U.selMarket();
-  if (!availableMarkets.includes(market)) {
-    market = availableMarkets.sort()[0] || 'New York';
-    U.setSelMarket(market);
+  const availableMarkets = ALL_MARKETS.filter(m => today.some(r => r.market === m));
+  let selMkt = U.selMarket();
+  if (!availableMarkets.includes(selMkt)) {
+    selMkt = availableMarkets[0] || ALL_MARKETS[0];
+    U.setSelMarket(selMkt);
   }
-  document.getElementById('mkt-desktop').textContent = market;
-  document.getElementById('mkt-picker').textContent = market;
+  document.getElementById('mkt-desktop').textContent = selMkt;
+  document.getElementById('pc-mkt-txt').textContent = selMkt;
 
-  // Filter to selected market
-  const todayInMkt = today.filter(r => r.market === market);
-  const prevInMkt = prev.filter(r => r.market === market);
-  const todayBy = U.groupBy(todayInMkt, r => r.commodity);
-  const prevBy = U.groupBy(prevInMkt, r => r.commodity);
-
-  // Compute changes for the market
-  const changes = [];
-  for (const [name, rs] of todayBy) {
-    const agg = U.aggregateCommodity(rs);
-    const prevAgg = prevBy.has(name) ? U.aggregateCommodity(prevBy.get(name)) : null;
-    const d = U.delta(agg.mostly, prevAgg?.mostly);
-    changes.push({ name, cat: rs[0]?.commodity_type, today: agg, prev: prevAgg, pct: d.pct, dir: d.dir, rows: rs });
+  // ── COMMODITY LIST (across all markets, unique) ──
+  const commodityCatMap = new Map();
+  for (const r of today) {
+    if (!commodityCatMap.has(r.commodity)) commodityCatMap.set(r.commodity, { cat: r.commodity_type, lots: 0 });
+    commodityCatMap.get(r.commodity).lots++;
   }
+  const commodityList = [...commodityCatMap.entries()]
+    .map(([name, meta]) => ({ name, cat: meta.cat, lots: meta.lots }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  // ── AUTOCOMPLETE index (based on today's data) ──
-  // Build a searchable list: one entry per unique commodity+variety+origin+size+package combo
-  const searchIndex = [];
-  for (const r of todayInMkt) {
-    searchIndex.push({
-      commodity: r.commodity,
-      variety: r.variety || null,
-      origin: r.origin || null,
-      size: r.size || null,
-      package: r.package || null,
-      row: r,
-    });
-  }
-  // Also a commodity-level entry for each unique commodity
-  const commodityLevel = [];
-  for (const [name, rs] of todayBy) {
-    commodityLevel.push({
-      commodity: name,
-      variety: null, origin: null, size: null, package: null,
-      row: null,
-      agg: U.aggregateCommodity(rs),
-      commodityLevel: true,
-    });
-  }
+  // ── PRICE CHECK FORM ──
+  let selCom = null;
+  const comField = document.getElementById('pc-com-field');
+  const comCombo = document.getElementById('pc-com-combo');
+  const comInput = document.getElementById('pc-com-input');
+  const comList  = document.getElementById('pc-com-list');
+  const comVal   = document.getElementById('pc-com-val');
 
-  const input = document.getElementById('search-input');
-  const ac = document.getElementById('autocomplete');
-  let hoverIdx = -1;
-  let currentResults = [];
-
-  function searchQuery(q) {
-    const s = q.toLowerCase().trim();
-    if (!s) return [];
-    // Commodity-level matches first
-    const commodityMatches = commodityLevel
-      .filter(x => x.commodity.toLowerCase().includes(s))
-      .slice(0, 3);
-    // SKU-level matches
-    const skuMatches = searchIndex.filter(x => {
-      const hay = [x.commodity, x.variety, x.origin, x.size, x.package].filter(Boolean).join(' ').toLowerCase();
-      return hay.includes(s);
-    }).slice(0, 6);
-    return [...commodityMatches, ...skuMatches];
-  }
-
-  function renderAutocomplete(results) {
-    currentResults = results;
-    hoverIdx = results.length ? 0 : -1;
-    if (!results.length) {
-      ac.innerHTML = `<div class="ac-empty">No matches. Try a shorter query.</div>`;
-    } else {
-      ac.innerHTML = results.map((r, i) => {
-        let priceHtml = '', deltaHtml = '', specHtml = '';
-        if (r.commodityLevel) {
-          const price = r.agg.mostly ?? r.agg.low;
-          if (price != null) priceHtml = `<span class="ac-item__price">$${price.toFixed(2)}</span>`;
-          specHtml = `<span class="ac-item__spec">All varieties · ${market}</span>`;
-        } else {
-          const row = r.row;
-          const price = U.rowMostly(row);
-          if (price != null) priceHtml = `<span class="ac-item__price">$${price.toFixed(2)}</span>`;
-          const specParts = [r.variety, r.origin, r.size, r.package].filter(Boolean);
-          specHtml = `<span class="ac-item__spec">${specParts.join(' · ') || '—'}</span>`;
-        }
-        return `<a class="ac-item ${i === hoverIdx ? 'is-hover' : ''}" data-idx="${i}" href="${detailURLFor(r)}">
-          <div style="width:6px;height:6px;border-radius:50%;background:var(--pop);flex-shrink:0"></div>
-          <div style="flex:1;overflow:hidden">
-            <div class="ac-item__name">${escape(r.commodity)}</div>
-            ${specHtml}
-          </div>
-          ${priceHtml}
-        </a>`;
-      }).join('');
-    }
-    ac.classList.add('is-open');
-  }
-
-  function detailURLFor(r) {
-    return U.detailURL({
-      commodity: r.commodity,
-      variety: r.variety,
-      origin: r.origin,
-      size: r.size,
-      package: r.package,
-      market: r.commodityLevel ? market : market,
-    });
-  }
-
-  input.addEventListener('input', (e) => {
-    const q = e.target.value;
-    if (!q.trim()) {
-      ac.classList.remove('is-open');
+  function renderComList(filter = '') {
+    const f = filter.toLowerCase().trim();
+    const filtered = f ? commodityList.filter(c => c.name.toLowerCase().includes(f)) : commodityList;
+    if (!filtered.length) {
+      comList.innerHTML = `<div class="combo__empty">No matches.</div>`;
       return;
     }
-    renderAutocomplete(searchQuery(q));
-  });
-  input.addEventListener('focus', (e) => {
-    if (e.target.value.trim()) renderAutocomplete(searchQuery(e.target.value));
-  });
-  input.addEventListener('keydown', (e) => {
-    if (!currentResults.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      hoverIdx = (hoverIdx + 1) % currentResults.length;
-      updateHover();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      hoverIdx = (hoverIdx - 1 + currentResults.length) % currentResults.length;
-      updateHover();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const r = currentResults[hoverIdx] || currentResults[0];
-      if (r) {
-        savRecent(r);
-        window.location.href = detailURLFor(r);
-      }
-    } else if (e.key === 'Escape') {
-      ac.classList.remove('is-open');
+    comList.innerHTML = filtered.slice(0, 100).map(c => `
+      <div class="combo__item ${selCom === c.name ? 'is-selected' : ''}" data-name="${escape(c.name)}">
+        <span class="dot" style="background:${catColor(c.cat)}"></span>
+        <span>${escape(c.name)}</span>
+        <span class="combo__meta">${c.lots} lot${c.lots === 1 ? '' : 's'}</span>
+      </div>
+    `).join('');
+  }
+
+  comField.addEventListener('click', (e) => {
+    if (comCombo.contains(e.target)) return;
+    const isOpen = comCombo.classList.contains('is-open');
+    closeAllCombos();
+    if (!isOpen) {
+      comCombo.classList.add('is-open');
+      renderComList(comInput.value);
+      setTimeout(() => comInput.focus(), 10);
     }
   });
-  ac.addEventListener('mousedown', (e) => {
-    const item = e.target.closest('.ac-item');
+  comInput.addEventListener('input', () => renderComList(comInput.value));
+  comInput.addEventListener('click', (e) => e.stopPropagation());
+  comList.addEventListener('click', (e) => {
+    const item = e.target.closest('.combo__item');
     if (!item) return;
-    const r = currentResults[parseInt(item.dataset.idx, 10)];
-    if (r) savRecent(r);
-    // Let the anchor navigate
+    selCom = item.dataset.name;
+    comVal.innerHTML = `${escape(selCom)} <span class="chev">▾</span>`;
+    comVal.classList.remove('pc-field__val--muted');
+    comCombo.classList.remove('is-open');
+    updateCheckBtn();
   });
+
+  // Market picker
+  const mktField = document.getElementById('pc-mkt-field');
+  const mktCombo = document.getElementById('pc-mkt-combo');
+  const mktList  = document.getElementById('pc-mkt-list');
+  const mktTxt   = document.getElementById('pc-mkt-txt');
+
+  function renderMktList() {
+    mktList.innerHTML = availableMarkets.map(m => `
+      <div class="combo__item ${selMkt === m ? 'is-selected' : ''}" data-name="${escape(m)}">
+        <span class="dot"></span>
+        <span>${escape(m)}</span>
+      </div>
+    `).join('');
+  }
+  mktField.addEventListener('click', (e) => {
+    if (mktCombo.contains(e.target)) return;
+    const isOpen = mktCombo.classList.contains('is-open');
+    closeAllCombos();
+    if (!isOpen) { mktCombo.classList.add('is-open'); renderMktList(); }
+  });
+  mktList.addEventListener('click', (e) => {
+    const item = e.target.closest('.combo__item');
+    if (!item) return;
+    selMkt = item.dataset.name;
+    U.setSelMarket(selMkt);
+    mktTxt.textContent = selMkt;
+    document.getElementById('mkt-desktop').textContent = selMkt;
+    mktCombo.classList.remove('is-open');
+    updateCheckBtn();
+  });
+
+  function closeAllCombos() {
+    comCombo.classList.remove('is-open');
+    mktCombo.classList.remove('is-open');
+  }
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-box')) ac.classList.remove('is-open');
+    if (!e.target.closest('.pc-field')) closeAllCombos();
   });
-  function updateHover() {
-    ac.querySelectorAll('.ac-item').forEach((el, i) => el.classList.toggle('is-hover', i === hoverIdx));
+
+  // Check price button
+  const checkBtn = document.getElementById('pc-check');
+  function updateCheckBtn() {
+    checkBtn.disabled = !(selCom && selMkt);
   }
-  function savRecent(r) {
-    const rowMostly = r.commodityLevel ? r.agg?.mostly : (r.row ? U.rowMostly(r.row) : null);
-    pushRecent({
-      commodity: r.commodity,
-      variety: r.variety,
-      origin: r.origin,
-      size: r.size,
-      package: r.package,
-      market,
-      price: rowMostly,
-    });
+  checkBtn.addEventListener('click', () => {
+    if (!selCom || !selMkt) return;
+    // Save to recents
+    const rows = today.filter(r => r.market === selMkt && r.commodity === selCom);
+    const agg = rows.length ? U.aggregateCommodity(rows) : null;
+    pushRecent({ commodity: selCom, market: selMkt, price: agg?.mostly });
+    // Navigate to market detail scrolled to the commodity block
+    window.location.href = `/app/markets/city?m=${encodeURIComponent(selMkt)}#com-${U.slugify(selCom)}`;
+  });
+
+  // ── RECENTS ──
+  const recentWrap = document.getElementById('pc-recent-wrap');
+  const recentEl = document.getElementById('pc-recent');
+  const recents = getRecent();
+  if (recents.length) {
+    recentWrap.style.display = 'flex';
+    recentEl.innerHTML = recents.map(r => {
+      const url = `/app/markets/city?m=${encodeURIComponent(r.market)}#com-${U.slugify(r.commodity)}`;
+      return `<a class="recent-chip" href="${url}">${escape(r.commodity)} · ${escape(r.market)}${r.price != null ? `<span class="p">$${r.price.toFixed(2)}</span>` : ''}</a>`;
+    }).join('');
   }
 
-  // ── RECENT CHIPS ──
-  function renderRecents() {
-    const chips = document.getElementById('recent-chips');
-    const recent = getRecent();
-    if (!recent.length) {
-      // Auto-populate with top movers if empty
-      const auto = [...changes].filter(c => c.pct != null).sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct)).slice(0, 3);
-      chips.innerHTML = auto.map(c => {
-        const url = U.detailURL({ commodity: c.name, market });
-        const dCls = c.pct < 0 ? 'dn' : 'up';
-        const arrow = c.pct < 0 ? '▼' : '▲';
-        return `<a class="recent-chip" href="${url}">${escape(c.name)}<span class="p">$${(c.today.mostly ?? c.today.low ?? 0).toFixed(2)}</span><span class="d ${dCls}">${arrow}${Math.abs(c.pct).toFixed(1)}%</span></a>`;
-      }).join('');
-    } else {
-      chips.innerHTML = recent.map(r => {
-        const url = U.detailURL({
-          commodity: r.commodity, variety: r.variety, origin: r.origin, size: r.size, package: r.package, market: r.market,
-        });
-        const shortName = r.variety ? `${r.variety.split(/[ ,]/)[0]} ${r.commodity}` : r.commodity;
-        return `<a class="recent-chip" href="${url}">${escape(shortName)}${r.size ? ` ${escape(r.size)}` : ''}${r.price != null ? `<span class="p">$${r.price.toFixed(2)}</span>` : ''}</a>`;
-      }).join('');
-    }
+  // ── MOOD STRIP (national aggregate) ──
+  const allByCom = U.groupBy(today, r => r.commodity);
+  const prevAllByCom = U.groupBy(prev, r => r.commodity);
+  const nationalChanges = [];
+  for (const [name, rs] of allByCom) {
+    const prevRs = prevAllByCom.get(name) || [];
+    const agg = U.aggregateCommodity(rs);
+    const pAgg = prevRs.length ? U.aggregateCommodity(prevRs) : null;
+    const d = U.delta(agg.mostly, pAgg?.mostly);
+    nationalChanges.push({ name, cat: rs[0]?.commodity_type, today: agg, prev: pAgg, pct: d.pct, dir: d.dir });
   }
-  renderRecents();
-
-  // ── MOOD STRIP ──
-  const withChg = changes.filter(c => c.pct != null);
+  const withChg = nationalChanges.filter(c => c.pct != null);
   const down = withChg.filter(c => c.dir === 'down').length;
   const up = withChg.filter(c => c.dir === 'up').length;
   const avgChg = withChg.length ? withChg.reduce((s, c) => s + c.pct, 0) / withChg.length : null;
   const mood = U.moodFromAvgChg(avgChg);
-
   document.getElementById('k-down').textContent = down;
   document.getElementById('k-up').textContent = up;
-  document.getElementById('k-count').textContent = changes.length;
-  document.getElementById('mood-num').textContent = mood.score;
+  document.getElementById('k-count').textContent = allByCom.size;
+  document.getElementById('k-markets').textContent = availableMarkets.length;
   document.getElementById('mood-label').textContent = mood.label;
-  document.getElementById('mood-market').textContent = `${market} · ${fmtDate(latestDate)}`;
-  const circ = 2 * Math.PI * 13;
-  const fill = (mood.score / 100) * circ;
-  document.getElementById('mood-arc').setAttribute('stroke-dasharray', `${fill.toFixed(1)} ${(circ - fill).toFixed(1)}`);
+  document.getElementById('mood-date').textContent = `Updated ${fmtDate(latestDate)}`;
   document.getElementById('mood-strip').style.display = 'flex';
 
-  // ── WATCHLIST ──
+  // ── HUB CARDS ──
+  // Terminal Markets card: preview top 4 markets by lot count
+  const byMarket = U.groupBy(today, r => r.market);
+  const marketPreviews = ALL_MARKETS
+    .filter(m => byMarket.has(m))
+    .map(m => ({ market: m, lots: byMarket.get(m).length, coms: U.uniq(byMarket.get(m).map(r => r.commodity)).length }))
+    .sort((a, b) => b.lots - a.lots)
+    .slice(0, 4);
+  document.getElementById('hub-mkt-count').textContent = availableMarkets.length;
+  document.getElementById('hub-lots').textContent = today.length.toLocaleString();
+  document.getElementById('hub-mkt-body').innerHTML = marketPreviews.map(m => `
+    <div class="hub-row">
+      <span class="n">${escape(m.market)}</span>
+      <span class="meta">${m.lots} lots · ${m.coms} coms</span>
+    </div>
+  `).join('');
+
+  // Commodities card: biggest movers today (national)
+  const bigMovers = [...withChg]
+    .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
+    .slice(0, 5);
+  document.getElementById('hub-com-count').textContent = allByCom.size;
+  document.getElementById('hub-com-body').innerHTML = bigMovers.map(c => {
+    const cls = c.pct < 0 ? 'dn' : 'up';
+    const arrow = c.pct < 0 ? '▼' : '▲';
+    return `<div class="hub-row">
+      <span class="hub-row__star" style="color:${catColor(c.cat)}">●</span>
+      <span class="n">${escape(c.name)}</span>
+      <span class="d ${cls}">${arrow}${Math.abs(c.pct).toFixed(1)}%</span>
+    </div>`;
+  }).join('') || `<div class="hub-card__empty">No change data yet</div>`;
+
+  // Shipping points card (basic — just show it exists)
+  try {
+    const shpDates = await agraxAPI.reportShippingPoints(latestDate);
+    if (shpDates && shpDates.length) {
+      const origins = U.uniq(shpDates.map(r => r.origin)).slice(0, 4);
+      document.getElementById('hub-shp-body').innerHTML = origins.map(o => `
+        <div class="hub-row"><span class="n">${escape(o || '—')}</span></div>
+      `).join('') || `<div class="hub-card__empty">No shipping data today</div>`;
+    } else {
+      document.getElementById('hub-shp-body').innerHTML = `<div class="hub-card__empty">No shipping data today</div>`;
+    }
+  } catch {
+    document.getElementById('hub-shp-body').innerHTML = `<div class="hub-card__empty">FOB pricing from Fresno, Nogales, Orlando &amp; more</div>`;
+  }
+
+  // Watchlist card
   const watch = U.watchList();
-  document.getElementById('wl-count').textContent = `${watch.length} item${watch.length === 1 ? '' : 's'} · ${market}`;
-  const wlBody = document.getElementById('wl-body');
+  document.getElementById('hub-wl-meta').textContent = watch.length ? `${watch.length} item${watch.length === 1 ? '' : 's'} tracked` : 'Star items to track them';
+  const wlBody = document.getElementById('hub-wl-body');
   if (!watch.length) {
-    wlBody.innerHTML = `<div class="wl-empty">
-      No commodities watched yet. <a href="/app/markets">Browse markets →</a>
+    wlBody.innerHTML = `<div class="hub-card__empty">
+      No watchlist yet.<br>Star commodities from the market read to track them.
     </div>`;
   } else {
-    const rows = watch.slice(0, 6).map(name => {
-      const c = changes.find(x => x.name === name);
-      if (!c) {
-        return `<div class="wl-row" style="opacity:0.6">
-          <span class="wl-row__star">★</span>
-          <div class="wl-row__name"><b>${escape(name)}</b><div class="wl-row__spec">No data in ${escape(market)}</div></div>
-        </div>`;
-      }
-      const chg = U.fmtDelta(c.pct);
-      const cls = chg.dir === 'down' ? 'dn' : chg.dir === 'up' ? 'up' : 'fl';
-      const url = U.detailURL({ commodity: name, market });
-      return `<a href="${url}" class="wl-row">
-        <span class="wl-row__star">★</span>
-        <div class="wl-row__name"><b>${escape(name)}</b><div class="wl-row__spec">${escape(c.today.packs[0] || '')}</div></div>
-        <span class="wl-row__price">${U.fmtPrice(c.today.mostly)}</span>
-        <span class="wl-row__delta ${cls}">${chg.text}</span>
-      </a>`;
+    wlBody.innerHTML = watch.slice(0, 5).map(name => {
+      const c = nationalChanges.find(x => x.name === name);
+      const cls = c?.pct == null ? 'fl' : (c.pct < 0 ? 'dn' : 'up');
+      const arrow = c?.pct == null ? '—' : (c.pct < 0 ? '▼' : '▲');
+      const priceHtml = c?.today?.mostly != null ? `<span class="p">$${c.today.mostly.toFixed(2)}</span>` : '';
+      const dHtml = c?.pct != null ? `<span class="d ${cls}">${arrow}${Math.abs(c.pct).toFixed(1)}%</span>` : '';
+      return `<div class="hub-row">
+        <span class="hub-row__star">★</span>
+        <span class="n">${escape(name)}</span>
+        ${priceHtml}
+        ${dHtml}
+      </div>`;
     }).join('');
-    wlBody.innerHTML = rows;
   }
 
-  // ── BEST BUY (biggest drop) ──
-  const sorted = [...withChg].sort((a, b) => a.pct - b.pct);
-  const biggestDrop = sorted[0];
-  if (biggestDrop && biggestDrop.pct < -1) {
-    document.getElementById('best-name').textContent = biggestDrop.name;
-    document.getElementById('best-price').textContent = U.fmtPrice(biggestDrop.today.mostly);
-    document.getElementById('best-delta').textContent = ' ' + U.fmtDelta(biggestDrop.pct).text;
-    document.getElementById('best-sub').textContent = biggestDrop.prev
-      ? `vs ${U.fmtPrice(biggestDrop.prev.mostly)} yesterday · ${market}`
-      : `in ${market}`;
-    const cta = document.getElementById('best-cta');
-    cta.href = U.detailURL({ commodity: biggestDrop.name, market });
-    cta.style.display = 'inline-block';
-  } else {
-    document.getElementById('best-name').textContent = 'Steady across the board';
-    document.getElementById('best-price').textContent = '—';
-    document.getElementById('best-sub').textContent = `No standout drops in ${market} today.`;
-  }
-
-  // ── ALERTS ──
+  // Alerts card
   const triggered = watch
-    .map(name => changes.find(c => c.name === name))
+    .map(name => nationalChanges.find(c => c.name === name))
     .filter(c => c && c.pct != null && Math.abs(c.pct) > 5);
-  document.getElementById('alerts-meta').textContent = `${triggered.length} today`;
-  const alertsBody = document.getElementById('alerts-body');
+  document.getElementById('hub-alerts-meta').textContent = triggered.length ? `${triggered.length} firing today` : 'No alerts firing';
+  const aBody = document.getElementById('hub-alerts-body');
   if (!triggered.length) {
-    alertsBody.innerHTML = `<div class="alert-empty">No alerts firing.<br>Watched items with >5% moves show up here.</div>`;
+    aBody.innerHTML = `<div class="hub-card__empty">Watched items with &gt;5% moves show up here.</div>`;
   } else {
-    alertsBody.innerHTML = triggered.slice(0, 4).map(c => {
+    aBody.innerHTML = triggered.slice(0, 4).map(c => {
       const isDrop = c.pct < 0;
-      const url = U.detailURL({ commodity: c.name, market });
-      return `<a href="${url}" class="alert-row" style="text-decoration:none;color:inherit">
-        <span class="alert-row__icn ${isDrop ? 'pos' : 'neg'}">!</span>
-        <div class="alert-row__body"><b>${escape(c.name)}</b> ${isDrop ? 'dropped' : 'rose'} ${Math.abs(c.pct).toFixed(0)}% in ${escape(market)}</div>
-      </a>`;
+      return `<div class="hub-row">
+        <span class="hub-row__star" style="color:${isDrop ? 'var(--pop)' : 'var(--up)'}">!</span>
+        <span class="n">${escape(c.name)}</span>
+        <span class="d ${isDrop ? 'dn' : 'up'}">${isDrop ? '▼' : '▲'}${Math.abs(c.pct).toFixed(0)}%</span>
+      </div>`;
     }).join('');
   }
 
-  // Focus search input on desktop after load
-  if (window.matchMedia('(min-width: 900px)').matches) {
-    setTimeout(() => input.focus(), 100);
+  function catColor(cat) {
+    return cat === 'vegetables' ? 'var(--pop)' :
+           cat === 'fruits' ? '#B91C1C' :
+           cat === 'onions_potatoes' ? '#B87A0B' :
+           cat === 'nuts' ? '#7d5a3a' :
+           'var(--muted)';
   }
-
   function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function fmtDateLong(iso) { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
   function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }

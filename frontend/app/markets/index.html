@@ -36,19 +36,22 @@
   gap: var(--sp-4);
 }
 @media(min-width: 640px){ .mgrid { grid-template-columns: 1fr 1fr; } }
+@media(min-width: 1100px){ .mgrid { grid-template-columns: 1fr 1fr 1fr; } }
 
 .mcard {
   background: var(--card);
   border: 0.5px solid var(--line);
   border-radius: var(--r-card);
-  padding: var(--sp-6) var(--sp-7);
+  padding: var(--sp-5) var(--sp-6);
   cursor: pointer;
   transition: border-color .15s, transform .15s;
   position: relative;
   overflow: hidden;
   color: inherit;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 190px;
 }
 .mcard:hover { border-color: var(--pop-border); transform: translateY(-1px); }
 .mcard--feat {
@@ -59,24 +62,24 @@
   content: '';
   position: absolute;
   top: -30px; right: -30px;
-  width: 120px; height: 120px;
+  width: 100px; height: 100px;
   border-radius: 50%;
   background: var(--glow-corner-soft);
   pointer-events: none;
 }
 .mcard > * { position: relative; }
-.mcard__top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.mcard__pin { width: 8px; height: 8px; border-radius: 50%; background: var(--pop); box-shadow: 0 0 6px var(--pop); flex-shrink: 0; }
-.mcard__city { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
-.mcard__code { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-left: 4px; }
+.mcard__top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+.mcard__pin { width: 7px; height: 7px; border-radius: 50%; background: var(--pop); box-shadow: 0 0 6px var(--pop); flex-shrink: 0; }
+.mcard__city { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
+.mcard__code { font-family: var(--font-mono); font-size: 9.5px; color: var(--muted); }
 .mcard__mood {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
+  gap: 3px;
+  padding: 2px 7px;
   border-radius: var(--r-pill);
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -87,46 +90,46 @@
 .mcard__mood.st { background: var(--fill); color: var(--muted); }
 
 .mcard__meta {
-  display: flex; align-items: center; gap: var(--sp-5);
-  font-size: 11px;
+  display: flex; align-items: center; gap: var(--sp-4);
+  font-size: 10.5px;
   color: var(--muted);
-  margin-bottom: var(--sp-5);
+  margin-bottom: var(--sp-4);
   flex-wrap: wrap;
 }
 .mcard__meta b { color: var(--sub); font-weight: 500; }
 
 .mcard__movers-lbl {
-  font-size: 9.5px;
+  font-size: 9px;
   color: var(--muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
-  margin-bottom: var(--sp-3);
+  margin-bottom: var(--sp-2);
 }
-.mcard__movers { display: flex; flex-wrap: wrap; gap: 5px; }
+.mcard__movers { display: flex; flex-wrap: wrap; gap: 4px; }
 .mover-chip {
-  font-size: 11px;
-  padding: 3px 8px;
+  font-size: 10.5px;
+  padding: 2px 7px;
   border-radius: var(--r-pill);
   background: var(--fill);
   color: var(--sub);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   max-width: 100%;
 }
-.mover-chip .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; }
-.mover-chip .p { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
-.mover-chip .d { font-family: var(--font-mono); font-size: 10px; font-weight: 600; }
+.mover-chip .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80px; }
+.mover-chip .p { font-family: var(--font-mono); font-weight: 600; color: var(--ink); font-size: 10px; }
+.mover-chip .d { font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; }
 .mover-chip .d.dn { color: var(--pop); }
 .mover-chip .d.up { color: var(--up); }
 
 .mcard__foot {
   display: flex; align-items: center;
-  margin-top: var(--sp-5);
+  margin-top: auto;
   padding-top: var(--sp-4);
   border-top: 0.5px solid var(--line-softer);
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--sub);
 }
 .mcard__cta { margin-left: auto; color: var(--pop); font-weight: 500; }
@@ -264,12 +267,12 @@
   document.getElementById('side-slot').outerHTML = shell.side;
   document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
 
-  // Region mapping
+  // Region mapping — the 12 USDA terminal markets
   const REGIONS = [
     { name: 'Northeast', markets: ['New York', 'Boston', 'Philadelphia', 'Baltimore'] },
     { name: 'Midwest',   markets: ['Chicago', 'Detroit'] },
     { name: 'Southeast', markets: ['Atlanta', 'Miami', 'Raleigh', 'Columbia', 'Asheville'] },
-    { name: 'West',      markets: ['Los Angeles', 'San Francisco', 'Dallas'] },
+    { name: 'West',      markets: ['Los Angeles'] },
   ];
   // Fallback: any market not in a region goes to "Other markets"
 
@@ -315,7 +318,7 @@
     const mood = U.moodFromAvgChg(avgChg);
     const movers = [...withChg]
       .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
-      .slice(0, 4);
+      .slice(0, 3);
     marketData.set(market, {
       commodityCount: byCom.size,
       lotCount: rows.length,
