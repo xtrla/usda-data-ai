@@ -558,6 +558,21 @@ def normalize_trading(trading_val) -> str | None:
 
 # ── Origin normalizer ────────────────────────────────────────────────────────
 # Shipping point reports return verbose district names — normalize to clean form.
+
+def _first_real(*vals):
+    """Return the first value that's non-empty and not 'N/A'.
+    Critical because MARS populates unused fields with the literal string 'N/A'
+    (which Python's `or` treats as truthy, causing us to prefer garbage over real data).
+    """
+    for v in vals:
+        if v is None:
+            continue
+        s = str(v).strip()
+        if s and s.upper() != "N/A":
+            return s
+    return None
+
+
 ORIGIN_MAP = {
     "mexico crossings through nogales arizona": "Nogales, AZ",
     "south and central california and mexico crossings through southern california and san luis arizona": "Southern CA / San Luis, AZ",
@@ -708,9 +723,14 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "market_type":        report_meta["market_type"],
         "commodity":          normalize_commodity(commodity),
         "variety":            variety_raw[:100] or None,
-        # For shipping point reports, district contains the verbose region name (preferred)
-        # origin may contain a short country name — use district first if available
-        "origin":             normalize_origin(raw.get("district") or raw.get("origin") or raw.get("reporting_city") or ""),
+        # For shipping-point reports, district contains the verbose region name (preferred).
+        # For terminal reports, district is often "N/A" and origin holds the real value.
+        # _first_real() skips "N/A" and empty strings so we correctly fall through.
+        "origin":             normalize_origin(_first_real(
+                                  raw.get("district"),
+                                  raw.get("origin"),
+                                  raw.get("reporting_city"),
+                              ) or ""),
         "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
         "grade":              extract_grade(grade_text) or grade_field.title() or None,
