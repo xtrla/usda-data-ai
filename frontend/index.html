@@ -50,6 +50,11 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
   color: #fff;
   text-decoration: none;
 }
+.nav__logo-img {
+  height: 30px;
+  width: auto;
+  display: block;
+}
 .nav__mark {
   width: 26px; height: 26px;
   border-radius: 7px;
@@ -488,7 +493,9 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
   border: 0.5px solid #E7E7E4;
   box-shadow: 0 20px 60px rgba(10,15,5,.08);
   overflow: hidden;
+  min-width: 0;
 }
+.mock-tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .mock-inner { background: linear-gradient(135deg, #fff, #F6FAF2); }
 .mock-header { padding: 18px 22px 14px; display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
 .mock-tag {
@@ -617,6 +624,197 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
 .aud-title { font-size: 14.5px; font-weight: 600; }
 .aud-desc { font-size: 12.5px; color: #4a5045; margin-top: 6px; line-height: 1.55; }
 
+/* ═════════ PRICE POINTS ═════════ */
+.pp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.pp-card {
+  background: #fff;
+  border: 0.5px solid #E7E7E4;
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+.pp-card__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #15A24A;
+}
+.pp-card__icon { font-size: 14px; }
+.pp-card__title { font-size: 19px; font-weight: 600; margin-top: 12px; letter-spacing: -0.02em; }
+.pp-card__desc { font-size: 13px; color: #4a5045; margin-top: 8px; line-height: 1.6; flex: 1; }
+.pp-card__stat {
+  border-top: 0.5px solid #EFEFEC;
+  margin-top: 18px;
+  padding-top: 16px;
+}
+.pp-card__price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 600;
+  color: #0A0B0A;
+}
+.pp-card__price small { font-size: 13px; font-weight: 500; color: #8b8f80; font-family: 'JetBrains Mono', monospace; }
+.pp-card__meta { font-size: 11.5px; color: #8b8f80; margin-top: 4px; }
+
+/* ═════════ THE SPREAD ═════════ */
+.spread-hero {
+  background: linear-gradient(160deg, #0A0B0A, #132817);
+  border-radius: 20px;
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.spread-hero__dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: .5;
+  pointer-events: none;
+}
+.spread-hero__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+  align-items: center;
+}
+.spread-hero__copy { color: #fff; }
+.spread-hero__eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7ED957;
+}
+.spread-hero__title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 12px 0 0;
+  color: #fff;
+  text-transform: uppercase;
+}
+.spread-hero__sub {
+  font-size: 13.5px;
+  color: #c7cbbe;
+  margin-top: 14px;
+  line-height: 1.65;
+  max-width: 440px;
+}
+.spread-hero__list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.spread-hero__list li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: #e8e8e2;
+}
+.spread-hero__list li span { color: #7ED957; }
+
+.spread-panel {
+  background: rgba(255,255,255,.03);
+  border: 0.5px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  padding: 22px;
+}
+.spread-panel__code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #8b9082;
+  letter-spacing: 0.04em;
+}
+.spread-row { margin-top: 18px; }
+.spread-row__lbl {
+  font-size: 11px;
+  color: #8b9082;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.spread-row__body {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.spread-row__name { font-size: 13.5px; color: #e8e8e2; }
+.spread-row__val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+.spread-row__bar {
+  height: 2px;
+  background: rgba(255,255,255,.05);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.spread-row__fill { height: 100%; border-radius: 2px; }
+.spread-row__fill--fob { background: #7ED957; }
+.spread-row__fill--terminal { background: #4a90e2; }
+
+.spread-summary {
+  margin-top: 20px;
+  background: rgba(21,162,74,.10);
+  border: 0.5px solid rgba(126,217,87,.25);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.spread-summary__lbl {
+  font-size: 11px;
+  color: #a8e0a0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.spread-summary__right { text-align: right; }
+.spread-summary__amt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #7ED957;
+}
+.spread-summary__unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #a8e0a0;
+  margin-left: 6px;
+}
+.spread-summary__pct { font-size: 11px; color: #8b9082; margin-top: 2px; }
+
+@media (max-width: 640px) {
+  .spread-hero { padding: 32px 22px; }
+  .spread-hero__title { font-size: 22px; }
+  .spread-panel { padding: 18px 16px; }
+  .pp-card__price { font-size: 22px; }
+}
+
 /* ═════════ PRICING ═════════ */
 .pricing {
   background: #fff;
@@ -731,6 +929,7 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
   flex-wrap: wrap;
 }
 .footer__logo { display: flex; align-items: center; gap: 8px; }
+.footer__logo-img { height: 20px; width: auto; display: block; }
 .footer__mark { width: 20px; height: 20px; border-radius: 6px; background: #0A0B0A; display: flex; align-items: center; justify-content: center; }
 .footer__mark span { width: 7px; height: 7px; border-radius: 50%; background: #15A24A; display: block; }
 .footer__word { font-size: 13px; font-weight: 600; letter-spacing: -0.03em; }
@@ -742,7 +941,16 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
   .final-cta__title { font-size: 22px; }
   .section__title { font-size: 24px; }
   .showcase__title, .pricing__title { font-size: 22px; }
-  .mock-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .mock-kpi-grid { grid-template-columns: repeat(2, 1fr); padding: 12px 16px; gap: 6px; }
+  .mock-kpi__val { font-size: 14px; }
+  .mock-header { padding: 14px 16px 10px; }
+  .mock-title { font-size: 18px; }
+  .mock-chips { padding: 8px 16px; gap: 4px; }
+  .mock-chip { font-size: 10.5px; padding: 4px 9px; }
+  .mock-tbl th, .mock-tbl td { padding: 8px 12px !important; font-size: 11.5px; }
+  .nav__logo-img { height: 26px; }
+  .hero__grid { padding: 40px 20px 32px; }
+  .pc-body { padding: 18px; }
 }
 </style>
 </head>
@@ -754,8 +962,7 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
 <nav class="nav">
   <div class="nav__row">
     <a class="nav__logo" href="/">
-      <span class="nav__mark"><span></span></span>
-      <span class="nav__word">agraX</span>
+      <img src="/assets/agrax-logo-white.png" alt="agraX" class="nav__logo-img" />
     </a>
     <div class="nav__links">
       <a href="#features">Product</a>
@@ -976,6 +1183,7 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
             <span class="mock-chip">2-layer 70s</span>
             <span class="mock-chip">Organic</span>
           </div>
+          <div class="mock-tbl-wrap">
           <table class="mock-tbl">
             <thead><tr><th>Market</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly ▲</th><th class="r">Chg</th></tr></thead>
             <tbody>
@@ -985,6 +1193,7 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
               <tr><td><span class="pin"></span>Atlanta</td><td class="r">38.00</td><td class="r">42.00</td><td class="r">40.00</td><td class="r color-up">+2.5%</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1044,6 +1253,99 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
         <div class="aud-body">
           <div class="aud-title">Growers &amp; shippers</div>
           <div class="aud-desc">See what terminals are paying against your FOB — in real time.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ -->
+<!-- PRICE POINTS                                                       -->
+<!-- ═════════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section__hd">
+    <div class="section__eyebrow">Three numbers, one commodity</div>
+    <h2 class="section__title">From the field to the terminal — every price along the way.</h2>
+  </div>
+
+  <div class="pp-grid">
+    <div class="pp-card">
+      <div class="pp-card__label"><span class="pp-card__icon">📍</span>FOB · Shipping point</div>
+      <div class="pp-card__title">Farm-Gate Price</div>
+      <div class="pp-card__desc">The price at the growing region — Salinas, Vidalia, Watsonville — before freight. What a buyer pays at source, before trucking and handling.</div>
+      <div class="pp-card__stat">
+        <div class="pp-card__price">$18.40<small>/flat</small></div>
+        <div class="pp-card__meta">Strawberries · Watsonville, CA</div>
+      </div>
+    </div>
+
+    <div class="pp-card">
+      <div class="pp-card__label"><span class="pp-card__icon">🌐</span>Terminal market · Delivered</div>
+      <div class="pp-card__title">City-Hub Price</div>
+      <div class="pp-card__desc">The price once produce has arrived at a major wholesale hub — Hunts Point, Chicago Terminal, LA's 7th Street. Includes freight, cooling, and handling margin.</div>
+      <div class="pp-card__stat">
+        <div class="pp-card__price">$24.80<small>/flat</small></div>
+        <div class="pp-card__meta">Strawberries · NY – Hunts Point</div>
+      </div>
+    </div>
+
+    <div class="pp-card">
+      <div class="pp-card__label"><span class="pp-card__icon">📈</span>Movement · WA_FV175</div>
+      <div class="pp-card__title">National Volume</div>
+      <div class="pp-card__desc">Pounds shipped nationwide, broken out by transport mode and region. Volume explains price — a surge signals heavy supply; thin movement signals tightness.</div>
+      <div class="pp-card__stat">
+        <div class="pp-card__price">1.25M<small> lbs</small></div>
+        <div class="pp-card__meta">Strawberries · Jul 7, 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ -->
+<!-- THE SPREAD                                                         -->
+<!-- ═════════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="spread-hero">
+    <div class="spread-hero__dots"></div>
+    <div class="spread-hero__grid">
+      <div class="spread-hero__copy">
+        <div class="spread-hero__eyebrow">The spread</div>
+        <h2 class="spread-hero__title">What it costs to move produce.</h2>
+        <p class="spread-hero__sub">The gap between the FOB price and the terminal price is the cost of the supply chain. agraX shows that spread in one number, updated daily.</p>
+        <ul class="spread-hero__list">
+          <li><span>✓</span>Spread tracked over 7 and 30 days</li>
+          <li><span>✓</span>Historical spread percentiles by commodity</li>
+          <li><span>✓</span>Alerts when spreads widen abnormally</li>
+        </ul>
+      </div>
+
+      <div class="spread-panel">
+        <div class="spread-panel__code">STRAWBERRIES · JUL 7, 2026</div>
+
+        <div class="spread-row">
+          <div class="spread-row__lbl">Shipping point</div>
+          <div class="spread-row__body">
+            <span class="spread-row__name">Watsonville, CA (FOB)</span>
+            <span class="spread-row__val">$18.40</span>
+          </div>
+          <div class="spread-row__bar"><div class="spread-row__fill spread-row__fill--fob" style="width:74%"></div></div>
+        </div>
+
+        <div class="spread-row">
+          <div class="spread-row__lbl">Terminal market</div>
+          <div class="spread-row__body">
+            <span class="spread-row__name">NY – Hunts Point</span>
+            <span class="spread-row__val">$24.80</span>
+          </div>
+          <div class="spread-row__bar"><div class="spread-row__fill spread-row__fill--terminal" style="width:100%"></div></div>
+        </div>
+
+        <div class="spread-summary">
+          <div class="spread-summary__lbl">Spread</div>
+          <div class="spread-summary__right">
+            <div><span class="spread-summary__amt">$6.40</span><span class="spread-summary__unit">/flat</span></div>
+            <div class="spread-summary__pct">+34.8% above FOB</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1120,8 +1422,7 @@ select.agx-select { appearance: none; -webkit-appearance: none; background-repea
 <footer class="footer">
   <div class="footer__inner">
     <div class="footer__logo">
-      <span class="footer__mark"><span></span></span>
-      <span class="footer__word">agraX</span>
+      <img src="/assets/agrax-logo-black.png" alt="agraX" class="footer__logo-img" />
     </div>
     <div class="footer__copy">© 2026 agraX. Wholesale produce data, every morning.</div>
   </div>
