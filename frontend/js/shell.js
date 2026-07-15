@@ -40,18 +40,16 @@ const Shell = {
     return {
       mtop: `
         <div class="mtop">
-          <div class="mtop__logo-mark"><span></span></div>
-          <div class="mtop__word">agraX</div>
+          <a href="/" class="mtop__logo-link"><img src="/assets/agrax-logo-white.png" alt="agraX" class="mtop__logo-img" /></a>
           <div class="mtop__btn mtop__btn--bell" role="button" aria-label="Notifications">🔔</div>
           <div class="mtop__btn mtop__btn--last" role="button" aria-label="Menu">☰</div>
         </div>
       `,
       side: `
         <aside class="side">
-          <div class="side__logo">
-            <div class="side__logo-mark"><span></span></div>
-            <div class="side__word">agraX</div>
-          </div>
+          <a href="/" class="side__logo">
+            <img src="/assets/agrax-logo-white.png" alt="agraX" class="side__logo-img" />
+          </a>
           <div class="side__section">Workspace</div>
           ${NAV.map(i => _navItem(i, active)).join('')}
           <div class="side__section">Insights</div>
