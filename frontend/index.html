@@ -279,7 +279,7 @@
 (async function() {
   const U = window.agraxUtil;
   const api = window.agraxAPI;
-  const esc = (s) => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc = (s) => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
   const UP = '#16A34A', DOWN = '#DC2626';
   const MARKETS = ['Los Angeles, CA','Dallas, TX','San Francisco, CA','Miami, FL','Atlanta, GA','Seattle, WA','Chicago, IL','Detroit, MI','Philadelphia, PA','Baltimore, MD','New York, NY','Boston, MA'];
   const POPULAR = ['Avocados','Romaine','Yellow onions','Roma tomatoes','Blueberries','Pecans'];
