@@ -380,3 +380,17 @@
     min-width: 0 !important;
   }
 }
+
+@media (max-width: 979px) {
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .detail-grid aside {
+    position: relative !important;
+    top: auto !important;
+  }
+  #d-stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}

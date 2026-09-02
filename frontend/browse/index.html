@@ -701,7 +701,7 @@
         html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
         html += '<span class="eyebrow" style="flex:none">Movement</span>';
         html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
-        html += '<a href="/app/commodity?c=' + encodeURIComponent(d.name) + '&market=' + encodeURIComponent(marketShort(currentMarket)) + '" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
         html += '</div></div>';
       }
 
@@ -732,11 +732,15 @@
     renderAll();
   };
 
-  // Select a SKU → show dossier in right panel
+  // Select a SKU → show dossier in right panel (desktop) or navigate (mobile)
   window._selectSku = function(comName, skuIdx) {
+    // On mobile, navigate to the standalone detail page
+    if (window.innerWidth < 980) {
+      window.location.href = '/app/commodity?c=' + encodeURIComponent(comName) + '&market=' + encodeURIComponent(marketShort(currentMarket));
+      return;
+    }
     var newId = comName + '::' + skuIdx;
     if (selectedSku === newId) {
-      // Deselect
       selectedSku = null;
       selectedComName = null;
     } else {
