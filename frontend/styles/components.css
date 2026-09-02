@@ -175,3 +175,183 @@
 @media (min-width: 980px) {
   .mobile-only { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 979px) {
+  /* Browse: collapse 3-col to single column */
+  #main-grid {
+    grid-template-columns: 1fr !important;
+    padding: 12px 12px 20px !important;
+  }
+  #sidebar {
+    position: relative !important;
+    top: auto !important;
+    max-height: none !important;
+    display: none;
+  }
+  #sidebar.is-open {
+    display: block;
+  }
+  #right-panel {
+    display: none !important;
+  }
+  /* Browse: simplify table to 3 columns on mobile */
+  .col-headers {
+    grid-template-columns: 1fr 80px 80px !important;
+  }
+  .desk-col {
+    display: none !important;
+  }
+  .com-row {
+    grid-template-columns: 1fr 80px 80px !important;
+    min-width: 0 !important;
+  }
+  .desk-col-js {
+    display: none !important;
+  }
+  /* Browse: toolbar */
+  #toolbar {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  /* Homepage: stack hero */
+  .hero-flex {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+  .hero-flex > *:first-child {
+    min-width: 0 !important;
+  }
+  .hero-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Homepage: stack board + sidebar */
+  #board-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Homepage: What AgraX covers → stack */
+  .covers-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Homepage: trust bar → stack */
+  .trust-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Homepage: category cards */
+  .cat-cards-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Newsletter: stack */
+  .newsletter-flex {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .newsletter-flex > *:last-child {
+    width: 100% !important;
+  }
+
+  /* Header: hide search and secondary nav */
+  .header-search-desk {
+    display: none !important;
+  }
+  .header-nav-desk {
+    display: none !important;
+  }
+  .header-mobile-menu {
+    display: flex !important;
+  }
+
+  /* Footer: stack columns */
+  .footer-grid {
+    flex-direction: column !important;
+    gap: 28px !important;
+  }
+
+  /* About page: stack */
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Market strip: smaller chips */
+  #market-strip-wrap,
+  [id="home-market-strip"] {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Bottom nav for mobile */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow-bottom-nav);
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+}
+@media (max-width: 979px) {
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  body {
+    padding-bottom: 64px;
+  }
+}
+.mobile-bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-bottom-nav__item.is-active {
+  color: var(--accent);
+}
+
+@media (max-width: 979px) {
+  /* SKU expanded rows: 3-col on mobile */
+  [style*="grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr"] {
+    grid-template-columns: 1fr 0.6fr 0.8fr !important;
+    min-width: 0 !important;
+  }
+  /* Hide grade, pack columns on mobile expanded SKU view */
+  [style*="grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr"] > :nth-child(2),
+  [style*="grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr"] > :nth-child(3),
+  [style*="grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr"] > :nth-child(4) {
+    display: none !important;
+  }
+  /* Sponsored row: stack on mobile */
+  [style*="min-width:660px"][href] {
+    min-width: 0 !important;
+    flex-wrap: wrap !important;
+  }
+  /* Market strip chips smaller */
+  [style*="min-width:132px"] {
+    min-width: 110px !important;
+  }
+  /* Hero min-width remove */
+  [style*="min-width:420px"] {
+    min-width: 0 !important;
+  }
+}
