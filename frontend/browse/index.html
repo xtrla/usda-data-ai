@@ -62,6 +62,11 @@
       <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Shipping point</div>
       <div id="origin-list" style="padding:10px 0;display:flex;flex-direction:column;gap:9px"></div>
     </div>
+    <!-- Country of Origin -->
+    <div style="margin-top:20px">
+      <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Country / Origin</div>
+      <div id="country-list" style="padding:10px 0;display:flex;flex-direction:column;gap:9px"></div>
+    </div>
     <!-- Watchlist -->
     <div style="margin-top:20px">
       <div style="display:flex;align-items:center;gap:8px;padding-bottom:9px;border-bottom:1px solid var(--border)">
@@ -117,6 +122,7 @@
       <div id="sum-ship"></div>
       <p style="margin:16px 0 0;font-size:12px;line-height:1.65;color:var(--text-dim)">Open any commodity for its prices, shipping-point FOB, weekly movement and all 12 terminal markets — without leaving this page.</p>
     </div>
+    <div style="display:none" id="dossier-panel"></div>
   </aside>
 </div>
 
@@ -170,9 +176,12 @@
   let expanded = {};        // which commodity rows are open
   let catOpen = {};          // which sidebar category accordions are open
   let checkedComs = {};      // which commodity checkboxes are ticked
-  let checkedOrigins = {};   // which origin checkboxes are ticked
+  let checkedOrigins = {};   // which shipping point checkboxes are ticked
+  let checkedCountries = {}; // which country/origin checkboxes are ticked
   let sortMode = 'az';
   let searchQ = '';
+  let selectedSku = null;     // 'CommodityName::skuIdx' or null
+  let selectedComName = null;  // commodity name of selected SKU
 
   const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
   const marketFull = (m) => {
@@ -269,8 +278,8 @@
     var allByCom = U.groupBy(allRows, function(r) { return r.commodity; });
     allByCom.forEach(function(rows, name) { checkedComs[name] = true; });
 
-    // Open Fruits by default
-    catOpen['Fruits'] = true;
+    // Open nothing by default — all collapsed
+    catOpen = {};
 
     renderAll();
     renderSummary();
@@ -394,6 +403,25 @@
     });
     document.getElementById('origin-list').innerHTML = originHtml;
 
+    // Country of Origin checkboxes — pulled from commodity row origins
+    var countryCounts = {};
+    marketRows.forEach(function(r) {
+      var o = r.origin;
+      if (!o) return;
+      countryCounts[o] = (countryCounts[o] || 0) + 1;
+    });
+    var countryHtml = '';
+    Object.entries(countryCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(pair) {
+      var name = pair[0], count = pair[1];
+      var checked = !!checkedCountries[name];
+      countryHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
+      countryHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCountry(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+      countryHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</span>';
+      countryHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + count + '</span>';
+      countryHtml += '</label>';
+    });
+    document.getElementById('country-list').innerHTML = countryHtml;
+
     // Watchlist
     var wl = U.watchList();
     document.getElementById('watch-count').textContent = wl.length;
@@ -434,6 +462,7 @@
   };
   window._toggleCheckCom = function(name) { checkedComs[name] = !checkedComs[name]; renderAll(); };
   window._toggleCheckOrigin = function(name) { checkedOrigins[name] = !checkedOrigins[name]; renderAll(); };
+  window._toggleCheckCountry = function(name) { checkedCountries[name] = !checkedCountries[name]; renderAll(); };
   window._toggleCom = function(name) { expanded[name] = !expanded[name]; renderAll(); };
 
   // ── TABLE ──
@@ -461,6 +490,7 @@
     // Active filters
     var activeComs = Object.keys(checkedComs).filter(function(k) { return checkedComs[k]; });
     var activeOrigins = Object.keys(checkedOrigins).filter(function(k) { return checkedOrigins[k]; });
+    var activeCountries = Object.keys(checkedCountries).filter(function(k) { return checkedCountries[k]; });
 
     // Build commodity list
     var comList = [];
@@ -479,6 +509,14 @@
           return allOrigins.some(function(ao) { return ao && ao.indexOf(o.split(',')[0]) > -1; });
         });
         if (!hasMatch) return;
+      }
+      // Country of origin filter
+      if (activeCountries.length) {
+        var rowOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var countryMatch = activeCountries.some(function(c) {
+          return rowOrigins.some(function(ro) { return ro === c; });
+        });
+        if (!countryMatch) return;
       }
 
       var origins = U.uniq(rows.map(function(r) { return r.origin; }).filter(Boolean));
@@ -558,13 +596,15 @@
         html += '</div>';
 
         var sorted = d.rows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
-        sorted.forEach(function(row) {
+        sorted.forEach(function(row, skuIdx) {
           var sp = skuPrice(row);
           var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
           var sub = sp.src === 'mid' && sp.range ? sp.range : '';
+          var skuId = esc(d.name) + '::' + skuIdx;
+          var isSelected = selectedSku === skuId;
 
-          html += '<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px">';
-          html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.variety || '\u2014') + '</span>';
+          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
+          html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (isSelected ? 'var(--accent)' : 'inherit') + '">' + esc(row.variety || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.package || '\u2014') + '</span>';
@@ -601,10 +641,183 @@
   window._clearFilters = function() {
     checkedComs = {};
     checkedOrigins = {};
+    checkedCountries = {};
     searchQ = '';
     document.getElementById('header-search').value = '';
+    // Re-check all commodities
+    var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
+    byCom.forEach(function(rows, name) { checkedComs[name] = true; });
     renderAll();
   };
+
+  // Select a SKU → show dossier in right panel
+  window._selectSku = function(comName, skuIdx) {
+    var newId = comName + '::' + skuIdx;
+    if (selectedSku === newId) {
+      // Deselect
+      selectedSku = null;
+      selectedComName = null;
+    } else {
+      selectedSku = newId;
+      selectedComName = comName;
+    }
+    renderTable();
+    renderDossier();
+  };
+
+  window._closeDossier = function() {
+    selectedSku = null;
+    selectedComName = null;
+    renderTable();
+    document.getElementById('market-summary').style.display = 'block';
+    document.getElementById('dossier-panel').style.display = 'none';
+  };
+
+  // Render the dossier panel
+  function renderDossier() {
+    var summaryEl = document.getElementById('market-summary');
+    var dossierEl = document.getElementById('dossier-panel');
+
+    if (!selectedComName || !selectedSku) {
+      summaryEl.style.display = 'block';
+      dossierEl.style.display = 'none';
+      return;
+    }
+
+    summaryEl.style.display = 'none';
+    dossierEl.style.display = 'block';
+
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market && r.commodity === selectedComName; });
+    if (!marketRows.length) {
+      // Fallback
+      marketRows = allRows.filter(function(r) { return r.commodity === selectedComName; });
+    }
+    var sorted = marketRows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+    var skuIdx = parseInt(selectedSku.split('::')[1]);
+    var row = sorted[skuIdx];
+    if (!row) { dossierEl.innerHTML = ''; return; }
+
+    var sp = skuPrice(row);
+    var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+    var trend = trendOf(marketRows);
+    var origins = U.uniq(marketRows.map(function(r) { return r.origin; }).filter(Boolean));
+    var skuLabel = [row.variety, row.grade, row.size, row.package].filter(Boolean).join(' \u00b7 ');
+
+    // FOB data for this commodity
+    var comFob = fobRows.filter(function(r) { return r.commodity === selectedComName; });
+    var fobByOrigin = {};
+    comFob.forEach(function(r) {
+      var o = r.market || r.origin || 'Unknown';
+      if (o === 'National Trends') return;
+      if (!fobByOrigin[o]) {
+        var p = skuPrice(r);
+        fobByOrigin[o] = { name: o, price: p.price };
+      }
+    });
+
+    // Cross-market data
+    var crossMarket = [];
+    var allByCom = U.groupBy(allRows.filter(function(r) { return r.commodity === selectedComName; }), function(r) { return r.market; });
+    allByCom.forEach(function(rows, mkt) {
+      var prices = rows.map(function(r) { return skuPrice(r).price; }).filter(function(p) { return p != null; });
+      if (prices.length) {
+        var avg = prices.reduce(function(a, b) { return a + b; }, 0) / prices.length;
+        crossMarket.push({ name: mkt, price: avg, isCurrent: mkt === market });
+      }
+    });
+    crossMarket.sort(function(a, b) { return a.price - b.price; });
+    var maxPrice = crossMarket.length ? crossMarket[crossMarket.length - 1].price : 1;
+
+    var html = '';
+
+    // Header
+    html += '<div style="padding:18px 20px 16px;border-bottom:1px solid var(--border)">';
+    html += '<div style="display:flex;align-items:center;gap:10px">';
+    html += '<span class="eyebrow">' + esc(selectedComName) + ' \u00b7 variety</span>';
+    html += '<span onclick="window._closeDossier()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
+    html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>Close</span>';
+    html += '</div>';
+    html += '<h2 style="margin:10px 0 0;font-size:24px;font-weight:500;letter-spacing:-0.035em;line-height:1.05">' + esc(row.variety || selectedComName) + '</h2>';
+    html += '<div style="display:flex;align-items:center;gap:9px;margin-top:10px;flex-wrap:wrap">';
+    html += '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary)">' + esc(skuLabel) + '</span>';
+    html += '<span class="tone tone--sm ' + trend.cls + '"><span>' + trend.arrow + '</span>' + trend.label + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:7px">' + esc(row.origin || origins.join(' \u00b7 ')) + '</div>';
+    html += '</div>';
+
+    // Price section
+    html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+    html += '<div class="eyebrow">Variety price \u00b7 ' + esc(currentMarket) + '</div>';
+    html += '<div style="font-size:12px;font-weight:500;line-height:1.5;margin-top:7px">' + esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
+    html += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
+    html += '<span style="font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-0.05em;line-height:0.92;font-variant-numeric:tabular-nums">' + priceStr + '</span>';
+    if (sp.src === 'mid' && sp.range) {
+      html += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">' + sp.range + '</span>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    // Shipping point FOB
+    var fobEntries = Object.values(fobByOrigin);
+    if (fobEntries.length) {
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+      html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
+      html += '<span class="eyebrow">Shipping point FOB</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + esc(selectedComName) + ' \u00b7 all districts</span>';
+      html += '</div>';
+      html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;padding:8px 0 6px">';
+      html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">District</span>';
+      html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">FOB</span>';
+      html += '</div>';
+      fobEntries.forEach(function(f) {
+        html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">';
+        html += '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
+        html += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
+        html += '</div>';
+      });
+      // Markup
+      if (sp.price != null && fobEntries[0] && fobEntries[0].price != null) {
+        var markup = sp.price - fobEntries[0].price;
+        var markupPct = fobEntries[0].price > 0 ? Math.round(markup / fobEntries[0].price * 100) : 0;
+        html += '<div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">';
+        html += '<span style="font-size:11.5px;color:var(--text-dim);flex:1">Terminal over FOB</span>';
+        html += '<span style="font-family:var(--mono);font-size:13px;font-weight:500">+$' + markup.toFixed(2) + '</span>';
+        html += '<span style="font-family:var(--mono);font-size:11px;color:var(--text-faint)">+' + markupPct + '%</span>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    // Cross-market comparison
+    if (crossMarket.length > 1) {
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+      html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
+      html += '<span class="eyebrow">All ' + crossMarket.length + ' terminal markets</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">cheapest first</span>';
+      html += '</div>';
+      crossMarket.forEach(function(m, idx) {
+        var barW = maxPrice > 0 ? (26 + (m.price / maxPrice) * 74).toFixed(1) : '50';
+        html += '<div style="display:grid;grid-template-columns:20px minmax(0,1fr) 52px 62px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
+        html += '<span style="font-family:var(--mono);font-size:9.5px;color:var(--text-ghost)">' + String(idx + 1).padStart(2, '0') + '</span>';
+        html += '<span style="font-size:11.5px;font-weight:' + (m.isCurrent ? 600 : 400) + ';color:' + (m.isCurrent ? 'var(--text)' : 'var(--text-secondary)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(m.name) + (m.isCurrent ? ' \u25cf' : '') + '</span>';
+        html += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' + (m.isCurrent ? 'var(--accent)' : 'var(--border-header)') + ';width:' + barW + '%"></div></div>';
+        html += '<span style="font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">$' + m.price.toFixed(2) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Action buttons
+    html += '<div style="padding:4px 20px 20px;display:flex;gap:6px;flex-wrap:wrap">';
+    html += '<button class="btn btn--primary" style="font-size:12px">Watch</button>';
+    html += '<button class="btn btn--ghost" style="font-size:12px">Set alert</button>';
+    html += '<button class="btn btn--ghost" style="font-size:12px">Export prices</button>';
+    html += '</div>';
+
+    dossierEl.innerHTML = html;
+    dossierEl.scrollTop = 0;
+  }
 
   // ── MARKET SUMMARY ──
   async function renderSummary() {
