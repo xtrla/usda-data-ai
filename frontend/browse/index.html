@@ -481,21 +481,47 @@
     }
   }
 
-  // Sidebar categories
+  // Sidebar categories — expandable accordions matching Claude Design
   const marketRows2 = allRows.filter(r => r.market === marketShort(currentMarket));
   const byCom2 = U.groupBy(marketRows2, r => r.commodity);
-  const catCounts = { Fruits: 0, Vegetables: 0, 'Onions & Potatoes': 0, Nuts: 0 };
-  for (const [, rows] of byCom2) {
+  const catOpen = { Fruits: true };
+  const catItems = {};
+  for (const [name, rows] of byCom2) {
     const cat = U.catLabel(rows[0]?.commodity_type);
-    if (catCounts[cat] != null) catCounts[cat]++;
+    if (!catItems[cat]) catItems[cat] = [];
+    catItems[cat].push(name);
   }
-  document.getElementById('cat-list').innerHTML = Object.entries(catCounts).map(([name, count]) =>
-    `<div style="padding:9px 0;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--surface-row)">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none"><polyline points="9 6 15 12 9 18"></polyline></svg>
-      <span style="font-size:12.5px;font-weight:500;flex:1;min-width:0">${esc(name)}</span>
-      <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">${count}</span>
-    </div>`
-  ).join('');
+  Object.values(catItems).forEach(arr => arr.sort());
+
+  function renderSidebar() {
+    const catCounts = {};
+    for (const [cat, items] of Object.entries(catItems)) catCounts[cat] = items.length;
+
+    document.getElementById('cat-list').innerHTML = Object.entries(catCounts).map(([name, count]) => {
+      const isOpen = !!catOpen[name];
+      const items = catItems[name] || [];
+      return `<div>
+        <div onclick="toggleCat('${esc(name)}')" style="padding:9px 0;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--surface-row)">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:${isOpen ? 'rotate(90deg)' : 'none'}"><polyline points="9 6 15 12 9 18"></polyline></svg>
+          <span style="font-size:12.5px;font-weight:500;flex:1;min-width:0">${esc(name)}</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">${count}</span>
+        </div>
+        ${isOpen ? `<div style="padding:8px 0 10px 18px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--surface-row)">
+          ${items.map(item => `<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">
+            <input type="checkbox" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">
+            <span style="flex:1;min-width:0">${esc(item)}</span>
+          </label>`).join('')}
+        </div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  window.toggleCat = function(name) {
+    catOpen[name] = !catOpen[name];
+    renderSidebar();
+  };
+
+  renderSidebar();
 
   // Watchlist
   const wl = U.watchList();
