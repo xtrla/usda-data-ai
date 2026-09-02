@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — AgraX</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%23C2410C'/%3E%3Ctext x='18' y='26' font-family='system-ui' font-size='22' font-weight='800' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/components.css">
+</head>
+<body>
+<div style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
+<header style="position:sticky;top:0;z-index:60;background:var(--dark);color:#fff;display:flex;align-items:center;gap:20px;height:52px;padding:0 20px;border-bottom:1px solid var(--dark-border)">
+  <a href="/" style="display:flex;align-items:center;gap:11px;flex:none;color:#fff;text-decoration:none">
+    <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:20px;width:auto;display:block">
+    <span style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#525252">Free USDA wholesale prices</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:22px;flex:none;margin-left:auto">
+    <a href="/browse" style="font-size:12.5px;font-weight:500;color:#A3A3A3">Browse</a>
+    <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:3px;background:#D97706"></span>Pro</span>
+    <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;cursor:pointer">Sign in</span>
+    <a href="#" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid #262626;background:#141414;color:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center">Create account</a>
+  </div>
+</header>
+<main style="flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:44px;max-width:1100px;margin:0 auto;padding:40px 20px 60px">
+  <div>
+    <div style="font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-heading)">About AgraX</div>
+    <h1 style="margin:12px 0 0;font-size:36px;font-weight:500;letter-spacing:-0.04em;line-height:1.1">Wholesale produce prices, published as they were reported.</h1>
+    <div style="margin-top:28px;display:flex;flex-direction:column;gap:20px;font-size:14px;line-height:1.75;color:var(--text-secondary)">
+      <p>AgraX was built by two people who spent years buying and moving produce, and spent every morning of those years digging the same numbers out of USDA PDFs. The reports are public and thorough, and almost unusable at the speed a buying desk actually works. So we started parsing them into something we would have wanted on the desk: every commodity, every variety, every origin, in one place, before the first call of the day.</p>
+      <p>The data comes from the USDA Agricultural Marketing Service — Specialty Crops Terminal Market and Shipping Point reports, covering 12 terminal markets and the shipping-point districts that feed them. We parse each weekday morning and publish what the report says. We do not blend, smooth, or average prices across varieties, origins, or packs, because a price only means something attached to the item it was paid for. Where a figure is a midpoint of a reported range rather than a transaction-weighted price, we label it as such on the row.</p>
+      <p>AgraX is an independent company. We are not affiliated with, endorsed by, or acting on behalf of the United States Department of Agriculture. The price data is free and stays free; we make money on Pro subscriptions and sponsorships from companies serving the produce trade. If a number looks wrong to you, tell us — corrections come first.</p>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:28px">
+      <a href="/browse" style="height:38px;padding:0 16px;border-radius:7px;background:var(--ink);color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center">Browse prices</a>
+      <button style="height:38px;padding:0 16px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;cursor:pointer">Contact us</button>
+    </div>
+  </div>
+  <aside>
+    <div class="card" style="padding:20px">
+      <div style="font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-heading);padding-bottom:12px;border-bottom:1px solid var(--border)">At a glance</div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Founded</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">2024</span></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Terminal markets</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">12</span></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Shipping points</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">9</span></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Commodities daily</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">148</span></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="font-size:12.5px;color:var(--text-secondary)">Published by</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">6:00 AM ET</span></div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11.5px;line-height:1.6;color:var(--text-dim)">Source: USDA AMS Specialty Crops. Independent of the USDA.</div>
+    </div>
+  </aside>
+</main>
+<footer style="background:var(--dark);color:#fff;padding:28px 20px 22px;margin-top:auto">
+  <div style="display:flex;align-items:flex-start;gap:56px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px;max-width:520px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:-0.02em">AgraX</div>
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.75;color:#737373">Prices sourced from USDA Agricultural Marketing Service Specialty Crops Terminal Market and Shipping Point reports. Updated every weekday morning. AgraX is not affiliated with the USDA.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
+      <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
+      <span style="font-size:12px;color:#A3A3A3">Pro</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
+      <a href="/about" style="font-size:12px;color:#fff">About</a>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Contact</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Advertise</span>
+      <span style="font-size:12px;color:#A3A3A3">Privacy</span>
+      <span style="font-size:12px;color:#A3A3A3">Terms</span>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1F1F1F;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
+    <span>© 2026 AgraX. Free wholesale produce pricing.</span>
+    <span>Source: USDA AMS · Terminal + Shipping Point</span>
+  </div>
+</footer>
+</div>
+</body>
+</html>

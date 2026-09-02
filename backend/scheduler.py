@@ -14,12 +14,20 @@ log = logging.getLogger(__name__)
 
 def run_ingest():
     try:
-        log.info("Scheduler: starting ingestion run...")
+        log.info("Scheduler: starting price ingestion run...")
         from ingest import run
         run()
-        log.info("Scheduler: ingestion complete.")
+        log.info("Scheduler: price ingestion complete.")
     except Exception as e:
-        log.error("Scheduler: ingestion failed: %s", e)
+        log.error("Scheduler: price ingestion failed: %s", e)
+
+    try:
+        log.info("Scheduler: starting movement ingestion run...")
+        from ingest_movement import run as run_movement
+        run_movement()
+        log.info("Scheduler: movement ingestion complete.")
+    except Exception as e:
+        log.error("Scheduler: movement ingestion failed: %s", e)
 
 def scheduler_loop():
     # Run once immediately on startup to backfill today

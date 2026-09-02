@@ -70,6 +70,26 @@ const api = {
 
   // GET /stats → {total_records, commodities, markets, dates}
   stats: () => _fetch('/stats'),
+
+  // GET /market-summary?market=&date=
+  marketSummary: (market, date) => {
+    const params = [];
+    if (market) params.push(`market=${encodeURIComponent(market)}`);
+    if (date) params.push(`date=${encodeURIComponent(date)}`);
+    return _fetch(`/market-summary${params.length ? '?' + params.join('&') : ''}`);
+  },
+
+  // GET /wow?market= — week-over-week price changes per commodity
+  wow: (market) =>
+    _fetch(`/wow${market ? `?market=${encodeURIComponent(market)}` : ''}`),
+
+  // GET /movers?market=&limit= — biggest movers with representative SKU
+  movers: (market, limit = 6) =>
+    _fetch(`/movers?market=${encodeURIComponent(market || 'New York')}&limit=${limit}`),
+
+  // GET /story?market= — AI-generated story of the day
+  story: (market) =>
+    _fetch(`/story${market ? `?market=${encodeURIComponent(market)}` : ''}`),
 };
 
 // Expose globally for non-module scripts

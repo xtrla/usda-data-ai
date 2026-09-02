@@ -3,19 +3,14 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/browse", "destination": "/browse/index.html" },
+    { "source": "/about", "destination": "/about/index.html" },
     { "source": "/app", "destination": "/app/index.html" },
-    { "source": "/app/markets", "destination": "/app/markets/index.html" },
-    { "source": "/app/markets/city", "destination": "/app/markets/city/index.html" },
-    { "source": "/app/markets/compare", "destination": "/app/markets/compare/index.html" },
-    { "source": "/app/commodity", "destination": "/app/commodity/index.html" },
-    { "source": "/app/shipping", "destination": "/app/shipping/index.html" },
-    { "source": "/app/movement", "destination": "/app/movement/index.html" },
-    { "source": "/app/watchlist", "destination": "/app/watchlist/index.html" },
-    { "source": "/app/alerts", "destination": "/app/alerts/index.html" }
+    { "source": "/app/commodity", "destination": "/app/commodity/index.html" }
   ],
   "headers": [
     {
-      "source": "/(.*)\\.(css|js|jpg|jpeg|png|svg|woff2?)",
+      "source": "/(.*)\\.(css|js|jpg|jpeg|png|svg|webp|woff2?)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]

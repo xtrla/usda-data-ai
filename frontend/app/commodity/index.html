@@ -3,677 +3,428 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>agraX — Commodity Detail</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
+<title>AgraX — Commodity Detail</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%231D4ED8'/%3E%3Ctext x='18' y='26' font-family='system-ui' font-size='22' font-weight='800' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/styles/tokens.css" />
 <link rel="stylesheet" href="/styles/components.css" />
+<script src="/js/config.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
 <style>
-  /* Chart panel */
-  .chart-card {
-    background: var(--card);
-    border: 0.5px solid var(--line);
-    border-radius: var(--r-card);
-    padding: 20px 22px 12px;
-    position: relative;
-    overflow: hidden;
-  }
-  .chart-hd {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-  .chart-hd__title {
-    font-size: 13px; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
+  .chart-wrap { position: relative; }
+  .chart-wrap svg { width: 100%; height: 240px; }
+  .chart-tip {
+    position: absolute; pointer-events: none; opacity: 0;
+    background: var(--ink); color: #fff; padding: 5px 10px;
+    border-radius: var(--r-chip); font-size: var(--fs-base); font-family: var(--font-mono);
+    white-space: nowrap; z-index: 5; transition: opacity .1s;
   }
   .range-toggle {
-    display: inline-flex;
-    background: var(--fill);
-    padding: 3px;
-    border-radius: 9px;
-    gap: 2px;
-    margin-left: auto;
+    display: inline-flex; background: var(--surface-chip); padding: 3px; border-radius: var(--r-btn); gap: 2px;
   }
   .range-toggle__opt {
-    font-size: 11px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    color: var(--sub);
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-weight: 500;
+    font-size: var(--fs-sm); padding: 5px 10px; border-radius: var(--r-chip); color: var(--text-secondary);
+    cursor: pointer; font-family: var(--font-mono); font-weight: var(--fw-medium);
   }
-  .range-toggle__opt.is-active {
-    background: var(--card);
-    color: var(--ink);
-    box-shadow: var(--shadow-sm);
-  }
-  .chart-wrap { position: relative; height: 240px; }
-  .chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
-  .chart-band { fill: var(--pop-14); }
-  .chart-line { fill: none; stroke: var(--pop); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-  .chart-axis-lbl { font-family: var(--font-mono); font-size: 10px; fill: var(--muted); }
-  .chart-hover-dot { fill: var(--pop); stroke: #fff; stroke-width: 2; }
-  .chart-hover-line { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 3; }
-  .chart-tip {
-    position: absolute;
-    background: var(--dark-1);
-    color: #fff;
-    font-size: 11px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    pointer-events: none;
-    white-space: nowrap;
-    font-family: var(--font-mono);
-    opacity: 0;
-    transition: opacity 100ms;
-    z-index: 5;
-  }
-  .chart-tip b { color: var(--pop-glow); }
-  .chart-empty {
-    height: 240px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted);
-    font-size: 12.5px;
-    text-align: center;
-    padding: 20px;
-  }
-
-  /* Grid layout */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--sp-5);
-  }
-  @media(min-width: 900px){
-    .grid-2 { grid-template-columns: 1.4fr 1fr; }
-  }
-
-  /* Related SKUs list */
-  .rel-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px;
-    border-top: 0.5px solid var(--line-softer);
-    font-size: 12.5px;
-    cursor: pointer;
-    transition: background var(--dur-fast);
-  }
-  .rel-item:first-child { border-top: none; }
-  .rel-item:hover { background: var(--card-alt); }
-  .rel-item.is-current {
-    background: var(--pop-04);
-    border-left: 2px solid var(--pop);
-    padding-left: 12px;
-  }
-  .rel-item__name { flex: 1; }
-  .rel-item__spec { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
-  .rel-item__price { font-family: var(--font-mono); font-weight: 500; }
-
-  /* Cross-market compact */
-  table.cx-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.cx-tbl thead tr { color: var(--muted); background: var(--card-alt); border-bottom: 0.5px solid var(--line-soft); }
-  table.cx-tbl th { text-align: left; font-weight: 500; padding: 8px 14px; font-size: 11px; }
-  table.cx-tbl th.r { text-align: right; }
-  table.cx-tbl td { padding: 9px 14px; border-top: 0.5px solid var(--line-softer); font-size: 12px; }
-  table.cx-tbl td.r { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-  table.cx-tbl tr.is-best td:first-child { border-left: 2px solid var(--pop); padding-left: 12px; }
-
-  /* Info tiles */
-  .info-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    padding: 12px 14px;
-    background: var(--card-alt);
-    border-radius: 8px;
-  }
-  @media(min-width: 640px){ .info-row { grid-template-columns: repeat(4, 1fr); } }
-  .info-row .kpi { background: transparent; border: none; padding: 0; }
-  .info-row .kpi__val { font-size: 15px; }
-
-  /* USDA context callout */
-  .quote-card {
-    background: linear-gradient(90deg, var(--pop-04), transparent);
-    border: 0.5px solid var(--pop-13);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-size: 12.5px;
-    color: var(--sub);
-    line-height: 1.55;
-  }
-  .quote-card b { color: var(--ink); font-weight: 600; }
-  .quote-card__src {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    color: var(--muted);
-    margin-top: 6px;
-    display: block;
-  }
+  .range-toggle__opt.is-active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .cx-bar { display: flex; align-items: center; gap: 10px; padding: 11px 20px; border-bottom: 1px solid var(--border-row); }
+  .cx-bar__bar { height: 8px; border-radius: 4px; transition: width .3s; }
+  .cx-bar__price { font-family: var(--font-mono); font-size: var(--fs-md); font-weight: var(--fw-bold); width: 70px; text-align: right; }
 </style>
 </head>
 <body>
 
-<div class="app">
-  <div id="mtop-slot"></div>
-  <div id="side-slot"></div>
-
-  <main class="main">
-    <div class="topbar">
-      <div class="topbar__search"><span>🔍</span>Search…<span class="topbar__kbd">⌘K</span></div>
-      <div class="topbar__bell">🔔</div>
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="header">
+  <div class="header__inner">
+    <a href="/" class="header__logo">
+      <div class="header__logo-mark">A</div>
+      <span class="header__logo-word">AgraX</span>
+    </a>
+    <div class="header__search">
+      <span class="header__search-icon">⌕</span>
+      <input type="text" class="header__search-input" placeholder="Search…" id="header-search" />
     </div>
+    <nav class="header__nav">
+      <a href="/browse" class="header__link">Browse</a>
+      <a href="/app" class="header__link header__link--pro">Pro</a>
+      <a href="#" class="header__link">Sign in</a>
+    </nav>
+  </div>
+</header>
 
-    <div class="breadcrumb">
-      <a href="/app/markets" style="color:var(--muted)">← Terminal markets</a>
-      <span>·</span>
-      <span id="bc-cat">—</span>
-      <span>·</span>
-      <span class="breadcrumb__now" id="bc-name">—</span>
+<div style="max-width:var(--max-content);margin:0 auto;padding:26px 28px 80px;display:grid;grid-template-columns:262px 1fr;gap:26px;align-items:start">
+
+  <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
+  <aside class="sidebar">
+    <!-- Related SKUs -->
+    <div class="sidebar__card">
+      <div class="sidebar__head">Variants <span class="sidebar__head-count" id="rel-count">0</span></div>
+      <div id="rel-list" style="max-height:400px;overflow-y:auto"></div>
     </div>
-
-    <!-- Header -->
-    <div class="detail-head">
-      <div>
-        <div class="detail-head__name" id="d-name">Loading…</div>
-        <div class="detail-head__meta" id="d-meta">—</div>
-      </div>
-      <div class="detail-head__price-block">
-        <div class="detail-head__price" id="d-price">—</div>
-        <div id="d-delta-wrap"></div>
-        <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-start" id="d-actions">
-          <button class="btn btn--tiny btn--ghost" id="btn-watch">★ Watch</button>
-          <button class="btn btn--tiny btn--dark" id="btn-alert">⚡ Set alert</button>
-        </div>
-      </div>
+    <!-- Movement -->
+    <div class="sidebar__card">
+      <div class="sidebar__head">Shipments</div>
+      <div id="mv-body" style="padding:12px 15px;font-size:var(--fs-md);color:var(--text-muted)">Loading…</div>
     </div>
+  </aside>
 
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <div class="breadcrumb" id="breadcrumb"></div>
     <div id="err-slot"></div>
 
-    <!-- Chart -->
-    <section class="chart-card" style="margin-bottom:var(--sp-5)">
-      <div class="chart-hd">
-        <div class="chart-hd__title"><span style="color:var(--pop)">◐</span>Price history <span style="color:var(--muted);font-weight:400;font-size:11px" id="chart-scope">—</span></div>
+    <!-- Header card -->
+    <div class="detail-header" id="detail-header">
+      <div style="font-size:var(--fs-md);color:var(--text-muted)" id="head-loading">Loading…</div>
+    </div>
+
+    <!-- Stat strip -->
+    <div class="stat-strip" id="stat-strip" style="display:none">
+      <div class="stat-strip__cell">
+        <div class="stat-strip__label">FOB origin</div>
+        <div class="stat-strip__val" id="ss-fob">—</div>
+      </div>
+      <div class="stat-strip__cell">
+        <div class="stat-strip__label">Markup to terminal</div>
+        <div class="stat-strip__val" id="ss-markup">—</div>
+      </div>
+      <div class="stat-strip__cell">
+        <div class="stat-strip__label">Shipments</div>
+        <div class="stat-strip__val" id="ss-ship">—</div>
+      </div>
+      <div class="stat-strip__cell">
+        <div class="stat-strip__label">30-day range</div>
+        <div class="stat-strip__val" id="ss-range">—</div>
+      </div>
+    </div>
+
+    <!-- Price chart -->
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:var(--fs-md);font-weight:var(--fw-semibold)">Price history</span>
         <div class="range-toggle" id="range-toggle">
-          <span class="range-toggle__opt" data-days="7">7d</span>
-          <span class="range-toggle__opt is-active" data-days="30">30d</span>
-          <span class="range-toggle__opt" data-days="90">90d</span>
-          <span class="range-toggle__opt" data-days="365">1y</span>
+          <span class="range-toggle__opt" data-d="7">7d</span>
+          <span class="range-toggle__opt is-active" data-d="30">30d</span>
+          <span class="range-toggle__opt" data-d="60">60d</span>
+          <span class="range-toggle__opt" data-d="90">90d</span>
         </div>
       </div>
       <div class="chart-wrap" id="chart-wrap">
-        <div class="chart-empty">Loading chart…</div>
+        <div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Loading…</div>
       </div>
       <div class="chart-tip" id="chart-tip"></div>
-    </section>
-
-    <!-- Cross-market + Related SKUs -->
-    <div class="grid-2" style="margin-bottom:var(--sp-5)">
-      <section class="card card--flush">
-        <div class="card-title" style="padding:14px 16px 0"><span class="card-title__ico">◈</span>Across markets today</div>
-        <div style="padding:8px 0 0">
-          <div class="table-wrap">
-            <table class="cx-tbl">
-              <thead>
-                <tr><th>Market</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly ▲</th></tr>
-              </thead>
-              <tbody id="cx-tbody">
-                <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading…</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section class="card card--flush">
-        <div class="card-title" style="padding:14px 16px 6px"><span class="card-title__ico">◇</span>Related SKUs<span class="card-title__meta" id="rel-meta">—</span></div>
-        <div id="rel-body">
-          <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
-        </div>
-      </section>
     </div>
 
-    <!-- Movement + Context -->
-    <div class="grid-2" style="margin-bottom:var(--sp-8)">
-      <section class="card">
-        <div class="card-title"><span class="card-title__ico">◆</span>Movement · today<span class="card-title__meta" id="mv-meta">—</span></div>
-        <div id="mv-body">
-          <div style="font-size:12px;color:var(--muted);padding:8px 0">Loading…</div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-title"><span class="card-title__ico">◇</span>USDA context</div>
-        <div id="ctx-body">
-          <div style="font-size:12px;color:var(--muted);padding:8px 0">Loading…</div>
-        </div>
-      </section>
+    <!-- Varieties table (SKU-level — this is where prices live) -->
+    <div class="card" style="overflow:hidden">
+      <div style="padding:14px 20px;font-size:var(--fs-md);font-weight:var(--fw-semibold);border-bottom:1px solid var(--border-header)">All SKUs at <span id="var-market">—</span></div>
+      <div style="overflow-x:auto">
+        <table class="sku-table" id="var-table">
+          <thead><tr>
+            <th>Variety</th><th>Origin</th><th>Grade</th><th>Pack · Size</th>
+            <th class="sku-th-price">Price</th><th class="sku-th-source">Source</th>
+          </tr></thead>
+          <tbody id="var-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- 12-market comparison -->
+    <div class="card" style="overflow:hidden">
+      <div style="padding:14px 20px;font-size:var(--fs-md);font-weight:var(--fw-semibold);border-bottom:1px solid var(--border-header)">
+        Cross-market comparison <span style="color:var(--text-muted);font-weight:var(--fw-normal)" id="cx-count"></span>
+      </div>
+      <div id="cx-body"></div>
+    </div>
   </main>
-
-  <div id="mtabs-slot"></div>
 </div>
 
-<script src="/js/config.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/shell.js"></script>
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__logo">
+      <div class="footer__logo-mark">A</div>
+      <span class="footer__logo-word">AgraX</span>
+    </div>
+    <div class="footer__links">
+      <a href="/">Home</a><a href="/browse">Browse</a><a href="/app">Pro</a>
+    </div>
+    <span class="footer__copy">© 2026 AgraX. Data source: USDA AMS.</span>
+  </div>
+</footer>
+
 <script>
 (async function() {
   const U = window.agraxUtil;
-  const shell = Shell.render('markets');
-  document.getElementById('mtop-slot').outerHTML = shell.mtop;
-  document.getElementById('side-slot').outerHTML = shell.side;
-  document.getElementById('mtabs-slot').outerHTML = shell.mtabs;
+  const api = window.agraxAPI;
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const filters = U.readDetailFilters();
+  const commodity = filters.commodity;
+  if (!commodity) { showError({ message: 'No commodity specified.' }); return; }
 
-  // No commodity in URL? Send them back to markets to pick something.
-  if (!filters.commodity) {
-    window.location.replace('/app/markets');
+  // Breadcrumb
+  document.getElementById('breadcrumb').innerHTML = `<a href="/browse">Browse</a><span class="breadcrumb__sep">/</span><span>${esc(commodity)}</span>`;
+
+  let latestDate, allRows, currentDays = 30;
+
+  try {
+    const dates = await api.dates();
+    if (!dates?.length) throw new Error('No data');
+    latestDate = dates[0].date;
+    allRows = await api.reportTerminal(latestDate);
+  } catch (err) { showError(err); return; }
+
+  const market = filters.market || U.selMarket() || 'New York';
+  document.getElementById('var-market').textContent = market;
+
+  // Commodity rows at this market
+  const comRows = allRows.filter(r => r.commodity === commodity && r.market === market);
+  if (!comRows.length) {
+    document.getElementById('head-loading').textContent = `No data for "${commodity}" at ${market} today.`;
     return;
   }
 
-  // Fetch latest data
-  let latestDate, terminalRows = [], prevRows = [];
+  const agg = U.aggregateCommodity(comRows);
+  const primary = comRows[0];
+
+  // Header — no blended price; show trend + SKU count + origins
+  const header = document.getElementById('detail-header');
+  const origins = U.uniq(comRows.map(r => r.origin).filter(Boolean)).slice(0, 5).join(' · ') || '';
+  const movement = (primary.movement || primary.trend || '').toLowerCase();
+  const trendLabel = movement.includes('higher') || movement === 'up' ? 'Higher'
+    : movement.includes('lower') || movement === 'down' ? 'Lower' : 'Steady';
+  const trendMod = trendLabel === 'Higher' ? 'higher' : trendLabel === 'Lower' ? 'lower' : 'steady';
+  header.innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+      <div>
+        <div class="detail-header__name">${esc(commodity)}</div>
+        <div class="detail-header__pack">${esc(origins)}</div>
+        <div style="margin-top:8px;font-size:var(--fs-md);color:var(--text-muted)">
+          <span class="mono" style="font-weight:var(--fw-bold)">${comRows.length}</span> SKUs reporting at ${esc(market)}
+        </div>
+      </div>
+      <span class="trend-badge trend-badge--${trendMod}" style="flex-shrink:0">${trendLabel}</span>
+    </div>
+  `;
+
+  // Stat strip
+  let fobData = null;
   try {
-    const dates = await agraxAPI.dates();
-    if (!dates?.length) throw new Error('No data available');
-    latestDate = dates[0].date;
-    terminalRows = await agraxAPI.reportTerminal(latestDate);
-    if (dates[1]) prevRows = await agraxAPI.reportTerminal(dates[1].date);
-  } catch (err) { return showError(err); }
+    const fobRows = await api.reportShippingPoints(latestDate);
+    const forThis = fobRows.filter(r => r.commodity === commodity);
+    if (forThis.length) {
+      const fobAgg = U.aggregateCommodity(forThis);
+      fobData = { price: fobAgg.mostly, origin: forThis[0].origin || forThis[0].market || '—' };
+    }
+  } catch(e) {}
 
-  // Match commodity by name (case-insensitive)
-  const commodityNames = U.uniq(terminalRows.map(r => r.commodity));
-  const commodity = commodityNames.find(n => n.toLowerCase() === filters.commodity.toLowerCase())
-    || commodityNames.find(n => U.slugify(n) === U.slugify(filters.commodity));
-  if (!commodity) {
-    return showError({ message: `Unknown commodity: ${filters.commodity}` });
+  const strip = document.getElementById('stat-strip');
+  strip.style.display = '';
+  document.getElementById('ss-fob').textContent = fobData ? U.fmtPrice(fobData.price) : '—';
+  if (fobData && agg.mostly != null && fobData.price != null && fobData.price > 0) {
+    const mkPct = ((agg.mostly - fobData.price) / fobData.price * 100).toFixed(0);
+    document.getElementById('ss-markup').textContent = '+' + mkPct + '%';
   }
 
-  // All rows for this commodity today
-  const allRows = terminalRows.filter(r => r.commodity === commodity);
-  const cat = allRows[0]?.commodity_type;
-
-  // Apply filters to get the "focused" set for header + chart
-  const focused = allRows.filter(r => {
-    if (filters.variety && r.variety !== filters.variety) return false;
-    if (filters.origin && r.origin !== filters.origin) return false;
-    if (filters.size && r.size !== filters.size) return false;
-    if (filters.package && r.package !== filters.package) return false;
-    if (filters.market && r.market !== filters.market) return false;
-    return true;
-  });
-
-  // ── HEADER ──
-  document.getElementById('bc-cat').textContent = U.catLabel(cat);
-  document.getElementById('bc-name').textContent = commodity;
-
-  const scopeParts = [
-    filters.variety && filters.variety,
-    filters.origin && filters.origin,
-    filters.size && filters.size,
-    filters.market && filters.market,
-  ].filter(Boolean);
-  const scopeText = scopeParts.length ? scopeParts.join(' · ') : 'All varieties · All markets';
-
-  document.getElementById('d-name').textContent = filters.variety ? `${filters.variety} ${commodity}` : commodity;
-  document.getElementById('d-meta').textContent = scopeText;
-  document.getElementById('chart-scope').textContent = `· ${scopeText}`;
-
-  // Focused price + delta
-  const focusedAgg = focused.length ? U.aggregateCommodity(focused) : null;
-  const prevFocused = prevRows.filter(r => {
-    if (r.commodity !== commodity) return false;
-    if (filters.variety && r.variety !== filters.variety) return false;
-    if (filters.origin && r.origin !== filters.origin) return false;
-    if (filters.size && r.size !== filters.size) return false;
-    if (filters.package && r.package !== filters.package) return false;
-    if (filters.market && r.market !== filters.market) return false;
-    return true;
-  });
-  const prevAgg = prevFocused.length ? U.aggregateCommodity(prevFocused) : null;
-  const d = U.delta(focusedAgg?.mostly, prevAgg?.mostly);
-
-  document.getElementById('d-price').textContent = focusedAgg?.mostly != null
-    ? U.fmtPrice(focusedAgg.mostly)
-    : (focusedAgg?.low != null ? U.fmtPrice(focusedAgg.low) : '—');
-
-  const deltaWrap = document.getElementById('d-delta-wrap');
-  if (d.pct != null) {
-    const arrow = d.dir === 'up' ? '▲' : d.dir === 'down' ? '▼' : '—';
-    const color = d.dir === 'up' ? 'var(--up)' : d.dir === 'down' ? 'var(--pop)' : 'var(--muted)';
-    deltaWrap.innerHTML = `<span class="detail-head__delta" style="color:${color};background:transparent;border-color:${color}33">${arrow} ${Math.abs(d.pct).toFixed(1)}% vs yesterday</span>`;
+  // SKU-level price determination with source badge
+  function skuPrice(row) {
+    const mLow = U.num(row.price_mostly_low);
+    const mHigh = U.num(row.price_mostly_high);
+    if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, source: 'mostly' };
+    if (mLow != null) return { price: mLow, source: 'mostly' };
+    if (mHigh != null) return { price: mHigh, source: 'mostly' };
+    const low = U.num(row.price_low);
+    const high = U.num(row.price_high);
+    if (low != null && high != null) {
+      if (low === high) return { price: low, source: 'reported' };
+      return { price: (low + high) / 2, source: 'midrange' };
+    }
+    if (low != null) return { price: low, source: 'reported' };
+    if (high != null) return { price: high, source: 'reported' };
+    return { price: null, source: null };
   }
 
-  // Watch button — scope to variety-level for now
-  const watchKey = filters.variety ? `${filters.variety} ${commodity}` : commodity;
-  function updateWatchBtn() {
-    const btn = document.getElementById('btn-watch');
-    const isW = U.watchHas(watchKey);
-    btn.textContent = isW ? '★ Watching' : '★ Watch';
-    btn.classList.toggle('btn--dark', isW);
-    btn.classList.toggle('btn--ghost', !isW);
-  }
-  updateWatchBtn();
-  document.getElementById('btn-watch').addEventListener('click', () => {
-    U.watchToggle(watchKey);
-    updateWatchBtn();
-  });
+  // Varieties table — SKU-level with source badges
+  const vtbody = document.getElementById('var-tbody');
+  vtbody.innerHTML = comRows.map(r => {
+    const sp = skuPrice(r);
+    const priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
+    const badgeCls = sp.source === 'mostly' ? 'source-badge--mostly'
+      : sp.source === 'midrange' ? 'source-badge--midrange'
+      : sp.source === 'reported' ? 'source-badge--reported' : '';
+    const badgeLabel = sp.source === 'mostly' ? 'Mostly'
+      : sp.source === 'midrange' ? 'Mid-range'
+      : sp.source === 'reported' ? 'Reported' : '';
+    const packSize = [r.package, r.size].filter(Boolean).join(' · ') || '—';
+    return `<tr>
+      <td>${esc(r.variety || '—')}</td>
+      <td class="sku-muted">${esc(r.origin || '—')}</td>
+      <td class="sku-muted">${esc(r.grade || '—')}</td>
+      <td class="sku-muted">${esc(packSize)}</td>
+      <td class="sku-price">${priceStr}</td>
+      <td class="sku-source">${badgeLabel ? `<span class="source-badge ${badgeCls}">${badgeLabel}</span>` : '—'}</td>
+    </tr>`;
+  }).join('');
 
-  // ── CHART ──
-  let currentDays = 30;
-  document.getElementById('range-toggle').addEventListener('click', (e) => {
-    const opt = e.target.closest('[data-days]');
-    if (!opt) return;
-    document.querySelectorAll('#range-toggle .range-toggle__opt').forEach(x => x.classList.toggle('is-active', x === opt));
-    currentDays = parseInt(opt.dataset.days, 10);
-    loadChart();
-  });
-  loadChart();
-
-  async function loadChart() {
-    const wrap = document.getElementById('chart-wrap');
-    wrap.innerHTML = '<div class="chart-empty">Loading chart…</div>';
-    try {
-      const historyRows = await agraxAPI.history({
-        commodity,
-        variety: filters.variety,
-        origin: filters.origin,
-        size: filters.size,
-        package: filters.package,
-        market: filters.market,
-        days: currentDays,
-      });
-      renderChart(historyRows);
-    } catch (err) {
-      wrap.innerHTML = `<div class="chart-empty">Couldn't load history: ${escape(err.message || err)}</div>`;
-    }
-  }
-
-  function renderChart(rows) {
-    const wrap = document.getElementById('chart-wrap');
-    if (!rows?.length) {
-      wrap.innerHTML = `<div class="chart-empty">No history for this ${filters.market ? 'market' : 'combination'} in the last ${currentDays} days.<br>USDA reports don't have data every day for every SKU.</div>`;
-      return;
-    }
-    // Group by date, take median-mostly per date
-    const byDate = U.groupBy(rows, r => r.report_date);
-    const points = [];
-    for (const [date, rs] of byDate) {
-      const agg = U.aggregateCommodity(rs);
-      if (agg.mostly != null) {
-        points.push({ date, low: agg.low, high: agg.high, mostly: agg.mostly });
-      } else if (agg.low != null || agg.high != null) {
-        const val = agg.low != null && agg.high != null ? (agg.low + agg.high) / 2 : (agg.low ?? agg.high);
-        points.push({ date, low: agg.low, high: agg.high, mostly: val });
-      }
-    }
-    points.sort((a, b) => a.date.localeCompare(b.date));
-
-    if (!points.length) {
-      wrap.innerHTML = `<div class="chart-empty">No price data in this range.</div>`;
-      return;
-    }
-    if (points.length === 1) {
-      wrap.innerHTML = `<div class="chart-empty">Only 1 data point in range · $${points[0].mostly.toFixed(2)} on ${points[0].date}</div>`;
-      return;
-    }
-
-    // Build SVG
-    const W = wrap.clientWidth || 800;
-    const H = 240;
-    const P = { l: 40, r: 12, t: 16, b: 24 };
-    const iw = W - P.l - P.r;
-    const ih = H - P.t - P.b;
-
-    const allVals = points.flatMap(p => [p.low, p.high, p.mostly].filter(v => v != null));
-    let vMin = Math.min(...allVals), vMax = Math.max(...allVals);
-    const vPad = (vMax - vMin) * 0.1 || vMax * 0.1 || 1;
-    vMin -= vPad; vMax += vPad;
-
-    const x = (i) => P.l + (i / (points.length - 1)) * iw;
-    const y = (v) => P.t + (1 - (v - vMin) / (vMax - vMin)) * ih;
-
-    // Band path (low to high)
-    const bandUp = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(p.high ?? p.mostly)}`).join(' ');
-    const bandDn = points.slice().reverse().map((p, i, arr) => `L${x(points.length - 1 - i)},${y(p.low ?? p.mostly)}`).join(' ');
-    const bandPath = `${bandUp} ${bandDn} Z`;
-
-    // Line path (mostly)
-    const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(p.mostly)}`).join(' ');
-
-    // Y-axis labels (min, mid, max)
-    const yLabels = [vMax, (vMax + vMin) / 2, vMin].map(v => `
-      <text class="chart-axis-lbl" x="${P.l - 6}" y="${y(v) + 3}" text-anchor="end">$${v.toFixed(0)}</text>
-      <line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line-softer)" stroke-width="0.5"/>
-    `).join('');
-
-    // X-axis labels (first, mid, last)
-    const dLabels = [];
-    const idxs = points.length > 6 ? [0, Math.floor(points.length / 2), points.length - 1] : points.map((_, i) => i);
-    for (const i of idxs) {
-      const d = new Date(points[i].date);
-      const lbl = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      dLabels.push(`<text class="chart-axis-lbl" x="${x(i)}" y="${H - 6}" text-anchor="middle">${lbl}</text>`);
-    }
-
-    wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      ${yLabels}
-      <path class="chart-band" d="${bandPath}"/>
-      <path class="chart-line" d="${linePath}"/>
-      <g id="chart-dots"></g>
-      ${dLabels.join('')}
-      <rect id="chart-overlay" x="${P.l}" y="${P.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>
-    </svg>`;
-
-    // Hover
-    const svg = wrap.querySelector('svg');
-    const overlay = wrap.querySelector('#chart-overlay');
-    const dotsG = wrap.querySelector('#chart-dots');
-    const tip = document.getElementById('chart-tip');
-
-    overlay.addEventListener('mousemove', (ev) => {
-      const rect = svg.getBoundingClientRect();
-      const px = (ev.clientX - rect.left) * (W / rect.width);
-      const i = Math.max(0, Math.min(points.length - 1, Math.round(((px - P.l) / iw) * (points.length - 1))));
-      const p = points[i];
-      const cx = x(i), cy = y(p.mostly);
-      dotsG.innerHTML = `
-        <line class="chart-hover-line" x1="${cx}" y1="${P.t}" x2="${cx}" y2="${P.t + ih}"/>
-        <circle class="chart-hover-dot" cx="${cx}" cy="${cy}" r="4"/>
-      `;
-      const wrapRect = wrap.getBoundingClientRect();
-      const tipX = (cx / W) * wrapRect.width;
-      tip.style.left = `${Math.min(wrapRect.width - 120, Math.max(0, tipX - 60))}px`;
-      tip.style.top = `${(cy / H) * wrapRect.height - 34}px`;
-      const d = new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      tip.innerHTML = `${d} · <b>$${p.mostly.toFixed(2)}</b>`;
-      tip.style.opacity = '1';
-    });
-    overlay.addEventListener('mouseleave', () => {
-      dotsG.innerHTML = '';
-      tip.style.opacity = '0';
-    });
-  }
-
-  // ── CROSS-MARKET (today) ──
-  // If a specific market is selected in filters, still show all markets for comparison but highlight the selected one
-  const cxRows = allRows.filter(r => {
-    if (filters.variety && r.variety !== filters.variety) return false;
-    if (filters.origin && r.origin !== filters.origin) return false;
-    if (filters.size && r.size !== filters.size) return false;
-    if (filters.package && r.package !== filters.package) return false;
-    return true;
-  });
+  // Cross-market comparison
+  const cxRows = allRows.filter(r => r.commodity === commodity);
   const cxByMarket = U.groupBy(cxRows, r => r.market);
   const perMarket = [];
   for (const [mkt, rs] of cxByMarket) {
-    const agg = U.aggregateCommodity(rs);
-    perMarket.push({ market: mkt, ...agg });
+    const a = U.aggregateCommodity(rs);
+    if (a.mostly != null) perMarket.push({ market: mkt, mostly: a.mostly });
   }
-  perMarket.sort((a, b) => (a.mostly ?? Infinity) - (b.mostly ?? Infinity));
+  perMarket.sort((a, b) => a.mostly - b.mostly);
+  const maxPrice = perMarket.length ? Math.max(...perMarket.map(m => m.mostly)) : 1;
 
-  const cxBody = document.getElementById('cx-tbody');
+  document.getElementById('cx-count').textContent = `· ${perMarket.length} markets`;
+  const cxBody = document.getElementById('cx-body');
   if (!perMarket.length) {
-    cxBody.innerHTML = `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No markets have this exact SKU today.</td></tr>`;
+    cxBody.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted)">No cross-market data.</div>`;
   } else {
-    cxBody.innerHTML = perMarket.map((r, idx) => {
-      const isBest = idx === 0 && r.mostly != null;
-      const isSelected = filters.market === r.market;
-      return `<tr class="${isBest ? 'is-best' : ''}" style="${isSelected ? 'background:var(--pop-04)' : ''}">
-        <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pop);margin-right:6px;vertical-align:middle"></span>${escape(r.market)}${isBest ? '<span class="best-tag">Best</span>' : ''}</td>
-        <td class="r" data-label="Low">${r.low != null ? r.low.toFixed(2) : '—'}</td>
-        <td class="r" data-label="High">${r.high != null ? r.high.toFixed(2) : '—'}</td>
-        <td class="r strong" data-label="Mostly">${r.mostly != null ? r.mostly.toFixed(2) : '—'}</td>
-      </tr>`;
+    cxBody.innerHTML = perMarket.map(m => {
+      const pct = (m.mostly / maxPrice * 100).toFixed(0);
+      const isYours = m.market === market;
+      return `<div class="cx-bar">
+        <span class="mkt-label" style="${isYours ? 'font-weight:700' : ''}">${esc(m.market)}${isYours ? ' ●' : ''}</span>
+        <div style="flex:1"><div class="cx-bar__bar" style="width:${pct}%;background:${isYours ? 'var(--blue)' : 'var(--ink)'}"></div></div>
+        <span class="cx-bar__price">${U.fmtPrice(m.mostly)}</span>
+      </div>`;
     }).join('');
   }
 
-  // ── RELATED SKUs (sibling products in the same commodity) ──
-  // Within the same market (if filtered), or across markets otherwise
-  const relScope = filters.market ? allRows.filter(r => r.market === filters.market) : allRows;
-  // Group by unique variety+origin+size combos
-  const skuKey = (r) => [r.variety || '', r.origin || '', r.size || '', r.package || ''].join('|');
-  const bySku = U.groupBy(relScope, skuKey);
-  const relatedSkus = [];
+  // Related SKUs (sidebar)
+  const skuKey = (r) => [r.variety||'',r.origin||'',r.size||'',r.package||''].join('|');
+  const bySku = U.groupBy(comRows, skuKey);
+  const relList = [];
   for (const [key, rs] of bySku) {
     const [variety, origin, size, pkg] = key.split('|');
-    const agg = U.aggregateCommodity(rs);
-    if (agg.mostly == null && agg.low == null) continue;
-    const isCurrent =
-      (variety === (filters.variety || '')) &&
-      (origin === (filters.origin || '')) &&
-      (size === (filters.size || '')) &&
-      (pkg === (filters.package || ''));
-    relatedSkus.push({ variety, origin, size, pkg, agg, isCurrent, rowCount: rs.length });
+    const a = U.aggregateCommodity(rs);
+    relList.push({ variety, origin, size, pkg, mostly: a.mostly });
   }
-  relatedSkus.sort((a, b) => (a.agg.mostly ?? a.agg.low ?? Infinity) - (b.agg.mostly ?? b.agg.low ?? Infinity));
+  relList.sort((a,b) => (a.mostly ?? 999) - (b.mostly ?? 999));
+  document.getElementById('rel-count').textContent = relList.length;
+  const relEl = document.getElementById('rel-list');
+  relEl.innerHTML = relList.map(s => {
+    const name = s.variety || 'Standard';
+    const spec = [s.origin, s.size, s.pkg].filter(Boolean).join(' · ');
+    return `<div class="watch-row">
+      <div style="flex:1">
+        <div class="watch-row__name">${esc(name)}</div>
+        <div style="font-size:var(--fs-base);color:var(--text-muted)">${esc(spec)}</div>
+      </div>
+      <span class="watch-row__price">${s.mostly != null ? U.fmtPrice(s.mostly) : '—'}</span>
+    </div>`;
+  }).join('');
 
-  document.getElementById('rel-meta').textContent = `${relatedSkus.length} variant${relatedSkus.length === 1 ? '' : 's'}`;
-  const relBody = document.getElementById('rel-body');
-  if (!relatedSkus.length) {
-    relBody.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No variants.</div>`;
-  } else {
-    relBody.innerHTML = relatedSkus.slice(0, 12).map(s => {
-      const name = s.variety || 'Standard';
-      const spec = [s.origin, s.size, s.pkg].filter(Boolean).join(' · ') || '—';
-      const price = s.agg.mostly != null ? U.fmtPrice(s.agg.mostly)
-        : s.agg.low != null ? U.fmtPrice(s.agg.low) : '—';
-      const url = U.detailURL({
-        commodity,
-        variety: s.variety || null,
-        origin: s.origin || null,
-        size: s.size || null,
-        package: s.pkg || null,
-        market: filters.market,
-      });
-      return `<a href="${url}" class="rel-item ${s.isCurrent ? 'is-current' : ''}" style="text-decoration:none;color:inherit">
-        <div style="flex:1">
-          <div class="rel-item__name">${escape(name)}</div>
-          <div class="rel-item__spec">${escape(spec)}</div>
-        </div>
-        <span class="rel-item__price">${price}</span>
-      </a>`;
-    }).join('');
-  }
-
-  // ── MOVEMENT (if data exists for this commodity today) ──
+  // Movement (sidebar)
   const mvBody = document.getElementById('mv-body');
-  const mvMeta = document.getElementById('mv-meta');
   try {
-    const mv = await agraxAPI.movementLatest();
-    if (!mv?.rows?.length) {
-      mvBody.innerHTML = `<div style="font-size:12px;color:var(--muted)">No movement data for this date.</div>`;
-    } else {
-      // Filter to this commodity (fuzzy match — movement uses different capitalization sometimes)
+    const mv = await api.movementLatest();
+    if (mv?.rows?.length) {
       const cLower = commodity.toLowerCase();
-      const forThis = mv.rows.filter(r =>
-        String(r.commodity || '').toLowerCase().includes(cLower) ||
-        cLower.includes(String(r.commodity || '').toLowerCase())
-      );
-      if (!forThis.length) {
-        mvBody.innerHTML = `<div style="font-size:12px;color:var(--muted)">No movement data for ${escape(commodity)} on ${mv.date}.</div>`;
-        mvMeta.textContent = mv.date;
+      const forThis = mv.rows.filter(r => String(r.commodity||'').toLowerCase().includes(cLower));
+      if (forThis.length) {
+        const totalLbs = forThis.reduce((s,r) => s + (r.total_pounds||0), 0);
+        const loads = Math.round(totalLbs / 40000);
+        document.getElementById('ss-ship').textContent = loads.toLocaleString();
+        mvBody.innerHTML = `<div style="font-family:var(--font-mono);font-size:var(--fs-xl2);font-weight:700">${loads.toLocaleString()} loads</div>
+          <div style="font-size:var(--fs-base);color:var(--text-muted);margin-top:4px">${(totalLbs/1e6).toFixed(1)}M lbs total · ${forThis.length} lots</div>`;
       } else {
-        // Group by origin
-        const totalLbs = forThis.reduce((s, r) => s + (r.total_pounds || 0), 0);
-        const byOrigin = {};
-        const byMode = {};
-        for (const r of forThis) {
-          const o = r.origin_name || r.origin_code || 'Unknown';
-          const m = r.trans_mode_full || r.trans_mode || 'Unknown';
-          byOrigin[o] = (byOrigin[o] || 0) + (r.total_pounds || 0);
-          byMode[m] = (byMode[m] || 0) + (r.total_pounds || 0);
-        }
-        const originList = Object.entries(byOrigin).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        const modeList = Object.entries(byMode).sort((a, b) => b[1] - a[1]);
-
-        mvMeta.textContent = mv.date;
-        mvBody.innerHTML = `
-          <div class="info-row">
-            <div class="kpi"><div class="kpi__lbl">Total volume</div><div class="kpi__val">${fmtLbs(totalLbs)}</div></div>
-            <div class="kpi"><div class="kpi__lbl">Origins</div><div class="kpi__val">${Object.keys(byOrigin).length}</div></div>
-            <div class="kpi"><div class="kpi__lbl">Lots</div><div class="kpi__val">${forThis.length}</div></div>
-            <div class="kpi"><div class="kpi__lbl">Top mode</div><div class="kpi__val" style="font-size:13px">${escape(modeList[0]?.[0] || '—')}</div></div>
-          </div>
-          <div style="margin-top:12px">
-            <div style="font-size:10.5px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px">Top origins by volume</div>
-            ${originList.map(([o, lbs]) => {
-              const pct = totalLbs ? (lbs / totalLbs) * 100 : 0;
-              return `<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin:6px 0">
-                <span style="flex:1">${escape(o)}</span>
-                <span class="mono" style="color:var(--muted)">${fmtLbs(lbs)}</span>
-                <div class="bar" style="width:80px"><div style="width:${pct.toFixed(0)}%"></div></div>
-              </div>`;
-            }).join('')}
-          </div>
-        `;
+        mvBody.textContent = 'No movement data for this item.';
       }
-    }
-  } catch (err) {
-    mvBody.innerHTML = `<div style="font-size:12px;color:var(--muted)">Movement endpoint unavailable.</div>`;
-  }
-
-  // ── USDA CONTEXT (national trends) ──
-  const ctxBody = document.getElementById('ctx-body');
-  try {
-    const trends = await agraxAPI.reportTrends(latestDate);
-    const forThis = (trends || []).filter(r =>
-      String(r.commodity || '').toLowerCase() === commodity.toLowerCase()
-    );
-    if (!forThis.length) {
-      ctxBody.innerHTML = `<div style="font-size:12px;color:var(--muted)">No national trends commentary for ${escape(commodity)} today.</div>`;
     } else {
-      ctxBody.innerHTML = forThis.slice(0, 3).map(r => {
-        const note = r.supply_note || r.trading_activity || r.movement || '—';
-        return `<div class="quote-card" style="margin-bottom:8px">
-          <b>${escape(r.commodity)}</b> — ${escape(note)}
-          <span class="quote-card__src">USDA ${escape(r.source_report || 'National Trends')} · ${escape(latestDate)}</span>
-        </div>`;
-      }).join('');
+      mvBody.textContent = 'No movement data available.';
     }
-  } catch (err) {
-    ctxBody.innerHTML = `<div style="font-size:12px;color:var(--muted)">Context unavailable.</div>`;
+  } catch(e) { mvBody.textContent = 'Movement unavailable.'; }
+
+  // Price chart
+  async function drawChart(days) {
+    const wrap = document.getElementById('chart-wrap');
+    try {
+      const rows = await api.history({ commodity, market, days });
+      if (!rows?.length) { wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">No history data.</div>`; return; }
+      const byDate = U.groupBy(rows, r => r.report_date);
+      const points = [];
+      for (const [date, rs] of byDate) {
+        const a = U.aggregateCommodity(rs);
+        if (a.mostly != null) points.push({ date, mostly: a.mostly, low: a.low, high: a.high });
+      }
+      points.sort((a,b) => a.date.localeCompare(b.date));
+      if (points.length < 2) { wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Only ${points.length} data point(s).</div>`; return; }
+
+      // 30-day range
+      if (days >= 30) {
+        const vals = points.map(p => p.mostly);
+        document.getElementById('ss-range').textContent = U.fmtPrice(Math.min(...vals)) + ' – ' + U.fmtPrice(Math.max(...vals));
+      }
+
+      const W = wrap.clientWidth || 800, H = 240;
+      const P = { l: 40, r: 12, t: 16, b: 24 };
+      const iw = W - P.l - P.r, ih = H - P.t - P.b;
+      const allVals = points.flatMap(p => [p.low, p.high, p.mostly].filter(v => v != null));
+      let vMin = Math.min(...allVals), vMax = Math.max(...allVals);
+      const vPad = (vMax - vMin) * 0.1 || 1; vMin -= vPad; vMax += vPad;
+      const x = i => P.l + (i / (points.length - 1)) * iw;
+      const y = v => P.t + (1 - (v - vMin) / (vMax - vMin)) * ih;
+
+      const bandUp = points.map((p,i) => `${i===0?'M':'L'}${x(i)},${y(p.high??p.mostly)}`).join(' ');
+      const bandDn = points.slice().reverse().map((p,i) => `L${x(points.length-1-i)},${y(p.low??p.mostly)}`).join(' ');
+      const linePath = points.map((p,i) => `${i===0?'M':'L'}${x(i)},${y(p.mostly)}`).join(' ');
+
+      const yLabels = [vMax,(vMax+vMin)/2,vMin].map(v => `<text class="chart-axis-lbl" x="${P.l-6}" y="${y(v)+3}" text-anchor="end">$${v.toFixed(0)}</text><line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border-row)" stroke-width="0.5"/>`).join('');
+      const dIdxs = points.length > 6 ? [0, Math.floor(points.length/2), points.length-1] : points.map((_,i) => i);
+      const dLabels = dIdxs.map(i => { const d = U.parseLocalDate(points[i].date); return `<text class="chart-axis-lbl" x="${x(i)}" y="${H-6}" text-anchor="middle">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</text>`; }).join('');
+
+      wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        ${yLabels}
+        <path class="chart-band" d="${bandUp} ${bandDn} Z"/>
+        <path class="chart-line" d="${linePath}"/>
+        <g id="chart-dots"></g>
+        ${dLabels}
+        <rect id="chart-overlay" x="${P.l}" y="${P.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>
+      </svg>`;
+
+      // Hover
+      const svg = wrap.querySelector('svg');
+      const overlay = wrap.querySelector('#chart-overlay');
+      const dotsG = wrap.querySelector('#chart-dots');
+      const tip = document.getElementById('chart-tip');
+      overlay.addEventListener('mousemove', ev => {
+        const rect = svg.getBoundingClientRect();
+        const px = (ev.clientX - rect.left) * (W / rect.width);
+        const i = Math.max(0, Math.min(points.length-1, Math.round(((px - P.l) / iw) * (points.length-1))));
+        const p = points[i], cx = x(i), cy = y(p.mostly);
+        dotsG.innerHTML = `<line class="chart-hover-line" x1="${cx}" y1="${P.t}" x2="${cx}" y2="${P.t+ih}"/><circle class="chart-hover-dot" cx="${cx}" cy="${cy}" r="4"/>`;
+        const wrapRect = wrap.getBoundingClientRect();
+        tip.style.left = `${Math.min(wrapRect.width-120, Math.max(0, (cx/W)*wrapRect.width - 60))}px`;
+        tip.style.top = `${(cy/H)*wrapRect.height - 34}px`;
+        tip.innerHTML = `${U.fmtDate(p.date)} · <b>$${p.mostly.toFixed(2)}</b>`;
+        tip.style.opacity = '1';
+      });
+      overlay.addEventListener('mouseleave', () => { dotsG.innerHTML = ''; tip.style.opacity = '0'; });
+    } catch(e) {
+      wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Chart unavailable.</div>`;
+    }
   }
 
-  // ── helpers ──
-  function fmtLbs(lbs) {
-    if (!lbs) return '0';
-    if (lbs >= 1e6) return (lbs / 1e6).toFixed(1) + 'M lbs';
-    if (lbs >= 1e3) return (lbs / 1e3).toFixed(0) + 'K lbs';
-    return lbs.toFixed(0) + ' lbs';
-  }
-  function escape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  drawChart(30);
+  document.getElementById('range-toggle').addEventListener('click', (e) => {
+    const opt = e.target.closest('.range-toggle__opt');
+    if (!opt) return;
+    document.querySelectorAll('.range-toggle__opt').forEach(o => o.classList.remove('is-active'));
+    opt.classList.add('is-active');
+    currentDays = parseInt(opt.dataset.d);
+    drawChart(currentDays);
+  });
+
   function showError(err) {
-    const el = document.createElement('div');
-    el.className = 'err-banner';
-    el.innerHTML = `<span class="err-banner__icn">!</span><span><b>Couldn't load.</b> ${escape(String(err.message || err))}</span>`;
-    document.getElementById('err-slot').appendChild(el);
+    document.getElementById('err-slot').innerHTML = `<div class="err-banner">${esc(err.message||err)}</div>`;
   }
 })();
 </script>

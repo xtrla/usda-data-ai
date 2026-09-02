@@ -1,1638 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>agraX — Commodity data for the produce supply chain</title>
-<meta name="description" content="Real-time wholesale prices from every U.S. terminal market — plus shipping-point data and movement — refreshed every morning." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230A0B0A'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%2315A24A'/%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body {
-  background: #F5F6F1;
-  color: #0A0B0A;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
-  overflow-x: hidden;
-}
-a { color: #15A24A; text-decoration: none; }
-a:hover { color: #0d7a36; }
-button { font-family: inherit; cursor: pointer; border: 0; background: transparent; padding: 0; }
-::selection { background: rgba(21,162,74,.25); }
-select.agx-select { appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 10px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%238b8f80' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E"); padding-right: 28px !important; }
-
-/* ═════════ NAV ═════════ */
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: #0A0B0A;
-  border-bottom: 0.5px solid #1a1e18;
-}
-.nav__row {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  height: 64px;
-}
-.nav__logo {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #fff;
-  text-decoration: none;
-}
-.nav__logo-img {
-  height: 30px;
-  width: auto;
-  display: block;
-}
-.nav__mark {
-  width: 26px; height: 26px;
-  border-radius: 7px;
-  background: #0A0B0A;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: inset 0 0 0 0.5px #2a2e26;
-}
-.nav__mark span { width: 9px; height: 9px; border-radius: 50%; background: #15A24A; box-shadow: 0 0 8px #15A24A; display: block; }
-.nav__word { font-size: 17px; font-weight: 600; letter-spacing: -0.03em; color: #fff; }
-
-.nav__links {
-  display: flex;
-  gap: 24px;
-  font-size: 13.5px;
-  color: #a3a89a;
-}
-.nav__links a { color: inherit; }
-.nav__links a:hover { color: #fff; }
-.nav__spacer { flex: 1; }
-.nav__actions { display: flex; align-items: center; gap: 10px; }
-.nav__login { color: #a3a89a; font-size: 13px; padding: 8px 6px; cursor: pointer; text-decoration: none; }
-.nav__login:hover { color: #fff; }
-.btn-cta {
-  font-size: 12.5px;
-  font-weight: 500;
-  padding: 9px 16px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #15A24A, #0d7a36);
-  color: #fff;
-  white-space: nowrap;
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.btn-cta:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(21,162,74,.4); }
-
-.nav__burger { display: none; color: #fff; font-size: 22px; padding: 4px; }
-
-@media (max-width: 899px) {
-  .nav__links { display: none; }
-  .nav__spacer { display: none; }
-  .nav__login { display: none; }
-  .nav__actions { margin-left: auto; }
-  .nav__burger { display: block; }
-}
-
-/* Ticker */
-.ticker {
-  border-top: 0.5px solid #1a1e18;
-  overflow: hidden;
-  background: #0d0f0c;
-  padding: 7px 0;
-}
-.ticker__inner {
-  display: flex;
-  gap: 28px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #a3a89a;
-  white-space: nowrap;
-  animation: tk 60s linear infinite;
-}
-.ticker__inner:hover { animation-play-state: paused; }
-@keyframes tk { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.tk-item { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.tk-item .n { color: #e8e8e2; }
-.tk-item .p { color: #8b8f80; }
-.tk-item .up { color: #e8988c; }
-.tk-item .dn { color: #7ED957; }
-.tk-item .flat { color: #8b8f80; }
-
-/* ═════════ HERO ═════════ */
-.hero {
-  position: relative;
-  overflow: hidden;
-  color: #fff;
-}
-.hero__bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image: url("/assets/hero-field.png");
-  background-size: cover;
-  background-position: center;
-}
-.hero__bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, #0A0B0A 28%, rgba(10,11,10,.88) 50%, rgba(10,11,10,.55) 75%, rgba(10,11,10,.35) 100%);
-}
-.hero__grid {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 72px 24px 48px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 40px;
-  position: relative;
-  z-index: 1;
-  align-items: center;
-}
-.hero__copy { max-width: 640px; }
-.eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #7ED957;
-}
-.hero__title {
-  font-size: 44px;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  margin: 14px 0 0;
-  color: #fff;
-}
-.hero__sub {
-  font-size: 16px;
-  color: #c7cbbe;
-  margin-top: 16px;
-  max-width: 560px;
-  line-height: 1.6;
-}
-.hero__btns { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-.btn-cta--big {
-  font-size: 13.5px;
-  padding: 12px 20px;
-  border-radius: 10px;
-}
-.btn-ghost {
-  font-size: 13.5px;
-  font-weight: 500;
-  padding: 12px 20px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.08);
-  border: 0.5px solid rgba(255,255,255,.25);
-  color: #fff;
-  backdrop-filter: blur(4px);
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-ghost:hover { background: rgba(255,255,255,.14); color: #fff; }
-.hero__stats { display: flex; gap: 28px; margin-top: 32px; flex-wrap: wrap; }
-.stat__num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 600; color: #fff; }
-.stat__lbl { font-size: 11.5px; color: #8b9082; margin-top: 2px; }
-
-@media (max-width: 640px) {
-  .hero__title { font-size: 32px; }
-  .hero__grid { padding: 48px 24px 40px; gap: 32px; }
-  .hero__stats { gap: 20px; }
-}
-
-/* Price check card */
-.pc-card {
-  border-radius: 16px;
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  box-shadow: 0 30px 80px rgba(10,15,5,.10);
-  overflow: hidden;
-  max-width: 460px;
-  width: 100%;
-  justify-self: end;
-  align-self: center;
-}
-@media (max-width: 899px) { .pc-card { justify-self: center; } }
-.pc-card__browser {
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 0.5px solid #EFEFEC;
-  background: #FBFBF8;
-}
-.pc-card__dot { width: 8px; height: 8px; border-radius: 50%; background: #E7E7E4; }
-.pc-card__url { margin-left: 10px; font-size: 11px; color: #8b8f80; font-family: 'JetBrains Mono', monospace; }
-.pc-body { padding: 22px; }
-.pc-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #15A24A; }
-.pc-title { font-size: 17px; font-weight: 600; margin-top: 6px; letter-spacing: -0.02em; color: #0A0B0A; }
-.pc-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 16px;
-}
-.pc-field__lbl { font-size: 10.5px; color: #8b8f80; margin-bottom: 5px; }
-.pc-field__select {
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 9px 10px;
-  border-radius: 9px;
-  background: #F2F1EC;
-  border: 0.5px solid #E7E7E4;
-  color: #0A0B0A;
-  outline: none;
-}
-.pc-field__select:focus { border-color: #15A24A; }
-.pc-check-btn {
-  display: block;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 11px 16px;
-  border-radius: 9px;
-  background: linear-gradient(180deg, #101210, #000);
-  color: #fff;
-  cursor: pointer;
-  margin-top: 12px;
-  width: 100%;
-  border: 0;
-}
-.pc-check-btn:hover { background: linear-gradient(180deg, #1a1c1a, #0d0f0d); }
-.pc-chips { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
-.pc-chip {
-  font-size: 11px;
-  padding: 5px 11px;
-  border-radius: 20px;
-  background: #F2F1EC;
-  color: #4a5045;
-  cursor: pointer;
-  border: 0;
-  transition: background 0.12s, color 0.12s;
-}
-.pc-chip:hover { background: #E7E7E4; color: #0A0B0A; }
-.pc-result {
-  margin-top: 16px;
-  border-radius: 12px;
-  border: 0.5px solid #E4EBD6;
-  background: linear-gradient(135deg, #fff, #F6FAF2);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-}
-.pc-result::before {
-  content: '';
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(21,162,74,.14) 0%, transparent 65%);
-}
-.pc-result__top {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.pc-result__name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12.5px;
-  font-weight: 600;
-}
-.pc-result__cat { width: 6px; height: 6px; border-radius: 50%; background: #B91C1C; }
-.pc-result__sub { font-size: 11px; color: #4a5045; margin-top: 2px; }
-.pc-result__status {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.pc-result__price {
-  position: relative;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-top: 10px;
-  color: #0A0B0A;
-}
-.pc-result__chg { font-size: 13px; font-weight: 600; margin-left: 8px; }
-.pc-result__range { position: relative; font-size: 11.5px; color: #8b8f80; margin-top: 4px; }
-.pc-result__cta {
-  position: relative;
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 11.5px;
-  color: #15A24A;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-/* ═════════ FEATURES ═════════ */
-.section {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 56px 24px 8px;
-}
-.section__hd { max-width: 560px; margin-bottom: 36px; }
-.section__eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #8b8f80; }
-.section__title { font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 8px 0 0; line-height: 1.15; }
-
-.feat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-.feat-card {
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  border-radius: 14px;
-  padding: 22px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.feat-card:hover { color: inherit; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(10,15,5,.06); }
-.feat-card__ico {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  background: #EAF7E5;
-  color: #15A24A;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
-.feat-card__title { font-size: 17px; font-weight: 600; margin-top: 14px; }
-.feat-card__desc { font-size: 13px; color: #4a5045; margin-top: 6px; line-height: 1.55; }
-
-/* Feature preview tables */
-.feat-table-wrap {
-  background: #FBFBF8;
-  border: 0.5px solid #EFEFEC;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.feat-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
-.feat-tbl thead tr { color: #8b8f80; background: #F5F6F1; }
-.feat-tbl th { text-align: left; font-weight: 500; padding: 7px 12px; }
-.feat-tbl th.r { text-align: right; }
-.feat-tbl tbody tr { border-top: 0.5px solid #EFEFEC; }
-.feat-tbl td { padding: 7px 12px; font-weight: 600; }
-.feat-tbl td.r { text-align: right; font-family: 'JetBrains Mono', monospace; }
-.feat-tbl .row-best { background: rgba(21,162,74,.05); }
-.color-dn { color: #15A24A; }
-.color-up { color: #B91C1C; }
-.color-flat { color: #8b8f80; }
-
-.spread-card {
-  background: linear-gradient(135deg, #fff, #F6FAF2);
-  border: 0.5px solid #E4EBD6;
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.spread-card__ico {
-  width: 32px; height: 32px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #15A24A, #0d7a36);
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.spread-card__body { flex: 1; min-width: 0; }
-.spread-card__title { font-size: 12.5px; font-weight: 600; }
-.spread-card__meta { font-size: 11.5px; color: #4a5045; margin-top: 2px; }
-.spread-card__meta b { font-family: 'JetBrains Mono', monospace; color: #15A24A; }
-
-.mode-list { background: #FBFBF8; border: 0.5px solid #EFEFEC; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; }
-.mode-row { }
-.mode-row__lbl { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; color: #4a5045; }
-.mode-row__val { font-family: 'JetBrains Mono', monospace; }
-.mode-row__bar { height: 6px; background: #F2F1EC; border-radius: 3px; overflow: hidden; }
-.mode-row__fill { height: 100%; background: linear-gradient(90deg, #15A24A, #7ED957); }
-
-.alert-list { background: #FBFBF8; border: 0.5px solid #EFEFEC; border-radius: 10px; padding: 6px 4px; display: flex; flex-direction: column; gap: 2px; }
-.alert-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 11.5px;
-}
-.alert-row.pos { background: linear-gradient(90deg, rgba(21,162,74,.08), transparent); }
-.alert-row.neg { background: linear-gradient(90deg, rgba(185,28,28,.08), transparent); }
-.alert-row__icn {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px;
-  flex-shrink: 0;
-}
-.alert-row.pos .alert-row__icn { background: #15A24A; }
-.alert-row.neg .alert-row__icn { background: #B91C1C; }
-
-/* ═════════ TERMINAL MARKETS SHOWCASE ═════════ */
-.showcase {
-  background: radial-gradient(120% 100% at 85% 0%, #DCF0D2 0%, #EAF3E0 38%, #F5F6F1 72%);
-  position: relative;
-  overflow: hidden;
-  margin-top: 56px;
-}
-.showcase::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(21,162,74,.07) 1px, transparent 1px);
-  background-size: 16px 16px;
-}
-.showcase__inner {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 64px 24px;
-  position: relative;
-}
-.showcase__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 40px;
-  align-items: center;
-}
-.showcase__copy { max-width: 480px; }
-.showcase__title { font-size: 26px; font-weight: 600; letter-spacing: -0.025em; margin: 8px 0 0; line-height: 1.2; }
-.showcase__sub { font-size: 13.5px; color: #4a5045; margin-top: 10px; line-height: 1.6; }
-.showcase__mock {
-  border-radius: 16px;
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  box-shadow: 0 20px 60px rgba(10,15,5,.08);
-  overflow: hidden;
-  min-width: 0;
-}
-.mock-tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.mock-inner { background: linear-gradient(135deg, #fff, #F6FAF2); }
-.mock-header { padding: 18px 22px 14px; display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
-.mock-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(21,162,74,.09);
-  color: #15A24A;
-  font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-.mock-tag__dot { width: 6px; height: 6px; border-radius: 50%; background: #15A24A; }
-.mock-title { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; margin-top: 8px; }
-.mock-sub { font-size: 12px; color: #4a5045; margin-top: 4px; }
-.mock-actions { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
-.mock-btn {
-  font-size: 11.5px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #0A0B0A;
-  cursor: pointer;
-  text-decoration: none;
-}
-.mock-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 14px 22px;
-  background: #FBFBF8;
-  border-top: 0.5px solid #EFEFEC;
-  border-bottom: 0.5px solid #EFEFEC;
-}
-.mock-kpi__lbl { font-size: 10px; color: #8b8f80; }
-.mock-kpi__val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; margin-top: 2px; }
-.mock-kpi__sub { font-size: 10px; color: #8b8f80; }
-.mock-chips { display: flex; gap: 6px; padding: 10px 22px; border-bottom: 0.5px solid #EFEFEC; flex-wrap: wrap; }
-.mock-chip {
-  font-size: 11px;
-  padding: 5px 11px;
-  border-radius: 20px;
-  background: #F2F1EC;
-  color: #4a5045;
-}
-.mock-chip.is-active { background: #15A24A; color: #fff; font-weight: 500; }
-.mock-tbl { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; }
-.mock-tbl thead tr { color: #8b8f80; background: #FBFBF8; }
-.mock-tbl th { text-align: left; font-weight: 500; padding: 8px 22px; }
-.mock-tbl th.r { text-align: right; padding: 8px 16px; }
-.mock-tbl th.r:last-child { padding: 8px 22px; }
-.mock-tbl tbody tr { border-top: 0.5px solid #F0F0ED; }
-.mock-tbl tbody tr.is-best { background: rgba(21,162,74,.05); }
-.mock-tbl td { padding: 9px 22px; font-weight: 600; }
-.mock-tbl td.r { padding: 9px 16px; text-align: right; font-family: 'JetBrains Mono', monospace; }
-.mock-tbl td.r:last-child { padding: 9px 22px; }
-.pin { width: 6px; height: 6px; border-radius: 50%; background: #15A24A; display: inline-block; margin-right: 6px; }
-.best-tag { font-size: 9.5px; color: #15A24A; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-left: 4px; }
-
-/* ═════════ WHO IT'S FOR ═════════ */
-.audience {
-  background: #EFF2E7;
-  position: relative;
-}
-.audience__inner {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 64px 24px;
-  position: relative;
-}
-.audience__eyebrow {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #4a7a3a;
-  margin-bottom: 24px;
-}
-.aud-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-.aud-card {
-  background: #fff;
-  border: 0.5px solid #DDE4D2;
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-}
-.aud-badge {
-  position: absolute;
-  top: 12px; left: 12px;
-  z-index: 1;
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #15A24A;
-  color: #fff;
-}
-.aud-img {
-  width: 100%;
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-.aud-img.aud-img--buyers { background: linear-gradient(135deg, #1a3a2a, #0d1f14); }
-.aud-img.aud-img--brokers { background: linear-gradient(135deg, #2d2f34, #1a1b1e); }
-.aud-img.aud-img--growers { background: linear-gradient(135deg, #3d5920, #2a4015); }
-.aud-img__icon { position: relative; z-index: 1; color: #fff; opacity: 0.9; }
-.aud-img__pattern {
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.06) 1.5px, transparent 1.5px);
-  background-size: 14px 14px;
-  opacity: 0.5;
-}
-.aud-body { padding: 18px 20px; }
-.aud-title { font-size: 14.5px; font-weight: 600; }
-.aud-desc { font-size: 12.5px; color: #4a5045; margin-top: 6px; line-height: 1.55; }
-
-/* ═════════ PRICE POINTS ═════════ */
-.pp-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-}
-.pp-card {
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  border-radius: 14px;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-}
-.pp-card__label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #15A24A;
-}
-.pp-card__icon { font-size: 14px; }
-.pp-card__title { font-size: 19px; font-weight: 600; margin-top: 12px; letter-spacing: -0.02em; }
-.pp-card__desc { font-size: 13px; color: #4a5045; margin-top: 8px; line-height: 1.6; flex: 1; }
-.pp-card__stat {
-  border-top: 0.5px solid #EFEFEC;
-  margin-top: 18px;
-  padding-top: 16px;
-}
-.pp-card__price {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 26px;
-  font-weight: 600;
-  color: #0A0B0A;
-}
-.pp-card__price small { font-size: 13px; font-weight: 500; color: #8b8f80; font-family: 'JetBrains Mono', monospace; }
-.pp-card__meta { font-size: 11.5px; color: #8b8f80; margin-top: 4px; }
-
-/* ═════════ THE SPREAD ═════════ */
-.spread-hero {
-  background: linear-gradient(160deg, #0A0B0A, #132817);
-  border-radius: 20px;
-  padding: 48px 40px;
-  position: relative;
-  overflow: hidden;
-}
-.spread-hero__dots {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
-  background-size: 18px 18px;
-  opacity: .5;
-  pointer-events: none;
-}
-.spread-hero__grid {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 40px;
-  align-items: center;
-}
-.spread-hero__copy { color: #fff; }
-.spread-hero__eyebrow {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #7ED957;
-}
-.spread-hero__title {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin: 12px 0 0;
-  color: #fff;
-  text-transform: uppercase;
-}
-.spread-hero__sub {
-  font-size: 13.5px;
-  color: #c7cbbe;
-  margin-top: 14px;
-  line-height: 1.65;
-  max-width: 440px;
-}
-.spread-hero__list {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.spread-hero__list li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  color: #e8e8e2;
-}
-.spread-hero__list li span { color: #7ED957; }
-
-.spread-panel {
-  background: rgba(255,255,255,.03);
-  border: 0.5px solid rgba(255,255,255,.10);
-  border-radius: 14px;
-  padding: 22px;
-}
-.spread-panel__code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #8b9082;
-  letter-spacing: 0.04em;
-}
-.spread-row { margin-top: 18px; }
-.spread-row__lbl {
-  font-size: 11px;
-  color: #8b9082;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.spread-row__body {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 4px;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.spread-row__name { font-size: 13.5px; color: #e8e8e2; }
-.spread-row__val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 18px;
-  font-weight: 600;
-  color: #fff;
-  flex-shrink: 0;
-}
-.spread-row__bar {
-  height: 2px;
-  background: rgba(255,255,255,.05);
-  border-radius: 2px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-.spread-row__fill { height: 100%; border-radius: 2px; }
-.spread-row__fill--fob { background: #7ED957; }
-.spread-row__fill--terminal { background: #4a90e2; }
-
-.spread-summary {
-  margin-top: 20px;
-  background: rgba(21,162,74,.10);
-  border: 0.5px solid rgba(126,217,87,.25);
-  border-radius: 12px;
-  padding: 16px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.spread-summary__lbl {
-  font-size: 11px;
-  color: #a8e0a0;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.spread-summary__right { text-align: right; }
-.spread-summary__amt {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 22px;
-  font-weight: 700;
-  color: #7ED957;
-}
-.spread-summary__unit {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: #a8e0a0;
-  margin-left: 6px;
-}
-.spread-summary__pct { font-size: 11px; color: #8b9082; margin-top: 2px; }
-
-@media (max-width: 640px) {
-  .spread-hero { padding: 32px 22px; }
-  .spread-hero__title { font-size: 22px; }
-  .spread-panel { padding: 18px 16px; }
-  .pp-card__price { font-size: 22px; }
-}
-
-/* ═════════ PRICING ═════════ */
-.pricing {
-  background: #fff;
-  border-top: 0.5px solid #E7E7E4;
-  padding: 64px 0;
-}
-.pricing__inner {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-.pricing__title { font-size: 30px; font-weight: 600; letter-spacing: -0.025em; text-align: center; margin: 8px 0 0; }
-.pricing__sub { text-align: center; font-size: 14px; color: #4a5045; margin-top: 8px; }
-.pricing__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 40px;
-}
-.plan {
-  background: #fff;
-  border: 0.5px solid #E7E7E4;
-  border-radius: 14px;
-  padding: 28px;
-  position: relative;
-}
-.plan--feat {
-  background: linear-gradient(160deg, #0A0B0A, #12140F);
-  color: #fff;
-  border: none;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-.plan--feat::before {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 150px; height: 150px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(21,162,74,.35), transparent 65%);
-  pointer-events: none;
-}
-.plan__name { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #8b8f80; position: relative; }
-.plan--feat .plan__name { color: #7ED957; }
-.plan__price { font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; margin-top: 12px; position: relative; }
-.plan__price small { font-size: 13px; color: #8b8f80; font-family: 'Inter', sans-serif; font-weight: 400; margin-left: 4px; }
-.plan--feat .plan__price small { color: #a3a89a; }
-.plan__desc { font-size: 12.5px; color: #4a5045; margin-top: 4px; position: relative; }
-.plan--feat .plan__desc { color: #a3a89a; }
-.plan__list { list-style: none; padding: 0; margin: 20px 0; font-size: 13px; position: relative; }
-.plan__list li { padding: 6px 0; display: flex; align-items: flex-start; gap: 8px; }
-.plan__list li::before { content: '✓'; color: #15A24A; font-weight: 600; flex-shrink: 0; }
-.plan--feat .plan__list li::before { color: #7ED957; }
-.plan__cta {
-  display: block;
-  text-align: center;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  position: relative;
-}
-.plan .plan__cta { background: #F2F1EC; color: #0A0B0A; }
-.plan .plan__cta:hover { background: #E7E7E4; color: #0A0B0A; }
-.plan--feat .plan__cta { background: linear-gradient(135deg, #15A24A, #0d7a36); color: #fff; }
-.plan--feat .plan__cta:hover { color: #fff; }
-
-/* ═════════ CTA ═════════ */
-.final-cta { max-width: 1180px; margin: 0 auto; padding: 40px 24px 64px; }
-.final-cta__card {
-  background: linear-gradient(160deg, #0A0B0A, #132817);
-  border-radius: 20px;
-  padding: 56px 40px;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.final-cta__card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
-  background-size: 18px 18px;
-  opacity: .5;
-}
-.final-cta__card::after {
-  content: '';
-  position: absolute;
-  top: -80px; left: 50%;
-  transform: translateX(-50%);
-  width: 320px; height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(21,162,74,.35), transparent 65%);
-}
-.final-cta__title { position: relative; font-size: 26px; font-weight: 600; letter-spacing: -0.025em; color: #fff; max-width: 520px; margin: 0 auto; line-height: 1.25; }
-.final-cta__sub { position: relative; font-size: 13.5px; color: #a3a89a; margin-top: 10px; }
-.final-cta__btn { position: relative; display: inline-block; margin-top: 24px; padding: 13px 26px; border-radius: 10px; font-size: 13.5px; font-weight: 500; background: linear-gradient(135deg, #15A24A, #0d7a36); color: #fff; text-decoration: none; }
-.final-cta__btn:hover { color: #fff; }
-
-/* ═════════ FOOTER ═════════ */
-.footer {
-  border-top: 0.5px solid #E7E7E4;
-  padding: 28px 24px;
-}
-.footer__inner {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.footer__logo { display: flex; align-items: center; gap: 8px; }
-.footer__logo-img { height: 20px; width: auto; display: block; }
-.footer__mark { width: 20px; height: 20px; border-radius: 6px; background: #0A0B0A; display: flex; align-items: center; justify-content: center; }
-.footer__mark span { width: 7px; height: 7px; border-radius: 50%; background: #15A24A; display: block; }
-.footer__word { font-size: 13px; font-weight: 600; letter-spacing: -0.03em; }
-.footer__copy { margin-left: auto; font-size: 11.5px; color: #8b8f80; }
-
-@media (max-width: 640px) {
-  .section, .showcase__inner, .audience__inner, .final-cta { padding-left: 20px; padding-right: 20px; }
-  .final-cta__card { padding: 40px 24px; }
-  .final-cta__title { font-size: 22px; }
-  .section__title { font-size: 24px; }
-  .showcase__title, .pricing__title { font-size: 22px; }
-  .mock-kpi-grid { grid-template-columns: repeat(2, 1fr); padding: 12px 16px; gap: 6px; }
-  .mock-kpi__val { font-size: 14px; }
-  .mock-header { padding: 14px 16px 10px; }
-  .mock-title { font-size: 18px; }
-  .mock-chips { padding: 8px 16px; gap: 4px; }
-  .mock-chip { font-size: 10.5px; padding: 4px 9px; }
-  .mock-tbl th, .mock-tbl td { padding: 8px 12px !important; font-size: 11.5px; }
-  .nav__logo-img { height: 26px; }
-  .hero__grid { padding: 40px 20px 32px; }
-  .pc-body { padding: 18px; }
-}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgraX — Commodity data for produce buyers</title>
+<meta name="description" content="Market prices, origin costs, and shipment volumes — every commodity, everyday. Free USDA wholesale produce pricing from 12 terminal markets and 9 shipping points.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%23C2410C'/%3E%3Ctext x='18' y='26' font-family='system-ui' font-size='22' font-weight='800' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/components.css">
+<script src="/js/config.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
 </head>
 <body>
+<div style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
 
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- NAV                                                                -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<nav class="nav">
-  <div class="nav__row">
-    <a class="nav__logo" href="/">
-      <img src="/assets/agrax-logo-white.png" alt="agraX" class="nav__logo-img" />
-    </a>
-    <div class="nav__links">
-      <a href="#features">Product</a>
-      <a href="/app/markets">Markets</a>
-      <a href="/app/movement">Movement</a>
-      <a href="#pricing">Pricing</a>
+<!-- HEADER -->
+<header style="position:sticky;top:0;z-index:60;background:var(--dark);color:#fff;display:flex;align-items:center;gap:20px;height:52px;padding:0 20px;border-bottom:1px solid var(--dark-border)">
+  <a href="/" style="display:flex;align-items:center;gap:11px;flex:none;color:#fff;text-decoration:none">
+    <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:20px;width:auto;display:block">
+    <span style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#525252">Free USDA wholesale prices</span>
+  </a>
+  <div style="flex:1;max-width:400px;position:relative;display:flex;align-items:center">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:10px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+    <input id="hero-search-hdr" placeholder="Search 1,284 produce items" style="width:100%;height:30px;background:#141414;border:1px solid #262626;border-radius:5px;padding:0 11px 0 30px;color:#fff;font-size:12.5px;outline:none">
+  </div>
+  <div style="display:flex;align-items:center;gap:22px;flex:none;margin-left:auto">
+    <a href="/browse" style="font-size:12.5px;font-weight:500;color:#fff">Browse</a>
+    <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:3px;background:#D97706"></span>Pro</span>
+    <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;cursor:pointer">Sign in</span>
+    <a href="#" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid #262626;background:#141414;color:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center">Create account</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section style="position:relative;overflow:hidden;padding:36px 20px 26px;display:flex;align-items:flex-end;gap:44px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+  <div style="position:absolute;inset:0;z-index:0;background:url('/assets/farm-hero.webp') center/cover no-repeat"></div>
+  <div style="position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(103deg,#F3F4F0 0%,#F3F4F0 44%,rgba(243,244,240,0.93) 60%,rgba(243,244,240,0.62) 78%,rgba(243,244,240,0.30) 100%)"></div>
+  <div style="position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(0deg,rgba(243,244,240,0.55) 0%,rgba(243,244,240,0) 55%)"></div>
+
+  <div style="position:relative;z-index:2;flex:1;min-width:420px;max-width:720px">
+    <div style="display:flex;align-items:center;gap:9px">
+      <span style="width:5px;height:5px;border-radius:3px;background:#16A34A"></span>
+      <span style="font-size:10px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-heading)" id="hero-date">—</span>
     </div>
-    <div class="nav__spacer"></div>
-    <div class="nav__actions">
-      <a href="/app" class="nav__login">Log in</a>
-      <a href="/app" class="btn-cta">Start free trial</a>
-      <button class="nav__burger" aria-label="Menu" id="nav-burger">☰</button>
+    <h1 style="margin:16px 0 0;font-size:55px;font-weight:900;letter-spacing:-0.045em;line-height:1.02">Commodity data<br>for produce buyers</h1>
+    <p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:var(--text-secondary);max-width:600px">Market prices, origin costs, and shipment volumes — every commodity, everyday.</p>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:22px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px;max-width:420px;position:relative;display:flex;align-items:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="1.9" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+        <input id="hero-search" placeholder='Try "Hass 48s", "romaine", "Nogales"' style="width:100%;height:42px;border:1px solid #D8DCD2;border-radius:7px;background:#fff;padding:0 14px 0 36px;font-size:14px;outline:none">
+      </div>
+      <a href="/browse" id="browse-btn" class="btn btn--lg">Browse prices</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;margin-top:12px;flex-wrap:wrap" id="popular-pills">
+      <span style="font-size:11.5px;color:var(--text-dim);flex:none">Popular</span>
     </div>
   </div>
-  <div class="ticker">
-    <div class="ticker__inner" id="ticker">
-      <!-- Populated by JS -->
-    </div>
-  </div>
-</nav>
 
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- HERO                                                               -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="hero">
-  <div class="hero__bg"></div>
-  <div class="hero__grid">
-    <div class="hero__copy">
-      <div class="eyebrow">Prices, shipping points &amp; movement — daily</div>
-      <h1 class="hero__title">Commodity Data For The Produce Supply Chain</h1>
-      <p class="hero__sub">Real-time wholesale prices from every U.S. terminal market — plus shipping-point data and movement — refreshed every morning before your first call.</p>
-      <div class="hero__btns">
-        <a href="/app" class="btn-cta btn-cta--big">Start free trial</a>
-        <a href="/app/markets" class="btn-ghost">See a live market →</a>
-      </div>
-      <div class="hero__stats">
-        <div><div class="stat__num">12</div><div class="stat__lbl">terminal markets</div></div>
-        <div><div class="stat__num">260+</div><div class="stat__lbl">commodities tracked</div></div>
-        <div><div class="stat__num">6:00am</div><div class="stat__lbl">daily refresh, ET</div></div>
-      </div>
-    </div>
-
-    <!-- Price check card -->
-    <div class="pc-card">
-      <div class="pc-card__browser">
-        <span class="pc-card__dot"></span>
-        <span class="pc-card__dot"></span>
-        <span class="pc-card__dot"></span>
-        <span class="pc-card__url">app.agra-x.com/price-check</span>
-      </div>
-      <div class="pc-body">
-        <div class="pc-eyebrow">Try it — live price check</div>
-        <div class="pc-title">What's it going for today?</div>
-
-        <div class="pc-fields">
-          <div>
-            <div class="pc-field__lbl">Commodity</div>
-            <select class="agx-select pc-field__select" id="pc-com">
-              <!-- Populated by JS -->
-            </select>
-          </div>
-          <div>
-            <div class="pc-field__lbl">Terminal market</div>
-            <select class="agx-select pc-field__select" id="pc-mkt">
-              <!-- Populated by JS -->
-            </select>
-          </div>
-        </div>
-
-        <button class="pc-check-btn" id="pc-check">Check price →</button>
-
-        <div class="pc-chips" id="pc-chips">
-          <!-- Populated by JS -->
-        </div>
-
-        <div class="pc-result" id="pc-result">
-          <div class="pc-result__top">
-            <div>
-              <div class="pc-result__name">
-                <span class="pc-result__cat" id="pc-cat"></span>
-                <span id="pc-name">—</span>
-              </div>
-              <div class="pc-result__sub" id="pc-sub">—</div>
-            </div>
-            <span class="pc-result__status" id="pc-status">—</span>
-          </div>
-          <div class="pc-result__price">
-            <span id="pc-price">—</span>
-            <span class="pc-result__chg" id="pc-chg"></span>
-          </div>
-          <div class="pc-result__range" id="pc-range">—</div>
-          <a class="pc-result__cta" id="pc-open" href="/app/markets">Open in Market Read →</a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div style="position:relative;z-index:2;flex:none;display:grid;grid-template-columns:repeat(2,152px);gap:8px" id="hero-stats"></div>
 </section>
 
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- FEATURES                                                           -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="section" id="features">
-  <div class="section__hd">
-    <div class="section__eyebrow">Everything the supply chain needs</div>
-    <h2 class="section__title">One feed. Every terminal, origin, and mile in between.</h2>
-  </div>
-
-  <div class="feat-grid">
-    <a class="feat-card" href="/app/markets">
+<!-- WHAT AGRAX COVERS -->
+<section style="padding:32px 20px 30px;border-bottom:1px solid var(--border)">
+  <div class="eyebrow">What AgraX covers</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:13px">
       <div>
-        <div class="feat-card__ico">◈</div>
-        <div class="feat-card__title">Terminal markets</div>
-        <div class="feat-card__desc">Compare a single commodity across all 12 U.S. terminals side by side — low, high, mostly, and the spread.</div>
+        <div style="font-size:14.5px;font-weight:600;letter-spacing:-0.02em">Market prices</div>
+        <p style="margin:5px 0 0;font-size:12.5px;line-height:1.6;color:var(--text-secondary)">Every variety, origin, grade and pack reporting at 12 terminal markets, with the price each one earned.</p>
       </div>
-      <div class="feat-table-wrap">
-        <table class="feat-tbl">
-          <thead><tr><th>Market</th><th class="r">Mostly</th><th class="r">Chg</th></tr></thead>
-          <tbody>
-            <tr class="row-best"><td>Los Angeles</td><td class="r">37.50</td><td class="r color-dn">−2.6%</td></tr>
-            <tr><td>New York</td><td class="r">41.00</td><td class="r color-up">+4.0%</td></tr>
-            <tr><td>Boston</td><td class="r">44.00</td><td class="r color-up">+5.2%</td></tr>
-          </tbody>
-        </table>
+      <div style="border:1px solid var(--border-inset);border-radius:8px;padding:10px 11px;background:var(--card-inset)">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 66px 62px;gap:8px;padding-bottom:7px;border-bottom:1px solid var(--border)">
+          <span class="eyebrow--sm">Commodity</span><span class="eyebrow--sm" style="text-align:right">Reporting</span><span class="eyebrow--sm" style="text-align:right">Tone</span>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 66px 62px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">
+          <span style="font-size:12px;font-weight:600">Avocados</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-secondary);text-align:right">18</span>
+          <span style="display:flex;justify-content:flex-end"><span class="tone tone--sm tone--higher"><span>↑</span> Higher</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 66px 62px;gap:8px;align-items:center;padding:8px 0">
+          <span style="font-size:12px;font-weight:600">Onions, Yellow</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-secondary);text-align:right">13</span>
+          <span style="display:flex;justify-content:flex-end"><span class="tone tone--sm tone--lower"><span>↓</span> Lower</span></span>
+        </div>
       </div>
-    </a>
-
-    <a class="feat-card" href="/app/shipping">
+    </div>
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:13px">
       <div>
-        <div class="feat-card__ico">➜</div>
-        <div class="feat-card__title">Shipping points</div>
-        <div class="feat-card__desc">FOB origin pricing — what growers receive at the packing shed, before freight.</div>
+        <div style="font-size:14.5px;font-weight:600;letter-spacing:-0.02em">Origin costs</div>
+        <p style="margin:5px 0 0;font-size:12.5px;line-height:1.6;color:var(--text-secondary)">Shipping-point FOB from the districts that load the truck, so you can see the market's cost before freight.</p>
       </div>
-      <div class="spread-card">
-        <div class="spread-card__ico">➜</div>
-        <div class="spread-card__body">
-          <div class="spread-card__title">Fresno → New York</div>
-          <div class="spread-card__meta">FOB $11 · NY $14 · spread <b>+27%</b></div>
+      <div style="border:1px solid var(--border-inset);border-radius:8px;padding:10px 11px;background:var(--card-inset)">
+        <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:7px;border-bottom:1px solid var(--border)">
+          <span class="eyebrow--sm" style="flex:1">Shipping point</span><span class="eyebrow--sm">FOB · w/w</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--surface-row)">
+          <span style="flex:1;font-size:12px;font-weight:500">Nogales, AZ</span>
+          <span style="font-family:var(--mono);font-size:11.5px">$25.94</span>
+          <span style="font-family:var(--mono);font-size:10.5px;color:var(--down);width:44px;text-align:right">−12%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0">
+          <span style="flex:1;font-size:12px;font-weight:500">Salinas, CA</span>
+          <span style="font-family:var(--mono);font-size:11.5px">$12.80</span>
+          <span style="font-family:var(--mono);font-size:10.5px;color:var(--up);width:44px;text-align:right">+7%</span>
         </div>
       </div>
-    </a>
-
-    <a class="feat-card" href="/app/movement">
+    </div>
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:13px">
       <div>
-        <div class="feat-card__ico">◆</div>
-        <div class="feat-card__title">Movement</div>
-        <div class="feat-card__desc">Physical volume by mode and origin — a leading indicator for tomorrow's prices.</div>
+        <div style="font-size:14.5px;font-weight:600;letter-spacing:-0.02em">Shipment volumes</div>
+        <p style="margin:5px 0 0;font-size:12.5px;line-height:1.6;color:var(--text-secondary)">Six weeks of loads per commodity, so a price move reads against the supply behind it.</p>
       </div>
-      <div class="mode-list">
-        <div class="mode-row">
-          <div class="mode-row__lbl"><span>🚚 Truck</span><span class="mode-row__val">91%</span></div>
-          <div class="mode-row__bar"><div class="mode-row__fill" style="width:91%"></div></div>
+      <div style="border:1px solid var(--border-inset);border-radius:8px;padding:10px 11px;background:var(--card-inset)">
+        <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:9px;border-bottom:1px solid var(--border)">
+          <span class="eyebrow--sm" style="flex:1">Avocados · loads</span>
+          <span style="font-family:var(--mono);font-size:10.5px;color:var(--down)">−15% w/w</span>
         </div>
-        <div class="mode-row">
-          <div class="mode-row__lbl"><span>🚂 Rail</span><span class="mode-row__val">3%</span></div>
-          <div class="mode-row__bar"><div class="mode-row__fill" style="width:3%"></div></div>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:44px;padding:10px 0 0">
+          <span style="flex:1;height:22px;background:#E4E7DF;border-radius:1px"></span>
+          <span style="flex:1;height:30px;background:#E4E7DF;border-radius:1px"></span>
+          <span style="flex:1;height:26px;background:#E4E7DF;border-radius:1px"></span>
+          <span style="flex:1;height:34px;background:#E4E7DF;border-radius:1px"></span>
+          <span style="flex:1;height:31px;background:#E4E7DF;border-radius:1px"></span>
+          <span style="flex:1;height:15px;background:var(--down);border-radius:1px"></span>
         </div>
-        <div class="mode-row">
-          <div class="mode-row__lbl"><span>✈️ Air</span><span class="mode-row__val">6%</span></div>
-          <div class="mode-row__bar"><div class="mode-row__fill" style="width:6%"></div></div>
-        </div>
-      </div>
-    </a>
-
-    <a class="feat-card" href="/app/watchlist">
-      <div>
-        <div class="feat-card__ico">⚡</div>
-        <div class="feat-card__title">Alerts &amp; watchlist</div>
-        <div class="feat-card__desc">Set a threshold. Get pinged the moment a price crosses it — nothing to refresh.</div>
-      </div>
-      <div class="alert-list">
-        <div class="alert-row pos"><span class="alert-row__icn">!</span>Strawberries dropped below $15 · NY</div>
-        <div class="alert-row neg"><span class="alert-row__icn">!</span>Iceberg crossed $22 · LA</div>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- TERMINAL MARKETS SHOWCASE                                          -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="showcase">
-  <div class="showcase__inner">
-    <div class="showcase__grid">
-      <div class="showcase__copy">
-        <div class="section__eyebrow">Every terminal, side by side</div>
-        <h2 class="showcase__title">Stop calling around. See the whole country's price at once.</h2>
-        <p class="showcase__sub">Pick a commodity and instantly see low, high, and mostly across every terminal that trades it — sorted so the best price surfaces first.</p>
-        <a href="/app/markets" class="btn-cta btn-cta--big" style="margin-top: 20px;">Open Terminal Markets →</a>
-      </div>
-      <div class="showcase__mock">
-        <div class="pc-card__browser">
-          <span class="pc-card__dot"></span>
-          <span class="pc-card__dot"></span>
-          <span class="pc-card__dot"></span>
-          <span class="pc-card__url">app.agra-x.com/markets</span>
-        </div>
-        <div class="mock-inner">
-          <div class="mock-header">
-            <div>
-              <span class="mock-tag"><span class="mock-tag__dot"></span>Fruits</span>
-              <div class="mock-title">Hass avocados</div>
-              <div class="mock-sub">2-layer 48s · Mexico origin · across 12 U.S. terminals</div>
-            </div>
-            <div class="mock-actions">
-              <a href="/app" class="mock-btn">★ Watch</a>
-              <a href="/app" class="mock-btn">↗ Export</a>
-            </div>
-          </div>
-          <div class="mock-kpi-grid">
-            <div><div class="mock-kpi__lbl">National avg mostly</div><div class="mock-kpi__val">$40.60</div></div>
-            <div><div class="mock-kpi__lbl">Cheapest</div><div class="mock-kpi__val color-dn">$37.50</div><div class="mock-kpi__sub">Los Angeles</div></div>
-            <div><div class="mock-kpi__lbl">Highest</div><div class="mock-kpi__val color-up">$44.00</div><div class="mock-kpi__sub">Boston</div></div>
-            <div><div class="mock-kpi__lbl">Spread</div><div class="mock-kpi__val">$6.50</div><div class="mock-kpi__sub">17% range</div></div>
-          </div>
-          <div class="mock-chips">
-            <span class="mock-chip is-active">2-layer 48s</span>
-            <span class="mock-chip">2-layer 60s</span>
-            <span class="mock-chip">2-layer 70s</span>
-            <span class="mock-chip">Organic</span>
-          </div>
-          <div class="mock-tbl-wrap">
-          <table class="mock-tbl">
-            <thead><tr><th>Market</th><th class="r">Low</th><th class="r">High</th><th class="r">Mostly ▲</th><th class="r">Chg</th></tr></thead>
-            <tbody>
-              <tr class="is-best"><td><span class="pin"></span>Los Angeles<span class="best-tag">Best</span></td><td class="r">36.00</td><td class="r">39.00</td><td class="r">37.50</td><td class="r color-dn">−2.6%</td></tr>
-              <tr><td><span class="pin"></span>Chicago</td><td class="r">37.00</td><td class="r">40.00</td><td class="r">38.50</td><td class="r color-flat">0.0%</td></tr>
-              <tr><td><span class="pin"></span>Miami</td><td class="r">37.50</td><td class="r">41.50</td><td class="r">39.50</td><td class="r color-up">+1.2%</td></tr>
-              <tr><td><span class="pin"></span>Atlanta</td><td class="r">38.00</td><td class="r">42.00</td><td class="r">40.00</td><td class="r color-up">+2.5%</td></tr>
-            </tbody>
-          </table>
-          </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-family:var(--mono);font-size:9.5px;color:var(--text-faint)">Jul 20</span>
+          <span style="font-family:var(--mono);font-size:9.5px;color:var(--text-faint)">Aug 24</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- AUDIENCE                                                           -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="audience">
-  <div class="audience__inner">
-    <div class="audience__eyebrow">Built for distributors, brokers &amp; growers</div>
-    <div class="aud-grid">
-      <div class="aud-card">
-        <span class="aud-badge">Primary</span>
-        <div class="aud-img aud-img--buyers">
-          <div class="aud-img__pattern"></div>
-          <svg class="aud-img__icon" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="18" width="40" height="26" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 24h40" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="14" y="10" width="28" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="18" cy="48" r="3" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="38" cy="48" r="3" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
+<!-- MARKET STRIP -->
+<div style="padding:12px 20px 0;display:flex;align-items:stretch;gap:8px">
+  <div style="flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;padding-right:14px;border-right:1px solid var(--border-soft)">
+    <span class="eyebrow--sm">Terminal markets</span>
+    <span style="font-size:12.5px;font-weight:600;letter-spacing:-0.02em">Pick one →</span>
+  </div>
+  <div style="flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px" id="home-market-strip"></div>
+</div>
+
+<!-- TODAY'S BOARD + STORY + MOVERS + SHIPPING -->
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px;padding:12px 20px 20px;align-items:stretch" id="board-grid">
+  <main style="min-width:0;display:flex;flex-direction:column;gap:12px">
+    <!-- Today's Board -->
+    <div class="card" style="padding:16px 16px 8px">
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding-bottom:12px">
+        <div style="flex:1;min-width:220px">
+          <div class="eyebrow">Today's board · <span id="board-market">—</span></div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px" id="board-label">Loading…</div>
         </div>
-        <div class="aud-body">
-          <div class="aud-title">Distributors &amp; wholesalers</div>
-          <div class="aud-desc">Know the mostly price before you're on the phone with a shipper.</div>
-        </div>
+        <a href="/browse" style="font-size:12.5px;font-weight:500;flex:none">Browse prices →</a>
       </div>
-      <div class="aud-card">
-        <div class="aud-img aud-img--brokers">
-          <div class="aud-img__pattern"></div>
-          <svg class="aud-img__icon" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 44 L20 30 L28 36 L48 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M40 14 L48 14 L48 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="8" y1="50" x2="48" y2="50" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="aud-body">
-          <div class="aud-title">Brokers</div>
-          <div class="aud-desc">Negotiate from the same numbers your buyer sees — before the call, not during it.</div>
-        </div>
+      <div id="board-table" style="overflow-x:auto">
+        <div style="padding:30px 0;text-align:center;color:var(--text-dim)">Loading…</div>
       </div>
-      <div class="aud-card">
-        <div class="aud-img aud-img--growers">
-          <div class="aud-img__pattern"></div>
-          <svg class="aud-img__icon" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 46 L28 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M28 24 C 22 20, 16 22, 14 28 C 16 30, 22 30, 28 24 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <path d="M28 24 C 34 20, 40 22, 42 28 C 40 30, 34 30, 28 24 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <path d="M28 30 C 24 26, 20 28, 19 32 C 22 34, 26 32, 28 30 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <path d="M28 30 C 32 26, 36 28, 37 32 C 34 34, 30 32, 28 30 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <line x1="10" y1="46" x2="46" y2="46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+      <div style="padding:14px 0 8px">
+        <a href="/browse" style="height:32px;padding:0 13px;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;color:var(--text)" id="see-all-btn">See all →</a>
+      </div>
+    </div>
+    <!-- Browse by Category -->
+    <div class="card" style="padding:16px">
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding-bottom:14px">
+        <div style="flex:1;min-width:220px">
+          <div class="eyebrow">Browse by category</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px">1,284 commodities across four groups.</div>
         </div>
-        <div class="aud-body">
-          <div class="aud-title">Growers &amp; shippers</div>
-          <div class="aud-desc">See what terminals are paying against your FOB — in real time.</div>
-        </div>
+        <a href="/browse" style="height:32px;padding:0 13px;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;color:var(--text)">All categories</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="cat-cards"></div>
+    </div>
+  </main>
+
+  <!-- Right column: Story + Movers + Shipping -->
+  <aside style="min-width:0;display:flex;flex-direction:column;gap:12px">
+    <!-- Story of the Day -->
+    <div class="card" style="border-left:4px solid var(--accent);padding:16px;display:flex;flex-direction:column;flex:1;min-height:0">
+      <div class="eyebrow">Story of the day · <span id="story-market">—</span></div>
+      <div style="font-size:16px;font-weight:500;letter-spacing:-0.025em;line-height:1.35;margin-top:10px" id="story-headline">Loading…</div>
+      <p style="margin:9px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)" id="story-body"></p>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--surface-row)">
+        <span style="font-size:11.5px;color:var(--text-dim);flex:1">AgraX analysis based on USDA AMS market reports. Not USDA guidance.</span>
+        <a href="/browse" style="font-size:12px;font-weight:500;flex:none">Open dossier →</a>
+      </div>
+    </div>
+    <!-- Biggest Movers -->
+    <div class="card" style="padding:16px 16px 8px">
+      <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--border)">
+        <span class="eyebrow">Biggest movers</span>
+      </div>
+      <div id="movers-list"></div>
+    </div>
+    <!-- Shipping Point Movement -->
+    <div class="card" style="padding:16px 16px 8px">
+      <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--border)">
+        <span class="eyebrow">Shipping point movement</span>
+        <span style="font-size:11px;color:var(--text-faint);margin-left:auto">loads, w/w</span>
+      </div>
+      <div id="ship-list"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- TRUST BAR -->
+<section style="padding:0 20px 20px">
+  <div class="card" style="padding:22px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+    <div>
+      <div class="eyebrow">Where it comes from</div>
+      <div style="font-size:14.5px;font-weight:500;letter-spacing:-0.02em;margin-top:9px">USDA, unfiltered.</div>
+      <p style="margin:7px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)">Terminal Market and Shipping Point reports from the Agricultural Marketing Service, parsed every weekday morning and published without blending, smoothing, or averaging.</p>
+    </div>
+    <div>
+      <div class="eyebrow">Why no single price</div>
+      <div style="font-size:14.5px;font-weight:500;letter-spacing:-0.02em;margin-top:9px">A commodity is not a price.</div>
+      <p style="margin:7px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)">Hass 48s from Mexico and organic 40s from California are not the same trade. We keep every variety, origin, grade, pack and size separate, and label how each price was sourced.</p>
+    </div>
+    <div>
+      <div class="eyebrow">What it costs</div>
+      <div style="font-size:14.5px;font-weight:500;letter-spacing:-0.02em;margin-top:9px">The data is free.</div>
+      <p style="margin:7px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)">All 148 commodities, all 12 terminal markets, every price. Free.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section style="padding:8px 20px 34px">
+  <div style="background:#0F1B14;color:#fff;border-radius:10px;box-shadow:var(--shadow-card);padding:26px 24px;display:flex;align-items:center;gap:44px;flex-wrap:wrap">
+    <div style="flex:1;min-width:300px">
+      <h3 style="margin:0;font-size:22px;font-weight:500;letter-spacing:-0.03em">Wholesale prices in your inbox every morning. Free.</h3>
+      <p style="margin:9px 0 0;font-size:13px;line-height:1.6;color:#9CAFA0;max-width:560px">One email: your commodities, the items that moved, and the shipping points behind them. Unsubscribe any time.</p>
+    </div>
+    <div style="flex:none;width:420px;max-width:100%">
+      <div style="display:flex;gap:8px">
+        <input placeholder="you@company.com" style="flex:1;height:42px;border-radius:6px;border:1px solid #2C3A31;background:#16241B;padding:0 13px;color:#fff;font-size:13.5px;outline:none">
+        <button style="height:42px;padding:0 18px;border-radius:6px;border:0;background:#fff;color:var(--ink);font-size:13.5px;font-weight:500;cursor:pointer;flex:none">Subscribe</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- PRICE POINTS                                                       -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="section">
-  <div class="section__hd">
-    <div class="section__eyebrow">Three numbers, one commodity</div>
-    <h2 class="section__title">From the field to the terminal — every price along the way.</h2>
-  </div>
-
-  <div class="pp-grid">
-    <div class="pp-card">
-      <div class="pp-card__label"><span class="pp-card__icon">📍</span>FOB · Shipping point</div>
-      <div class="pp-card__title">Farm-Gate Price</div>
-      <div class="pp-card__desc">The price at the growing region — Salinas, Vidalia, Watsonville — before freight. What a buyer pays at source, before trucking and handling.</div>
-      <div class="pp-card__stat">
-        <div class="pp-card__price">$18.40<small>/flat</small></div>
-        <div class="pp-card__meta">Strawberries · Watsonville, CA</div>
-      </div>
+<!-- FOOTER -->
+<footer style="background:var(--dark);color:#fff;padding:28px 20px 22px;margin-top:auto">
+  <div style="display:flex;align-items:flex-start;gap:56px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px;max-width:520px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:-0.02em">AgraX</div>
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.75;color:#737373">Prices sourced from USDA Agricultural Marketing Service Specialty Crops Terminal Market and Shipping Point reports. Updated every weekday morning. AgraX is not affiliated with the USDA.</p>
     </div>
-
-    <div class="pp-card">
-      <div class="pp-card__label"><span class="pp-card__icon">🌐</span>Terminal market · Delivered</div>
-      <div class="pp-card__title">City-Hub Price</div>
-      <div class="pp-card__desc">The price once produce has arrived at a major wholesale hub — Hunts Point, Chicago Terminal, LA's 7th Street. Includes freight, cooling, and handling margin.</div>
-      <div class="pp-card__stat">
-        <div class="pp-card__price">$24.80<small>/flat</small></div>
-        <div class="pp-card__meta">Strawberries · NY – Hunts Point</div>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
+      <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
+      <span style="font-size:12px;color:#A3A3A3">Pro</span>
+      <span style="font-size:12px;color:#A3A3A3">Daily email</span>
     </div>
-
-    <div class="pp-card">
-      <div class="pp-card__label"><span class="pp-card__icon">📈</span>Movement · WA_FV175</div>
-      <div class="pp-card__title">National Volume</div>
-      <div class="pp-card__desc">Pounds shipped nationwide, broken out by transport mode and region. Volume explains price — a surge signals heavy supply; thin movement signals tightness.</div>
-      <div class="pp-card__stat">
-        <div class="pp-card__price">1.25M<small> lbs</small></div>
-        <div class="pp-card__meta">Strawberries · Jul 7, 2026</div>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
+      <a href="/about" style="font-size:12px;color:#A3A3A3">About</a>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Contact</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Advertise</span>
+      <span style="font-size:12px;color:#A3A3A3">Privacy</span>
+      <span style="font-size:12px;color:#A3A3A3">Terms</span>
     </div>
   </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- THE SPREAD                                                         -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="section">
-  <div class="spread-hero">
-    <div class="spread-hero__dots"></div>
-    <div class="spread-hero__grid">
-      <div class="spread-hero__copy">
-        <div class="spread-hero__eyebrow">The spread</div>
-        <h2 class="spread-hero__title">What it costs to move produce.</h2>
-        <p class="spread-hero__sub">The gap between the FOB price and the terminal price is the cost of the supply chain. agraX shows that spread in one number, updated daily.</p>
-        <ul class="spread-hero__list">
-          <li><span>✓</span>Spread tracked over 7 and 30 days</li>
-          <li><span>✓</span>Historical spread percentiles by commodity</li>
-          <li><span>✓</span>Alerts when spreads widen abnormally</li>
-        </ul>
-      </div>
-
-      <div class="spread-panel">
-        <div class="spread-panel__code">STRAWBERRIES · JUL 7, 2026</div>
-
-        <div class="spread-row">
-          <div class="spread-row__lbl">Shipping point</div>
-          <div class="spread-row__body">
-            <span class="spread-row__name">Watsonville, CA (FOB)</span>
-            <span class="spread-row__val">$18.40</span>
-          </div>
-          <div class="spread-row__bar"><div class="spread-row__fill spread-row__fill--fob" style="width:74%"></div></div>
-        </div>
-
-        <div class="spread-row">
-          <div class="spread-row__lbl">Terminal market</div>
-          <div class="spread-row__body">
-            <span class="spread-row__name">NY – Hunts Point</span>
-            <span class="spread-row__val">$24.80</span>
-          </div>
-          <div class="spread-row__bar"><div class="spread-row__fill spread-row__fill--terminal" style="width:100%"></div></div>
-        </div>
-
-        <div class="spread-summary">
-          <div class="spread-summary__lbl">Spread</div>
-          <div class="spread-summary__right">
-            <div><span class="spread-summary__amt">$6.40</span><span class="spread-summary__unit">/flat</span></div>
-            <div class="spread-summary__pct">+34.8% above FOB</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- PRICING                                                            -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="pricing" id="pricing">
-  <div class="pricing__inner">
-    <div class="section__eyebrow" style="text-align:center">Pricing</div>
-    <h2 class="pricing__title">Start free. Upgrade when you're ready.</h2>
-    <p class="pricing__sub">No credit card required to explore. Cancel anytime.</p>
-
-    <div class="pricing__grid">
-      <div class="plan">
-        <div class="plan__name">Free</div>
-        <div class="plan__price">$0<small>/month</small></div>
-        <div class="plan__desc">For anyone kicking the tires.</div>
-        <ul class="plan__list">
-          <li>4 major terminal markets</li>
-          <li>Today's prices</li>
-          <li>Basic search</li>
-          <li>Community support</li>
-        </ul>
-        <a href="/app" class="plan__cta">Get started</a>
-      </div>
-      <div class="plan plan--feat">
-        <div class="plan__name">Pro</div>
-        <div class="plan__price">$29<small>/month</small></div>
-        <div class="plan__desc">For daily wholesale operators.</div>
-        <ul class="plan__list">
-          <li>All 12 terminal markets</li>
-          <li>All 5 shipping-point origins</li>
-          <li>Full price history</li>
-          <li>Watchlist &amp; alerts</li>
-          <li>CSV export</li>
-          <li>API access</li>
-        </ul>
-        <a href="/app" class="plan__cta">Start free trial</a>
-      </div>
-      <div class="plan">
-        <div class="plan__name">Enterprise</div>
-        <div class="plan__price">Custom</div>
-        <div class="plan__desc">Teams, custom integrations, SLAs.</div>
-        <ul class="plan__list">
-          <li>Everything in Pro</li>
-          <li>SSO &amp; team management</li>
-          <li>Custom integrations</li>
-          <li>Dedicated support</li>
-          <li>Volume pricing</li>
-        </ul>
-        <a href="mailto:hello@agra-x.com" class="plan__cta">Contact sales</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- FINAL CTA                                                          -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<section class="final-cta">
-  <div class="final-cta__card">
-    <div class="final-cta__title">Stop guessing. Start buying on data.</div>
-    <div class="final-cta__sub">No spreadsheets. No stale wire reports. Just the market, this morning.</div>
-    <a href="/app" class="final-cta__btn">Start free trial</a>
-  </div>
-</section>
-
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<!-- FOOTER                                                             -->
-<!-- ═════════════════════════════════════════════════════════════════ -->
-<footer class="footer">
-  <div class="footer__inner">
-    <div class="footer__logo">
-      <img src="/assets/agrax-logo-black.png" alt="agraX" class="footer__logo-img" />
-    </div>
-    <div class="footer__copy">© 2026 agraX. Wholesale produce data, every morning.</div>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1F1F1F;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
+    <span>© 2026 AgraX. Free wholesale produce pricing.</span>
+    <span>Source: USDA AMS · Terminal + Shipping Point</span>
   </div>
 </footer>
 
+</div>
+
 <script>
-(function() {
-  // ─── Data ──────────────────────────────────────────────
-  const COMMODITIES = [
-    { name: 'Hass avocados', base: 41.00, catColor: '#B91C1C', apiName: 'Avocados', variety: 'HASS' },
-    { name: 'Strawberries',  base: 22.00, catColor: '#B91C1C', apiName: 'Strawberries' },
-    { name: 'Table grapes',  base: 24.00, catColor: '#B91C1C', apiName: 'Grapes' },
-    { name: 'Blueberries',   base: 26.00, catColor: '#B91C1C', apiName: 'Blueberries' },
-    { name: 'Iceberg lettuce', base: 22.50, catColor: '#15A24A', apiName: 'Lettuce, Iceberg' },
-    { name: 'Roma tomatoes', base: 16.00, catColor: '#15A24A', apiName: 'Tomatoes' },
-    { name: 'Broccoli',      base: 18.00, catColor: '#15A24A', apiName: 'Broccoli' },
-    { name: 'Bell peppers',  base: 19.50, catColor: '#15A24A', apiName: 'Peppers, Bell Type' },
-    { name: 'Russet potatoes', base: 16.50, catColor: '#B87A0B', apiName: 'Potatoes' },
-    { name: 'Yellow onions', base: 15.00, catColor: '#B87A0B', apiName: 'Onions Dry' },
-  ];
+(async function() {
+  const U = window.agraxUtil;
+  const api = window.agraxAPI;
+  const esc = (s) => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const UP = '#16A34A', DOWN = '#DC2626';
+  const MARKETS = ['Los Angeles, CA','Dallas, TX','San Francisco, CA','Miami, FL','Atlanta, GA','Seattle, WA','Chicago, IL','Detroit, MI','Philadelphia, PA','Baltimore, MD','New York, NY','Boston, MA'];
+  const POPULAR = ['Avocados','Romaine','Yellow onions','Roma tomatoes','Blueberries','Pecans'];
 
-  const MARKETS = [
-    'New York', 'Boston', 'Philadelphia', 'Baltimore',
-    'Chicago', 'Detroit',
-    'Atlanta', 'Miami', 'Raleigh', 'Columbia', 'Asheville',
-    'Los Angeles',
-  ];
+  let market = U.selMarket() || 'New York';
+  const now = new Date();
+  document.getElementById('hero-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + ' · ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
 
-  const POPULAR = [
-    { label: 'Avocados · NY',      commodity: 'Hass avocados', market: 'New York' },
-    { label: 'Strawberries · LA',  commodity: 'Strawberries',  market: 'Los Angeles' },
-    { label: 'Tomatoes · Miami',   commodity: 'Roma tomatoes', market: 'Miami' },
-  ];
+  // Popular pills
+  document.getElementById('popular-pills').innerHTML += POPULAR.map(p =>
+    `<a href="/browse?q=${encodeURIComponent(p)}" style="height:26px;display:inline-flex;align-items:center;padding:0 10px;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:12px;font-weight:500;color:var(--text)">${p}</a>`
+  ).join('');
 
-  // Deterministic hash for demo prices
-  function hashStr(s) {
-    let h = 0;
-    for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
-    return Math.abs(h);
-  }
+  // Search
+  const doSearch = () => {
+    const q = (document.getElementById('hero-search').value || '').trim();
+    window.location.href = '/browse' + (q ? '?q=' + encodeURIComponent(q) : '');
+  };
+  document.getElementById('hero-search').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+  document.getElementById('hero-search-hdr').addEventListener('keydown', e => { if (e.key === 'Enter') { const q = e.target.value.trim(); window.location.href = '/browse' + (q ? '?q=' + encodeURIComponent(q) : ''); }});
 
-  function computeResult(commodityName, marketName) {
-    const c = COMMODITIES.find(x => x.name === commodityName) || COMMODITIES[0];
-    const seed1 = hashStr(c.name + '|' + marketName);
-    const variancePct = ((seed1 % 21) - 10) / 100;
-    const mostly = Math.round(c.base * (1 + variancePct) * 100) / 100;
-    const low = Math.round(mostly * 0.92 * 100) / 100;
-    const high = Math.round(mostly * 1.08 * 100) / 100;
+  try {
+    const dates = await api.dates();
+    if (!dates?.length) return;
+    const latestDate = dates[0].date;
+    const allRows = await api.reportTerminal(latestDate);
+    const marketRows = allRows.filter(r => r.market === market);
+    const byCom = U.groupBy(marketRows, r => r.commodity);
 
-    const seed2 = hashStr(marketName + '|' + c.name + '|chg');
-    const chgPct = Math.round((((seed2 % 121) - 60) / 10) * 10) / 10;
+    // Hero stats
+    let higher = 0, lower = 0;
+    for (const [, rows] of byCom) {
+      const m = (rows[0]?.movement || rows[0]?.trend || '').toLowerCase();
+      if (m.includes('higher') || m === 'up') higher++;
+      else if (m.includes('lower') || m === 'down') lower++;
+    }
+    document.getElementById('hero-stats').innerHTML = [
+      {l:'Commodities',v:byCom.size,s:'reporting today',fg:'var(--text)'},
+      {l:'Prices',v:allRows.length.toLocaleString(),s:'across 12 markets',fg:'var(--text)'},
+      {l:'Tone higher',v:higher,s:`of ${byCom.size} today`,fg:'var(--up)'},
+      {l:'Movement',v:'10.6k',s:'loads this week',fg:'var(--text)'},
+    ].map(s => `<div class="card" style="padding:13px 14px">
+      <div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">${s.l}</div>
+      <div style="font-family:var(--mono);font-size:22px;font-weight:500;letter-spacing:-0.04em;margin-top:7px;color:${s.fg}">${s.v}</div>
+      <div style="font-size:10.5px;color:var(--text-faint);margin-top:2px">${s.s}</div>
+    </div>`).join('');
 
-    let chgColor = '#8b8f80', chgStr = '0.0%';
-    if (chgPct < 0)      { chgColor = '#15A24A'; chgStr = chgPct.toFixed(1) + '%'; }
-    else if (chgPct > 0) { chgColor = '#B91C1C'; chgStr = '+' + chgPct.toFixed(1) + '%'; }
+    // Market strip
+    const byAllMarket = U.groupBy(allRows, r => r.market);
+    document.getElementById('home-market-strip').innerHTML = MARKETS.map(m => {
+      const short = m.replace(/, [A-Z]{2}$/, '');
+      const rows = byAllMarket.get(short) || [];
+      const count = new Set(rows.map(r => r.commodity)).size;
+      const isCurrent = short === market;
+      return `<a href="/browse?market=${encodeURIComponent(short)}" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;box-shadow:var(--shadow-chip);border:1px solid ${isCurrent?'var(--accent)':'#E9EBE4'};color:var(--text);text-decoration:none;display:block">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11.5px;font-weight:${isCurrent?600:500};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(short)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">${count} items</span>
+        </div>
+      </a>`;
+    }).join('');
 
-    let statusLabel = 'Steady', statusColor = '#4a5045', statusBg = '#F2F1EC';
-    if (chgPct <= -4)      { statusLabel = 'Good buy'; statusColor = '#15A24A'; statusBg = 'rgba(21,162,74,.12)'; }
-    else if (chgPct >= 4)  { statusLabel = 'Climbing'; statusColor = '#B91C1C'; statusBg = 'rgba(185,28,28,.10)'; }
+    // Board
+    document.getElementById('board-market').textContent = market;
+    document.getElementById('board-label').textContent = byCom.size + ' commodities reporting';
+    document.getElementById('see-all-btn').textContent = `See all ${byCom.size} at ${market}`;
+    document.getElementById('see-all-btn').href = `/browse?market=${encodeURIComponent(market)}`;
 
-    return {
-      commodity: c.name,
-      apiName: c.apiName,
-      market: marketName,
-      catColor: c.catColor,
-      mostly: '$' + mostly.toFixed(2),
-      low: '$' + low.toFixed(2),
-      high: '$' + high.toFixed(2),
-      chgStr, chgColor,
-      statusLabel, statusColor, statusBg,
-    };
-  }
+    const boardItems = [];
+    for (const [name, rows] of byCom) {
+      const origins = U.uniq(rows.map(r => r.origin).filter(Boolean));
+      const mv = (rows[0]?.movement || rows[0]?.trend || '').toLowerCase();
+      const trend = mv.includes('higher') || mv === 'up' ? 'Higher' : mv.includes('lower') || mv === 'down' ? 'Lower' : 'Steady';
+      boardItems.push({ name, count: rows.length, origins, trend });
+    }
+    boardItems.sort((a,b) => a.name.localeCompare(b.name));
 
-  // ─── DOM refs ─────────────────────────────────────────
-  const $ = (id) => document.getElementById(id);
-  const comSel  = $('pc-com');
-  const mktSel  = $('pc-mkt');
-  const chipsEl = $('pc-chips');
-  const checkBtn = $('pc-check');
-  const openLink = $('pc-open');
-  const resultEl = $('pc-result');
+    const toneStyle = (t) => t === 'Higher' ? 'tone--higher' : t === 'Lower' ? 'tone--lower' : 'tone--steady';
+    const toneArrow = (t) => t === 'Higher' ? '↑' : t === 'Lower' ? '↓' : '→';
 
-  // ─── Populate selects ─────────────────────────────────
-  COMMODITIES.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.name;
-    opt.textContent = c.name;
-    comSel.appendChild(opt);
-  });
-  MARKETS.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = m;
-    mktSel.appendChild(opt);
-  });
-  // Default selection
-  comSel.value = 'Hass avocados';
-  mktSel.value = 'Los Angeles';
+    document.getElementById('board-table').innerHTML = `
+      <div style="display:grid;min-width:640px;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
+        <span class="eyebrow">Commodity</span><span class="eyebrow">Reporting</span><span class="eyebrow">Origins</span><span class="eyebrow" style="text-align:right">USDA tone</span>
+      </div>
+      ${boardItems.slice(0, 7).map((d, i) => `
+        <a href="/browse?q=${encodeURIComponent(d.name)}&market=${encodeURIComponent(market)}" style="display:grid;min-width:640px;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 94px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);color:var(--text)">
+          <div style="display:flex;align-items:center;gap:9px;min-width:0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-ghost)" stroke-width="2.4" stroke-linecap="round" style="flex:none"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            <span style="font-size:16px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">${d.count} reporting</span>
+          <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.origins.slice(0,3).join(' · '))}</span>
+          <div style="display:flex;justify-content:flex-end"><span class="tone ${toneStyle(d.trend)}"><span>${toneArrow(d.trend)}</span>${d.trend}</span></div>
+        </a>
+      `).join('')}`;
 
-  // Populate popular chips
-  POPULAR.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'pc-chip';
-    btn.type = 'button';
-    btn.textContent = p.label;
-    btn.addEventListener('click', () => {
-      comSel.value = p.commodity;
-      mktSel.value = p.market;
-      renderResult();
-    });
-    chipsEl.appendChild(btn);
-  });
+    // Category cards
+    const cats = { Fruits: [], Vegetables: [], 'Onions & Potatoes': [], Nuts: [] };
+    for (const [name, rows] of byCom) {
+      const cat = U.catLabel(rows[0]?.commodity_type);
+      if (cats[cat]) cats[cat].push({ name, count: rows.length, trend: (rows[0]?.movement||'').toLowerCase().includes('higher')?'Higher':(rows[0]?.movement||'').toLowerCase().includes('lower')?'Lower':'Steady' });
+    }
+    document.getElementById('cat-cards').innerHTML = Object.entries(cats).map(([cat, items]) => {
+      const top = items.slice(0, 3);
+      return `<a href="/browse?cat=${encodeURIComponent(cat)}" style="display:flex;flex-direction:column;gap:11px;padding:14px;border:1px solid var(--border);border-radius:9px;background:var(--card-inset);text-decoration:none;color:inherit">
+        <div><div style="font-size:14.5px;font-weight:600;letter-spacing:-0.02em">${esc(cat)}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-top:3px">${items.length} commodities</div></div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          ${top.map(t => `<div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</span><span style="font-family:var(--mono);font-size:10.5px;color:var(--text-dim);text-align:right">${t.count} reporting</span></div>`).join('')}
+        </div>
+        <div style="padding-top:10px;border-top:1px solid #EEF0EA;font-size:11.5px;font-weight:500;color:var(--accent)">Browse →</div>
+      </a>`;
+    }).join('');
 
-  // ─── Slugify (for anchor deep link) ───────────────────
-  function slugify(s) {
-    return String(s || '').toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  }
-
-  // ─── Render ───────────────────────────────────────────
-  function renderResult() {
-    const r = computeResult(comSel.value, mktSel.value);
-    $('pc-cat').style.background = r.catColor;
-    $('pc-name').textContent = r.commodity;
-    $('pc-sub').textContent = r.market + ' · mostly today';
-    $('pc-status').textContent = r.statusLabel;
-    $('pc-status').style.color = r.statusColor;
-    $('pc-status').style.background = r.statusBg;
-    $('pc-price').textContent = r.mostly;
-    $('pc-chg').textContent = r.chgStr;
-    $('pc-chg').style.color = r.chgColor;
-    $('pc-range').textContent = 'Range ' + r.low + ' – ' + r.high;
-
-    // Deep-link to the market read for that commodity
-    // Uses the same API commodity name so the anchor slug matches server data
-    const anchor = 'com-' + slugify(r.apiName || r.commodity);
-    openLink.href = '/app/markets/city?m=' + encodeURIComponent(r.market) + '#' + anchor;
-  }
-
-  comSel.addEventListener('change', renderResult);
-  mktSel.addEventListener('change', renderResult);
-  checkBtn.addEventListener('click', renderResult);
-  renderResult();
-
-  // ─── Ticker ───────────────────────────────────────────
-  const TICKER_ITEMS = [
-    { name: 'STRAWBERRIES',    price: '$22.00', chg: '−4.0%',  cls: 'dn' },
-    { name: 'HASS AVOCADOS',   price: '$41.00', chg: '+4.0%',  cls: 'up' },
-    { name: 'ICEBERG LETTUCE', price: '$22.50', chg: '+9.0%',  cls: 'up' },
-    { name: 'ROMA TOMATOES',   price: '$16.00', chg: '0.0%',   cls: 'flat' },
-    { name: 'BROCCOLI',        price: '$18.00', chg: '−5.0%',  cls: 'dn' },
-    { name: 'RUSSET POTATOES', price: '$16.50', chg: '+1.2%',  cls: 'up' },
-    { name: 'TABLE GRAPES',    price: '$24.00', chg: '0.0%',   cls: 'flat' },
-    { name: 'BELL PEPPERS',    price: '$19.50', chg: '−7.0%',  cls: 'dn' },
-    { name: 'BLUEBERRIES',     price: '$26.00', chg: '+2.5%',  cls: 'up' },
-    { name: 'YELLOW ONIONS',   price: '$15.00', chg: '−1.5%',  cls: 'dn' },
-  ];
-  function renderTicker() {
-    const tk = $('ticker');
-    // Duplicate for seamless marquee
-    const items = [...TICKER_ITEMS, ...TICKER_ITEMS];
-    tk.innerHTML = items.map(t => `
-      <span class="tk-item">
-        <span class="n">${t.name}</span>
-        <span class="p">${t.price}</span>
-        <span class="${t.cls}">${t.chg}</span>
-      </span>
-    `).join('');
-  }
-  renderTicker();
-
-  // ─── Mobile menu (burger) ─────────────────────────────
-  const burger = $('nav-burger');
-  if (burger) {
-    burger.addEventListener('click', () => {
-      // Simple: just toggle a mobile menu overlay
-      const existing = document.getElementById('nav-mobile-panel');
-      if (existing) { existing.remove(); return; }
-      const panel = document.createElement('div');
-      panel.id = 'nav-mobile-panel';
-      panel.style.cssText = 'position:fixed;top:64px;left:0;right:0;bottom:0;background:#0A0B0A;z-index:49;padding:24px;display:flex;flex-direction:column;gap:4px;';
-      panel.innerHTML = `
-        <a href="#features" style="color:#fff;padding:14px 8px;border-bottom:0.5px solid #1a1e18;font-size:16px;text-decoration:none">Product</a>
-        <a href="/app/markets" style="color:#fff;padding:14px 8px;border-bottom:0.5px solid #1a1e18;font-size:16px;text-decoration:none">Markets</a>
-        <a href="/app/movement" style="color:#fff;padding:14px 8px;border-bottom:0.5px solid #1a1e18;font-size:16px;text-decoration:none">Movement</a>
-        <a href="#pricing" style="color:#fff;padding:14px 8px;border-bottom:0.5px solid #1a1e18;font-size:16px;text-decoration:none">Pricing</a>
-        <a href="/app" style="color:#fff;padding:14px 8px;border-bottom:0.5px solid #1a1e18;font-size:16px;text-decoration:none">Log in</a>
-        <a href="/app" style="margin-top:12px;text-align:center;padding:14px 20px;border-radius:10px;background:linear-gradient(135deg,#15A24A,#0d7a36);color:#fff;font-weight:500;text-decoration:none">Start free trial</a>
-      `;
-      document.body.appendChild(panel);
-      // Close on link click
-      panel.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') panel.remove();
-      });
-    });
-  }
-
-  // Smooth scroll for anchor nav links
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const id = a.getAttribute('href').slice(1);
-      if (!id) return;
-      const el = document.getElementById(id);
-      if (el) {
-        e.preventDefault();
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Story of the Day
+    document.getElementById('story-market').textContent = market;
+    try {
+      const story = await api.story(market);
+      if (story.headline) {
+        document.getElementById('story-headline').textContent = story.headline;
+        document.getElementById('story-body').textContent = story.body || '';
+      } else {
+        document.getElementById('story-headline').textContent = 'Market data loading — story generates from today\'s report.';
       }
-    });
-  });
+    } catch(e) {
+      document.getElementById('story-headline').textContent = 'Story unavailable today.';
+    }
+
+    // Movers
+    try {
+      const movers = await api.movers(market, 6);
+      const moversList = movers.movers || [];
+      document.getElementById('movers-list').innerHTML = moversList.length ? moversList.map(m => {
+        const fg = m.change_pct > 0 ? UP : DOWN;
+        const chg = (m.change_pct > 0 ? '+' : '') + m.change_pct + '%';
+        return `<a href="/browse?q=${encodeURIComponent(m.commodity)}&market=${encodeURIComponent(market)}" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--surface-row);color:var(--text)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;letter-spacing:-0.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.commodity)}</div>
+            <div style="font-size:10.5px;color:var(--text-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.sku || '')}</div>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <div style="display:flex;align-items:baseline;gap:7px">
+              <span style="font-family:var(--mono);font-size:15px;font-weight:500;letter-spacing:-0.03em">${m.price ? '$'+m.price.toFixed(2) : '—'}</span>
+              <span style="font-family:var(--mono);font-size:11px;color:${fg}">${chg}</span>
+            </div>
+            ${m.source ? `<span class="src-badge src-badge--${m.source === 'mostly' ? 'mostly' : m.source === 'mid-range' ? 'mid' : 'reported'}">${m.source}</span>` : ''}
+          </div>
+        </a>`;
+      }).join('') : '<div style="padding:16px 0;font-size:12px;color:var(--text-dim)">No movers data yet.</div>';
+    } catch(e) {
+      document.getElementById('movers-list').innerHTML = '<div style="padding:16px 0;font-size:12px;color:var(--text-dim)">Movers unavailable.</div>';
+    }
+
+    // Shipping movement
+    try {
+      const summary = await api.marketSummary(market);
+      const shipData = summary.shipping_point_movement || [];
+      document.getElementById('ship-list').innerHTML = shipData.length ? shipData.slice(0,6).map(p => {
+        const fg = p.wow_pct != null ? (p.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
+        const chg = p.wow_pct != null ? (p.wow_pct >= 0 ? '+' : '') + p.wow_pct + '%' : '—';
+        return `<div style="display:grid;grid-template-columns:minmax(0,1fr) 66px 52px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--surface-row)">
+          <span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</span>
+          <span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary);text-align:right">${p.loads ? p.loads.toLocaleString() : '—'}</span>
+          <span style="font-family:var(--mono);font-size:11px;color:${fg};text-align:right">${chg}</span>
+        </div>`;
+      }).join('') : '<div style="padding:12px 0;font-size:12px;color:var(--text-dim)">No movement data.</div>';
+    } catch(e) {
+      document.getElementById('ship-list').innerHTML = '<div style="padding:12px 0;font-size:12px;color:var(--text-dim)">Movement unavailable.</div>';
+    }
+
+  } catch (err) {
+    console.error('AgraX home error:', err);
+  }
 })();
 </script>
 </body>
