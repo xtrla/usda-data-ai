@@ -265,6 +265,13 @@
     allRows = results[0];
     fobRows = results[1];
 
+    // Default: check ALL commodities so table is fully populated on load
+    var allByCom = U.groupBy(allRows, function(r) { return r.commodity; });
+    allByCom.forEach(function(rows, name) { checkedComs[name] = true; });
+
+    // Open Fruits by default
+    catOpen['Fruits'] = true;
+
     renderAll();
     renderSummary();
   } catch (err) {
@@ -341,10 +348,16 @@
     ['Fruits', 'Vegetables', 'Onions & Potatoes', 'Nuts'].forEach(function(cat) {
       var items = catItems[cat] || [];
       var isOpen = !!catOpen[cat];
+      var allChecked = items.length > 0 && items.every(function(n) { return !!checkedComs[n]; });
+      var someChecked = items.some(function(n) { return !!checkedComs[n]; });
+
       catHtml += '<div>';
-      catHtml += '<div onclick="window._toggleCat(\'' + esc(cat) + '\')" style="padding:9px 0;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--surface-row)">';
-      catHtml += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:' + (isOpen ? 'rotate(90deg)' : 'none') + '"><polyline points="9 6 15 12 9 18"></polyline></svg>';
-      catHtml += '<span style="font-size:12.5px;font-weight:500;flex:1;min-width:0">' + esc(cat) + '</span>';
+      catHtml += '<div style="padding:9px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--surface-row)">';
+      // Category checkbox — selects/deselects all items in this category
+      catHtml += '<input type="checkbox" ' + (allChecked ? 'checked' : '') + (someChecked && !allChecked ? ' style="opacity:0.5"' : '') + ' onchange="window._toggleCatAll(\'' + esc(cat) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none;cursor:pointer">';
+      // Expand caret
+      catHtml += '<svg onclick="window._toggleCat(\'' + esc(cat) + '\')" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:' + (isOpen ? 'rotate(90deg)' : 'none') + ';cursor:pointer"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      catHtml += '<span onclick="window._toggleCat(\'' + esc(cat) + '\')" style="font-size:12.5px;font-weight:500;flex:1;min-width:0;cursor:pointer">' + esc(cat) + '</span>';
       catHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + items.length + '</span>';
       catHtml += '</div>';
       if (isOpen) {
@@ -404,6 +417,21 @@
 
   // Global handlers
   window._toggleCat = function(name) { catOpen[name] = !catOpen[name]; renderSidebar(); };
+  window._toggleCatAll = function(cat) {
+    // Get all commodities in this category
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+    var items = [];
+    byCom.forEach(function(rows, name) {
+      var c = U.catLabel(rows[0] && rows[0].commodity_type);
+      if (c === cat) items.push(name);
+    });
+    // If all checked → uncheck all; otherwise check all
+    var allChecked = items.every(function(n) { return !!checkedComs[n]; });
+    items.forEach(function(n) { checkedComs[n] = !allChecked; });
+    renderAll();
+  };
   window._toggleCheckCom = function(name) { checkedComs[name] = !checkedComs[name]; renderAll(); };
   window._toggleCheckOrigin = function(name) { checkedOrigins[name] = !checkedOrigins[name]; renderAll(); };
   window._toggleCom = function(name) { expanded[name] = !expanded[name]; renderAll(); };
@@ -412,6 +440,20 @@
   function renderTable() {
     var market = marketShort(currentMarket);
     var marketRows = allRows.filter(function(r) { return r.market === market; });
+
+    // Fallback: if no rows match, try finding the closest market name
+    if (marketRows.length === 0 && allRows.length > 0) {
+      var marketLower = market.toLowerCase();
+      marketRows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(marketLower.split(',')[0].split(' ')[0]) > -1;
+      });
+      if (marketRows.length > 0) {
+        // Found data under a different market name — use that
+        market = marketRows[0].market;
+        console.log('AgraX: market name adjusted to "' + market + '"');
+      }
+    }
+
     var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
 
     document.getElementById('toolbar-market').textContent = currentMarket;
