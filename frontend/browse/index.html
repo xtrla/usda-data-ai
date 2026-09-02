@@ -431,22 +431,56 @@
     });
     document.getElementById('origin-list').innerHTML = originHtml;
 
-    // Country of Origin checkboxes — pulled from commodity row origins
+    // Country of Origin checkboxes — grouped by region
     var countryCounts = {};
     marketRows.forEach(function(r) {
       var o = r.origin;
-      if (!o) return;
+      if (!o || o === 'None') return;
       countryCounts[o] = (countryCounts[o] || 0) + 1;
     });
-    var countryHtml = '';
-    Object.entries(countryCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(pair) {
+
+    // Classify each origin into a region
+    var US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming','Orange County New York'];
+    var MEX_CA = ['Mexico','Guatemala','Costa Rica','Honduras','Nicaragua','El Salvador','Belize','Panama'];
+    var SOUTH_AM = ['Chile','Peru','Ecuador','Colombia','Brazil','Argentina','Uruguay','Paraguay','Bolivia','Venezuela'];
+
+    function regionOf(name) {
+      if (US_STATES.some(function(s) { return name.indexOf(s) > -1; })) return 'Domestic';
+      if (MEX_CA.some(function(s) { return name.indexOf(s) > -1; })) return 'Mexico & Central America';
+      if (SOUTH_AM.some(function(s) { return name.indexOf(s) > -1; })) return 'South America';
+      return 'Other imports';
+    }
+
+    var regionGroups = { 'Domestic': [], 'Mexico & Central America': [], 'South America': [], 'Other imports': [] };
+    Object.entries(countryCounts).forEach(function(pair) {
       var name = pair[0], count = pair[1];
-      var checked = !!checkedCountries[name];
-      countryHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
-      countryHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCountry(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
-      countryHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</span>';
-      countryHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + count + '</span>';
-      countryHtml += '</label>';
+      var region = regionOf(name);
+      regionGroups[region].push({ name: name, count: count });
+    });
+    // Sort each group by count desc
+    Object.values(regionGroups).forEach(function(arr) {
+      arr.sort(function(a, b) { return b.count - a.count; });
+    });
+
+    var countryHtml = '';
+    ['Domestic', 'Mexico & Central America', 'South America', 'Other imports'].forEach(function(region) {
+      var items = regionGroups[region];
+      if (!items.length) return;
+      var totalCount = items.reduce(function(a, b) { return a + b.count; }, 0);
+      countryHtml += '<div style="margin-top:10px">';
+      countryHtml += '<div style="display:flex;align-items:center;gap:6px;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--surface-row)">';
+      countryHtml += '<span style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);flex:1">' + region + '</span>';
+      countryHtml += '<span style="font-family:var(--mono);font-size:9px;color:var(--text-label)">' + totalCount + '</span>';
+      countryHtml += '</div>';
+      items.forEach(function(item) {
+        var checked = !!checkedCountries[item.name];
+        countryHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;padding:3px 0">';
+        countryHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCountry(\'' + esc(item.name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+        countryHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(item.name) + '</span>';
+        countryHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + item.count + '</span>';
+        countryHtml += '</label>';
+      });
+      countryHtml += '</div>';
     });
     document.getElementById('country-list').innerHTML = countryHtml;
 
