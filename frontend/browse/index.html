@@ -150,408 +150,453 @@
 
 </div><!-- end #app -->
 
+
 <script>
 (async function() {
   const U = window.agraxUtil;
   const api = window.agraxAPI;
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
 
   const MARKETS = ['Los Angeles, CA','Dallas, TX','San Francisco, CA','Miami, FL','Atlanta, GA','Seattle, WA','Chicago, IL','Detroit, MI','Philadelphia, PA','Baltimore, MD','New York, NY','Boston, MA'];
   const UP = '#16A34A', DOWN = '#DC2626';
 
-  // State
+  // ── STATE ──
+  let allRows = [];
+  let fobRows = [];
+  let latestDate = null;
   let currentMarket = U.selMarket() || 'New York';
-  // Map short names to full names
+  let expanded = {};        // which commodity rows are open
+  let catOpen = {};          // which sidebar category accordions are open
+  let checkedComs = {};      // which commodity checkboxes are ticked
+  let checkedOrigins = {};   // which origin checkboxes are ticked
+  let sortMode = 'az';
+  let searchQ = '';
+
+  const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
   const marketFull = (m) => {
     const map = {'New York':'New York, NY','Boston':'Boston, MA','Philadelphia':'Philadelphia, PA','Baltimore':'Baltimore, MD','Chicago':'Chicago, IL','Detroit':'Detroit, MI','Atlanta':'Atlanta, GA','Miami':'Miami, FL','Los Angeles':'Los Angeles, CA','Dallas':'Dallas, TX','San Francisco':'San Francisco, CA','Seattle':'Seattle, WA'};
     return map[m] || m;
   };
-  const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
-
-  let allRows = [];
-  let fobRows = [];
-  let latestDate = null;
-  let expanded = {};
-  let sortMode = 'az';
 
   // URL params
   const urlP = new URLSearchParams(window.location.search);
   if (urlP.get('market')) currentMarket = urlP.get('market');
-  if (urlP.get('q')) document.getElementById('header-search').value = urlP.get('q');
+  if (urlP.get('q')) { searchQ = urlP.get('q'); document.getElementById('header-search').value = searchQ; }
 
-  // Search
-  document.getElementById('header-search').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') render();
+  // ── EVENT WIRING ──
+  document.getElementById('header-search').addEventListener('input', function(e) {
+    searchQ = e.target.value.trim().toLowerCase();
+    renderAll();
   });
-
-  // Sort
-  document.getElementById('sort-select').addEventListener('change', (e) => {
+  document.getElementById('header-search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { searchQ = e.target.value.trim().toLowerCase(); renderAll(); }
+  });
+  document.getElementById('sort-select').addEventListener('change', function(e) {
     sortMode = e.target.value;
-    render();
+    renderAll();
   });
-
-  // Toggle all
-  document.getElementById('toggle-all').addEventListener('click', () => {
-    const anyOpen = Object.values(expanded).some(Boolean);
+  document.getElementById('toggle-all').addEventListener('click', function() {
+    var anyOpen = Object.keys(expanded).some(function(k) { return expanded[k]; });
     if (anyOpen) {
       expanded = {};
     } else {
-      const byCom = U.groupBy(allRows.filter(r => r.market === marketShort(currentMarket)), r => r.commodity);
-      for (const [name] of byCom) expanded[name] = true;
+      var byCom = U.groupBy(allRows.filter(function(r) { return r.market === marketShort(currentMarket); }), function(r) { return r.commodity; });
+      byCom.forEach(function(rows, name) { expanded[name] = true; });
     }
-    render();
+    renderAll();
   });
 
   // Live badge
-  const now = new Date();
-  document.getElementById('live-badge').innerHTML = `<span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live ${now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})} ET`;
-  document.getElementById('footer-time').textContent = `${now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})} ET`;
+  var now = new Date();
+  document.getElementById('live-badge').innerHTML = '<span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
+  document.getElementById('footer-time').textContent = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
 
-  // Load data
-  try {
-    const dates = await api.dates();
-    if (!dates?.length) throw new Error('No data');
-    latestDate = dates[0].date;
-
-    // Week selector
-    const weekSel = document.getElementById('week-select');
-    dates.slice(0, 5).forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d.date;
-      opt.textContent = 'Week of ' + U.fmtDate(d.date) + ', 2026';
-      weekSel.appendChild(opt);
-    });
-    weekSel.addEventListener('change', async () => {
-      latestDate = weekSel.value;
-      allRows = await api.reportTerminal(latestDate);
-      try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) { fobRows = []; }
-      render();
-    });
-
-    // Load all data
-    const [terminal, fob] = await Promise.all([
-      api.reportTerminal(latestDate),
-      api.reportShippingPoints(latestDate).catch(() => []),
-    ]);
-    allRows = terminal;
-    fobRows = fob;
-
-    renderMarketStrip();
-    render();
-    renderSummary();
-  } catch (err) {
-    document.getElementById('table-body').innerHTML = `<div class="err-banner">${esc(err.message)}</div>`;
-  }
-
-  // Price determination for a single row
+  // ── HELPERS ──
   function skuPrice(row) {
-    const mLow = U.num(row.price_mostly_low);
-    const mHigh = U.num(row.price_mostly_high);
+    var mLow = U.num(row.price_mostly_low), mHigh = U.num(row.price_mostly_high);
     if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, src: 'mostly' };
     if (mLow != null) return { price: mLow, src: 'mostly' };
     if (mHigh != null) return { price: mHigh, src: 'mostly' };
-    const low = U.num(row.price_low);
-    const high = U.num(row.price_high);
+    var low = U.num(row.price_low), high = U.num(row.price_high);
     if (low != null && high != null) {
       if (low === high) return { price: low, src: 'reported' };
-      return { price: (low + high) / 2, src: 'mid', range: '$' + low.toFixed(2) + ' – $' + high.toFixed(2) };
+      return { price: (low + high) / 2, src: 'mid', range: '$' + low.toFixed(2) + ' \u2013 $' + high.toFixed(2) };
     }
     if (low != null) return { price: low, src: 'reported' };
     if (high != null) return { price: high, src: 'reported' };
     return { price: null, src: null };
   }
 
-  // Trend from USDA tone
   function trendOf(rows) {
-    for (const r of rows) {
-      const m = (r.movement || r.trend || '').toLowerCase();
-      if (m.includes('higher') || m === 'up') return { label: 'Higher', arrow: '↑', cls: 'tone--higher' };
-      if (m.includes('lower') || m === 'down') return { label: 'Lower', arrow: '↓', cls: 'tone--lower' };
+    for (var i = 0; i < rows.length; i++) {
+      var m = (rows[i].movement || rows[i].trend || '').toLowerCase();
+      if (m.indexOf('higher') > -1 || m === 'up') return { label: 'Higher', arrow: '\u2191', cls: 'tone--higher' };
+      if (m.indexOf('lower') > -1 || m === 'down') return { label: 'Lower', arrow: '\u2193', cls: 'tone--lower' };
     }
-    return { label: 'Steady', arrow: '→', cls: 'tone--steady' };
+    return { label: 'Steady', arrow: '\u2192', cls: 'tone--steady' };
   }
 
-  // Market strip
-  function renderMarketStrip() {
-    const strip = document.getElementById('market-strip');
-    const byMarket = U.groupBy(allRows, r => r.market);
+  // ── LOAD DATA ──
+  try {
+    var dates = await api.dates();
+    if (!dates || !dates.length) throw new Error('No data available');
+    latestDate = dates[0].date;
 
-    strip.innerHTML = MARKETS.map(m => {
-      const short = marketShort(m);
-      const rows = byMarket.get(short) || [];
-      const count = new Set(rows.map(r => r.commodity)).size;
-      const isCurrent = short === marketShort(currentMarket);
-      const trend = trendOf(rows);
-      const fg = trend.label === 'Lower' ? DOWN : UP;
-      return `<div onclick="pickMarket('${esc(m)}')" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;box-shadow:var(--shadow-chip);border:1px solid ${isCurrent ? 'var(--accent)' : '#E9EBE4'}">
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:11.5px;font-weight:${isCurrent ? 600 : 500};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(short)}</span>
-          <span style="font-family:var(--mono);font-size:10.5px;color:${fg};margin-left:auto">${trend.label === 'Lower' ? '−' : '+'}${(Math.random()*4+0.5).toFixed(1)}%</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">${count} items</span>
-          <span style="font-size:10px;font-weight:500;color:${fg};margin-left:auto">${trend.label.toLowerCase()}</span>
-        </div>
-      </div>`;
+    var weekSel = document.getElementById('week-select');
+    dates.slice(0, 5).forEach(function(d) {
+      var opt = document.createElement('option');
+      opt.value = d.date;
+      opt.textContent = 'Week of ' + U.fmtDate(d.date);
+      weekSel.appendChild(opt);
+    });
+    weekSel.addEventListener('change', async function() {
+      latestDate = weekSel.value;
+      allRows = await api.reportTerminal(latestDate);
+      try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) { fobRows = []; }
+      renderAll();
+    });
+
+    var results = await Promise.all([
+      api.reportTerminal(latestDate),
+      api.reportShippingPoints(latestDate).catch(function() { return []; }),
+    ]);
+    allRows = results[0];
+    fobRows = results[1];
+
+    renderAll();
+    renderSummary();
+  } catch (err) {
+    document.getElementById('table-body').innerHTML = '<div class="err-banner">' + esc(err.message) + '</div>';
+  }
+
+  // ── RENDER EVERYTHING ──
+  function renderAll() {
+    renderMarketStrip();
+    renderSidebar();
+    renderTable();
+  }
+
+  // ── MARKET STRIP ──
+  function renderMarketStrip() {
+    var strip = document.getElementById('market-strip');
+    var byMarket = U.groupBy(allRows, function(r) { return r.market; });
+
+    strip.innerHTML = MARKETS.map(function(m) {
+      var short = marketShort(m);
+      var rows = byMarket.get(short) || [];
+      var count = new Set(rows.map(function(r) { return r.commodity; })).size;
+      var isCurrent = short === marketShort(currentMarket);
+      var trend = trendOf(rows);
+      var fg = trend.label === 'Lower' ? DOWN : UP;
+      // Calculate a representative change %
+      var mktByCom = U.groupBy(rows, function(r) { return r.commodity; });
+      var h = 0, l = 0;
+      mktByCom.forEach(function(rs) {
+        var mv = (rs[0].movement || rs[0].trend || '').toLowerCase();
+        if (mv.indexOf('higher') > -1 || mv === 'up') h++;
+        else if (mv.indexOf('lower') > -1 || mv === 'down') l++;
+      });
+      var pct = mktByCom.size > 0 ? ((h - l) / mktByCom.size * 3).toFixed(1) : '0.0';
+      var sign = parseFloat(pct) >= 0 ? '+' : '';
+
+      return '<div onclick="window._pickMarket(\'' + esc(m) + '\')" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;box-shadow:var(--shadow-chip);border:1px solid ' + (isCurrent ? 'var(--accent)' : '#E9EBE4') + '">' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<span style="font-size:11.5px;font-weight:' + (isCurrent ? 600 : 500) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(short) + '</span>' +
+          '<span style="font-family:var(--mono);font-size:10.5px;color:' + fg + ';margin-left:auto">' + sign + pct + '%</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:5px">' +
+          '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + count + ' items</span>' +
+          '<span style="font-size:10px;font-weight:500;color:' + fg + ';margin-left:auto">' + trend.label.toLowerCase() + '</span>' +
+        '</div>' +
+      '</div>';
     }).join('');
   }
 
-  // Make pickMarket global
-  window.pickMarket = function(m) {
+  window._pickMarket = function(m) {
     currentMarket = m;
     U.setSelMarket(marketShort(m));
-    renderMarketStrip();
-    render();
+    renderAll();
     renderSummary();
   };
 
-  // Main render
-  function render() {
-    const market = marketShort(currentMarket);
-    const q = (document.getElementById('header-search').value || '').trim().toLowerCase();
-    const marketRows = allRows.filter(r => r.market === market);
-    const byCom = U.groupBy(marketRows, r => r.commodity);
+  // ── SIDEBAR ──
+  function renderSidebar() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+
+    // Build category → commodity map
+    var catItems = {};
+    byCom.forEach(function(rows, name) {
+      var cat = U.catLabel(rows[0] && rows[0].commodity_type);
+      if (!catItems[cat]) catItems[cat] = [];
+      catItems[cat].push(name);
+    });
+    Object.keys(catItems).forEach(function(k) { catItems[k].sort(); });
+
+    // Categories accordion
+    var catHtml = '';
+    ['Fruits', 'Vegetables', 'Onions & Potatoes', 'Nuts'].forEach(function(cat) {
+      var items = catItems[cat] || [];
+      var isOpen = !!catOpen[cat];
+      catHtml += '<div>';
+      catHtml += '<div onclick="window._toggleCat(\'' + esc(cat) + '\')" style="padding:9px 0;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--surface-row)">';
+      catHtml += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:' + (isOpen ? 'rotate(90deg)' : 'none') + '"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      catHtml += '<span style="font-size:12.5px;font-weight:500;flex:1;min-width:0">' + esc(cat) + '</span>';
+      catHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + items.length + '</span>';
+      catHtml += '</div>';
+      if (isOpen) {
+        catHtml += '<div style="padding:8px 0 10px 18px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--surface-row)">';
+        items.forEach(function(name) {
+          var checked = !!checkedComs[name];
+          catHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
+          catHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCom(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+          catHtml += '<span style="flex:1;min-width:0">' + esc(name) + '</span>';
+          catHtml += '</label>';
+        });
+        catHtml += '</div>';
+      }
+      catHtml += '</div>';
+    });
+    document.getElementById('cat-list').innerHTML = catHtml;
+
+    // Shipping point checkboxes
+    var originCounts = {};
+    fobRows.forEach(function(r) {
+      var o = r.market || r.origin || 'Unknown';
+      if (o === 'National Trends') return;
+      originCounts[o] = (originCounts[o] || 0) + 1;
+    });
+    var originHtml = '';
+    Object.entries(originCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(pair) {
+      var name = pair[0], count = pair[1];
+      var checked = !!checkedOrigins[name];
+      originHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
+      originHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckOrigin(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+      originHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</span>';
+      originHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + count + '</span>';
+      originHtml += '</label>';
+    });
+    document.getElementById('origin-list').innerHTML = originHtml;
+
+    // Watchlist
+    var wl = U.watchList();
+    document.getElementById('watch-count').textContent = wl.length;
+    var watchHtml = '';
+    if (wl.length) {
+      wl.forEach(function(name) {
+        var rows = byCom.get(name);
+        var trend = rows ? trendOf(rows) : { label: 'Steady', arrow: '\u2192', cls: 'tone--steady' };
+        watchHtml += '<div style="padding:9px 0;border-bottom:1px solid var(--surface-row);cursor:pointer" onclick="window._toggleCom(\'' + esc(name) + '\')">';
+        watchHtml += '<div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</div>';
+        watchHtml += '<div style="display:flex;align-items:center;gap:7px;margin-top:5px">';
+        watchHtml += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);flex:1;min-width:0">' + (rows ? rows.length + ' reporting' : '\u2014') + '</span>';
+        watchHtml += '<span class="tone tone--sm ' + trend.cls + '"><span>' + trend.arrow + '</span>' + trend.label + '</span>';
+        watchHtml += '</div></div>';
+      });
+    } else {
+      watchHtml = '<div style="padding:12px 0;font-size:11.5px;color:var(--text-dim)">No items watched yet.</div>';
+    }
+    document.getElementById('watch-list').innerHTML = watchHtml;
+  }
+
+  // Global handlers
+  window._toggleCat = function(name) { catOpen[name] = !catOpen[name]; renderSidebar(); };
+  window._toggleCheckCom = function(name) { checkedComs[name] = !checkedComs[name]; renderAll(); };
+  window._toggleCheckOrigin = function(name) { checkedOrigins[name] = !checkedOrigins[name]; renderAll(); };
+  window._toggleCom = function(name) { expanded[name] = !expanded[name]; renderAll(); };
+
+  // ── TABLE ──
+  function renderTable() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
 
     document.getElementById('toolbar-market').textContent = currentMarket;
 
-    // Build commodity list
-    let comList = [];
-    for (const [name, rows] of byCom) {
-      if (q && !name.toLowerCase().includes(q)) continue;
-      const origins = U.uniq(rows.map(r => r.origin).filter(Boolean));
-      const trend = trendOf(rows);
-      // Shipping points
-      const comFob = fobRows.filter(r => r.commodity === name);
-      const shipPts = U.uniq(comFob.map(r => r.market || r.origin).filter(Boolean));
+    // Active filters
+    var activeComs = Object.keys(checkedComs).filter(function(k) { return checkedComs[k]; });
+    var activeOrigins = Object.keys(checkedOrigins).filter(function(k) { return checkedOrigins[k]; });
 
-      comList.push({ name, rows, origins, trend, shipPts, skuCount: rows.length });
-    }
+    // Build commodity list
+    var comList = [];
+    byCom.forEach(function(rows, name) {
+      // Search filter
+      if (searchQ && name.toLowerCase().indexOf(searchQ) === -1) return;
+      // Commodity checkbox filter
+      if (activeComs.length && activeComs.indexOf(name) === -1) return;
+      // Origin filter — check if any of this commodity's origins match
+      if (activeOrigins.length) {
+        var comOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var comFob = fobRows.filter(function(r) { return r.commodity === name; });
+        var fobOrigins = comFob.map(function(r) { return r.market || r.origin; }).filter(Boolean);
+        var allOrigins = comOrigins.concat(fobOrigins);
+        var hasMatch = activeOrigins.some(function(o) {
+          return allOrigins.some(function(ao) { return ao && ao.indexOf(o.split(',')[0]) > -1; });
+        });
+        if (!hasMatch) return;
+      }
+
+      var origins = U.uniq(rows.map(function(r) { return r.origin; }).filter(Boolean));
+      var trend = trendOf(rows);
+      var comFob2 = fobRows.filter(function(r) { return r.commodity === name; });
+      var shipPts = U.uniq(comFob2.map(function(r) { return r.market || r.origin; }).filter(Boolean));
+
+      comList.push({ name: name, rows: rows, origins: origins, trend: trend, shipPts: shipPts, skuCount: rows.length });
+    });
 
     // Sort
-    if (sortMode === 'skus') comList.sort((a, b) => b.skuCount - a.skuCount);
-    else if (sortMode === 'higher') comList.sort((a, b) => (a.trend.label === 'Higher' ? 0 : 1) - (b.trend.label === 'Higher' ? 0 : 1) || a.name.localeCompare(b.name));
-    else if (sortMode === 'lower') comList.sort((a, b) => (a.trend.label === 'Lower' ? 0 : 1) - (b.trend.label === 'Lower' ? 0 : 1) || a.name.localeCompare(b.name));
-    else comList.sort((a, b) => a.name.localeCompare(b.name));
+    var sorters = {
+      az: function(a, b) { return a.name.localeCompare(b.name); },
+      skus: function(a, b) { return b.skuCount - a.skuCount || a.name.localeCompare(b.name); },
+      higher: function(a, b) { return (a.trend.label === 'Higher' ? 0 : 1) - (b.trend.label === 'Higher' ? 0 : 1) || a.name.localeCompare(b.name); },
+      lower: function(a, b) { return (a.trend.label === 'Lower' ? 0 : 1) - (b.trend.label === 'Lower' ? 0 : 1) || a.name.localeCompare(b.name); },
+    };
+    comList.sort(sorters[sortMode] || sorters.az);
 
-    document.getElementById('toolbar-count').textContent = `${comList.length} of ${byCom.size} commodities · ${marketRows.length} prices reporting`;
+    var totalPrices = marketRows.length;
+    var filterLabel = activeComs.length || activeOrigins.length || searchQ
+      ? comList.length + ' of ' + byCom.size + ' commodities match'
+      : comList.length + ' of ' + byCom.size + ' commodities \u00b7 ' + totalPrices + ' prices reporting';
+    document.getElementById('toolbar-count').textContent = filterLabel;
 
-    const anyOpen = Object.values(expanded).some(Boolean);
+    var anyOpen = Object.keys(expanded).some(function(k) { return expanded[k]; });
     document.getElementById('toggle-all').textContent = anyOpen ? 'Collapse all' : 'Expand all';
 
-    // Render rows
-    const tbody = document.getElementById('table-body');
+    // Render
+    var tbody = document.getElementById('table-body');
     if (!comList.length) {
-      tbody.innerHTML = `<div style="padding:40px 0;font-size:14px;font-weight:500">Nothing matches "${esc(q)}".</div>`;
+      tbody.innerHTML = '<div style="padding:40px 0;display:flex;flex-direction:column;gap:8px">' +
+        '<div style="font-size:14px;font-weight:500">No commodities match.</div>' +
+        '<span onclick="window._clearFilters()" style="font-size:12.5px;font-weight:500;color:var(--accent);cursor:pointer">Clear search and filters</span>' +
+        '</div>';
       return;
     }
 
-    let html = '';
-    comList.forEach((d, i) => {
-      const isExp = !!expanded[d.name];
-      const origLabel = d.origins.slice(0, 3).join(' · ') + (d.origins.length > 3 ? ' +' + (d.origins.length - 3) : '');
-      const shipLabel = d.shipPts.length ? d.shipPts.length + ' districts · ' + d.shipPts[0] : '—';
+    var html = '';
+    comList.forEach(function(d, i) {
+      var isExp = !!expanded[d.name];
+      var origLabel = d.origins.slice(0, 3).join(' \u00b7 ');
+      if (d.origins.length > 3) origLabel += ' +' + (d.origins.length - 3);
+      var shipLabel = d.shipPts.length ? d.shipPts.length + ' districts \u00b7 ' + d.shipPts[0] : '\u2014';
 
       // Commodity row
-      html += `<div style="border-bottom:1px solid var(--border);background:${isExp ? 'var(--surface-active)' : 'transparent'}" data-com="${esc(d.name)}">`;
-      html += `<div onclick="toggleCom('${esc(d.name)}')" style="display:grid;min-width:660px;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">`;
+      html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
+      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" style="display:grid;min-width:660px;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
 
-      // Name
-      html += `<div style="display:flex;align-items:center;gap:9px;min-width:0">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2.4" stroke-linecap="round" style="flex:none;transform:${isExp ? 'rotate(90deg)' : 'none'}"><polyline points="9 6 15 12 9 18"></polyline></svg>
-        <span style="font-size:16px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span>
-      </div>`;
+      // Name with caret
+      html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
+      html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2.4" stroke-linecap="round" style="flex:none;transform:' + (isExp ? 'rotate(90deg)' : 'none') + '"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      html += '<span style="font-size:16px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(d.name) + '</span>';
+      html += '</div>';
       // Reporting
-      html += `<span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">${d.skuCount} reporting</span>`;
+      html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">' + d.skuCount + ' reporting</span>';
       // Origins
-      html += `<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(origLabel)}</span>`;
+      html += '<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(origLabel) + '</span>';
       // Shipping points
-      html += `<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(shipLabel)}</span>`;
-      // Movement w/w (placeholder bars)
-      html += `<div style="display:flex;align-items:center;gap:8px">
-        <div style="flex:1;height:14px;display:flex;align-items:flex-end;gap:2px">
-          ${[6,8,7,9,8,5].map((h,j) => `<span style="flex:1;height:${h}px;background:${j===5 ? (d.trend.label==='Lower' ? DOWN : UP) : '#E4E7DF'};border-radius:1px"></span>`).join('')}
-        </div>
-        <span style="font-family:var(--mono);font-size:11.5px;color:${d.trend.label === 'Lower' ? DOWN : d.trend.label === 'Higher' ? DOWN : 'var(--text-dim)'};flex:none">—</span>
-      </div>`;
-      // Tone
-      html += `<div style="display:flex;justify-content:flex-end">
-        <span class="tone ${d.trend.cls}"><span>${d.trend.arrow}</span>${d.trend.label}</span>
-      </div>`;
+      html += '<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(shipLabel) + '</span>';
+      // Movement bars
+      html += '<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:14px;display:flex;align-items:flex-end;gap:2px">';
+      [6,8,7,9,8,5].forEach(function(h, j) {
+        html += '<span style="flex:1;height:' + h + 'px;background:' + (j === 5 ? (d.trend.label === 'Lower' ? DOWN : d.trend.label === 'Higher' ? UP : '#E4E7DF') : '#E4E7DF') + ';border-radius:1px"></span>';
+      });
+      html += '</div><span style="font-family:var(--mono);font-size:11.5px;color:var(--text-dim);flex:none">\u2014</span></div>';
+      // Tone badge
+      html += '<div style="display:flex;justify-content:flex-end"><span class="tone ' + d.trend.cls + '"><span>' + d.trend.arrow + '</span>' + d.trend.label + '</span></div>';
 
-      html += `</div>`; // close grid row
+      html += '</div>'; // close grid row
 
       // Expanded SKU table
       if (isExp) {
-        html += `<div style="padding:0 0 16px 19px;animation:agxFade .14s ease-out;overflow-x:auto">`;
-        // SKU column headers
-        html += `<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
-          <span class="eyebrow">Variety</span>
-          <span class="eyebrow">Origin</span>
-          <span class="eyebrow">Grade</span>
-          <span class="eyebrow">Pack</span>
-          <span class="eyebrow">Size</span>
-          <span class="eyebrow" style="text-align:right">Price</span>
-        </div>`;
+        html += '<div style="padding:0 0 16px 19px;animation:agxFade .14s ease-out;overflow-x:auto">';
+        html += '<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
+        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow" style="text-align:right">Price</span>';
+        html += '</div>';
 
-        // SKU rows
-        const sorted = [...d.rows].sort((a, b) => (a.variety || '').localeCompare(b.variety || ''));
-        for (const row of sorted) {
-          const sp = skuPrice(row);
-          const priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
-          const sub = sp.src === 'mid' && sp.range ? sp.range : '';
+        var sorted = d.rows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+        sorted.forEach(function(row) {
+          var sp = skuPrice(row);
+          var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+          var sub = sp.src === 'mid' && sp.range ? sp.range : '';
 
-          html += `<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;cursor:pointer;border-radius:4px" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
-            <span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(row.variety || '—')}</span>
-            <span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(row.origin || '—')}</span>
-            <span style="color:var(--text-secondary);white-space:nowrap">${esc(row.grade || '—')}</span>
-            <span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(row.package || '—')}</span>
-            <span style="font-family:var(--mono);color:var(--text-secondary);white-space:nowrap">${esc(row.size || '—')}</span>
-            <div style="text-align:right">
-              <div style="font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap">${priceStr}</div>
-              ${sub ? `<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px;white-space:nowrap">${sub}</div>` : ''}
-            </div>
-          </div>`;
-        }
+          html += '<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px">';
+          html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.variety || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.package || '\u2014') + '</span>';
+          html += '<span style="font-family:var(--mono);color:var(--text-secondary);white-space:nowrap">' + esc(row.size || '\u2014') + '</span>';
+          html += '<div style="text-align:right">';
+          html += '<div style="font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap">' + priceStr + '</div>';
+          if (sub) html += '<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px;white-space:nowrap">' + sub + '</div>';
+          html += '</div></div>';
+        });
 
-        // Movement footer
-        html += `<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">
-          <span class="eyebrow" style="flex:none">Movement</span>
-          <span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">${d.skuCount} prices</span>
-          <a href="/app/commodity?c=${encodeURIComponent(d.name)}&market=${encodeURIComponent(marketShort(currentMarket))}" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier →</a>
-        </div>`;
-
-        html += `</div>`; // close expanded panel
+        // Footer with link
+        html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
+        html += '<span class="eyebrow" style="flex:none">Movement</span>';
+        html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
+        html += '<a href="/app/commodity?c=' + encodeURIComponent(d.name) + '&market=' + encodeURIComponent(marketShort(currentMarket)) + '" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
+        html += '</div></div>';
       }
 
-      html += `</div>`; // close commodity wrapper
+      html += '</div>'; // close commodity wrapper
 
       // Sponsored row after 4th item
       if (i === 3 && comList.length > 5) {
-        html += `<a href="#" style="display:flex;align-items:center;gap:14px;min-width:660px;padding:13px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);color:var(--text);text-decoration:none">
-          <span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">Sponsored</span>
-          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-            <span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Sierra Cold Chain — reefer capacity out of Nogales</span>
-            <span style="font-size:11.5px;color:var(--text-muted)">Next-day into Dallas and Houston. Pre-cool, pallet-level temp logs, 24/7 dispatch.</span>
-          </span>
-          <span style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent)">Visit site →</span>
-        </a>`;
+        html += '<a href="#" style="display:flex;align-items:center;gap:14px;min-width:660px;padding:13px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);color:var(--text);text-decoration:none">';
+        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">Sponsored</span>';
+        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Sierra Cold Chain \u2014 reefer capacity out of Nogales</span><span style="font-size:11.5px;color:var(--text-muted)">Next-day into Dallas and Houston. Pre-cool, pallet-level temp logs, 24/7 dispatch.</span></span>';
+        html += '<span style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent)">Visit site \u2192</span></a>';
       }
     });
 
     tbody.innerHTML = html;
   }
 
-  // Toggle expand
-  window.toggleCom = function(name) {
-    expanded[name] = !expanded[name];
-    render();
+  // Clear all filters
+  window._clearFilters = function() {
+    checkedComs = {};
+    checkedOrigins = {};
+    searchQ = '';
+    document.getElementById('header-search').value = '';
+    renderAll();
   };
 
-  // Market summary
+  // ── MARKET SUMMARY ──
   async function renderSummary() {
-    const market = marketShort(currentMarket);
+    var market = marketShort(currentMarket);
     document.getElementById('sum-market').textContent = currentMarket;
-
     try {
-      const summary = await api.marketSummary(market);
-      document.getElementById('sum-stats').innerHTML = [
-        { label: 'Reporting', value: summary.commodities || '—', sub: 'commodities today', fg: 'var(--text)' },
-        { label: 'Tone higher', value: summary.tone_higher ?? '—', sub: `of ${(summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)} on board`, fg: 'var(--up)' },
-        { label: 'Tone lower', value: summary.tone_lower ?? '—', sub: `of ${(summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)} on board`, fg: 'var(--down)' },
-        { label: 'Movement', value: summary.movement_loads ? summary.movement_loads.toLocaleString() : '—', sub: 'loads this week', fg: 'var(--text)' },
-      ].map(s => `<div style="border:1px solid var(--border);border-radius:8px;padding:11px 12px">
-        <div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">${s.label}</div>
-        <div style="font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-0.035em;margin-top:6px;color:${s.fg}">${s.value}</div>
-        <div style="font-size:10.5px;color:var(--text-faint);margin-top:2px">${s.sub}</div>
-      </div>`).join('');
+      var summary = await api.marketSummary(market);
+      var stats = [
+        { label: 'Reporting', value: summary.commodities || '\u2014', sub: 'commodities today', fg: 'var(--text)' },
+        { label: 'Tone higher', value: summary.tone_higher != null ? summary.tone_higher : '\u2014', sub: 'of ' + ((summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)) + ' on board', fg: 'var(--up)' },
+        { label: 'Tone lower', value: summary.tone_lower != null ? summary.tone_lower : '\u2014', sub: 'of ' + ((summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)) + ' on board', fg: 'var(--down)' },
+        { label: 'Movement', value: summary.movement_loads ? summary.movement_loads.toLocaleString() : '\u2014', sub: 'loads this week', fg: 'var(--text)' },
+      ];
+      document.getElementById('sum-stats').innerHTML = stats.map(function(s) {
+        return '<div style="border:1px solid var(--border);border-radius:8px;padding:11px 12px">' +
+          '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">' + s.label + '</div>' +
+          '<div style="font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-0.035em;margin-top:6px;color:' + s.fg + '">' + s.value + '</div>' +
+          '<div style="font-size:10.5px;color:var(--text-faint);margin-top:2px">' + s.sub + '</div></div>';
+      }).join('');
 
-      // Shipping point movement
-      const shipData = summary.shipping_point_movement || [];
-      document.getElementById('sum-ship').innerHTML = shipData.length ? shipData.map(p => {
-        const fg = p.wow_pct != null ? (p.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
-        const chg = p.wow_pct != null ? (p.wow_pct >= 0 ? '+' : '') + p.wow_pct + '%' : '—';
-        return `<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--surface-row)">
-          <span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</span>
-          <span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary);text-align:right">${p.loads ? p.loads.toLocaleString() : '—'}</span>
-          <span style="font-family:var(--mono);font-size:11px;color:${fg};text-align:right">${chg}</span>
-        </div>`;
+      var shipData = summary.shipping_point_movement || [];
+      document.getElementById('sum-ship').innerHTML = shipData.length ? shipData.map(function(p) {
+        var fg = p.wow_pct != null ? (p.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
+        var chg = p.wow_pct != null ? (p.wow_pct >= 0 ? '+' : '') + p.wow_pct + '%' : '\u2014';
+        return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--surface-row)">' +
+          '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.name) + '</span>' +
+          '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary);text-align:right">' + (p.loads ? p.loads.toLocaleString() : '\u2014') + '</span>' +
+          '<span style="font-family:var(--mono);font-size:11px;color:' + fg + ';text-align:right">' + chg + '</span></div>';
       }).join('') : '<div style="padding:12px 0;font-size:12px;color:var(--text-dim)">No movement data yet.</div>';
     } catch(e) {
-      document.getElementById('sum-stats').innerHTML = `<div style="grid-column:1/-1;font-size:12px;color:var(--text-dim)">Summary unavailable.</div>`;
+      document.getElementById('sum-stats').innerHTML = '<div style="grid-column:1/-1;font-size:12px;color:var(--text-dim)">Summary unavailable.</div>';
     }
   }
 
-  // Sidebar categories — expandable accordions matching Claude Design
-  const marketRows2 = allRows.filter(r => r.market === marketShort(currentMarket));
-  const byCom2 = U.groupBy(marketRows2, r => r.commodity);
-  const catOpen = { Fruits: true };
-  const catItems = {};
-  for (const [name, rows] of byCom2) {
-    const cat = U.catLabel(rows[0]?.commodity_type);
-    if (!catItems[cat]) catItems[cat] = [];
-    catItems[cat].push(name);
-  }
-  Object.values(catItems).forEach(arr => arr.sort());
-
-  function renderSidebar() {
-    const catCounts = {};
-    for (const [cat, items] of Object.entries(catItems)) catCounts[cat] = items.length;
-
-    document.getElementById('cat-list').innerHTML = Object.entries(catCounts).map(([name, count]) => {
-      const isOpen = !!catOpen[name];
-      const items = catItems[name] || [];
-      return `<div>
-        <div onclick="toggleCat('${esc(name)}')" style="padding:9px 0;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--surface-row)">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:${isOpen ? 'rotate(90deg)' : 'none'}"><polyline points="9 6 15 12 9 18"></polyline></svg>
-          <span style="font-size:12.5px;font-weight:500;flex:1;min-width:0">${esc(name)}</span>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">${count}</span>
-        </div>
-        ${isOpen ? `<div style="padding:8px 0 10px 18px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--surface-row)">
-          ${items.map(item => `<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">
-            <input type="checkbox" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">
-            <span style="flex:1;min-width:0">${esc(item)}</span>
-          </label>`).join('')}
-        </div>` : ''}
-      </div>`;
-    }).join('');
-  }
-
-  window.toggleCat = function(name) {
-    catOpen[name] = !catOpen[name];
-    renderSidebar();
-  };
-
-  renderSidebar();
-
-  // Watchlist
-  const wl = U.watchList();
-  document.getElementById('watch-count').textContent = wl.length;
-  document.getElementById('watch-list').innerHTML = wl.length ? wl.map(name => {
-    const rows = byCom2.get(name);
-    const trend = rows ? trendOf(rows) : { label: 'Steady', arrow: '→', cls: 'tone--steady' };
-    return `<div style="padding:9px 0;border-bottom:1px solid var(--surface-row);cursor:pointer" onclick="toggleCom('${esc(name)}')">
-      <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</div>
-      <div style="display:flex;align-items:center;gap:7px;margin-top:5px">
-        <span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);flex:1;min-width:0">${rows ? rows.length + ' reporting' : '—'}</span>
-        <span class="tone tone--sm ${trend.cls}"><span>${trend.arrow}</span>${trend.label}</span>
-      </div>
-    </div>`;
-  }).join('') : '<div style="padding:12px 0;font-size:11.5px;color:var(--text-dim)">No items watched yet.</div>';
-
-  // Origin list
-  const originCounts = {};
-  for (const r of fobRows) {
-    const o = r.market || r.origin || 'Unknown';
-    if (o === 'National Trends') continue;
-    originCounts[o] = (originCounts[o] || 0) + 1;
-  }
-  document.getElementById('origin-list').innerHTML = Object.entries(originCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, count]) => `<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">
-      <input type="checkbox" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">
-      <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</span>
-      <span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">${count}</span>
-    </label>`).join('');
 })();
 </script>
 </body>
