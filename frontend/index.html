@@ -393,10 +393,22 @@
       `).join('')}`;
 
     // Category cards
+    // Category cards — use ALL data across all markets
+    const allByCom = U.groupBy(allRows, r => r.commodity);
     const cats = { Fruits: [], Vegetables: [], 'Onions & Potatoes': [], Nuts: [] };
-    for (const [name, rows] of byCom) {
-      const cat = U.catLabel(rows[0]?.commodity_type);
-      if (cats[cat]) cats[cat].push({ name, count: rows.length, trend: (rows[0]?.movement||'').toLowerCase().includes('higher')?'Higher':(rows[0]?.movement||'').toLowerCase().includes('lower')?'Lower':'Steady' });
+    for (const [name, rows] of allByCom) {
+      const rawType = rows[0]?.commodity_type || '';
+      const cat = U.catLabel(rawType);
+      const mv = (rows[0]?.movement||rows[0]?.trend||'').toLowerCase();
+      const trend = mv.includes('higher') || mv === 'up' ? 'Higher' : mv.includes('lower') || mv === 'down' ? 'Lower' : 'Steady';
+      if (cats[cat]) {
+        // Only add unique commodity names
+        if (!cats[cat].some(c => c.name === name)) {
+          cats[cat].push({ name, count: rows.length, trend });
+        }
+      } else {
+        cats['Vegetables'].push({ name, count: rows.length, trend });
+      }
     }
     document.getElementById('cat-cards').innerHTML = Object.entries(cats).map(([cat, items]) => {
       const top = items.slice(0, 3);
