@@ -317,7 +317,7 @@
 
 /* Bottom nav for mobile */
 .mobile-bottom-nav {
-  display: none;
+  display: none !important;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -330,7 +330,7 @@
 }
 @media (max-width: 979px) {
   .mobile-bottom-nav {
-    display: flex;
+    display: flex !important;
     justify-content: space-around;
     align-items: center;
   }
