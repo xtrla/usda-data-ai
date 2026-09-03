@@ -17,8 +17,6 @@
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
 <script src="/js/api.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
@@ -1216,6 +1214,35 @@
     if (storedUser) _updateAuthUI(JSON.parse(storedUser));
   } catch(e) {}
 
+  // ── Helper: get rows matching current filters (same logic as renderTable) ──
+  function _getFilteredRows() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    if (!marketRows.length) {
+      var marketLower = market.toLowerCase();
+      marketRows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(marketLower.split(',')[0].split(' ')[0]) > -1;
+      });
+    }
+    var activeComs = Object.keys(checkedComs).filter(function(k) { return checkedComs[k]; });
+    var activeCountries = Object.keys(checkedCountries).filter(function(k) { return checkedCountries[k]; });
+    var filtered = [];
+    var byCom = {};
+    marketRows.forEach(function(r) { if (!byCom[r.commodity]) byCom[r.commodity] = []; byCom[r.commodity].push(r); });
+    Object.keys(byCom).forEach(function(name) {
+      var rows = byCom[name];
+      if (searchQ && name.toLowerCase().indexOf(searchQ) === -1) return;
+      if (activeComs.length && activeComs.indexOf(name) === -1) return;
+      if (activeCountries.length) {
+        var rowOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var match = activeCountries.some(function(c) { return rowOrigins.some(function(ro) { return ro === c; }); });
+        if (!match) return;
+      }
+      filtered = filtered.concat(rows);
+    });
+    return filtered;
+  }
+
   // ── DOWNLOAD FORMAT TOGGLE ──
   var dlFormat = 'csv';
 
@@ -1250,18 +1277,21 @@
   // ── DOWNLOAD CSV ──
   document.getElementById('download-btn').addEventListener('click', function() {
     var market = marketShort(currentMarket);
-    var mktRows = allRows.filter(function(r) { return r.market === market; });
-    document.getElementById('dl-count-view').textContent = mktRows.length + ' prices';
-    document.getElementById('dl-count-full').textContent = mktRows.length + ' prices';
+    var allMktRows = allRows.filter(function(r) { return r.market === market; });
+    var filteredRows = _getFilteredRows();
+    document.getElementById('dl-count-view').textContent = filteredRows.length + ' prices';
+    document.getElementById('dl-count-full').textContent = allMktRows.length + ' prices';
     document.getElementById('dl-modal').style.display = 'flex';
   });
 
   window._downloadCSV = function() {
     var market = marketShort(currentMarket);
-    var rows = allRows.filter(function(r) { return r.market === market; });
     var scope = document.querySelector('input[name="dl-scope"]:checked');
-    if (scope && scope.value === 'view' && searchQ) {
-      rows = rows.filter(function(r) { return r.commodity.toLowerCase().indexOf(searchQ) > -1; });
+    var rows;
+    if (scope && scope.value === 'view') {
+      rows = _getFilteredRows();
+    } else {
+      rows = allRows.filter(function(r) { return r.market === market; });
     }
 
     var headers = ['Commodity','Variety','Origin','Grade','Package','Size','Price Low','Price High','Mostly Low','Mostly High','Movement','Market','Report Date'];
@@ -1296,111 +1326,119 @@
 
   // ── DOWNLOAD PDF ──
   window._downloadPDF = function() {
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-      alert('PDF library is still loading. Please wait a moment and try again.');
-      return;
-    }
-    try {
-    var jsPDF = window.jspdf.jsPDF;
-    var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
-    var market = marketShort(currentMarket);
-    var rows = allRows.filter(function(r) { return r.market === market; });
-    var scope = document.querySelector('input[name="dl-scope"]:checked');
-    if (scope && scope.value === 'view' && searchQ) {
-      rows = rows.filter(function(r) { return r.commodity.toLowerCase().indexOf(searchQ) > -1; });
-    }
+    var goBtn = document.getElementById('dl-go');
+    goBtn.textContent = 'Generating...';
+    goBtn.disabled = true;
 
-    // Group by commodity
-    var byCom = {};
-    rows.forEach(function(r) {
-      if (!byCom[r.commodity]) byCom[r.commodity] = [];
-      byCom[r.commodity].push(r);
-    });
+    function doGenerate() {
+      try {
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
+        var market = marketShort(currentMarket);
 
-    // Header
-    doc.setFontSize(18);
-    doc.setFont(undefined, 'bold');
-    doc.text('AgraX — Wholesale Produce Prices', 40, 40);
+        // Get filtered rows matching what's in the table
+        var scope = document.querySelector('input[name="dl-scope"]:checked');
+        var rows;
+        if (scope && scope.value === 'view') {
+          rows = _getFilteredRows();
+        } else {
+          rows = allRows.filter(function(r) { return r.market === market; });
+        }
 
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'normal');
-    doc.setTextColor(100);
-    doc.text(currentMarket + '  ·  Week of ' + (latestDate || '') + '  ·  ' + rows.length + ' prices reporting', 40, 56);
-    doc.text('Source: USDA Agricultural Marketing Service  ·  AgraX is not affiliated with the USDA', 40, 68);
-    doc.setTextColor(0);
+        var byCom = {};
+        rows.forEach(function(r) {
+          if (!byCom[r.commodity]) byCom[r.commodity] = [];
+          byCom[r.commodity].push(r);
+        });
 
-    // Build table data — one row per SKU, grouped by commodity
-    var tableHead = [['Commodity', 'Variety', 'Origin', 'Grade', 'Pack', 'Size', 'Price', 'Range', 'Tone']];
-    var tableBody = [];
+        doc.setFontSize(18);
+        doc.setFont(undefined, 'bold');
+        doc.text('AgraX \u2014 Wholesale Produce Prices', 40, 40);
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(100);
+        doc.text(currentMarket + '  \u00b7  Week of ' + (latestDate || '') + '  \u00b7  ' + rows.length + ' prices', 40, 56);
+        doc.text('Source: USDA Agricultural Marketing Service  \u00b7  AgraX is not affiliated with the USDA', 40, 68);
+        doc.setTextColor(0);
 
-    Object.keys(byCom).sort().forEach(function(comName) {
-      var comRows = byCom[comName];
-      var tone = '';
-      var mv = (comRows[0].movement || comRows[0].trend || '').toLowerCase();
-      if (mv.indexOf('higher') > -1 || mv === 'up') tone = 'Higher';
-      else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
-      else tone = 'Steady';
+        var tableHead = [['Commodity', 'Variety', 'Origin', 'Grade', 'Pack', 'Size', 'Price', 'Range', 'Tone']];
+        var tableBody = [];
 
-      comRows.sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
-      comRows.forEach(function(r, idx) {
-        var sp = skuPrice(r);
-        var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
-        var rangeStr = sp.src === 'mid' && sp.range ? sp.range : '';
-        tableBody.push([
-          idx === 0 ? comName : '',
-          r.variety || '—',
-          r.origin || '—',
-          r.grade || '—',
-          r.package || '—',
-          r.size || '—',
-          priceStr,
-          rangeStr,
-          idx === 0 ? tone : ''
-        ]);
-      });
-    });
+        Object.keys(byCom).sort().forEach(function(comName) {
+          var comRows = byCom[comName];
+          var tone = '';
+          var mv = (comRows[0].movement || comRows[0].trend || '').toLowerCase();
+          if (mv.indexOf('higher') > -1 || mv === 'up') tone = 'Higher';
+          else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
+          else tone = 'Steady';
 
-    doc.autoTable({
-      head: tableHead,
-      body: tableBody,
-      startY: 80,
-      margin: { left: 40, right: 40 },
-      styles: {
-        fontSize: 8,
-        cellPadding: 4,
-        lineColor: [228, 231, 223],
-        lineWidth: 0.5,
-      },
-      headStyles: {
-        fillColor: [243, 244, 240],
-        textColor: [60, 75, 66],
-        fontStyle: 'bold',
-        fontSize: 7.5,
-      },
-      columnStyles: {
-        0: { fontStyle: 'bold', cellWidth: 90 },
-        6: { halign: 'right', fontStyle: 'bold' },
-        7: { halign: 'right', fontSize: 7, textColor: [160, 160, 160] },
-        8: { cellWidth: 45 },
-      },
-      alternateRowStyles: {
-        fillColor: [250, 251, 248],
-      },
-      didDrawPage: function(data) {
-        // Footer on each page
-        var pageH = doc.internal.pageSize.height;
-        doc.setFontSize(7);
-        doc.setTextColor(160);
-        doc.text('AgraX  ·  agra-x.com  ·  Source: USDA AMS Terminal Market  ·  Not affiliated with the USDA', 40, pageH - 20);
-        doc.text('Page ' + doc.internal.getCurrentPageInfo().pageNumber, doc.internal.pageSize.width - 60, pageH - 20);
+          comRows.sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+          comRows.forEach(function(r, idx) {
+            var sp = skuPrice(r);
+            var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+            var rangeStr = sp.src === 'mid' && sp.range ? sp.range : '';
+            tableBody.push([
+              idx === 0 ? comName : '',
+              r.variety || '\u2014',
+              r.origin || '\u2014',
+              r.grade || '\u2014',
+              r.package || '\u2014',
+              r.size || '\u2014',
+              priceStr,
+              rangeStr,
+              idx === 0 ? tone : ''
+            ]);
+          });
+        });
+
+        doc.autoTable({
+          head: tableHead,
+          body: tableBody,
+          startY: 80,
+          margin: { left: 40, right: 40 },
+          styles: { fontSize: 8, cellPadding: 4, lineColor: [228, 231, 223], lineWidth: 0.5 },
+          headStyles: { fillColor: [243, 244, 240], textColor: [60, 75, 66], fontStyle: 'bold', fontSize: 7.5 },
+          columnStyles: {
+            0: { fontStyle: 'bold', cellWidth: 90 },
+            6: { halign: 'right', fontStyle: 'bold' },
+            7: { halign: 'right', fontSize: 7, textColor: [160, 160, 160] },
+            8: { cellWidth: 45 },
+          },
+          alternateRowStyles: { fillColor: [250, 251, 248] },
+          didDrawPage: function() {
+            var pageH = doc.internal.pageSize.height;
+            doc.setFontSize(7);
+            doc.setTextColor(160);
+            doc.text('AgraX  \u00b7  agra-x.com  \u00b7  Source: USDA AMS Terminal Market  \u00b7  Not affiliated with the USDA', 40, pageH - 20);
+            doc.text('Page ' + doc.internal.getCurrentPageInfo().pageNumber, doc.internal.pageSize.width - 60, pageH - 20);
+          }
+        });
+
+        doc.save('agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.pdf');
+        document.getElementById('dl-modal').style.display = 'none';
+      } catch(e) {
+        console.error('PDF generation error:', e);
+        alert('PDF generation failed: ' + e.message);
       }
-    });
+      goBtn.textContent = dlFormat === 'pdf' ? 'Download PDF' : 'Download CSV';
+      goBtn.disabled = false;
+    }
 
-    doc.save('agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.pdf');
-    document.getElementById('dl-modal').style.display = 'none';
-    } catch(e) {
-      console.error('PDF generation error:', e);
-      alert('PDF generation failed: ' + e.message);
+    // Load jsPDF on demand if not already loaded
+    if (window.jspdf && window.jspdf.jsPDF) {
+      doGenerate();
+    } else {
+      var s1 = document.createElement('script');
+      s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
+      s1.onload = function() {
+        var s2 = document.createElement('script');
+        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+        s2.onload = doGenerate;
+        s2.onerror = function() { alert('Failed to load PDF library. Check your internet connection.'); goBtn.textContent = 'Download PDF'; goBtn.disabled = false; };
+        document.head.appendChild(s2);
+      };
+      s1.onerror = function() { alert('Failed to load PDF library. Check your internet connection.'); goBtn.textContent = 'Download PDF'; goBtn.disabled = false; };
+      document.head.appendChild(s1);
     }
   };
 
