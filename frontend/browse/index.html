@@ -17,6 +17,8 @@
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
 <script src="/js/api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
@@ -185,7 +187,7 @@
     </div>
     <div style="display:flex;gap:10px;margin-bottom:18px">
       <button id="dl-csv" onclick="window._downloadCSV()" style="flex:1;height:42px;border-radius:8px;border:2px solid var(--accent);background:#fff;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer">CSV</button>
-      <button id="dl-pdf" style="flex:1;height:42px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:not-allowed;opacity:0.5">PDF (coming soon)</button>
+      <button id="dl-pdf" onclick="window._downloadPDF()" style="flex:1;height:42px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer">PDF</button>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <button onclick="document.getElementById('dl-modal').style.display='none'" class="btn btn--ghost" style="height:36px;padding:0 16px">Cancel</button>
@@ -1252,6 +1254,107 @@
     a.download = 'agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.csv';
     a.click();
     URL.revokeObjectURL(url);
+    document.getElementById('dl-modal').style.display = 'none';
+  };
+
+  // ── DOWNLOAD PDF ──
+  window._downloadPDF = function() {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
+    var market = marketShort(currentMarket);
+    var rows = allRows.filter(function(r) { return r.market === market; });
+    var scope = document.querySelector('input[name="dl-scope"]:checked');
+    if (scope && scope.value === 'view' && searchQ) {
+      rows = rows.filter(function(r) { return r.commodity.toLowerCase().indexOf(searchQ) > -1; });
+    }
+
+    // Group by commodity
+    var byCom = {};
+    rows.forEach(function(r) {
+      if (!byCom[r.commodity]) byCom[r.commodity] = [];
+      byCom[r.commodity].push(r);
+    });
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont(undefined, 'bold');
+    doc.text('AgraX — Wholesale Produce Prices', 40, 40);
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(100);
+    doc.text(currentMarket + '  ·  Week of ' + (latestDate || '') + '  ·  ' + rows.length + ' prices reporting', 40, 56);
+    doc.text('Source: USDA Agricultural Marketing Service  ·  AgraX is not affiliated with the USDA', 40, 68);
+    doc.setTextColor(0);
+
+    // Build table data — one row per SKU, grouped by commodity
+    var tableHead = [['Commodity', 'Variety', 'Origin', 'Grade', 'Pack', 'Size', 'Price', 'Range', 'Tone']];
+    var tableBody = [];
+
+    Object.keys(byCom).sort().forEach(function(comName) {
+      var comRows = byCom[comName];
+      var tone = '';
+      var mv = (comRows[0].movement || comRows[0].trend || '').toLowerCase();
+      if (mv.indexOf('higher') > -1 || mv === 'up') tone = 'Higher';
+      else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
+      else tone = 'Steady';
+
+      comRows.sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+      comRows.forEach(function(r, idx) {
+        var sp = skuPrice(r);
+        var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
+        var rangeStr = sp.src === 'mid' && sp.range ? sp.range : '';
+        tableBody.push([
+          idx === 0 ? comName : '',
+          r.variety || '—',
+          r.origin || '—',
+          r.grade || '—',
+          r.package || '—',
+          r.size || '—',
+          priceStr,
+          rangeStr,
+          idx === 0 ? tone : ''
+        ]);
+      });
+    });
+
+    doc.autoTable({
+      head: tableHead,
+      body: tableBody,
+      startY: 80,
+      margin: { left: 40, right: 40 },
+      styles: {
+        fontSize: 8,
+        cellPadding: 4,
+        lineColor: [228, 231, 223],
+        lineWidth: 0.5,
+      },
+      headStyles: {
+        fillColor: [243, 244, 240],
+        textColor: [60, 75, 66],
+        fontStyle: 'bold',
+        fontSize: 7.5,
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 90 },
+        6: { halign: 'right', fontStyle: 'bold' },
+        7: { halign: 'right', fontSize: 7, textColor: [160, 160, 160] },
+        8: { cellWidth: 45 },
+      },
+      alternateRowStyles: {
+        fillColor: [250, 251, 248],
+      },
+      didDrawPage: function(data) {
+        // Footer on each page
+        var pageH = doc.internal.pageSize.height;
+        doc.setFontSize(7);
+        doc.setTextColor(160);
+        doc.text('AgraX  ·  agra-x.com  ·  Source: USDA AMS Terminal Market  ·  Not affiliated with the USDA', 40, pageH - 20);
+        doc.text('Page ' + doc.internal.getCurrentPageInfo().pageNumber, doc.internal.pageSize.width - 60, pageH - 20);
+      }
+    });
+
+    doc.save('agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.pdf');
     document.getElementById('dl-modal').style.display = 'none';
   };
 
