@@ -886,21 +886,98 @@ def upsert_rows(rows: list[dict]) -> int:
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
+def find_missing_dates(lookback_days: int = 7) -> list[str]:
+    """
+    Check Supabase for any missing weekday dates in the last N days.
+    Returns a list of missing dates in MM/DD/YYYY format.
+    """
+    from datetime import timedelta
+
+    today = date.today()
+    # Build list of expected weekday dates
+    expected = []
+    for i in range(1, lookback_days + 1):
+        d = today - timedelta(days=i)
+        if d.weekday() < 5:  # Monday=0 through Friday=4
+            expected.append(d)
+
+    if not expected:
+        return []
+
+    # Fetch distinct report dates from Supabase
+    try:
+        result = supabase.table(TABLE).select("report_date").eq(
+            "market_type", "terminal"
+        ).gte(
+            "report_date", expected[-1].isoformat()
+        ).limit(50000).execute()
+
+        existing = set()
+        for row in (result.data or []):
+            rd = row.get("report_date")
+            if rd:
+                existing.add(rd)
+
+        # Find gaps
+        missing = []
+        for d in expected:
+            if d.isoformat() not in existing:
+                missing.append(d)
+
+        return missing
+
+    except Exception as e:
+        log.warning("Gap detection query failed: %s", e)
+        return []
+
+
 def run(target_date: str = None):
     """
     Ingest all configured report slugs for today (or target_date if given).
     target_date format: "MM/DD/YYYY"
 
     Strategy:
+    0. Check for missing dates in the last 7 days and backfill them first
     1. Try today's date first
     2. If no data, fall back to lastReports=1 (most recent published)
     3. After fetching, purge any older rows for that slug so stale data
        from previous runs never pollutes the results
     """
+    # ── Gap detection & backfill ──
+    if not target_date:
+        missing = find_missing_dates(7)
+        if missing:
+            log.info("=" * 60)
+            log.info("GAP DETECTION: found %d missing date(s) in the last 7 days", len(missing))
+            for d in sorted(missing):
+                log.info("  Missing: %s (%s)", d.isoformat(), d.strftime("%A"))
+            log.info("=" * 60)
+
+            # Backfill each missing date
+            for d in sorted(missing):
+                backfill_date = d.strftime("%m/%d/%Y")
+                log.info("BACKFILL: ingesting %s...", backfill_date)
+                try:
+                    _run_for_date(backfill_date)
+                    log.info("BACKFILL: %s complete", backfill_date)
+                except Exception as e:
+                    log.error("BACKFILL: %s failed: %s", backfill_date, e)
+        else:
+            log.info("Gap detection: no missing dates in the last 7 days")
+
+    # ── Main ingestion for today (or specified date) ──
     if not target_date:
         target_date = date.today().strftime("%m/%d/%Y")
 
-    log.info("Starting ingestion for %s", target_date)
+    log.info("Starting main ingestion for %s", target_date)
+    return _run_for_date(target_date)
+
+
+def _run_for_date(target_date: str) -> int:
+    """
+    Internal: ingest all configured report slugs for a specific date.
+    """
+    log.info("Ingesting for %s", target_date)
     grand_total = 0
 
     # Nuclear cleanup: delete any rows older than 30 days regardless of slug
