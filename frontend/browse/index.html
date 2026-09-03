@@ -793,7 +793,8 @@
     var origins = U.uniq(marketRows.map(function(r) { return r.origin; }).filter(Boolean));
     var skuLabel = [row.variety, row.grade, row.size, row.package].filter(Boolean).join(' \u00b7 ');
 
-    // FOB data for this commodity
+    // FOB data — match shipping points to the selected variety's origin
+    var selectedOrigin = (row.origin || '').toLowerCase();
     var comFob = fobRows.filter(function(r) { return r.commodity === selectedComName; });
     var fobByOrigin = {};
     comFob.forEach(function(r) {
@@ -801,8 +802,50 @@
       if (o === 'National Trends') return;
       if (!fobByOrigin[o]) {
         var p = skuPrice(r);
-        fobByOrigin[o] = { name: o, price: p.price };
+        fobByOrigin[o] = { name: o, price: p.price, fobOrigin: (r.origin || '').toLowerCase() };
       }
+    });
+
+    // Origin → likely shipping point mapping
+    var ORIGIN_SP_MAP = {
+      'mexico':       ['Nogales', 'Laredo', 'McAllen', 'Pharr', 'Texas'],
+      'california':   ['Oxnard', 'Fresno', 'Salinas', 'Los Angeles', 'San Diego'],
+      'arizona':      ['Nogales', 'Phoenix'],
+      'texas':        ['Laredo', 'McAllen', 'Pharr', 'Weslaco', 'Texas'],
+      'florida':      ['Orlando', 'Immokalee', 'Florida', 'Miami'],
+      'georgia':      ['Thomasville', 'Vidalia', 'Atlanta'],
+      'peru':         ['Miami Imports', 'Philadelphia', 'Port'],
+      'chile':        ['Philadelphia', 'Miami Imports', 'Port'],
+      'dom. rep.':    ['Miami Imports'],
+      'dominican republic': ['Miami Imports'],
+      'guatemala':    ['Miami Imports', 'Nogales', 'Port'],
+      'honduras':     ['Miami Imports', 'Port'],
+      'costa rica':   ['Miami Imports', 'Port'],
+      'ecuador':      ['Miami Imports', 'Port'],
+      'colombia':     ['Miami Imports', 'Port'],
+      'canada':       ['Detroit', 'Buffalo'],
+      'british columbia': ['Seattle'],
+      'oregon':       ['Portland', 'Salem', 'Oregon'],
+      'washington':   ['Seattle', 'Washington', 'Yakima'],
+      'idaho':        ['Idaho', 'Ontario'],
+      'new york':     ['New York', 'Orange County'],
+      'new jersey':   ['New Jersey', 'Philadelphia'],
+      'pennsylvania': ['Philadelphia', 'Pennsylvania'],
+    };
+
+    // Score each FOB district by relevance to this variety's origin
+    var fobEntries = Object.values(fobByOrigin);
+    var relevantSPs = ORIGIN_SP_MAP[selectedOrigin] || [];
+    fobEntries.forEach(function(f) {
+      f.relevant = relevantSPs.some(function(sp) {
+        return f.name.toLowerCase().indexOf(sp.toLowerCase()) > -1;
+      });
+    });
+    // Sort: relevant first, then by price
+    fobEntries.sort(function(a, b) {
+      if (a.relevant && !b.relevant) return -1;
+      if (!a.relevant && b.relevant) return 1;
+      return (a.price || 999) - (b.price || 999);
     });
 
     // Cross-market data
@@ -850,25 +893,46 @@
     // Shipping point FOB
     var fobEntries = Object.values(fobByOrigin);
     if (fobEntries.length) {
+      var relevantEntries = fobEntries.filter(function(f) { return f.relevant; });
+      var otherEntries = fobEntries.filter(function(f) { return !f.relevant; });
+      var label = selectedOrigin ? esc(selectedComName) + ' \u00b7 ' + esc(row.origin) + ' origin' : esc(selectedComName) + ' \u00b7 all districts';
+
       html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
       html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
       html += '<span class="eyebrow">Shipping point FOB</span>';
-      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + esc(selectedComName) + ' \u00b7 all districts</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + label + '</span>';
       html += '</div>';
       html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;padding:8px 0 6px">';
       html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">District</span>';
       html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">FOB</span>';
       html += '</div>';
-      fobEntries.forEach(function(f) {
+
+      // Relevant districts first (full weight)
+      relevantEntries.forEach(function(f) {
         html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">';
         html += '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
         html += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
         html += '</div>';
       });
-      // Markup
-      if (sp.price != null && fobEntries[0] && fobEntries[0].price != null) {
-        var markup = sp.price - fobEntries[0].price;
-        var markupPct = fobEntries[0].price > 0 ? Math.round(markup / fobEntries[0].price * 100) : 0;
+
+      // Other districts (dimmed)
+      if (otherEntries.length) {
+        html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
+        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint)">Other districts</span>';
+        html += '</div>';
+        otherEntries.forEach(function(f) {
+          html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-row)">';
+          html += '<span style="font-size:11.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
+          html += '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint);text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
+          html += '</div>';
+        });
+      }
+
+      // Markup — use the top relevant FOB for the calculation
+      var primaryFob = relevantEntries.length ? relevantEntries[0] : fobEntries[0];
+      if (sp.price != null && primaryFob && primaryFob.price != null) {
+        var markup = sp.price - primaryFob.price;
+        var markupPct = primaryFob.price > 0 ? Math.round(markup / primaryFob.price * 100) : 0;
         html += '<div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">';
         html += '<span style="font-size:11.5px;color:var(--text-dim);flex:1">Terminal over FOB</span>';
         html += '<span style="font-family:var(--mono);font-size:13px;font-weight:500">+$' + markup.toFixed(2) + '</span>';
