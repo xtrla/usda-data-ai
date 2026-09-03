@@ -1,430 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AgraX — Commodity Detail</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%231D4ED8'/%3E%3Ctext x='18' y='26' font-family='system-ui' font-size='22' font-weight='800' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/styles/tokens.css" />
-<link rel="stylesheet" href="/styles/components.css" />
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-white-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-white-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-white-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-white-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/components.css">
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
 <script src="/js/api.js"></script>
-<style>
-  .chart-wrap { position: relative; }
-  .chart-wrap svg { width: 100%; height: 240px; }
-  .chart-tip {
-    position: absolute; pointer-events: none; opacity: 0;
-    background: var(--ink); color: #fff; padding: 5px 10px;
-    border-radius: var(--r-chip); font-size: var(--fs-base); font-family: var(--font-mono);
-    white-space: nowrap; z-index: 5; transition: opacity .1s;
-  }
-  .range-toggle {
-    display: inline-flex; background: var(--surface-chip); padding: 3px; border-radius: var(--r-btn); gap: 2px;
-  }
-  .range-toggle__opt {
-    font-size: var(--fs-sm); padding: 5px 10px; border-radius: var(--r-chip); color: var(--text-secondary);
-    cursor: pointer; font-family: var(--font-mono); font-weight: var(--fw-medium);
-  }
-  .range-toggle__opt.is-active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .cx-bar { display: flex; align-items: center; gap: 10px; padding: 11px 20px; border-bottom: 1px solid var(--border-row); }
-  .cx-bar__bar { height: 8px; border-radius: 4px; transition: width .3s; }
-  .cx-bar__price { font-family: var(--font-mono); font-size: var(--fs-md); font-weight: var(--fw-bold); width: 70px; text-align: right; }
-</style>
 </head>
 <body>
+<div style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
 
-<!-- ═══════════ HEADER ═══════════ -->
-<header class="header">
-  <div class="header__inner">
-    <a href="/" class="header__logo">
-      <div class="header__logo-mark">A</div>
-      <span class="header__logo-word">AgraX</span>
+<!-- HEADER -->
+<header style="position:sticky;top:0;z-index:60;background:var(--dark);color:#fff;border-bottom:1px solid var(--dark-border)">
+  <div style="display:flex;align-items:center;gap:20px;height:52px;padding:0 20px">
+    <a href="/" style="display:flex;align-items:center;gap:11px;flex:none;color:#fff;text-decoration:none">
+      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:20px;width:auto">
     </a>
-    <div class="header__search">
-      <span class="header__search-icon">⌕</span>
-      <input type="text" class="header__search-input" placeholder="Search…" id="header-search" />
+    <div style="display:flex;align-items:center;gap:22px;flex:none;margin-left:auto">
+      <a href="/browse" style="font-size:12.5px;font-weight:500;color:#A3A3A3">Browse</a>
+      <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:3px;background:#D97706"></span>Pro</span>
+      <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;cursor:pointer">Sign in</span>
     </div>
-    <nav class="header__nav">
-      <a href="/browse" class="header__link">Browse</a>
-      <a href="/app" class="header__link header__link--pro">Pro</a>
-      <a href="#" class="header__link">Sign in</a>
-    </nav>
   </div>
 </header>
 
-<div style="max-width:var(--max-content);margin:0 auto;padding:26px 28px 80px;display:grid;grid-template-columns:262px 1fr;gap:26px;align-items:start">
+<main style="flex:1;max-width:1200px;margin:0 auto;padding:20px 20px 60px;width:100%">
+  <!-- Breadcrumb -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted);margin-bottom:16px">
+    <a href="/browse" style="color:var(--accent)">Browse</a>
+    <span style="color:var(--text-faint)">/</span>
+    <span id="bc-name">Loading…</span>
+  </div>
 
-  <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
-  <aside class="sidebar">
-    <!-- Related SKUs -->
-    <div class="sidebar__card">
-      <div class="sidebar__head">Variants <span class="sidebar__head-count" id="rel-count">0</span></div>
-      <div id="rel-list" style="max-height:400px;overflow-y:auto"></div>
-    </div>
-    <!-- Movement -->
-    <div class="sidebar__card">
-      <div class="sidebar__head">Shipments</div>
-      <div id="mv-body" style="padding:12px 15px;font-size:var(--fs-md);color:var(--text-muted)">Loading…</div>
-    </div>
-  </aside>
-
-  <!-- ═══════════ MAIN ═══════════ -->
-  <main style="display:flex;flex-direction:column;gap:16px;min-width:0">
-    <div class="breadcrumb" id="breadcrumb"></div>
-    <div id="err-slot"></div>
-
-    <!-- Header card -->
-    <div class="detail-header" id="detail-header">
-      <div style="font-size:var(--fs-md);color:var(--text-muted)" id="head-loading">Loading…</div>
-    </div>
-
-    <!-- Stat strip -->
-    <div class="stat-strip" id="stat-strip" style="display:none">
-      <div class="stat-strip__cell">
-        <div class="stat-strip__label">FOB origin</div>
-        <div class="stat-strip__val" id="ss-fob">—</div>
-      </div>
-      <div class="stat-strip__cell">
-        <div class="stat-strip__label">Markup to terminal</div>
-        <div class="stat-strip__val" id="ss-markup">—</div>
-      </div>
-      <div class="stat-strip__cell">
-        <div class="stat-strip__label">Shipments</div>
-        <div class="stat-strip__val" id="ss-ship">—</div>
-      </div>
-      <div class="stat-strip__cell">
-        <div class="stat-strip__label">30-day range</div>
-        <div class="stat-strip__val" id="ss-range">—</div>
-      </div>
-    </div>
-
-    <!-- Price chart -->
-    <div class="chart-card">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-        <span style="font-size:var(--fs-md);font-weight:var(--fw-semibold)">Price history</span>
-        <div class="range-toggle" id="range-toggle">
-          <span class="range-toggle__opt" data-d="7">7d</span>
-          <span class="range-toggle__opt is-active" data-d="30">30d</span>
-          <span class="range-toggle__opt" data-d="60">60d</span>
-          <span class="range-toggle__opt" data-d="90">90d</span>
+  <div class="detail-grid" style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start">
+    <!-- LEFT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <!-- Header card -->
+      <div class="card" style="padding:22px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+          <div>
+            <h1 style="font-size:26px;font-weight:600;letter-spacing:-0.03em;line-height:1.1" id="d-name">—</h1>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:6px" id="d-origins">—</div>
+            <div style="margin-top:8px;font-size:12.5px;color:var(--text-secondary)"><span style="font-family:var(--mono);font-weight:500" id="d-count">—</span> reporting at <span id="d-market">—</span></div>
+          </div>
+          <span id="d-tone" class="tone tone--steady">— Steady</span>
         </div>
       </div>
-      <div class="chart-wrap" id="chart-wrap">
-        <div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Loading…</div>
+
+      <!-- Stat strip -->
+      <div class="card" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);overflow:hidden" id="d-stats">
+        <div style="background:#fff;padding:14px 16px"><div class="eyebrow">FOB origin</div><div style="font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-0.03em;margin-top:6px" id="ds-fob">—</div></div>
+        <div style="background:#fff;padding:14px 16px"><div class="eyebrow">Markup</div><div style="font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-0.03em;margin-top:6px" id="ds-markup">—</div></div>
+        <div style="background:#fff;padding:14px 16px"><div class="eyebrow">Shipments</div><div style="font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-0.03em;margin-top:6px" id="ds-ship">—</div></div>
+        <div style="background:#fff;padding:14px 16px"><div class="eyebrow">30-day range</div><div style="font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-0.03em;margin-top:6px" id="ds-range">—</div></div>
       </div>
-      <div class="chart-tip" id="chart-tip"></div>
+
+      <!-- Varieties table -->
+      <div class="card" style="overflow:hidden">
+        <div style="padding:14px 18px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)">All varieties at <span id="vt-market">—</span></div>
+        <div style="overflow-x:auto" id="vt-wrap">
+          <div style="padding:20px;text-align:center;color:var(--text-dim);font-size:12px">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Cross-market comparison -->
+      <div class="card" style="overflow:hidden">
+        <div style="padding:14px 18px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;font-weight:600">Cross-market comparison</span>
+          <span style="font-size:12px;color:var(--text-faint);margin-left:auto" id="cx-count"></span>
+        </div>
+        <div id="cx-body" style="padding:6px 18px 12px"></div>
+      </div>
     </div>
 
-    <!-- Varieties table (SKU-level — this is where prices live) -->
-    <div class="card" style="overflow:hidden">
-      <div style="padding:14px 20px;font-size:var(--fs-md);font-weight:var(--fw-semibold);border-bottom:1px solid var(--border-header)">All SKUs at <span id="var-market">—</span></div>
-      <div style="overflow-x:auto">
-        <table class="sku-table" id="var-table">
-          <thead><tr>
-            <th>Variety</th><th>Origin</th><th>Grade</th><th>Pack · Size</th>
-            <th class="sku-th-price">Price</th><th class="sku-th-source">Source</th>
-          </tr></thead>
-          <tbody id="var-tbody"></tbody>
-        </table>
+    <!-- RIGHT COLUMN -->
+    <aside style="display:flex;flex-direction:column;gap:14px;position:sticky;top:72px">
+      <!-- FOB breakdown -->
+      <div class="card" style="padding:18px">
+        <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Shipping point FOB</div>
+        <div id="fob-body" style="margin-top:8px">
+          <div style="font-size:12px;color:var(--text-dim)">Loading…</div>
+        </div>
       </div>
-    </div>
-
-    <!-- 12-market comparison -->
-    <div class="card" style="overflow:hidden">
-      <div style="padding:14px 20px;font-size:var(--fs-md);font-weight:var(--fw-semibold);border-bottom:1px solid var(--border-header)">
-        Cross-market comparison <span style="color:var(--text-muted);font-weight:var(--fw-normal)" id="cx-count"></span>
+      <!-- Actions -->
+      <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn--primary" style="width:100%;justify-content:center;height:36px">Add to watchlist</button>
+        <button class="btn btn--ghost" style="width:100%;justify-content:center;height:36px">Set price alert</button>
+        <button class="btn btn--ghost" style="width:100%;justify-content:center;height:36px">Export prices</button>
       </div>
-      <div id="cx-body"></div>
-    </div>
-  </main>
-</div>
-
-<!-- ═══════════ FOOTER ═══════════ -->
-<footer class="footer">
-  <div class="footer__inner">
-    <div class="footer__logo">
-      <div class="footer__logo-mark">A</div>
-      <span class="footer__logo-word">AgraX</span>
-    </div>
-    <div class="footer__links">
-      <a href="/">Home</a><a href="/browse">Browse</a><a href="/app">Pro</a>
-    </div>
-    <span class="footer__copy">© 2026 AgraX. Data source: USDA AMS.</span>
+    </aside>
   </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="background:var(--dark);color:#fff;padding:28px 20px 22px;margin-top:auto">
+  <div class="footer-grid" style="display:flex;align-items:flex-start;gap:56px;flex-wrap:wrap">
+    <div style="flex:1;min-width:240px;max-width:520px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:-0.02em">AgraX</div>
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.75;color:#737373">Prices sourced from USDA Agricultural Marketing Service. AgraX is not affiliated with the USDA.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
+      <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
+      <a href="/about" style="font-size:12px;color:#A3A3A3">About</a>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1F1F1F;font-size:11px;color:#525252">© 2026 AgraX. Source: USDA AMS.</div>
 </footer>
+
+</div>
 
 <script>
 (async function() {
-  const U = window.agraxUtil;
-  const api = window.agraxAPI;
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  var U = window.agraxUtil;
+  var api = window.agraxAPI;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
-  const filters = U.readDetailFilters();
-  const commodity = filters.commodity;
-  if (!commodity) { showError({ message: 'No commodity specified.' }); return; }
+  var filters = U.readDetailFilters();
+  var commodity = filters.commodity;
+  if (!commodity) { document.getElementById('d-name').textContent = 'No commodity specified.'; return; }
 
-  // Breadcrumb
-  document.getElementById('breadcrumb').innerHTML = `<a href="/browse">Browse</a><span class="breadcrumb__sep">/</span><span>${esc(commodity)}</span>`;
-
-  let latestDate, allRows, currentDays = 30;
+  var market = filters.market || U.selMarket() || 'New York';
+  document.getElementById('bc-name').textContent = commodity;
+  document.getElementById('d-name').textContent = commodity;
+  document.getElementById('d-market').textContent = market;
+  document.getElementById('vt-market').textContent = market;
 
   try {
-    const dates = await api.dates();
-    if (!dates?.length) throw new Error('No data');
-    latestDate = dates[0].date;
-    allRows = await api.reportTerminal(latestDate);
-  } catch (err) { showError(err); return; }
+    var dates = await api.dates();
+    if (!dates || !dates.length) throw new Error('No data');
+    var latestDate = dates[0].date;
+    var allRows = await api.reportTerminal(latestDate);
 
-  const market = filters.market || U.selMarket() || 'New York';
-  document.getElementById('var-market').textContent = market;
-
-  // Commodity rows at this market
-  const comRows = allRows.filter(r => r.commodity === commodity && r.market === market);
-  if (!comRows.length) {
-    document.getElementById('head-loading').textContent = `No data for "${commodity}" at ${market} today.`;
-    return;
-  }
-
-  const agg = U.aggregateCommodity(comRows);
-  const primary = comRows[0];
-
-  // Header — no blended price; show trend + SKU count + origins
-  const header = document.getElementById('detail-header');
-  const origins = U.uniq(comRows.map(r => r.origin).filter(Boolean)).slice(0, 5).join(' · ') || '';
-  const movement = (primary.movement || primary.trend || '').toLowerCase();
-  const trendLabel = movement.includes('higher') || movement === 'up' ? 'Higher'
-    : movement.includes('lower') || movement === 'down' ? 'Lower' : 'Steady';
-  const trendMod = trendLabel === 'Higher' ? 'higher' : trendLabel === 'Lower' ? 'lower' : 'steady';
-  header.innerHTML = `
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
-      <div>
-        <div class="detail-header__name">${esc(commodity)}</div>
-        <div class="detail-header__pack">${esc(origins)}</div>
-        <div style="margin-top:8px;font-size:var(--fs-md);color:var(--text-muted)">
-          <span class="mono" style="font-weight:var(--fw-bold)">${comRows.length}</span> SKUs reporting at ${esc(market)}
-        </div>
-      </div>
-      <span class="trend-badge trend-badge--${trendMod}" style="flex-shrink:0">${trendLabel}</span>
-    </div>
-  `;
-
-  // Stat strip
-  let fobData = null;
-  try {
-    const fobRows = await api.reportShippingPoints(latestDate);
-    const forThis = fobRows.filter(r => r.commodity === commodity);
-    if (forThis.length) {
-      const fobAgg = U.aggregateCommodity(forThis);
-      fobData = { price: fobAgg.mostly, origin: forThis[0].origin || forThis[0].market || '—' };
+    var comRows = allRows.filter(function(r) { return r.commodity === commodity && r.market === market; });
+    // Fallback: fuzzy match
+    if (!comRows.length) {
+      comRows = allRows.filter(function(r) { return r.commodity === commodity; });
+      if (comRows.length) market = comRows[0].market;
     }
-  } catch(e) {}
-
-  const strip = document.getElementById('stat-strip');
-  strip.style.display = '';
-  document.getElementById('ss-fob').textContent = fobData ? U.fmtPrice(fobData.price) : '—';
-  if (fobData && agg.mostly != null && fobData.price != null && fobData.price > 0) {
-    const mkPct = ((agg.mostly - fobData.price) / fobData.price * 100).toFixed(0);
-    document.getElementById('ss-markup').textContent = '+' + mkPct + '%';
-  }
-
-  // SKU-level price determination with source badge
-  function skuPrice(row) {
-    const mLow = U.num(row.price_mostly_low);
-    const mHigh = U.num(row.price_mostly_high);
-    if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, source: 'mostly' };
-    if (mLow != null) return { price: mLow, source: 'mostly' };
-    if (mHigh != null) return { price: mHigh, source: 'mostly' };
-    const low = U.num(row.price_low);
-    const high = U.num(row.price_high);
-    if (low != null && high != null) {
-      if (low === high) return { price: low, source: 'reported' };
-      return { price: (low + high) / 2, source: 'midrange' };
+    if (!comRows.length) {
+      document.getElementById('d-origins').textContent = 'No data for "' + commodity + '" today.';
+      return;
     }
-    if (low != null) return { price: low, source: 'reported' };
-    if (high != null) return { price: high, source: 'reported' };
-    return { price: null, source: null };
-  }
 
-  // Varieties table — SKU-level with source badges
-  const vtbody = document.getElementById('var-tbody');
-  vtbody.innerHTML = comRows.map(r => {
-    const sp = skuPrice(r);
-    const priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
-    const badgeCls = sp.source === 'mostly' ? 'source-badge--mostly'
-      : sp.source === 'midrange' ? 'source-badge--midrange'
-      : sp.source === 'reported' ? 'source-badge--reported' : '';
-    const badgeLabel = sp.source === 'mostly' ? 'Mostly'
-      : sp.source === 'midrange' ? 'Mid-range'
-      : sp.source === 'reported' ? 'Reported' : '';
-    const packSize = [r.package, r.size].filter(Boolean).join(' · ') || '—';
-    return `<tr>
-      <td>${esc(r.variety || '—')}</td>
-      <td class="sku-muted">${esc(r.origin || '—')}</td>
-      <td class="sku-muted">${esc(r.grade || '—')}</td>
-      <td class="sku-muted">${esc(packSize)}</td>
-      <td class="sku-price">${priceStr}</td>
-      <td class="sku-source">${badgeLabel ? `<span class="source-badge ${badgeCls}">${badgeLabel}</span>` : '—'}</td>
-    </tr>`;
-  }).join('');
+    // Origins and tone
+    var origins = [];
+    comRows.forEach(function(r) { if (r.origin && origins.indexOf(r.origin) === -1) origins.push(r.origin); });
+    document.getElementById('d-origins').textContent = origins.join(' · ');
+    document.getElementById('d-count').textContent = comRows.length;
 
-  // Cross-market comparison
-  const cxRows = allRows.filter(r => r.commodity === commodity);
-  const cxByMarket = U.groupBy(cxRows, r => r.market);
-  const perMarket = [];
-  for (const [mkt, rs] of cxByMarket) {
-    const a = U.aggregateCommodity(rs);
-    if (a.mostly != null) perMarket.push({ market: mkt, mostly: a.mostly });
-  }
-  perMarket.sort((a, b) => a.mostly - b.mostly);
-  const maxPrice = perMarket.length ? Math.max(...perMarket.map(m => m.mostly)) : 1;
+    var mv = (comRows[0].movement || comRows[0].trend || '').toLowerCase();
+    var toneLabel = mv.indexOf('higher') > -1 || mv === 'up' ? 'Higher' : mv.indexOf('lower') > -1 || mv === 'down' ? 'Lower' : 'Steady';
+    var toneCls = toneLabel === 'Higher' ? 'tone--higher' : toneLabel === 'Lower' ? 'tone--lower' : 'tone--steady';
+    var toneArrow = toneLabel === 'Higher' ? '↑' : toneLabel === 'Lower' ? '↓' : '→';
+    document.getElementById('d-tone').className = 'tone ' + toneCls;
+    document.getElementById('d-tone').innerHTML = '<span>' + toneArrow + '</span> ' + toneLabel;
 
-  document.getElementById('cx-count').textContent = `· ${perMarket.length} markets`;
-  const cxBody = document.getElementById('cx-body');
-  if (!perMarket.length) {
-    cxBody.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted)">No cross-market data.</div>`;
-  } else {
-    cxBody.innerHTML = perMarket.map(m => {
-      const pct = (m.mostly / maxPrice * 100).toFixed(0);
-      const isYours = m.market === market;
-      return `<div class="cx-bar">
-        <span class="mkt-label" style="${isYours ? 'font-weight:700' : ''}">${esc(m.market)}${isYours ? ' ●' : ''}</span>
-        <div style="flex:1"><div class="cx-bar__bar" style="width:${pct}%;background:${isYours ? 'var(--blue)' : 'var(--ink)'}"></div></div>
-        <span class="cx-bar__price">${U.fmtPrice(m.mostly)}</span>
-      </div>`;
-    }).join('');
-  }
-
-  // Related SKUs (sidebar)
-  const skuKey = (r) => [r.variety||'',r.origin||'',r.size||'',r.package||''].join('|');
-  const bySku = U.groupBy(comRows, skuKey);
-  const relList = [];
-  for (const [key, rs] of bySku) {
-    const [variety, origin, size, pkg] = key.split('|');
-    const a = U.aggregateCommodity(rs);
-    relList.push({ variety, origin, size, pkg, mostly: a.mostly });
-  }
-  relList.sort((a,b) => (a.mostly ?? 999) - (b.mostly ?? 999));
-  document.getElementById('rel-count').textContent = relList.length;
-  const relEl = document.getElementById('rel-list');
-  relEl.innerHTML = relList.map(s => {
-    const name = s.variety || 'Standard';
-    const spec = [s.origin, s.size, s.pkg].filter(Boolean).join(' · ');
-    return `<div class="watch-row">
-      <div style="flex:1">
-        <div class="watch-row__name">${esc(name)}</div>
-        <div style="font-size:var(--fs-base);color:var(--text-muted)">${esc(spec)}</div>
-      </div>
-      <span class="watch-row__price">${s.mostly != null ? U.fmtPrice(s.mostly) : '—'}</span>
-    </div>`;
-  }).join('');
-
-  // Movement (sidebar)
-  const mvBody = document.getElementById('mv-body');
-  try {
-    const mv = await api.movementLatest();
-    if (mv?.rows?.length) {
-      const cLower = commodity.toLowerCase();
-      const forThis = mv.rows.filter(r => String(r.commodity||'').toLowerCase().includes(cLower));
-      if (forThis.length) {
-        const totalLbs = forThis.reduce((s,r) => s + (r.total_pounds||0), 0);
-        const loads = Math.round(totalLbs / 40000);
-        document.getElementById('ss-ship').textContent = loads.toLocaleString();
-        mvBody.innerHTML = `<div style="font-family:var(--font-mono);font-size:var(--fs-xl2);font-weight:700">${loads.toLocaleString()} loads</div>
-          <div style="font-size:var(--fs-base);color:var(--text-muted);margin-top:4px">${(totalLbs/1e6).toFixed(1)}M lbs total · ${forThis.length} lots</div>`;
-      } else {
-        mvBody.textContent = 'No movement data for this item.';
+    // SKU price helper
+    function skuPrice(row) {
+      var mLow = U.num(row.price_mostly_low), mHigh = U.num(row.price_mostly_high);
+      if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, src: 'mostly' };
+      if (mLow != null) return { price: mLow, src: 'mostly' };
+      if (mHigh != null) return { price: mHigh, src: 'mostly' };
+      var low = U.num(row.price_low), high = U.num(row.price_high);
+      if (low != null && high != null) {
+        if (low === high) return { price: low, src: 'reported' };
+        return { price: (low + high) / 2, src: 'mid', range: '$' + low.toFixed(2) + ' – $' + high.toFixed(2) };
       }
-    } else {
-      mvBody.textContent = 'No movement data available.';
+      if (low != null) return { price: low, src: 'reported' };
+      if (high != null) return { price: high, src: 'reported' };
+      return { price: null, src: null };
     }
-  } catch(e) { mvBody.textContent = 'Movement unavailable.'; }
 
-  // Price chart
-  async function drawChart(days) {
-    const wrap = document.getElementById('chart-wrap');
-    try {
-      const rows = await api.history({ commodity, market, days });
-      if (!rows?.length) { wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">No history data.</div>`; return; }
-      const byDate = U.groupBy(rows, r => r.report_date);
-      const points = [];
-      for (const [date, rs] of byDate) {
-        const a = U.aggregateCommodity(rs);
-        if (a.mostly != null) points.push({ date, mostly: a.mostly, low: a.low, high: a.high });
+    // FOB data
+    var fobRows = [];
+    try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) {}
+    var comFob = fobRows.filter(function(r) { return r.commodity === commodity; });
+    var fobByOrigin = {};
+    comFob.forEach(function(r) {
+      var o = r.market || r.origin || 'Unknown';
+      if (o === 'National Trends') return;
+      if (!fobByOrigin[o]) {
+        var p = skuPrice(r);
+        fobByOrigin[o] = { name: o, price: p.price };
       }
-      points.sort((a,b) => a.date.localeCompare(b.date));
-      if (points.length < 2) { wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Only ${points.length} data point(s).</div>`; return; }
+    });
+    var fobEntries = Object.values(fobByOrigin);
 
-      // 30-day range
-      if (days >= 30) {
-        const vals = points.map(p => p.mostly);
-        document.getElementById('ss-range').textContent = U.fmtPrice(Math.min(...vals)) + ' – ' + U.fmtPrice(Math.max(...vals));
+    // Stat strip
+    if (fobEntries.length && fobEntries[0].price != null) {
+      document.getElementById('ds-fob').textContent = '$' + fobEntries[0].price.toFixed(2);
+      // Markup
+      var allPrices = comRows.map(function(r) { return skuPrice(r).price; }).filter(function(p) { return p != null; });
+      if (allPrices.length) {
+        var medianPrice = allPrices.sort(function(a,b){return a-b;})[Math.floor(allPrices.length/2)];
+        var markup = medianPrice - fobEntries[0].price;
+        var pct = fobEntries[0].price > 0 ? Math.round(markup / fobEntries[0].price * 100) : 0;
+        document.getElementById('ds-markup').textContent = '+' + pct + '%';
       }
+    }
 
-      const W = wrap.clientWidth || 800, H = 240;
-      const P = { l: 40, r: 12, t: 16, b: 24 };
-      const iw = W - P.l - P.r, ih = H - P.t - P.b;
-      const allVals = points.flatMap(p => [p.low, p.high, p.mostly].filter(v => v != null));
-      let vMin = Math.min(...allVals), vMax = Math.max(...allVals);
-      const vPad = (vMax - vMin) * 0.1 || 1; vMin -= vPad; vMax += vPad;
-      const x = i => P.l + (i / (points.length - 1)) * iw;
-      const y = v => P.t + (1 - (v - vMin) / (vMax - vMin)) * ih;
-
-      const bandUp = points.map((p,i) => `${i===0?'M':'L'}${x(i)},${y(p.high??p.mostly)}`).join(' ');
-      const bandDn = points.slice().reverse().map((p,i) => `L${x(points.length-1-i)},${y(p.low??p.mostly)}`).join(' ');
-      const linePath = points.map((p,i) => `${i===0?'M':'L'}${x(i)},${y(p.mostly)}`).join(' ');
-
-      const yLabels = [vMax,(vMax+vMin)/2,vMin].map(v => `<text class="chart-axis-lbl" x="${P.l-6}" y="${y(v)+3}" text-anchor="end">$${v.toFixed(0)}</text><line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border-row)" stroke-width="0.5"/>`).join('');
-      const dIdxs = points.length > 6 ? [0, Math.floor(points.length/2), points.length-1] : points.map((_,i) => i);
-      const dLabels = dIdxs.map(i => { const d = U.parseLocalDate(points[i].date); return `<text class="chart-axis-lbl" x="${x(i)}" y="${H-6}" text-anchor="middle">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</text>`; }).join('');
-
-      wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-        ${yLabels}
-        <path class="chart-band" d="${bandUp} ${bandDn} Z"/>
-        <path class="chart-line" d="${linePath}"/>
-        <g id="chart-dots"></g>
-        ${dLabels}
-        <rect id="chart-overlay" x="${P.l}" y="${P.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>
-      </svg>`;
-
-      // Hover
-      const svg = wrap.querySelector('svg');
-      const overlay = wrap.querySelector('#chart-overlay');
-      const dotsG = wrap.querySelector('#chart-dots');
-      const tip = document.getElementById('chart-tip');
-      overlay.addEventListener('mousemove', ev => {
-        const rect = svg.getBoundingClientRect();
-        const px = (ev.clientX - rect.left) * (W / rect.width);
-        const i = Math.max(0, Math.min(points.length-1, Math.round(((px - P.l) / iw) * (points.length-1))));
-        const p = points[i], cx = x(i), cy = y(p.mostly);
-        dotsG.innerHTML = `<line class="chart-hover-line" x1="${cx}" y1="${P.t}" x2="${cx}" y2="${P.t+ih}"/><circle class="chart-hover-dot" cx="${cx}" cy="${cy}" r="4"/>`;
-        const wrapRect = wrap.getBoundingClientRect();
-        tip.style.left = `${Math.min(wrapRect.width-120, Math.max(0, (cx/W)*wrapRect.width - 60))}px`;
-        tip.style.top = `${(cy/H)*wrapRect.height - 34}px`;
-        tip.innerHTML = `${U.fmtDate(p.date)} · <b>$${p.mostly.toFixed(2)}</b>`;
-        tip.style.opacity = '1';
+    // FOB sidebar
+    var fobHtml = '';
+    if (fobEntries.length) {
+      fobEntries.forEach(function(f) {
+        fobHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--surface-row)">';
+        fobHtml += '<span style="font-size:12.5px;font-weight:500">' + esc(f.name) + '</span>';
+        fobHtml += '<span style="font-family:var(--mono);font-size:13px;font-weight:500">' + (f.price != null ? '$' + f.price.toFixed(2) : '—') + '</span>';
+        fobHtml += '</div>';
       });
-      overlay.addEventListener('mouseleave', () => { dotsG.innerHTML = ''; tip.style.opacity = '0'; });
-    } catch(e) {
-      wrap.innerHTML = `<div style="height:240px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">Chart unavailable.</div>`;
+    } else {
+      fobHtml = '<div style="font-size:12px;color:var(--text-dim);padding:8px 0">No FOB data for this commodity.</div>';
     }
-  }
+    document.getElementById('fob-body').innerHTML = fobHtml;
 
-  drawChart(30);
-  document.getElementById('range-toggle').addEventListener('click', (e) => {
-    const opt = e.target.closest('.range-toggle__opt');
-    if (!opt) return;
-    document.querySelectorAll('.range-toggle__opt').forEach(o => o.classList.remove('is-active'));
-    opt.classList.add('is-active');
-    currentDays = parseInt(opt.dataset.d);
-    drawChart(currentDays);
-  });
+    // Varieties table
+    var sorted = comRows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+    var vtHtml = '<table style="width:100%;border-collapse:collapse;font-size:12.5px">';
+    vtHtml += '<thead><tr style="border-bottom:2px solid var(--border-strong)">';
+    vtHtml += '<th style="text-align:left;padding:10px 16px;font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Variety</th>';
+    vtHtml += '<th style="text-align:left;padding:10px 12px;font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Origin</th>';
+    vtHtml += '<th style="text-align:left;padding:10px 12px;font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Grade</th>';
+    vtHtml += '<th style="text-align:left;padding:10px 12px;font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Pack · Size</th>';
+    vtHtml += '<th style="text-align:right;padding:10px 16px;font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Price</th>';
+    vtHtml += '</tr></thead><tbody>';
+    sorted.forEach(function(row) {
+      var sp = skuPrice(row);
+      var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '—';
+      var sub = sp.src === 'mid' && sp.range ? sp.range : '';
+      var packSize = [row.package, row.size].filter(Boolean).join(' · ') || '—';
+      vtHtml += '<tr style="border-bottom:1px solid var(--surface-row)">';
+      vtHtml += '<td style="padding:10px 16px;font-weight:500">' + esc(row.variety || '—') + '</td>';
+      vtHtml += '<td style="padding:10px 12px;color:var(--text-secondary)">' + esc(row.origin || '—') + '</td>';
+      vtHtml += '<td style="padding:10px 12px;color:var(--text-secondary)">' + esc(row.grade || '—') + '</td>';
+      vtHtml += '<td style="padding:10px 12px;color:var(--text-secondary)">' + esc(packSize) + '</td>';
+      vtHtml += '<td style="padding:10px 16px;text-align:right"><div style="font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:-0.03em">' + priceStr + '</div>';
+      if (sub) vtHtml += '<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px">' + sub + '</div>';
+      vtHtml += '</td></tr>';
+    });
+    vtHtml += '</tbody></table>';
+    document.getElementById('vt-wrap').innerHTML = vtHtml;
 
-  function showError(err) {
-    document.getElementById('err-slot').innerHTML = `<div class="err-banner">${esc(err.message||err)}</div>`;
+    // Cross-market comparison
+    var cxByCom = U.groupBy(allRows.filter(function(r) { return r.commodity === commodity; }), function(r) { return r.market; });
+    var perMarket = [];
+    cxByCom.forEach(function(rows, mkt) {
+      var prices = rows.map(function(r) { return skuPrice(r).price; }).filter(function(p) { return p != null; });
+      if (prices.length) {
+        var med = prices.sort(function(a,b){return a-b;})[Math.floor(prices.length/2)];
+        perMarket.push({ market: mkt, price: med, isCurrent: mkt === market });
+      }
+    });
+    perMarket.sort(function(a, b) { return a.price - b.price; });
+    var maxP = perMarket.length ? perMarket[perMarket.length - 1].price : 1;
+
+    document.getElementById('cx-count').textContent = perMarket.length + ' markets';
+    var cxHtml = '';
+    if (perMarket.length > 1) {
+      perMarket.forEach(function(m, idx) {
+        var barW = maxP > 0 ? (20 + (m.price / maxP) * 80).toFixed(1) : '50';
+        cxHtml += '<div style="display:grid;grid-template-columns:20px minmax(0,1fr) 60px 60px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">';
+        cxHtml += '<span style="font-family:var(--mono);font-size:9.5px;color:var(--text-faint)">' + String(idx + 1).padStart(2, '0') + '</span>';
+        cxHtml += '<div style="display:flex;align-items:center;gap:8px;min-width:0"><span style="font-size:12px;font-weight:' + (m.isCurrent ? 600 : 400) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(m.market) + (m.isCurrent ? ' ●' : '') + '</span></div>';
+        cxHtml += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' + (m.isCurrent ? 'var(--accent)' : 'var(--border-header)') + ';width:' + barW + '%"></div></div>';
+        cxHtml += '<span style="font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">$' + m.price.toFixed(2) + '</span>';
+        cxHtml += '</div>';
+      });
+    } else {
+      cxHtml = '<div style="padding:12px 0;font-size:12px;color:var(--text-dim)">Only reporting at one market.</div>';
+    }
+    document.getElementById('cx-body').innerHTML = cxHtml;
+
+  } catch(err) {
+    document.getElementById('d-origins').textContent = err.message;
   }
 })();
 </script>

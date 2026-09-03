@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Browse wholesale produce prices — AgraX</title>
 <meta name="description" content="Live wholesale produce prices from 12 U.S. terminal markets with FOB origin pricing and shipment volumes. Updated every weekday from USDA Market News.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='6' fill='%23C2410C'/%3E%3Ctext x='18' y='26' font-family='system-ui' font-size='22' font-weight='800' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-white-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-white-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-white-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-white-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -25,11 +28,11 @@
       <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block">
       <span style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--dark-muted)">Browse prices</span>
     </a>
-    <div style="flex:1;max-width:420px;position:relative;display:flex;align-items:center">
+    <div class="header-search-desk" style="flex:1;max-width:420px;position:relative;display:flex;align-items:center">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:10px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
       <input id="header-search" placeholder='Search commodity, variety, origin, pack — "Hass 48s", "Nogales"' style="width:100%;height:30px;background:var(--dark-input);border:1px solid var(--dark-input-border);border-radius:5px;padding:0 11px 0 30px;color:#fff;font-size:12.5px;outline:none">
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex:none;margin-left:auto">
+    <div class="header-nav-desk" style="display:flex;align-items:center;gap:8px;flex:none;margin-left:auto">
       <span id="live-badge" style="display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;color:var(--up-live);padding-left:4px"><span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live</span>
       <span style="width:1px;height:20px;background:var(--dark-input-border)"></span>
       <span style="font-size:12.5px;font-weight:500;color:var(--dark-faint);cursor:pointer">Sign in</span>
@@ -48,7 +51,7 @@
 </div>
 
 <!-- MAIN LAYOUT -->
-<div style="position:relative;flex:1;display:grid;grid-template-columns:minmax(200px,226px) minmax(620px,1fr) minmax(340px,404px);gap:12px;padding:12px 20px 20px;align-items:start" id="main-grid">
+<div class="browse-grid" style="position:relative;flex:1;display:grid;grid-template-columns:minmax(200px,226px) minmax(620px,1fr) minmax(340px,404px);gap:12px;padding:12px 20px 20px;align-items:start" id="main-grid">
 
   <!-- LEFT SIDEBAR -->
   <aside style="position:sticky;top:52px;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card);padding:14px 14px 8px" id="sidebar">
@@ -102,12 +105,12 @@
         <button id="share-btn" class="btn btn--ghost" style="display:flex;align-items:center;gap:6px">Share <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
       </div>
       <!-- Column headers -->
-      <div style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
+      <div class="col-headers" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
         <span class="eyebrow">Commodity</span>
         <span class="eyebrow">Reporting</span>
-        <span class="eyebrow">Origins</span>
-        <span class="eyebrow">Shipping points</span>
-        <span class="eyebrow">Movement w/w</span>
+        <span class="eyebrow desk-col">Origins</span>
+        <span class="eyebrow desk-col">Shipping points</span>
+        <span class="eyebrow desk-col">Movement w/w</span>
         <span class="eyebrow" style="text-align:right">USDA tone</span>
       </div>
     </div>
@@ -159,6 +162,26 @@
 </footer>
 
 </div><!-- end #app -->
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-bottom-nav">
+  <a href="/" class="mobile-bottom-nav__item">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Today
+  </a>
+  <a href="/browse" class="mobile-bottom-nav__item is-active">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Browse
+  </a>
+  <span class="mobile-bottom-nav__item" onclick="document.getElementById('sidebar').classList.toggle('is-open')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
+    Filters
+  </span>
+  <span class="mobile-bottom-nav__item" onclick="document.getElementById('header-search').focus();window.scrollTo(0,0)">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    Search
+  </span>
+</nav>
 
 
 <script>
@@ -626,7 +649,7 @@
 
       // Commodity row
       html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
-      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" style="display:grid;min-width:660px;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
+      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
 
       // Name with caret
       html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
@@ -636,11 +659,11 @@
       // Reporting
       html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">' + d.skuCount + ' reporting</span>';
       // Origins
-      html += '<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(origLabel) + '</span>';
+      html += '<span class="desk-col-js" style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(origLabel) + '</span>';
       // Shipping points
-      html += '<span style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(shipLabel) + '</span>';
+      html += '<span class="desk-col-js" style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(shipLabel) + '</span>';
       // Movement bars
-      html += '<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:14px;display:flex;align-items:flex-end;gap:2px">';
+      html += '<div class="desk-col-js" style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:14px;display:flex;align-items:flex-end;gap:2px">';
       [6,8,7,9,8,5].forEach(function(h, j) {
         html += '<span style="flex:1;height:' + h + 'px;background:' + (j === 5 ? (d.trend.label === 'Lower' ? DOWN : d.trend.label === 'Higher' ? UP : '#E4E7DF') : '#E4E7DF') + ';border-radius:1px"></span>';
       });
@@ -681,7 +704,7 @@
         html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
         html += '<span class="eyebrow" style="flex:none">Movement</span>';
         html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
-        html += '<a href="/app/commodity?c=' + encodeURIComponent(d.name) + '&market=' + encodeURIComponent(marketShort(currentMarket)) + '" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
         html += '</div></div>';
       }
 
@@ -712,11 +735,15 @@
     renderAll();
   };
 
-  // Select a SKU → show dossier in right panel
+  // Select a SKU → show dossier in right panel (desktop) or navigate (mobile)
   window._selectSku = function(comName, skuIdx) {
+    // On mobile, navigate to the standalone detail page
+    if (window.innerWidth < 980) {
+      window.location.href = '/app/commodity?c=' + encodeURIComponent(comName) + '&market=' + encodeURIComponent(marketShort(currentMarket));
+      return;
+    }
     var newId = comName + '::' + skuIdx;
     if (selectedSku === newId) {
-      // Deselect
       selectedSku = null;
       selectedComName = null;
     } else {
@@ -766,7 +793,8 @@
     var origins = U.uniq(marketRows.map(function(r) { return r.origin; }).filter(Boolean));
     var skuLabel = [row.variety, row.grade, row.size, row.package].filter(Boolean).join(' \u00b7 ');
 
-    // FOB data for this commodity
+    // FOB data — match shipping points to the selected variety's origin
+    var selectedOrigin = (row.origin || '').toLowerCase();
     var comFob = fobRows.filter(function(r) { return r.commodity === selectedComName; });
     var fobByOrigin = {};
     comFob.forEach(function(r) {
@@ -774,8 +802,50 @@
       if (o === 'National Trends') return;
       if (!fobByOrigin[o]) {
         var p = skuPrice(r);
-        fobByOrigin[o] = { name: o, price: p.price };
+        fobByOrigin[o] = { name: o, price: p.price, fobOrigin: (r.origin || '').toLowerCase() };
       }
+    });
+
+    // Origin → likely shipping point mapping
+    var ORIGIN_SP_MAP = {
+      'mexico':       ['Nogales', 'Laredo', 'McAllen', 'Pharr', 'Texas'],
+      'california':   ['Oxnard', 'Fresno', 'Salinas', 'Los Angeles', 'San Diego'],
+      'arizona':      ['Nogales', 'Phoenix'],
+      'texas':        ['Laredo', 'McAllen', 'Pharr', 'Weslaco', 'Texas'],
+      'florida':      ['Orlando', 'Immokalee', 'Florida', 'Miami'],
+      'georgia':      ['Thomasville', 'Vidalia', 'Atlanta'],
+      'peru':         ['Miami Imports', 'Philadelphia', 'Port'],
+      'chile':        ['Philadelphia', 'Miami Imports', 'Port'],
+      'dom. rep.':    ['Miami Imports'],
+      'dominican republic': ['Miami Imports'],
+      'guatemala':    ['Miami Imports', 'Nogales', 'Port'],
+      'honduras':     ['Miami Imports', 'Port'],
+      'costa rica':   ['Miami Imports', 'Port'],
+      'ecuador':      ['Miami Imports', 'Port'],
+      'colombia':     ['Miami Imports', 'Port'],
+      'canada':       ['Detroit', 'Buffalo'],
+      'british columbia': ['Seattle'],
+      'oregon':       ['Portland', 'Salem', 'Oregon'],
+      'washington':   ['Seattle', 'Washington', 'Yakima'],
+      'idaho':        ['Idaho', 'Ontario'],
+      'new york':     ['New York', 'Orange County'],
+      'new jersey':   ['New Jersey', 'Philadelphia'],
+      'pennsylvania': ['Philadelphia', 'Pennsylvania'],
+    };
+
+    // Score each FOB district by relevance to this variety's origin
+    var fobEntries = Object.values(fobByOrigin);
+    var relevantSPs = ORIGIN_SP_MAP[selectedOrigin] || [];
+    fobEntries.forEach(function(f) {
+      f.relevant = relevantSPs.some(function(sp) {
+        return f.name.toLowerCase().indexOf(sp.toLowerCase()) > -1;
+      });
+    });
+    // Sort: relevant first, then by price
+    fobEntries.sort(function(a, b) {
+      if (a.relevant && !b.relevant) return -1;
+      if (!a.relevant && b.relevant) return 1;
+      return (a.price || 999) - (b.price || 999);
     });
 
     // Cross-market data
@@ -823,25 +893,46 @@
     // Shipping point FOB
     var fobEntries = Object.values(fobByOrigin);
     if (fobEntries.length) {
+      var relevantEntries = fobEntries.filter(function(f) { return f.relevant; });
+      var otherEntries = fobEntries.filter(function(f) { return !f.relevant; });
+      var label = selectedOrigin ? esc(selectedComName) + ' \u00b7 ' + esc(row.origin) + ' origin' : esc(selectedComName) + ' \u00b7 all districts';
+
       html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
       html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
       html += '<span class="eyebrow">Shipping point FOB</span>';
-      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + esc(selectedComName) + ' \u00b7 all districts</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + label + '</span>';
       html += '</div>';
       html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;padding:8px 0 6px">';
       html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">District</span>';
       html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">FOB</span>';
       html += '</div>';
-      fobEntries.forEach(function(f) {
+
+      // Relevant districts first (full weight)
+      relevantEntries.forEach(function(f) {
         html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">';
         html += '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
         html += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
         html += '</div>';
       });
-      // Markup
-      if (sp.price != null && fobEntries[0] && fobEntries[0].price != null) {
-        var markup = sp.price - fobEntries[0].price;
-        var markupPct = fobEntries[0].price > 0 ? Math.round(markup / fobEntries[0].price * 100) : 0;
+
+      // Other districts (dimmed)
+      if (otherEntries.length) {
+        html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
+        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint)">Other districts</span>';
+        html += '</div>';
+        otherEntries.forEach(function(f) {
+          html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-row)">';
+          html += '<span style="font-size:11.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
+          html += '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint);text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
+          html += '</div>';
+        });
+      }
+
+      // Markup — use the top relevant FOB for the calculation
+      var primaryFob = relevantEntries.length ? relevantEntries[0] : fobEntries[0];
+      if (sp.price != null && primaryFob && primaryFob.price != null) {
+        var markup = sp.price - primaryFob.price;
+        var markupPct = primaryFob.price > 0 ? Math.round(markup / primaryFob.price * 100) : 0;
         html += '<div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">';
         html += '<span style="font-size:11.5px;color:var(--text-dim);flex:1">Terminal over FOB</span>';
         html += '<span style="font-family:var(--mono);font-size:13px;font-weight:500">+$' + markup.toFixed(2) + '</span>';
