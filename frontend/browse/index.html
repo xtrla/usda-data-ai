@@ -186,12 +186,12 @@
       </label>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:18px">
-      <button id="dl-csv" onclick="window._downloadCSV()" style="flex:1;height:42px;border-radius:8px;border:2px solid var(--accent);background:#fff;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer">CSV</button>
-      <button id="dl-pdf" onclick="window._downloadPDF()" style="flex:1;height:42px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer">PDF</button>
+      <button id="dl-csv" onclick="window._selectFormat('csv')" style="flex:1;height:42px;border-radius:8px;border:2px solid var(--accent);background:#fff;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer">CSV</button>
+      <button id="dl-pdf" onclick="window._selectFormat('pdf')" style="flex:1;height:42px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer">PDF</button>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <button onclick="document.getElementById('dl-modal').style.display='none'" class="btn btn--ghost" style="height:36px;padding:0 16px">Cancel</button>
-      <button onclick="window._downloadCSV()" class="btn btn--primary" style="height:36px;padding:0 16px;flex:1" id="dl-go">Download CSV</button>
+      <button onclick="window._doDownload()" class="btn btn--primary" style="height:36px;padding:0 16px;flex:1" id="dl-go">Download CSV</button>
     </div>
   </div>
 </div>
@@ -1216,6 +1216,37 @@
     if (storedUser) _updateAuthUI(JSON.parse(storedUser));
   } catch(e) {}
 
+  // ── DOWNLOAD FORMAT TOGGLE ──
+  var dlFormat = 'csv';
+
+  window._selectFormat = function(fmt) {
+    dlFormat = fmt;
+    var csvBtn = document.getElementById('dl-csv');
+    var pdfBtn = document.getElementById('dl-pdf');
+    var goBtn = document.getElementById('dl-go');
+    if (fmt === 'csv') {
+      csvBtn.style.border = '2px solid var(--accent)';
+      csvBtn.style.color = 'var(--accent)';
+      pdfBtn.style.border = '1px solid var(--border)';
+      pdfBtn.style.color = 'var(--text-secondary)';
+      goBtn.textContent = 'Download CSV';
+    } else {
+      pdfBtn.style.border = '2px solid var(--accent)';
+      pdfBtn.style.color = 'var(--accent)';
+      csvBtn.style.border = '1px solid var(--border)';
+      csvBtn.style.color = 'var(--text-secondary)';
+      goBtn.textContent = 'Download PDF';
+    }
+  };
+
+  window._doDownload = function() {
+    if (dlFormat === 'pdf') {
+      window._downloadPDF();
+    } else {
+      window._downloadCSV();
+    }
+  };
+
   // ── DOWNLOAD CSV ──
   document.getElementById('download-btn').addEventListener('click', function() {
     var market = marketShort(currentMarket);
@@ -1265,6 +1296,11 @@
 
   // ── DOWNLOAD PDF ──
   window._downloadPDF = function() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      alert('PDF library is still loading. Please wait a moment and try again.');
+      return;
+    }
+    try {
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
     var market = marketShort(currentMarket);
@@ -1362,6 +1398,10 @@
 
     doc.save('agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.pdf');
     document.getElementById('dl-modal').style.display = 'none';
+    } catch(e) {
+      console.error('PDF generation error:', e);
+      alert('PDF generation failed: ' + e.message);
+    }
   };
 
   // ── SHARE ──
