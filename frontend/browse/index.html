@@ -498,6 +498,12 @@
   window._pickMarket = function(m) {
     currentMarket = m;
     U.setSelMarket(marketShort(m));
+    // Reset dossier — go back to market summary for new market
+    selectedSku = null;
+    selectedComName = null;
+    expanded = {};
+    document.getElementById('market-summary').style.display = 'block';
+    document.getElementById('dossier-panel').style.display = 'none';
     renderAll();
     renderSummary();
   };
