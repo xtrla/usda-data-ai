@@ -944,11 +944,11 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
             "https://api.anthropic.com/v1/messages",
             headers={
                 "x-api-key": ANTHROPIC_KEY,
-                "anthropic-version": "2023-06-01",
+                "anthropic-version": "2024-10-22",
                 "content-type": "application/json",
             },
             json={
-                "model": "claude-sonnet-5",
+                "model": "claude-haiku-4-5-20251001",
                 "max_tokens": 400,
                 "messages": [{"role": "user", "content": prompt}],
             },
@@ -956,8 +956,13 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
         )
 
         if resp.status_code != 200:
+            err_body = ""
+            try:
+                err_body = resp.text[:500]
+            except:
+                pass
             return {"headline": None, "body": None, "source": SOURCE_LINE, "date": report_date,
-                    "market": cache_key, "error": f"Anthropic API returned {resp.status_code}"}
+                    "market": cache_key, "error": f"Anthropic API returned {resp.status_code}: {err_body}"}
 
         content = resp.json().get("content", [{}])
         text = content[0].get("text", "{}") if content else "{}"
