@@ -106,12 +106,13 @@
         <button id="share-btn" class="btn btn--ghost" style="display:flex;align-items:center;gap:6px">Share <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
       </div>
       <!-- Column headers -->
-      <div class="col-headers" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
+      <div class="col-headers" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 70px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
         <span class="eyebrow">Commodity</span>
         <span class="eyebrow">Reporting</span>
         <span class="eyebrow desk-col">Origins</span>
         <span class="eyebrow desk-col">Shipping points</span>
         <span class="eyebrow desk-col">Movement w/w</span>
+        <span class="eyebrow">Date</span>
         <span class="eyebrow" style="text-align:right">USDA tone</span>
       </div>
     </div>
@@ -727,7 +728,7 @@
       var comFob2 = fobRows.filter(function(r) { return r.commodity === name; });
       var shipPts = U.uniq(comFob2.map(function(r) { return r.market || r.origin; }).filter(Boolean));
 
-      comList.push({ name: name, rows: rows, origins: origins, trend: trend, shipPts: shipPts, skuCount: rows.length });
+      comList.push({ name: name, rows: rows, origins: origins, trend: trend, shipPts: shipPts, skuCount: rows.length, reportDate: rows[0].report_date || latestDate || '' });
     });
 
     // Sort
@@ -767,7 +768,7 @@
 
       // Commodity row
       html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
-      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
+      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 70px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
 
       // Name with caret
       html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
@@ -786,6 +787,8 @@
         html += '<span style="flex:1;height:' + h + 'px;background:' + (j === 5 ? (d.trend.label === 'Lower' ? DOWN : d.trend.label === 'Higher' ? UP : '#E4E7DF') : '#E4E7DF') + ';border-radius:1px"></span>';
       });
       html += '</div><span style="font-family:var(--mono);font-size:11.5px;color:var(--text-dim);flex:none">\u2014</span></div>';
+      // Date
+      html += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);white-space:nowrap">' + esc(d.reportDate) + '</span>';
       // Tone badge
       html += '<div style="display:flex;justify-content:flex-end"><span class="tone ' + d.trend.cls + '"><span>' + d.trend.arrow + '</span>' + d.trend.label + '</span></div>';
 
@@ -1342,39 +1345,41 @@
       byCom[r.commodity].push(r);
     });
 
-    // Build a print-ready HTML document matching the Claude Design PDF layout
+    // Build a print-ready HTML document — clean, white, print-friendly
     var html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
     html += '<title>AgraX \u2014 ' + esc(currentMarket) + ' \u2014 Wholesale Prices</title>';
     html += '<style>';
     html += '*{box-sizing:border-box;margin:0;padding:0}';
-    html += 'body{font-family:system-ui,-apple-system,sans-serif;font-size:9px;color:#0A0A0A;margin:0;padding:0;line-height:1.4}';
-    html += '.hdr{background:linear-gradient(135deg,#0F1B14 0%,#1a2e22 100%);color:#fff;padding:32px 38px 28px;margin-bottom:0}';
-    html += '.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}';
-    html += '.hdr-logo{font-size:18px;font-weight:700;letter-spacing:-0.03em}';
-    html += '.hdr-label{font-size:7px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.6)}';
-    html += '.hdr-title{font-size:24px;font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:8px}';
-    html += '.hdr-meta{display:flex;align-items:center;gap:8px;font-size:8.5px;font-weight:500;color:rgba(255,255,255,0.7)}';
-    html += '.hdr-dot{width:5px;height:5px;border-radius:3px;background:#4ADE80}';
-    html += '.stats{display:flex;border-bottom:2px solid #E4E7DF}';
-    html += '.stat{flex:1;padding:14px 16px;border-right:1px solid #E4E7DF}';
+    html += 'body{font-family:system-ui,-apple-system,sans-serif;font-size:9px;color:#1a1a1a;margin:0;padding:40px 36px;line-height:1.4}';
+    html += '.hdr{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:3px solid #1a1a1a;margin-bottom:14px}';
+    html += '.brand{display:flex;align-items:center;gap:8px}';
+    html += '.brand-x{font-size:28px;font-weight:900;letter-spacing:-0.04em;line-height:0.85}';
+    html += '.brand-name{font-size:13px;font-weight:700;letter-spacing:-0.02em;margin-top:2px}';
+    html += '.hdr-right{text-align:right}';
+    html += '.hdr-label{font-size:6.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#666;margin-bottom:4px}';
+    html += '.hdr-title{font-size:20px;font-weight:600;letter-spacing:-0.03em;line-height:1.15}';
+    html += '.hdr-meta{font-size:8px;color:#888;margin-top:3px}';
+    html += '.stats{display:flex;border:1px solid #ddd;border-radius:4px;margin-bottom:16px;overflow:hidden}';
+    html += '.stat{flex:1;padding:10px 14px;border-right:1px solid #ddd}';
     html += '.stat:last-child{border-right:none}';
-    html += '.stat-label{font-size:6.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8A9484;margin-bottom:4px}';
-    html += '.stat-val{font-family:ui-monospace,monospace;font-size:16px;font-weight:600;letter-spacing:-0.03em}';
-    html += '.content{padding:20px 38px 32px}';
-    html += '.sec-title{font-size:14px;font-weight:600;margin-bottom:3px}';
-    html += '.sec-sub{font-size:7px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#8A9484;text-align:right;margin-bottom:8px}';
+    html += '.stat-label{font-size:6px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px}';
+    html += '.stat-val{font-family:ui-monospace,monospace;font-size:15px;font-weight:700;letter-spacing:-0.02em}';
+    html += '.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px}';
+    html += '.sec-title{font-size:12px;font-weight:700}';
+    html += '.sec-sub{font-size:6.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#888}';
     html += 'table{width:100%;border-collapse:collapse}';
-    html += 'th{text-align:left;font-size:6.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#3C4B42;padding:6px 8px;border-bottom:2px solid #C9D1C4}';
-    html += 'td{padding:7px 8px;border-bottom:1px solid #E4E7DF;font-size:8.5px}';
-    html += 'tr:nth-child(even){background:#F9FAF7}';
-    html += '.com{font-weight:600;font-size:10px}';
+    html += 'th{text-align:left;font-size:6.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:6px 6px;border-bottom:2px solid #333}';
+    html += 'td{padding:6px 6px;border-bottom:1px solid #e0e0e0;font-size:8.5px}';
+    html += 'tr:nth-child(even){background:#f7f7f5}';
+    html += '.com{font-weight:700;font-size:9.5px}';
     html += '.mono{font-family:ui-monospace,monospace}';
-    html += '.price{text-align:right;font-family:ui-monospace,monospace;font-weight:600;font-size:10px}';
-    html += '.range{text-align:right;font-family:ui-monospace,monospace;font-size:7.5px;color:#737373}';
-    html += '.chg-up{text-align:right;font-family:ui-monospace,monospace;font-size:8px;font-weight:500;color:#16A34A}';
-    html += '.chg-dn{text-align:right;font-family:ui-monospace,monospace;font-size:8px;font-weight:500;color:#DC2626}';
-    html += '.footer{padding:12px 38px;border-top:1px solid #E4E7DF;font-size:7px;color:#A3A3A3;display:flex;justify-content:space-between}';
-    html += '@media print{@page{size:portrait letter;margin:0}}';
+    html += '.price{text-align:right;font-family:ui-monospace,monospace;font-weight:700;font-size:9.5px}';
+    html += '.range{text-align:right;font-family:ui-monospace,monospace;font-size:7.5px;color:#777}';
+    html += '.up{color:#16803d}';
+    html += '.dn{color:#b91c1c}';
+    html += '.date{font-family:ui-monospace,monospace;font-size:7.5px;color:#888}';
+    html += '.footer{margin-top:20px;padding-top:8px;border-top:1px solid #ddd;font-size:7px;color:#aaa;display:flex;justify-content:space-between}';
+    html += '@media print{@page{size:portrait letter;margin:12mm 10mm}}';
     html += '</style></head><body>';
 
     // Count tones
@@ -1387,39 +1392,35 @@
       else toneS++;
     });
 
-    // Format week date nicely
+    // Format week date
     var weekLabel = latestDate || '';
-    try {
-      var dp = new Date(weekLabel + 'T00:00:00');
-      weekLabel = dp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    } catch(e) {}
+    try { var dp = new Date(weekLabel + 'T00:00:00'); weekLabel = dp.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch(e) {}
 
-    // Dark header
+    // Header
     html += '<div class="hdr">';
-    html += '<div class="hdr-top"><span class="hdr-logo">AgraX</span><span class="hdr-label">Wholesale price report</span></div>';
-    html += '<div class="hdr-title">' + esc(currentMarket) + ' wholesale market, week to ' + weekLabel + '</div>';
-    html += '<div class="hdr-meta"><span class="hdr-dot"></span>' + esc(currentMarket).toUpperCase() + ' \u00b7 ' + esc(latestDate || '') + ' \u00b7 USDA REPORTED</div>';
+    html += '<div>';
+    html += '<div class="brand"><span class="brand-x">X</span><span class="brand-name">AgraX</span></div>';
     html += '</div>';
+    html += '<div class="hdr-right">';
+    html += '<div class="hdr-label">Wholesale price report</div>';
+    html += '<div class="hdr-title">' + esc(currentMarket) + '</div>';
+    html += '<div class="hdr-meta">Week to ' + weekLabel + ' \u00b7 USDA AMS reported</div>';
+    html += '</div></div>';
 
-    // Stat bar
+    // Stats
     html += '<div class="stats">';
     html += '<div class="stat"><div class="stat-label">Produce</div><div class="stat-val">' + comNames.length + '</div></div>';
-    html += '<div class="stat"><div class="stat-label">Higher</div><div class="stat-val" style="color:#16A34A">' + toneH + '</div></div>';
-    html += '<div class="stat"><div class="stat-label">Lower</div><div class="stat-val" style="color:#DC2626">' + toneL + '</div></div>';
+    html += '<div class="stat"><div class="stat-label">Higher</div><div class="stat-val up">' + toneH + '</div></div>';
+    html += '<div class="stat"><div class="stat-label">Lower</div><div class="stat-val dn">' + toneL + '</div></div>';
     html += '<div class="stat"><div class="stat-label">Steady</div><div class="stat-val">' + toneS + '</div></div>';
     html += '</div>';
 
-    // Content
-    html += '<div class="content">';
-    html += '<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px">';
-    html += '<div class="sec-title">Wholesale prices</div>';
-    html += '<div class="sec-sub">Mostly, per unit as reported</div>';
-    html += '</div>';
+    // Table
+    html += '<div class="sec-head"><div class="sec-title">Wholesale prices</div><div class="sec-sub">Mostly, per unit as reported</div></div>';
     html += '<table><thead><tr>';
-    html += '<th>Produce</th><th>Origin</th><th>Grade \u00b7 Package</th><th style="text-align:right">Range</th><th style="text-align:right">Mostly</th><th style="text-align:right">Tone</th>';
+    html += '<th>Produce</th><th>Origin</th><th>Grade \u00b7 Package</th><th style="text-align:right">Range</th><th style="text-align:right">Mostly</th><th>Tone</th><th>Date</th>';
     html += '</tr></thead><tbody>';
 
-    // One representative row per commodity (the one with the mostly price)
     comNames.sort().forEach(function(comName) {
       var comRows = byCom[comName];
       var tone = '';
@@ -1428,7 +1429,6 @@
       else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
       else tone = 'Steady';
 
-      // Find best representative row (prefer mostly price)
       var bestRow = comRows[0];
       var bestPrice = null;
       comRows.forEach(function(r) {
@@ -1442,7 +1442,8 @@
       var hi = bestRow.price_high != null ? parseFloat(bestRow.price_high).toFixed(2) : '';
       var rangeStr = lo && hi ? lo + '\u2013' + hi : '';
       var gradePack = [bestRow.grade, bestRow.package].filter(Boolean).join(' \u00b7 ');
-      var toneColor = tone === 'Higher' ? 'chg-up' : tone === 'Lower' ? 'chg-dn' : 'mono';
+      var toneCls = tone === 'Higher' ? 'up' : tone === 'Lower' ? 'dn' : '';
+      var reportDate = bestRow.report_date || latestDate || '';
 
       html += '<tr>';
       html += '<td class="com">' + esc(comName) + '</td>';
@@ -1450,12 +1451,13 @@
       html += '<td>' + esc(gradePack || '\u2014') + '</td>';
       html += '<td class="range">' + rangeStr + '</td>';
       html += '<td class="price">' + priceStr + '</td>';
-      html += '<td class="' + toneColor + '">' + tone + '</td>';
+      html += '<td class="' + toneCls + '">' + tone + '</td>';
+      html += '<td class="date">' + esc(reportDate) + '</td>';
       html += '</tr>';
     });
 
-    html += '</tbody></table></div>';
-    html += '<div class="footer"><span>AgraX \u00b7 agra-x.com \u00b7 Source: USDA AMS Terminal Market \u00b7 Not affiliated with the USDA</span><span>Generated ' + new Date().toLocaleDateString() + '</span></div>';
+    html += '</tbody></table>';
+    html += '<div class="footer"><span>AgraX \u00b7 agra-x.com \u00b7 Source: USDA AMS Terminal Market \u00b7 Independent of the USDA</span><span>Generated ' + new Date().toLocaleDateString() + '</span></div>';
     html += '<script>window.onload=function(){window.print();}<\/script>';
     html += '</body></html>';
 
