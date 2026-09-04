@@ -185,7 +185,7 @@
   <aside style="min-width:0;display:flex;flex-direction:column;gap:12px">
     <!-- Story of the Day -->
     <div class="card" style="border-left:4px solid var(--accent);padding:16px;display:flex;flex-direction:column;flex:1;min-height:0">
-      <div class="eyebrow">Story of the day · <span id="story-market">—</span></div>
+      <div class="eyebrow">Story of the day</div>
       <div style="font-size:16px;font-weight:500;letter-spacing:-0.025em;line-height:1.35;margin-top:10px" id="story-headline">Loading…</div>
       <p style="margin:9px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)" id="story-body"></p>
       <div style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--surface-row)">
@@ -425,10 +425,9 @@
       </a>`;
     }).join('');
 
-    // Story of the Day
-    document.getElementById('story-market').textContent = market;
+    // Story of the Day — national overview
     try {
-      const story = await api.story(market);
+      const story = await api.story('national');
       if (story.headline) {
         document.getElementById('story-headline').textContent = story.headline;
         document.getElementById('story-body').textContent = story.body || '';
