@@ -944,7 +944,7 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
             "https://api.anthropic.com/v1/messages",
             headers={
                 "x-api-key": ANTHROPIC_KEY,
-                "anthropic-version": "2024-10-22",
+                "anthropic-version": "2023-06-01",
                 "content-type": "application/json",
             },
             json={
