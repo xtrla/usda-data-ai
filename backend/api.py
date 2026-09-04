@@ -789,29 +789,58 @@ def biggest_movers(market: str = "New York", limit: int = 6):
 @app.get("/story")
 def story_of_the_day(market: str = "New York"):
     """
-    Generate a daily market narrative using Claude, based on today's data.
-    Reads terminal prices, shipping point costs, movement data, and w/w changes.
-    Returns {headline, body, source, date}.
-
-    Requires ANTHROPIC_API_KEY env var.
+    Daily market narrative. Checks cache first — generates once per market per day,
+    then serves cached version to all subsequent visitors.
+    Cost: ~$0.003 per generation × 12 markets = ~$0.04/day max.
     """
     import json
+    from datetime import date as dt_date
 
+    STORY_TABLE = "story_cache"
+    SOURCE_LINE = "AgraX analysis based on USDA AMS market reports. Not USDA guidance."
+
+    # Step 1: Get today's report date
+    try:
+        summary = market_summary(market=market)
+        report_date = summary.get("date")
+        if not report_date:
+            return {"headline": None, "body": None, "source": SOURCE_LINE, "date": None, "market": market}
+    except:
+        report_date = dt_date.today().isoformat()
+
+    # Step 2: Check cache
+    try:
+        cached = supabase.table(STORY_TABLE).select("*").eq(
+            "market", market
+        ).eq("report_date", report_date).limit(1).execute()
+
+        if cached.data and cached.data[0].get("headline"):
+            row = cached.data[0]
+            return {
+                "headline": row["headline"],
+                "body": row["body"],
+                "source": SOURCE_LINE,
+                "date": report_date,
+                "market": market,
+                "cached": True,
+            }
+    except Exception as e:
+        # Cache table might not exist yet — continue to generate
+        pass
+
+    # Step 3: Generate with Claude
     ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
     if not ANTHROPIC_KEY:
-        return {"headline": None, "body": None, "source": None, "date": None,
-                "error": "ANTHROPIC_API_KEY not configured"}
+        return {"headline": None, "body": None, "source": SOURCE_LINE, "date": report_date,
+                "market": market, "error": "ANTHROPIC_API_KEY not configured"}
 
     try:
-        # Gather data for the prompt
-        summary = market_summary(market=market)
         wow_data = week_over_week(market=market)
         movers_items = wow_data.get("items", [])[:10]
 
-        # Build a data snapshot for the LLM
         data_snapshot = {
             "market": market,
-            "date": summary.get("date"),
+            "date": report_date,
             "commodities_reporting": summary.get("commodities"),
             "tone_higher": summary.get("tone_higher"),
             "tone_lower": summary.get("tone_lower"),
@@ -864,20 +893,36 @@ Respond ONLY in this JSON format, no other text:
         )
 
         if resp.status_code != 200:
-            return {"headline": None, "body": None, "error": f"Anthropic API returned {resp.status_code}"}
+            return {"headline": None, "body": None, "source": SOURCE_LINE, "date": report_date,
+                    "market": market, "error": f"Anthropic API returned {resp.status_code}"}
 
         content = resp.json().get("content", [{}])
         text = content[0].get("text", "{}") if content else "{}"
-        # Strip markdown fences if present
         text = text.replace("```json", "").replace("```", "").strip()
         parsed = json.loads(text)
 
+        headline = parsed.get("headline")
+        body = parsed.get("body")
+
+        # Step 4: Cache the result
+        if headline:
+            try:
+                supabase.table(STORY_TABLE).upsert({
+                    "market": market,
+                    "report_date": report_date,
+                    "headline": headline,
+                    "body": body,
+                }, on_conflict="market,report_date").execute()
+            except:
+                pass  # Cache write failed — not critical
+
         return {
-            "headline": parsed.get("headline"),
-            "body": parsed.get("body"),
-            "source": "AgraX analysis based on USDA AMS market reports. Not USDA guidance.",
-            "date": summary.get("date"),
+            "headline": headline,
+            "body": body,
+            "source": SOURCE_LINE,
+            "date": report_date,
             "market": market,
+            "cached": False,
         }
 
     except Exception as e:
