@@ -948,7 +948,7 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
                 "content-type": "application/json",
             },
             json={
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-5",
                 "max_tokens": 400,
                 "messages": [{"role": "user", "content": prompt}],
             },
