@@ -34,8 +34,7 @@
   <div style="display:flex;align-items:center;gap:22px;flex:none;margin-left:auto">
     <a href="/browse" style="font-size:12.5px;font-weight:500;color:#fff">Browse</a>
     <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:3px;background:#D97706"></span>Pro</span>
-    <span onclick="window.location='/browse'" style="font-size:12.5px;font-weight:500;color:#A3A3A3;cursor:pointer">Sign in</span>
-    <a href="#" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid #262626;background:#141414;color:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center">Create account</a>
+    <a href="/browse" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid #262626;background:#141414;color:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center">Subscribe</a>
   </div>
 </header>
 
@@ -184,19 +183,19 @@
   <!-- Right column: Story + Movers + Shipping -->
   <aside style="min-width:0;display:flex;flex-direction:column;gap:12px">
     <!-- Story of the Day -->
-    <div class="card" style="border-left:4px solid var(--accent);padding:16px;display:flex;flex-direction:column;flex:1;min-height:0">
-      <div class="eyebrow">Story of the day · <span id="story-market">—</span></div>
+    <div class="card" style="border-left:4px solid var(--accent);padding:16px;display:flex;flex-direction:column;min-height:0">
+      <div class="eyebrow">Story of the day</div>
       <div style="font-size:16px;font-weight:500;letter-spacing:-0.025em;line-height:1.35;margin-top:10px" id="story-headline">Loading…</div>
       <p style="margin:9px 0 0;font-size:12.5px;line-height:1.65;color:var(--text-secondary)" id="story-body"></p>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--surface-row)">
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--surface-row)">
         <span style="font-size:11.5px;color:var(--text-dim);flex:1">AgraX analysis based on USDA AMS market reports. Not USDA guidance.</span>
-        <a href="/browse" style="font-size:12px;font-weight:500;flex:none">Open dossier →</a>
+        <a href="/browse" style="font-size:12px;font-weight:500;flex:none">View details →</a>
       </div>
     </div>
-    <!-- Biggest Movers -->
+    <!-- This week's moves -->
     <div class="card" style="padding:16px 16px 8px">
       <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--border)">
-        <span class="eyebrow">Biggest movers</span>
+        <span class="eyebrow">This week's moves</span>
       </div>
       <div id="movers-list"></div>
     </div>
@@ -271,7 +270,7 @@
     </div>
   </div>
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1F1F1F;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
-    <span>© 2026 AgraX. Free wholesale produce pricing.</span>
+    <span>© 2026 AgraX. Wholesale produce pricing.</span>
     <span>Source: USDA AMS · Terminal + Shipping Point</span>
   </div>
 </footer>
@@ -284,7 +283,7 @@
   const api = window.agraxAPI;
   const esc = (s) => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
   const UP = '#16A34A', DOWN = '#DC2626';
-  const MARKETS = ['Los Angeles, CA','Dallas, TX','San Francisco, CA','Miami, FL','Atlanta, GA','Seattle, WA','Chicago, IL','Detroit, MI','Philadelphia, PA','Baltimore, MD','New York, NY','Boston, MA'];
+  const MARKETS = ['Los Angeles, CA','Atlanta, GA','Chicago, IL','Detroit, MI','Miami, FL','New York, NY','Boston, MA','Philadelphia, PA','Baltimore, MD','Columbia, SC','Asheville, NC','Raleigh, NC'];
   const POPULAR = ['Avocados','Romaine','Yellow onions','Roma tomatoes','Blueberries','Pecans'];
 
   let market = U.selMarket() || 'New York';
@@ -308,7 +307,19 @@
     const dates = await api.dates();
     if (!dates?.length) return;
     const latestDate = dates[0].date;
-    const allRows = await api.reportTerminal(latestDate);
+    // Load last 5 dates and merge for full commodity coverage
+    const datesToLoad = dates.slice(0, 5).map(d => d.date);
+    const allResults = await Promise.all(datesToLoad.map(dt => api.reportTerminal(dt).catch(() => [])));
+    let mergedRows = [];
+    allResults.forEach(rows => { mergedRows = mergedRows.concat(rows); });
+    // Deduplicate — keep most recent per commodity+variety+origin+market
+    mergedRows.sort((a, b) => (b.report_date || '').localeCompare(a.report_date || ''));
+    const seen = {};
+    const allRows = [];
+    mergedRows.forEach(r => {
+      const key = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size].join('||');
+      if (!seen[key]) { seen[key] = true; allRows.push(r); }
+    });
     const marketRows = allRows.filter(r => r.market === market);
     const byCom = U.groupBy(marketRows, r => r.commodity);
 
@@ -425,10 +436,9 @@
       </a>`;
     }).join('');
 
-    // Story of the Day
-    document.getElementById('story-market').textContent = market;
+    // Story of the Day — national overview
     try {
-      const story = await api.story(market);
+      const story = await api.story('national');
       if (story.headline) {
         document.getElementById('story-headline').textContent = story.headline;
         document.getElementById('story-body').textContent = story.body || '';

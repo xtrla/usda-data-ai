@@ -789,48 +789,141 @@ def biggest_movers(market: str = "New York", limit: int = 6):
 @app.get("/story")
 def story_of_the_day(market: str = "New York"):
     """
-    Generate a daily market narrative using Claude, based on today's data.
-    Reads terminal prices, shipping point costs, movement data, and w/w changes.
-    Returns {headline, body, source, date}.
-
-    Requires ANTHROPIC_API_KEY env var.
+    Daily market narrative. Checks cache first — generates once per market per day,
+    then serves cached version to all subsequent visitors.
+    market='national' generates a cross-market overview.
     """
     import json
+    from datetime import date as dt_date
 
+    STORY_TABLE = "story_cache"
+    SOURCE_LINE = "AgraX analysis based on USDA AMS market reports. Not USDA guidance."
+    is_national = market.lower() == 'national'
+
+    # Step 1: Get today's report date
+    try:
+        dates_result = supabase.table(TABLE).select("report_date").eq("market_type", "terminal").order("report_date", desc=True).limit(1).execute()
+        report_date = dates_result.data[0]["report_date"] if dates_result.data else dt_date.today().isoformat()
+    except:
+        report_date = dt_date.today().isoformat()
+
+    # Step 2: Check cache
+    cache_key = "national" if is_national else market
+    try:
+        cached = supabase.table(STORY_TABLE).select("*").eq(
+            "market", cache_key
+        ).eq("report_date", report_date).limit(1).execute()
+
+        if cached.data and cached.data[0].get("headline"):
+            row = cached.data[0]
+            return {
+                "headline": row["headline"],
+                "body": row["body"],
+                "source": SOURCE_LINE,
+                "date": report_date,
+                "market": cache_key,
+                "cached": True,
+            }
+    except:
+        pass
+
+    # Step 3: Generate with Claude
     ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
     if not ANTHROPIC_KEY:
-        return {"headline": None, "body": None, "source": None, "date": None,
-                "error": "ANTHROPIC_API_KEY not configured"}
+        return {"headline": None, "body": None, "source": SOURCE_LINE, "date": report_date,
+                "market": cache_key, "error": "ANTHROPIC_API_KEY not configured"}
 
     try:
-        # Gather data for the prompt
-        summary = market_summary(market=market)
-        wow_data = week_over_week(market=market)
-        movers_items = wow_data.get("items", [])[:10]
+        # Build data snapshot
+        if is_national:
+            # Aggregate across all markets
+            all_rows = supabase.table(TABLE).select("commodity,movement,market").eq("market_type", "terminal").eq("report_date", report_date).limit(50000).execute()
+            rows = all_rows.data or []
+            markets_data = {}
+            total_h, total_l, total_s = 0, 0, 0
+            for r in rows:
+                mkt = r.get("market", "")
+                com = r.get("commodity", "")
+                mv = (r.get("movement") or "").lower()
+                if mkt not in markets_data:
+                    markets_data[mkt] = {"higher": 0, "lower": 0, "steady": 0, "count": 0, "coms": set()}
+                if com not in markets_data[mkt]["coms"]:
+                    markets_data[mkt]["coms"].add(com)
+                    markets_data[mkt]["count"] += 1
+                    if "higher" in mv or mv == "up":
+                        markets_data[mkt]["higher"] += 1
+                        total_h += 1
+                    elif "lower" in mv or mv == "down":
+                        markets_data[mkt]["lower"] += 1
+                        total_l += 1
+                    else:
+                        markets_data[mkt]["steady"] += 1
+                        total_s += 1
 
-        # Build a data snapshot for the LLM
-        data_snapshot = {
-            "market": market,
-            "date": summary.get("date"),
-            "commodities_reporting": summary.get("commodities"),
-            "tone_higher": summary.get("tone_higher"),
-            "tone_lower": summary.get("tone_lower"),
-            "tone_steady": summary.get("tone_steady"),
-            "movement_loads": summary.get("movement_loads"),
-            "movement_wow_pct": summary.get("movement_wow"),
-            "shipping_point_movement": summary.get("shipping_point_movement", [])[:6],
-            "biggest_changes": [
-                {
-                    "commodity": m["commodity"],
-                    "change_pct": m["change_pct"],
-                    "current_price": m["current_price"],
-                    "tone": m["tone"],
-                }
-                for m in movers_items if m.get("change_pct")
-            ],
-        }
+            market_summaries = []
+            for mkt, d in sorted(markets_data.items(), key=lambda x: x[1]["count"], reverse=True)[:12]:
+                market_summaries.append({
+                    "market": mkt,
+                    "commodities": d["count"],
+                    "higher": d["higher"],
+                    "lower": d["lower"],
+                    "steady": d["steady"],
+                })
 
-        prompt = f"""You are a produce market analyst writing a daily briefing for small wholesale buyers.
+            # Get biggest movers from the largest market
+            top_market = market_summaries[0]["market"] if market_summaries else "New York"
+            try:
+                wow = week_over_week(market=top_market)
+                top_movers = [{"commodity": m["commodity"], "change_pct": m["change_pct"], "tone": m["tone"]} for m in (wow.get("items") or [])[:6] if m.get("change_pct")]
+            except:
+                top_movers = []
+
+            data_snapshot = {
+                "scope": "national — all 12 USDA terminal markets",
+                "date": report_date,
+                "total_commodities_higher": total_h,
+                "total_commodities_lower": total_l,
+                "total_commodities_steady": total_s,
+                "markets": market_summaries,
+                "biggest_movers_at_" + top_market: top_movers,
+            }
+
+            prompt = f"""You are a produce market analyst writing a national daily briefing.
+You have today's USDA data across all 12 U.S. terminal markets.
+
+DATA:
+{json.dumps(data_snapshot, indent=2)}
+
+RULES:
+- Write a headline (1 sentence, under 15 words) about the national market picture today.
+- Write a body paragraph (3-4 sentences) that gives the big picture across markets. Which markets are tightening? Which are easing? Mention 2-3 specific commodities and their direction.
+- Write for a produce buyer checking prices at 5 AM. Plain language. No jargon.
+- End with one sentence about what to watch today.
+- Do NOT say "I" or "we." Just state the facts.
+
+Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
+        else:
+            summary = market_summary(market=market)
+            wow_data = week_over_week(market=market)
+            movers_items = wow_data.get("items", [])[:10]
+
+            data_snapshot = {
+                "market": market,
+                "date": report_date,
+                "commodities_reporting": summary.get("commodities"),
+                "tone_higher": summary.get("tone_higher"),
+                "tone_lower": summary.get("tone_lower"),
+                "tone_steady": summary.get("tone_steady"),
+                "movement_loads": summary.get("movement_loads"),
+                "movement_wow_pct": summary.get("movement_wow"),
+                "shipping_point_movement": summary.get("shipping_point_movement", [])[:6],
+                "biggest_changes": [
+                    {"commodity": m["commodity"], "change_pct": m["change_pct"], "current_price": m["current_price"], "tone": m["tone"]}
+                    for m in movers_items if m.get("change_pct")
+                ],
+            }
+
+            prompt = f"""You are a produce market analyst writing a daily briefing for small wholesale buyers.
 You have today's USDA data for {market}. Write a Story of the Day.
 
 DATA:
@@ -842,10 +935,9 @@ RULES:
 - Write in plain produce industry language. No jargon. A buyer in a truck at 5 AM should understand this instantly.
 - If movement is down and prices are up, say supply is tightening. If movement is up and prices are flat, say supply is flooding.
 - End with one actionable sentence — buy ahead, negotiate, hold, or wait.
-- Do NOT say "I" or "we." Do NOT say "based on USDA data." Just state the facts.
+- Do NOT say "I" or "we." Just state the facts.
 
-Respond ONLY in this JSON format, no other text:
-{{"headline": "...", "body": "..."}}"""
+Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
 
         import requests as req
         resp = req.post(
@@ -856,7 +948,7 @@ Respond ONLY in this JSON format, no other text:
                 "content-type": "application/json",
             },
             json={
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-haiku-4-5-20251001",
                 "max_tokens": 400,
                 "messages": [{"role": "user", "content": prompt}],
             },
@@ -864,20 +956,41 @@ Respond ONLY in this JSON format, no other text:
         )
 
         if resp.status_code != 200:
-            return {"headline": None, "body": None, "error": f"Anthropic API returned {resp.status_code}"}
+            err_body = ""
+            try:
+                err_body = resp.text[:500]
+            except:
+                pass
+            return {"headline": None, "body": None, "source": SOURCE_LINE, "date": report_date,
+                    "market": cache_key, "error": f"Anthropic API returned {resp.status_code}: {err_body}"}
 
         content = resp.json().get("content", [{}])
         text = content[0].get("text", "{}") if content else "{}"
-        # Strip markdown fences if present
         text = text.replace("```json", "").replace("```", "").strip()
         parsed = json.loads(text)
 
+        headline = parsed.get("headline")
+        body = parsed.get("body")
+
+        # Step 4: Cache
+        if headline:
+            try:
+                supabase.table(STORY_TABLE).upsert({
+                    "market": cache_key,
+                    "report_date": report_date,
+                    "headline": headline,
+                    "body": body,
+                }, on_conflict="market,report_date").execute()
+            except:
+                pass
+
         return {
-            "headline": parsed.get("headline"),
-            "body": parsed.get("body"),
-            "source": "AgraX analysis based on USDA AMS market reports. Not USDA guidance.",
-            "date": summary.get("date"),
-            "market": market,
+            "headline": headline,
+            "body": body,
+            "source": SOURCE_LINE,
+            "date": report_date,
+            "market": cache_key,
+            "cached": False,
         }
 
     except Exception as e:

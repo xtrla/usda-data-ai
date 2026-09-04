@@ -35,9 +35,7 @@
     <div class="header-nav-desk" style="display:flex;align-items:center;gap:8px;flex:none;margin-left:auto">
       <span id="live-badge" style="display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;color:var(--up-live);padding-left:4px"><span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live</span>
       <span style="width:1px;height:20px;background:var(--dark-input-border)"></span>
-      <span id="auth-signin" onclick="window._openAuth('signin')" style="font-size:12.5px;font-weight:500;color:var(--dark-faint);cursor:pointer">Sign in</span>
-      <button id="auth-create" onclick="window._openAuth('signup')" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid var(--dark-input-border);background:var(--dark-input);color:#fff;font-size:12.5px;font-weight:500;cursor:pointer">Create account</button>
-      <span id="auth-user" style="display:none;font-size:12.5px;font-weight:500;color:var(--dark-faint);cursor:pointer" onclick="window._logout()"></span>
+      <button onclick="document.getElementById('subscribe-modal').style.display='flex'" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid var(--dark-input-border);background:var(--dark-input);color:#fff;font-size:12.5px;font-weight:500;cursor:pointer">Subscribe</button>
     </div>
   </div>
 </header>
@@ -111,7 +109,7 @@
         <span class="eyebrow">Reporting</span>
         <span class="eyebrow desk-col">Origins</span>
         <span class="eyebrow desk-col">Shipping points</span>
-        <span class="eyebrow desk-col">Movement w/w</span>
+        <span class="eyebrow desk-col">Volume</span>
         <span class="eyebrow">Date</span>
         <span class="eyebrow" style="text-align:right">USDA tone</span>
       </div>
@@ -122,7 +120,7 @@
     </div>
   </main>
 
-  <!-- RIGHT PANEL (Market Summary / Dossier) -->
+  <!-- RIGHT PANEL (Market Summary / Detail) -->
   <aside style="position:sticky;top:52px;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card)" id="right-panel">
     <div style="padding:20px" id="market-summary">
       <div class="eyebrow">Market summary · <span id="sum-market">—</span></div>
@@ -151,21 +149,75 @@
     <div style="display:flex;flex-direction:column;gap:9px;flex:none">
       <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
       <a href="/about" style="font-size:12px;color:#A3A3A3">About</a>
-      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" id="footer-contact">Contact</span>
-      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" id="footer-advertise">Advertise</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" onclick="document.getElementById('contact-modal').style.display='flex'">Contact</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" onclick="document.getElementById('advertise-modal').style.display='flex'">Advertise</span>
       <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Privacy</span>
       <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Terms</span>
     </div>
   </div>
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--dark-border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
-    <span>© 2026 AgraX. Free wholesale produce pricing.</span>
+    <span>© 2026 AgraX. Wholesale produce pricing.</span>
     <span>Source: USDA AMS · Terminal + Shipping Point · Last sync <span id="footer-time">—</span></span>
   </div>
 </footer>
 
-</div><!-- end #app -->
+<!-- Contact Modal -->
+<div id="contact-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Contact us</h3>
+      <span onclick="document.getElementById('contact-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <textarea placeholder="Message" rows="4" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
+      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Send</button>
+    </div>
+  </div>
+</div>
 
-<!-- Download Modal -->
+<!-- Advertise Modal -->
+<div id="advertise-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Reach produce buyers where they check prices</h3>
+      <span onclick="document.getElementById('advertise-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:18px">
+      <p style="margin:8px 0">• Sponsored row in the browse table — seen by every visitor</p>
+      <p style="margin:8px 0">• Sponsored card in the market summary panel</p>
+      <p style="margin:8px 0">• Newsletter sponsorship — delivered every morning to verified buyers</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Company" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <textarea placeholder="What are you looking to promote?" rows="3" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
+      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subscribe Modal -->
+<div id="subscribe-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Wholesale prices, every morning</h3>
+      <span onclick="document.getElementById('subscribe-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:18px">One email every weekday: your commodities, what moved, and the shipping points behind them. Unsubscribe any time.</p>
+    <div id="subscribe-success" style="display:none;margin-bottom:12px"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <input id="sub-email" type="email" placeholder="you@company.com" style="width:100%;height:42px;border:1px solid var(--border);border-radius:7px;padding:0 14px;font-size:14px;outline:none">
+      <input id="sub-name" type="text" placeholder="Name (optional)" style="width:100%;height:42px;border:1px solid var(--border);border-radius:7px;padding:0 14px;font-size:14px;outline:none">
+      <button onclick="window._subscribe()" class="btn btn--primary" style="height:44px;width:100%;font-size:14px;border-radius:7px">Subscribe</button>
+    </div>
+    <p style="font-size:11px;color:var(--text-faint);margin-top:12px;text-align:center">No spam. USDA data only. Unsubscribe in one click.</p>
+  </div>
+</div>
+
+</div><!-- end #app -->
 <div id="dl-modal" class="modal-overlay" style="display:none">
   <div class="modal modal--md" style="padding:28px">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
@@ -207,75 +259,6 @@
   </div>
 </div>
 
-<!-- Auth Modal -->
-<div id="auth-modal" class="modal-overlay" style="display:none">
-  <div class="modal modal--sm" style="padding:28px">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-      <h3 style="font-size:17px;font-weight:600;letter-spacing:-0.02em;flex:1" id="auth-title">Sign in</h3>
-      <span onclick="document.getElementById('auth-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
-    </div>
-    <div id="auth-error" style="display:none" class="err-banner"></div>
-    <div id="auth-success" style="display:none" class="toast"></div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div id="auth-name-field" style="display:none">
-        <label style="font-size:11.5px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">Name</label>
-        <input id="auth-name" type="text" placeholder="Your name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">Email</label>
-        <input id="auth-email" type="email" placeholder="you@company.com" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">Password</label>
-        <input id="auth-pass" type="password" placeholder="••••••••" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      </div>
-      <button id="auth-submit" onclick="window._authSubmit()" class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px;margin-top:4px">Sign in</button>
-      <div style="text-align:center;font-size:12.5px;color:var(--text-muted)">
-        <span id="auth-toggle-text">Don't have an account?</span>
-        <span onclick="window._authToggle()" style="color:var(--accent);cursor:pointer;font-weight:500" id="auth-toggle-link">Create one</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Contact Modal -->
-<div id="contact-modal" class="modal-overlay" style="display:none">
-  <div class="modal modal--sm" style="padding:28px">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-      <h3 style="font-size:17px;font-weight:600;flex:1">Contact us</h3>
-      <span onclick="document.getElementById('contact-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      <textarea placeholder="Message" rows="4" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
-      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Send</button>
-    </div>
-  </div>
-</div>
-
-<!-- Advertise Modal -->
-<div id="advertise-modal" class="modal-overlay" style="display:none">
-  <div class="modal modal--sm" style="padding:28px">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <h3 style="font-size:17px;font-weight:600;flex:1">Reach produce buyers where they check prices</h3>
-      <span onclick="document.getElementById('advertise-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
-    </div>
-    <div style="font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:18px">
-      <p style="margin:8px 0">• Sponsored row in the browse table — seen by every visitor</p>
-      <p style="margin:8px 0">• Sponsored card in the market summary panel</p>
-      <p style="margin:8px 0">• Newsletter sponsorship — delivered at 5 AM to verified buyers</p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      <input placeholder="Company" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
-      <textarea placeholder="What are you looking to promote?" rows="3" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
-      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Submit</button>
-    </div>
-  </div>
-</div>
-
 <!-- Mobile bottom nav -->
 <nav class="mobile-bottom-nav">
   <a href="/" class="mobile-bottom-nav__item">
@@ -305,7 +288,7 @@
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 
-  const MARKETS = ['Los Angeles, CA','Dallas, TX','San Francisco, CA','Miami, FL','Atlanta, GA','Seattle, WA','Chicago, IL','Detroit, MI','Philadelphia, PA','Baltimore, MD','New York, NY','Boston, MA'];
+  const MARKETS = ['Los Angeles, CA','Atlanta, GA','Chicago, IL','Detroit, MI','Miami, FL','New York, NY','Boston, MA','Philadelphia, PA','Baltimore, MD','Columbia, SC','Asheville, NC','Raleigh, NC'];
   const UP = '#16A34A', DOWN = '#DC2626';
 
   // ── STATE ──
@@ -325,7 +308,7 @@
 
   const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
   const marketFull = (m) => {
-    const map = {'New York':'New York, NY','Boston':'Boston, MA','Philadelphia':'Philadelphia, PA','Baltimore':'Baltimore, MD','Chicago':'Chicago, IL','Detroit':'Detroit, MI','Atlanta':'Atlanta, GA','Miami':'Miami, FL','Los Angeles':'Los Angeles, CA','Dallas':'Dallas, TX','San Francisco':'San Francisco, CA','Seattle':'Seattle, WA'};
+    const map = {'New York':'New York, NY','Boston':'Boston, MA','Philadelphia':'Philadelphia, PA','Baltimore':'Baltimore, MD','Chicago':'Chicago, IL','Detroit':'Detroit, MI','Atlanta':'Atlanta, GA','Miami':'Miami, FL','Los Angeles':'Los Angeles, CA','Columbia':'Columbia, SC','Asheville':'Asheville, NC','Raleigh':'Raleigh, NC'};
     return map[m] || m;
   };
 
@@ -387,6 +370,22 @@
   document.getElementById('footer-time').textContent = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
 
   // ── HELPERS ──
+  // Deduplicate rows from multiple dates — keep the most recent per commodity+variety+origin+market+pack+size
+  function _deduplicateRows(rows) {
+    var seen = {};
+    // Sort newest first so the first occurrence is the most recent
+    rows.sort(function(a, b) { return (b.report_date || '').localeCompare(a.report_date || ''); });
+    var result = [];
+    rows.forEach(function(r) {
+      var key = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size].join('||');
+      if (!seen[key]) {
+        seen[key] = true;
+        result.push(r);
+      }
+    });
+    return result;
+  }
+
   function skuPrice(row) {
     var mLow = U.num(row.price_mostly_low), mHigh = U.num(row.price_mostly_high);
     if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, src: 'mostly' };
@@ -426,17 +425,28 @@
     });
     weekSel.addEventListener('change', async function() {
       latestDate = weekSel.value;
-      allRows = await api.reportTerminal(latestDate);
+      // Load selected date + previous 4 dates for full commodity coverage
+      var selIdx = dates.findIndex(function(d) { return d.date === latestDate; });
+      var datesToLoad = dates.slice(selIdx, selIdx + 5).map(function(d) { return d.date; });
+      var allPromises = datesToLoad.map(function(dt) { return api.reportTerminal(dt).catch(function() { return []; }); });
+      var allResults = await Promise.all(allPromises);
+      var merged = [];
+      allResults.forEach(function(rows) { merged = merged.concat(rows); });
+      allRows = _deduplicateRows(merged);
       try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) { fobRows = []; }
       renderAll();
     });
 
-    var results = await Promise.all([
-      api.reportTerminal(latestDate),
-      api.reportShippingPoints(latestDate).catch(function() { return []; }),
-    ]);
-    allRows = results[0];
-    fobRows = results[1];
+    // Load last 5 dates and merge — ensures all commodities appear even if not reported today
+    var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
+    var allPromises = datesToLoad.map(function(dt) { return api.reportTerminal(dt).catch(function() { return []; }); });
+    var fobPromise = api.reportShippingPoints(latestDate).catch(function() { return []; });
+
+    var allResults = await Promise.all(allPromises);
+    var merged = [];
+    allResults.forEach(function(rows) { merged = merged.concat(rows); });
+    allRows = _deduplicateRows(merged);
+    fobRows = await fobPromise;
 
     // Default: check ALL commodities so table is fully populated on load
     var allByCom = U.groupBy(allRows, function(r) { return r.commodity; });
@@ -825,18 +835,19 @@
         html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
         html += '<span class="eyebrow" style="flex:none">Movement</span>';
         html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
-        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">View details \u2192</a>';
         html += '</div></div>';
       }
 
       html += '</div>'; // close commodity wrapper
 
-      // Sponsored row after 4th item
+      // Self-promo row after 4th item
       if (i === 3 && comList.length > 5) {
-        html += '<a href="#" style="display:flex;align-items:center;gap:14px;min-width:660px;padding:13px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);color:var(--text);text-decoration:none">';
-        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">Sponsored</span>';
-        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Sierra Cold Chain \u2014 reefer capacity out of Nogales</span><span style="font-size:11.5px;color:var(--text-muted)">Next-day into Dallas and Houston. Pre-cool, pallet-level temp logs, 24/7 dispatch.</span></span>';
-        html += '<span style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent)">Visit site \u2192</span></a>';
+        html += '<div onclick="document.getElementById(\'subscribe-modal\').style.display=\'flex\'" style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);cursor:pointer">';
+        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">AgraX</span>';
+        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Wholesale prices in your inbox every weekday morning</span><span style="font-size:11.5px;color:var(--text-muted)">One email: your commodities, what moved, and the shipping points behind them.</span></span>';
+        html += '<span onclick="document.getElementById(\'subscribe-modal\').style.display=\'flex\'" style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent);cursor:pointer">Subscribe \u2192</span>';
+        html += '</div>';
       }
     });
 
@@ -872,10 +883,10 @@
       selectedComName = comName;
     }
     renderTable();
-    renderDossier();
+    renderDetail();
   };
 
-  window._closeDossier = function() {
+  window._closeDetail = function() {
     selectedSku = null;
     selectedComName = null;
     renderTable();
@@ -884,7 +895,7 @@
   };
 
   // Render the dossier panel
-  function renderDossier() {
+  function renderDetail() {
     var summaryEl = document.getElementById('market-summary');
     var dossierEl = document.getElementById('dossier-panel');
 
@@ -988,7 +999,7 @@
     html += '<div style="padding:18px 20px 16px;border-bottom:1px solid var(--border)">';
     html += '<div style="display:flex;align-items:center;gap:10px">';
     html += '<span class="eyebrow">' + esc(selectedComName) + ' \u00b7 variety</span>';
-    html += '<span onclick="window._closeDossier()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
+    html += '<span onclick="window._closeDetail()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
     html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>Close</span>';
     html += '</div>';
     html += '<h2 style="margin:10px 0 0;font-size:24px;font-weight:500;letter-spacing:-0.035em;line-height:1.05">' + esc(row.variety || selectedComName) + '</h2>';
@@ -1509,6 +1520,22 @@
     var body = 'Check wholesale produce prices at ' + currentMarket + ': ' + window.location.href;
     window.open('mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
     document.getElementById('share-dropdown').style.display = 'none';
+  };
+
+  // ── SUBSCRIBE ──
+  window._subscribe = function() {
+    var email = document.getElementById('sub-email').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    // For now, show success — wire to actual email service later
+    var successEl = document.getElementById('subscribe-success');
+    successEl.innerHTML = '<span class="toast__dot"></span>You\'re subscribed. First email arrives tomorrow morning.';
+    successEl.style.display = 'flex';
+    successEl.style.marginBottom = '12px';
+    document.getElementById('sub-email').value = '';
+    document.getElementById('sub-name').value = '';
   };
 
   // ── FOOTER MODALS ──
