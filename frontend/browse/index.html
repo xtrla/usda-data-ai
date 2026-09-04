@@ -831,12 +831,13 @@
 
       html += '</div>'; // close commodity wrapper
 
-      // Sponsored row after 4th item
+      // Self-promo row after 4th item
       if (i === 3 && comList.length > 5) {
-        html += '<a href="#" style="display:flex;align-items:center;gap:14px;min-width:660px;padding:13px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);color:var(--text);text-decoration:none">';
-        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">Sponsored</span>';
-        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Sierra Cold Chain \u2014 reefer capacity out of Nogales</span><span style="font-size:11.5px;color:var(--text-muted)">Next-day into Dallas and Houston. Pre-cool, pallet-level temp logs, 24/7 dispatch.</span></span>';
-        html += '<span style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent)">Visit site \u2192</span></a>';
+        html += '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);background:var(--surface-ad)">';
+        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">AgraX</span>';
+        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Wholesale prices in your inbox every weekday morning</span><span style="font-size:11.5px;color:var(--text-muted)">One email: your commodities, what moved, and the shipping points behind them.</span></span>';
+        html += '<span onclick="window.scrollTo({top:document.body.scrollHeight,behavior:\'smooth\'})" style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent);cursor:pointer">Subscribe \u2192</span>';
+        html += '</div>';
       }
     });
 
