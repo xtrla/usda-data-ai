@@ -111,7 +111,7 @@
         <span class="eyebrow">Reporting</span>
         <span class="eyebrow desk-col">Origins</span>
         <span class="eyebrow desk-col">Shipping points</span>
-        <span class="eyebrow desk-col">Movement w/w</span>
+        <span class="eyebrow desk-col">Volume</span>
         <span class="eyebrow">Date</span>
         <span class="eyebrow" style="text-align:right">USDA tone</span>
       </div>
@@ -122,7 +122,7 @@
     </div>
   </main>
 
-  <!-- RIGHT PANEL (Market Summary / Dossier) -->
+  <!-- RIGHT PANEL (Market Summary / Detail) -->
   <aside style="position:sticky;top:52px;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card)" id="right-panel">
     <div style="padding:20px" id="market-summary">
       <div class="eyebrow">Market summary · <span id="sum-market">—</span></div>
@@ -825,7 +825,7 @@
         html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
         html += '<span class="eyebrow" style="flex:none">Movement</span>';
         html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
-        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">Open dossier \u2192</a>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">View details \u2192</a>';
         html += '</div></div>';
       }
 
@@ -872,10 +872,10 @@
       selectedComName = comName;
     }
     renderTable();
-    renderDossier();
+    renderDetail();
   };
 
-  window._closeDossier = function() {
+  window._closeDetail = function() {
     selectedSku = null;
     selectedComName = null;
     renderTable();
@@ -884,7 +884,7 @@
   };
 
   // Render the dossier panel
-  function renderDossier() {
+  function renderDetail() {
     var summaryEl = document.getElementById('market-summary');
     var dossierEl = document.getElementById('dossier-panel');
 
@@ -988,7 +988,7 @@
     html += '<div style="padding:18px 20px 16px;border-bottom:1px solid var(--border)">';
     html += '<div style="display:flex;align-items:center;gap:10px">';
     html += '<span class="eyebrow">' + esc(selectedComName) + ' \u00b7 variety</span>';
-    html += '<span onclick="window._closeDossier()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
+    html += '<span onclick="window._closeDetail()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
     html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>Close</span>';
     html += '</div>';
     html += '<h2 style="margin:10px 0 0;font-size:24px;font-weight:500;letter-spacing:-0.035em;line-height:1.05">' + esc(row.variety || selectedComName) + '</h2>';
