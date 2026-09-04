@@ -1399,7 +1399,7 @@
     // Header
     html += '<div class="hdr">';
     html += '<div>';
-    html += '<div class="brand"><span class="brand-x">X</span><span class="brand-name">AgraX</span></div>';
+    html += '<div class="brand"><img src="https://www.agra-x.com/assets/agrax-mark-transparent.png" style="height:28px;width:auto" onerror="this.style.display=\'none\'"><span class="brand-name">AgraX</span></div>';
     html += '</div>';
     html += '<div class="hdr-right">';
     html += '<div class="hdr-label">Wholesale price report</div>';
@@ -1415,10 +1415,10 @@
     html += '<div class="stat"><div class="stat-label">Steady</div><div class="stat-val">' + toneS + '</div></div>';
     html += '</div>';
 
-    // Table
+    // Table — ALL varieties expanded, grouped by commodity
     html += '<div class="sec-head"><div class="sec-title">Wholesale prices</div><div class="sec-sub">Mostly, per unit as reported</div></div>';
     html += '<table><thead><tr>';
-    html += '<th>Produce</th><th>Origin</th><th>Grade \u00b7 Package</th><th style="text-align:right">Range</th><th style="text-align:right">Mostly</th><th>Tone</th><th>Date</th>';
+    html += '<th>Produce</th><th>Variety</th><th>Origin</th><th>Grade \u00b7 Package</th><th style="text-align:right">Range</th><th style="text-align:right">Mostly</th><th>Tone</th><th>Date</th>';
     html += '</tr></thead><tbody>';
 
     comNames.sort().forEach(function(comName) {
@@ -1428,32 +1428,29 @@
       if (mv.indexOf('higher') > -1 || mv === 'up') tone = 'Higher';
       else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
       else tone = 'Steady';
-
-      var bestRow = comRows[0];
-      var bestPrice = null;
-      comRows.forEach(function(r) {
-        var sp = skuPrice(r);
-        if (sp.src === 'mostly' && sp.price != null) { bestRow = r; bestPrice = sp; }
-      });
-      if (!bestPrice) bestPrice = skuPrice(bestRow);
-
-      var priceStr = bestPrice.price != null ? '$' + bestPrice.price.toFixed(2) : '\u2014';
-      var lo = bestRow.price_low != null ? parseFloat(bestRow.price_low).toFixed(2) : '';
-      var hi = bestRow.price_high != null ? parseFloat(bestRow.price_high).toFixed(2) : '';
-      var rangeStr = lo && hi ? lo + '\u2013' + hi : '';
-      var gradePack = [bestRow.grade, bestRow.package].filter(Boolean).join(' \u00b7 ');
       var toneCls = tone === 'Higher' ? 'up' : tone === 'Lower' ? 'dn' : '';
-      var reportDate = bestRow.report_date || latestDate || '';
 
-      html += '<tr>';
-      html += '<td class="com">' + esc(comName) + '</td>';
-      html += '<td>' + esc(bestRow.origin || '\u2014') + '</td>';
-      html += '<td>' + esc(gradePack || '\u2014') + '</td>';
-      html += '<td class="range">' + rangeStr + '</td>';
-      html += '<td class="price">' + priceStr + '</td>';
-      html += '<td class="' + toneCls + '">' + tone + '</td>';
-      html += '<td class="date">' + esc(reportDate) + '</td>';
-      html += '</tr>';
+      comRows.sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+      comRows.forEach(function(r, idx) {
+        var sp = skuPrice(r);
+        var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+        var lo = r.price_low != null ? parseFloat(r.price_low).toFixed(2) : '';
+        var hi = r.price_high != null ? parseFloat(r.price_high).toFixed(2) : '';
+        var rangeStr = lo && hi && lo !== hi ? lo + '\u2013' + hi : '';
+        var gradePack = [r.grade, r.package].filter(Boolean).join(' \u00b7 ');
+        var reportDate = r.report_date || latestDate || '';
+
+        html += '<tr>';
+        html += '<td class="com">' + (idx === 0 ? esc(comName) : '') + '</td>';
+        html += '<td>' + esc(r.variety || '\u2014') + '</td>';
+        html += '<td>' + esc(r.origin || '\u2014') + '</td>';
+        html += '<td>' + esc(gradePack || '\u2014') + '</td>';
+        html += '<td class="range">' + rangeStr + '</td>';
+        html += '<td class="price">' + priceStr + '</td>';
+        html += '<td class="' + toneCls + '">' + (idx === 0 ? tone : '') + '</td>';
+        html += '<td class="date">' + esc(reportDate) + '</td>';
+        html += '</tr>';
+      });
     });
 
     html += '</tbody></table>';
