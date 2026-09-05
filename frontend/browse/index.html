@@ -103,6 +103,14 @@
         <button id="download-btn" class="btn btn--primary">Download</button>
         <button id="share-btn" class="btn btn--ghost" style="display:flex;align-items:center;gap:6px">Share <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
       </div>
+      <!-- Mobile category filter pills -->
+      <div id="mobile-cats" class="mobile-only" style="display:none;overflow-x:auto;gap:6px;padding:8px 0;-webkit-overflow-scrolling:touch">
+        <span class="mobile-pill is-active" onclick="window._mobileFilterCat('all')">All</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Fruits')">Fruits</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Vegetables')">Vegetables</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Onions & Potatoes')">Onions & Potatoes</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Nuts')">Nuts</span>
+      </div>
       <!-- Column headers -->
       <div class="col-headers" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 70px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
         <span class="eyebrow">Commodity</span>
@@ -1256,6 +1264,39 @@
     });
     return filtered;
   }
+
+  // ── MOBILE CATEGORY FILTER ──
+  var mobileActiveCat = 'all';
+  window._mobileFilterCat = function(cat) {
+    mobileActiveCat = cat;
+    // Update pill styles
+    var pills = document.querySelectorAll('#mobile-cats .mobile-pill');
+    pills.forEach(function(p) {
+      var pCat = p.textContent.trim();
+      if ((cat === 'all' && pCat === 'All') || pCat === cat) {
+        p.classList.add('is-active');
+      } else {
+        p.classList.remove('is-active');
+      }
+    });
+    // If a category is selected, check/uncheck commodities accordingly
+    if (cat === 'all') {
+      // Check all commodities
+      var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
+      byCom.forEach(function(rows, name) { checkedComs[name] = true; });
+    } else {
+      // Uncheck all first, then check only this category
+      var market = marketShort(currentMarket);
+      var marketRows = allRows.filter(function(r) { return r.market === market; });
+      var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+      Object.keys(checkedComs).forEach(function(k) { checkedComs[k] = false; });
+      byCom.forEach(function(rows, name) {
+        var c = U.catLabel(rows[0] && rows[0].commodity_type);
+        if (c === cat) checkedComs[name] = true;
+      });
+    }
+    renderAll();
+  };
 
   // ── DOWNLOAD FORMAT TOGGLE ──
   var dlFormat = 'csv';

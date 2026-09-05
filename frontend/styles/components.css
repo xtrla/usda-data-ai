@@ -256,10 +256,17 @@
   }
   /* Header: simplify for mobile */
   .header-search-desk {
-    display: none !important;
+    display: flex !important;
+    max-width: 100% !important;
+    flex: 1 !important;
   }
-  .header-nav-desk span:not(:last-child),
-  .header-nav-desk [style*="Sign in"] {
+  .header-search-desk input {
+    height: 36px !important;
+    font-size: 14px !important;
+    border-color: #333 !important;
+    border-radius: 8px !important;
+  }
+  .header-nav-desk {
     display: none !important;
   }
   /* Browse: collapse 3-col to single column */
@@ -295,8 +302,43 @@
   }
   /* Browse: toolbar */
   #toolbar {
-    position: relative !important;
-    top: auto !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    border-radius: 0 !important;
+    padding: 10px 0 0 !important;
+  }
+  /* Show mobile category pills */
+  #mobile-cats {
+    display: flex !important;
+  }
+  /* Hide desktop filter/sort controls on mobile, keep only icons */
+  #table-filter {
+    display: none !important;
+  }
+  #week-select {
+    display: none !important;
+  }
+  #sort-select {
+    height: 32px !important;
+    font-size: 11px !important;
+    padding: 0 6px !important;
+  }
+  #toggle-all {
+    display: none !important;
+  }
+  /* Column headers: simplify for mobile */
+  .col-headers {
+    grid-template-columns: 1fr 70px 68px !important;
+    gap: 6px !important;
+    padding: 7px 0 !important;
+  }
+  /* Commodity rows: mobile layout */
+  .com-row {
+    grid-template-columns: 1fr 70px 68px !important;
+    min-width: 0 !important;
+    padding: 10px 0 !important;
+    min-height: 56px !important;
   }
   /* Market strip */
   #market-strip-wrap {
