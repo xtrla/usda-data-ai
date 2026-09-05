@@ -327,7 +327,10 @@
     return '' +
       '<header class="m-header">' +
         '<div class="m-header__top">' +
-          '<a class="m-logo" href="/">agra<span>x</span></a>' +
+          '<a class="m-logo" href="/" aria-label="AgraX home">' +
+            '<img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" ' +
+              'width="646" height="241" decoding="async">' +
+          '</a>' +
           '<button class="m-market-pill" data-act="markets-sheet">' +
             I.pin +
             '<span class="m-market-pill__name">' + esc(S.market) + '</span>' +

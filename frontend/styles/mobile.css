@@ -53,12 +53,11 @@ html[data-m-lock], html[data-m-lock] body { overflow: hidden; }
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; margin-bottom: 12px;
 }
-.m-logo {
-  font-size: 20px; font-weight: 600; letter-spacing: -0.03em;
-  color: #fff; text-decoration: none; line-height: 1;
-}
-.m-logo span { color: var(--m-accent); }
-.m-logo:hover { color: #fff; }
+/* Same wordmark asset the desktop header uses. Intrinsic size is
+   646x241; height is fixed and width follows that ratio so the
+   image reserves its box before it loads. */
+.m-logo { flex: none; display: block; line-height: 0; }
+.m-logo img { height: 26px; width: auto; display: block; }
 
 .m-market-pill {
   display: flex; align-items: center; gap: 7px;
