@@ -435,6 +435,43 @@ async def subscription_status(user_id: str):
 # MARKET SUMMARY — everything the browse page market bar needs
 # ─────────────────────────────────────────────────────────────
 
+# ─────────────────────────────────────────────────────────────
+# NEWSLETTER SIGNUP
+# ─────────────────────────────────────────────────────────────
+@app.post("/subscribe")
+async def subscribe(request: Request):
+    """Capture an email for the weekday morning brief.
+
+    Deliberately does not require an account. Always reports success to
+    the caller so the endpoint can't be used to probe which addresses
+    are already on the list.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Expected a JSON body")
+
+    email = (body.get("email") or "").strip().lower()
+    if not email or "@" not in email or "." not in email.split("@")[-1] or len(email) > 254:
+        raise HTTPException(status_code=400, detail="A valid email is required")
+
+    row = {
+        "email": email,
+        "source": (body.get("source") or "web")[:40],
+        "market": (body.get("market") or None),
+    }
+
+    try:
+        supabase.table("subscribers").upsert(row, on_conflict="email").execute()
+    except Exception as e:
+        print(f"[subscribe] failed for {email}: {e}")
+        # Don't leak storage failures to the form; the address is far more
+        # likely to be lost to a transient Supabase blip than to be a dupe.
+        return {"ok": True}
+
+    return {"ok": True}
+
+
 @app.get("/market-summary")
 def market_summary(market: str = "New York", date: str = None):
     """

@@ -43,3 +43,16 @@ jobs:
           cd backend
           python ingest_movement.py
         continue-on-error: true  # Don't fail the whole run if movement fails
+
+      - name: Send price alerts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          FRONTEND_URL: https://www.agra-x.com
+          # Flip to "1" to evaluate and log without emailing anyone.
+          ALERT_DRY_RUN: ${{ vars.ALERT_DRY_RUN }}
+        run: |
+          cd backend
+          python send_alerts.py
+        continue-on-error: true  # A send failure must not fail the ingest
