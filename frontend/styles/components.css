@@ -394,3 +394,187 @@
     grid-template-columns: 1fr 1fr !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE ACCENT — olive green #4D7C0F on mobile
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 979px) {
+  :root {
+    --accent: #4D7C0F;
+    --accent-hover: #3F6212;
+  }
+  .mobile-bottom-nav__item.is-active {
+    color: #4D7C0F;
+  }
+  /* Sticky filter bar on mobile */
+  .mobile-filter-bar {
+    position: sticky;
+    top: 90px;
+    z-index: 50;
+    background: var(--page);
+    padding: 8px 0 0;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .mobile-filter-pills {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-filter-pills::-webkit-scrollbar { display: none; }
+  .mobile-pill {
+    flex: none;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-pill.is-active {
+    background: #0A0A0A;
+    color: #fff;
+    border-color: #0A0A0A;
+  }
+  .mobile-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-toolbar__count {
+    flex: 1;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .mobile-toolbar__btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Dense mobile commodity rows */
+  .mobile-com-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 64px;
+  }
+  .mobile-com-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .mobile-com-name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-com-meta {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-com-date {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--text-faint);
+    margin-top: 1px;
+  }
+  .mobile-com-right {
+    flex: none;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+  .mobile-com-count {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-faint);
+  }
+  /* Mobile hero section */
+  .mobile-hero {
+    position: relative;
+    padding: 20px 16px 18px;
+    overflow: hidden;
+  }
+  .mobile-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url('/assets/farm-hero.webp') center/cover no-repeat;
+    z-index: 0;
+  }
+  .mobile-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(243,244,240,0.92) 0%, rgba(243,244,240,0.80) 50%, rgba(243,244,240,0.95) 100%);
+    z-index: 1;
+  }
+  .mobile-hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  .mobile-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .mobile-stat-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .mobile-stat-label {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .mobile-stat-val {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-top: 4px;
+  }
+  /* Mobile story */
+  .mobile-story {
+    margin: 12px;
+    padding: 14px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+    border-left: 4px solid #4D7C0F;
+  }
+}
