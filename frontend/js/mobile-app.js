@@ -561,7 +561,8 @@
   // ── TABS ───────────────────────────────────────────────
 
   function tabToday() {
-    return viewHero() + viewStory() + viewMoves() + viewSubscribe() + viewFine();
+    return viewHero() + viewStory() + viewMoves() +
+      viewMarketCards() + viewCategoryCards() + viewSubscribe() + viewFine();
   }
 
   function tabBrowse() {
@@ -979,6 +980,21 @@
     root.innerHTML = viewHeader() + '<main id="m-main">' + body + '</main>' +
       viewTabbar() + '<div id="m-overlay"></div>';
     if (overlay) refreshOverlay();
+    revealActivePill();
+  }
+
+  // The pill row scrolls horizontally, so a category picked from a card
+  // (or a deep link) can land off-screen. Bring it into view.
+  function revealActivePill() {
+    var row = document.querySelector('.m-pills');
+    if (!row) return;
+    var active = row.querySelector('.m-pill[aria-pressed="true"]');
+    if (!active) return;
+    var left = active.offsetLeft - 16;
+    var right = active.offsetLeft + active.offsetWidth + 16;
+    if (left < row.scrollLeft || right > row.scrollLeft + row.clientWidth) {
+      row.scrollLeft = Math.max(0, left);
+    }
   }
 
   // ── EVENTS ─────────────────────────────────────────────
@@ -998,9 +1014,15 @@
     if (act === 'cat') { S.cat = t.getAttribute('data-cat'); render(); return; }
     if (act === 'cat-jump') {
       S.cat = t.getAttribute('data-cat');
+      var wasToday = S.tab !== 'browse';
+      S.tab = 'browse';
       render();
-      var pills = document.querySelector('.m-pills');
-      if (pills) window.scrollTo({ top: pills.offsetTop - 120, behavior: 'smooth' });
+      if (wasToday) {
+        window.scrollTo(0, 0);
+      } else {
+        var pills = document.querySelector('.m-pills');
+        if (pills) window.scrollTo({ top: pills.offsetTop - 120, behavior: 'smooth' });
+      }
       return;
     }
     if (act === 'toggle') {
@@ -1022,8 +1044,9 @@
       return;
     }
     if (act === 'market' || act === 'market-go') {
+      var jump = act === 'market-go' || S.tab !== 'browse';
       switchMarket(t.getAttribute('data-market'));
-      if (act === 'market-go') { S.tab = 'browse'; render(); window.scrollTo(0, 0); }
+      if (jump) { S.tab = 'browse'; render(); window.scrollTo(0, 0); }
       return;
     }
     if (act === 'set-format') { S.dlFormat = t.getAttribute('data-format'); refreshOverlay(); return; }
