@@ -365,7 +365,7 @@
 
     return '' +
       '<section class="m-hero">' +
-        '<div class="m-hero__bg" style="background-image:url(/assets/hero-field.png)"></div>' +
+        '<div class="m-hero__bg"></div>' +
         '<h1>Commodity data for produce buyers</h1>' +
         '<p class="m-hero__lede">Your supplier checks wholesale prices every morning. Now you can too.</p>' +
         '<p class="m-hero__sub">USDA market prices, origin costs, and shipment volumes \u2014 every weekday.</p>' +
