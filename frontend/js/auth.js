@@ -21,7 +21,21 @@ const auth = (() => {
     return null;
   }
 
-  const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+  // The SDK comes from a CDN, which can be blocked or simply slow. Bailing
+  // out here leaves window.agraxAuth null and the app in local-only mode,
+  // instead of throwing and taking every later script down with it.
+  if (!window.supabase || !window.supabase.createClient) {
+    console.warn('[auth] Supabase SDK not loaded. Auth disabled.');
+    return null;
+  }
+
+  let sb;
+  try {
+    sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+  } catch (e) {
+    console.warn('[auth] Could not create Supabase client:', e);
+    return null;
+  }
 
   // ── State ──
   let currentUser = null;
@@ -146,7 +160,7 @@ const auth = (() => {
   }
 
   // ── Auto-init ──
-  init();
+  init().catch(function (e) { console.warn('[auth] init failed:', e); });
 
   return {
     signUp,

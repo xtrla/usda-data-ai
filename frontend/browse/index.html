@@ -18,6 +18,9 @@
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
 <script src="/js/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/store.js"></script>
 <script src="/js/mobile-app.js"></script>
 </head>
 <body>
@@ -325,7 +328,13 @@
   // URL params
   const urlP = new URLSearchParams(window.location.search);
   if (urlP.get('market')) currentMarket = urlP.get('market');
-  if (urlP.get('q')) { searchQ = urlP.get('q'); document.getElementById('header-search').value = searchQ; }
+  if (urlP.get('q')) {
+    var rawQ = urlP.get('q');
+    // Must be lowercased here: the match below compares against
+    // name.toLowerCase(), so a capitalised param could never hit.
+    searchQ = rawQ.trim().toLowerCase();
+    document.getElementById('header-search').value = rawQ;
+  }
 
   // ── EVENT WIRING ──
   document.getElementById('header-search').addEventListener('input', function(e) {
@@ -719,8 +728,22 @@
     // Build commodity list
     var comList = [];
     byCom.forEach(function(rows, name) {
-      // Search filter
-      if (searchQ && name.toLowerCase().indexOf(searchQ) === -1) return;
+      // Search filter — commodity name plus variety, origin, pack and size,
+      // which is what the input's placeholder advertises.
+      if (searchQ) {
+        var hay = name;
+        for (var si = 0; si < rows.length; si++) {
+          var sr = rows[si];
+          hay += ' ' + (sr.variety || '') + ' ' + (sr.origin || '') +
+                 ' ' + (sr.package || '') + ' ' + (sr.size || '');
+        }
+        hay = hay.toLowerCase();
+        // Every word must appear somewhere, in any order, so a query like
+        // "hass 48s" matches a Hass row packed as "2 layer ctn 48s".
+        var terms = searchQ.split(/\s+/).filter(Boolean);
+        var hit = terms.every(function(t) { return hay.indexOf(t) > -1; });
+        if (!hit) return;
+      }
       // Commodity checkbox filter
       if (activeComs.length && activeComs.indexOf(name) === -1) return;
       // Origin filter — check if any of this commodity's origins match

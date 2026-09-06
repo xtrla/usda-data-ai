@@ -18,6 +18,19 @@
   var U = window.agraxUtil;
   if (!API || !U) return;
 
+  // Store is optional: without it the shell still browses prices, it just
+  // can't remember anything. Falls back to a local-only shim.
+  var STORE = window.agraxStore || {
+    state: { watch: [], alerts: [], user: null },
+    onChange: function (fn) { fn(this.state); return function () {}; },
+    list: function () { return U.watchList(); },
+    has: function (n) { return U.watchHas(n); },
+    toggle: function (n) { U.watchToggle(n); return Promise.resolve({ ok: true }); },
+    addAlert: function () { return Promise.resolve({ ok: false, error: 'Sign in to create alerts.' }); },
+    removeAlert: function () { return Promise.resolve({ ok: false }); },
+    isSignedIn: function () { return false; }
+  };
+
   // ── MARKETS ────────────────────────────────────────────
   // The 12 USDA terminal markets AgraX reports on.
   var MARKETS = [
@@ -65,7 +78,18 @@
     detail: null,         // commodity name shown in the detail sheet
     dlFormat: 'csv',
     dlScope: 'view',
-    subscribed: false
+    subscribed: false,
+    // account
+    user: null,
+    watch: [],
+    alerts: [],
+    authMode: 'signup',   // 'signup' | 'signin' | 'reset'
+    authBusy: false,
+    authError: null,
+    authNotice: null,
+    alertFor: null,       // commodity the alert sheet is being built for
+    alertKind: 'any_move',
+    alertVal: '10'
   };
 
   // ── SMALL HELPERS ──────────────────────────────────────
@@ -93,6 +117,9 @@
     today: '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="14" x2="5" y2="19"/><line x1="10" y1="9" x2="10" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/><line x1="20" y1="11" x2="20" y2="19"/></svg>',
     browse: '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>',
     markets: '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg>',
+    bell: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg>',
+    user: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>',
+    trash: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg>',
     star: function (filled) {
       return '<svg width="23" height="23" viewBox="0 0 24 24" fill="' + (filled ? 'currentColor' : 'none') +
         '" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12 3 15 9.5 22 10.3 17 15 18.3 21.5 12 18.2 5.7 21.5 7 15 2 10.3 9 9.5 12 3"/></svg>';
@@ -174,7 +201,10 @@
         var hay = (name + ' ' + rows.map(function (r) {
           return [r.variety, r.origin, r.package, r.size].join(' ');
         }).join(' ')).toLowerCase();
-        if (hay.indexOf(S.q) === -1) return;
+        // All words must appear, in any order, so "hass 48s" finds a Hass
+        // row packed as "2 layer ctn 48s". Matches the desktop behaviour.
+        var terms = S.q.split(/\s+/).filter(Boolean);
+        if (!terms.every(function (t) { return hay.indexOf(t) > -1; })) return;
       }
       var priced = rows.map(function (r) {
         return { row: r, p: skuPrice(r) };
@@ -619,26 +649,84 @@
   }
 
   function tabWatch() {
-    var names = U.watchList();
+    var signedIn = !!S.user;
+    var h = '';
+
+    // Account strip always sits at the top of the tab.
+    h += '<section class="m-section"><div class="m-account">' +
+      (signedIn
+        ? '<div class="m-account__row">' +
+            '<span class="m-account__avatar">' + I.user + '</span>' +
+            '<span class="m-account__id">' +
+              '<span class="m-account__email">' + esc(S.user.email || 'Signed in') + '</span>' +
+              '<span class="m-account__meta">Watchlist and alerts sync to this account</span>' +
+            '</span>' +
+            '<button class="m-textbtn" data-act="signout">Sign out</button>' +
+          '</div>'
+        : '<div class="m-account__pitch">' +
+            '<h3>Keep a watchlist that follows you</h3>' +
+            '<p>Create an account to save commodities across devices and get an ' +
+              'email when one of them moves.</p>' +
+            '<div class="m-account__cta">' +
+              '<button class="m-btn m-btn--primary" data-act="auth" data-mode="signup">Create account</button>' +
+              '<button class="m-btn m-btn--ghost" data-act="auth" data-mode="signin">Sign in</button>' +
+            '</div>' +
+          '</div>') +
+      '</div></section>';
+
+    // Watchlist
+    var names = S.watch;
     if (!names.length) {
-      return '<div class="m-empty" style="padding-top:70px">' +
+      h += '<div class="m-empty">' +
         '<div class="m-empty__title">Nothing on your watchlist</div>' +
         '<div class="m-empty__body">Star a commodity from its details to track it here.</div>' +
         '<button data-act="tab" data-tab="browse">Browse commodities</button></div>';
+    } else {
+      var picked = commodities().filter(function (c) { return names.indexOf(c.name) > -1; });
+      h += '<section class="m-section m-section--tight"><div class="m-section__head">' +
+        '<h2 class="m-section__title">Watchlist</h2>' +
+        '<span class="m-section__aside">' + esc(S.market) + '</span></div></section>';
+      if (picked.length) {
+        h += '<div class="m-list">' + picked.map(viewCommodity).join('') + '</div>';
+      }
+      var absent = names.filter(function (n) {
+        return !picked.some(function (c) { return c.name === n; });
+      });
+      if (absent.length) {
+        h += '<p class="m-fine">Not printing in ' + esc(S.market) + ' today: ' +
+          esc(absent.join(', ')) + '.</p>';
+      }
     }
-    var all = commodities();
-    var picked = all.filter(function (c) { return names.indexOf(c.name) > -1; });
-    if (!picked.length) {
-      return '<div class="m-empty" style="padding-top:70px">' +
-        '<div class="m-empty__title">No prices today</div>' +
-        '<div class="m-empty__body">Your ' + names.length + ' watched commodit' +
-        (names.length === 1 ? 'y hasn\u2019t' : 'ies haven\u2019t') +
-        ' printed in ' + esc(S.market) + ' yet.</div></div>';
+
+    // Alerts
+    if (signedIn) {
+      h += '<section class="m-section"><div class="m-section__head">' +
+        '<h2 class="m-section__title">Email alerts</h2>' +
+        '<span class="m-section__aside">' + plural(S.alerts.length, 'rule') + '</span></div>';
+      if (!S.alerts.length) {
+        h += '<p class="m-fine" style="padding:0">No alerts yet. Open a commodity\u2019s ' +
+          'details and tap the bell to be emailed when it moves.</p>';
+      } else {
+        h += '<div class="m-alerts">' + S.alerts.map(function (a) {
+          return '<div class="m-alert">' +
+            '<span><span class="m-alert__name">' + esc(a.commodity) + '</span>' +
+            '<span class="m-alert__rule">' + esc(alertLabel(a)) + ' \u00b7 ' + esc(a.market) + '</span></span>' +
+            '<button class="m-iconbtn" data-act="del-alert" data-id="' + esc(a.id) + '" ' +
+              'aria-label="Delete alert for ' + esc(a.commodity) + '">' + I.trash + '</button>' +
+            '</div>';
+        }).join('') + '</div>';
+      }
+      h += '</section>';
     }
-    return '<section class="m-section"><div class="m-section__head">' +
-      '<h2 class="m-section__title">Watchlist</h2>' +
-      '<span class="m-section__aside">' + esc(S.market) + '</span></div></section>' +
-      '<div class="m-list">' + picked.map(viewCommodity).join('') + '</div>';
+
+    return h + viewFine();
+  }
+
+  function alertLabel(a) {
+    var t = Number(a.threshold);
+    if (a.kind === 'any_move') return 'Moves more than ' + t + '% in a week';
+    if (a.kind === 'price_above') return 'Price at or above ' + U.fmtPrice(t);
+    return 'Price at or below ' + U.fmtPrice(t);
   }
 
   function viewTabbar() {
@@ -691,7 +779,7 @@
     if (!c) return '<div class="m-sheet__grip"></div><div class="m-sheet__head">' +
       '<h2 class="m-sheet__title">Not reporting</h2></div>';
 
-    var watched = U.watchHas(c.name);
+    var watched = STORE.has(c.name);
     var fob = S.fob.filter(function (r) { return r.commodity === c.name; });
 
     // Origin-aware: FOB districts that match an origin seen in the
@@ -713,6 +801,8 @@
       '<div><h2 class="m-detail__title">' + esc(c.name) + '</h2>' +
       '<div class="m-detail__meta">' + esc(S.market) + ' \u00b7 ' +
       plural(c.count, 'SKU') + ' \u00b7 ' + esc(U.catLabel(c.type)) + '</div></div>' +
+      '<button class="m-round" data-act="alert-open" data-com="' + esc(c.name) + '" ' +
+        'aria-label="Set an alert for ' + esc(c.name) + '">' + I.bell + '</button>' +
       '<button class="m-round" data-act="watch" data-com="' + esc(c.name) + '" ' +
         'aria-pressed="' + watched + '" aria-label="' +
         (watched ? 'Remove from watchlist' : 'Add to watchlist') + '">' + I.star(watched) + '</button>' +
@@ -760,6 +850,117 @@
       'style="color:var(--text-muted)">No origin prices for ' + esc(c.name) + ' today.</span></div>';
     h += '</div>';
 
+    h += '</div></div>';
+    return h;
+  }
+
+  function sheetAuth() {
+    var mode = S.authMode;
+    var title = mode === 'signup' ? 'Create your account'
+      : mode === 'signin' ? 'Sign in'
+      : 'Reset your password';
+
+    var h = '<div class="m-sheet__grip"></div>';
+    h += '<div class="m-sheet__head">' +
+      '<h2 class="m-sheet__title">' + title + '</h2>' +
+      '<p class="m-detail__meta" style="margin-top:6px">' +
+        (mode === 'signup'
+          ? 'Free. Saves your watchlist and lets you set price alerts.'
+          : mode === 'signin' ? 'Welcome back.'
+          : 'We\u2019ll email you a link to set a new password.') +
+      '</p></div>';
+
+    h += '<div class="m-sheet__scroll"><div class="m-form">';
+    if (S.authNotice) h += '<div class="m-note m-note--ok">' + esc(S.authNotice) + '</div>';
+    if (S.authError) h += '<div class="m-note m-note--bad">' + esc(S.authError) + '</div>';
+
+    h += '<label class="m-field"><span>Email</span>' +
+      '<input id="m-auth-email" type="email" inputmode="email" autocomplete="email" ' +
+      'autocapitalize="none" placeholder="you@company.com"></label>';
+
+    if (mode !== 'reset') {
+      h += '<label class="m-field"><span>Password</span>' +
+        '<input id="m-auth-pass" type="password" ' +
+        'autocomplete="' + (mode === 'signup' ? 'new-password' : 'current-password') + '" ' +
+        'placeholder="' + (mode === 'signup' ? 'At least 8 characters' : 'Your password') + '">' +
+        '</label>';
+    }
+
+    h += '<button class="m-btn m-btn--primary m-btn--full" data-act="auth-submit"' +
+      (S.authBusy ? ' disabled' : '') + '>' +
+      (S.authBusy ? 'Working\u2026'
+        : mode === 'signup' ? 'Create account'
+        : mode === 'signin' ? 'Sign in'
+        : 'Send reset link') + '</button>';
+
+    h += '<div class="m-form__alt">';
+    if (mode === 'signup') {
+      h += 'Already have an account? <button data-act="auth" data-mode="signin">Sign in</button>';
+    } else if (mode === 'signin') {
+      h += 'New here? <button data-act="auth" data-mode="signup">Create an account</button>' +
+        '<br><button data-act="auth" data-mode="reset">Forgot your password?</button>';
+    } else {
+      h += '<button data-act="auth" data-mode="signin">Back to sign in</button>';
+    }
+    h += '</div>';
+
+    if (mode === 'signup') {
+      h += '<p class="m-form__fine">Prices stay free and open. An account only adds ' +
+        'watchlists and alerts.</p>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+
+  function sheetAlert() {
+    var name = S.alertFor;
+    var c = commodities().filter(function (x) { return x.name === name; })[0];
+    var existing = S.alerts.filter(function (a) {
+      return a.commodity === name && a.market === S.market;
+    });
+
+    var h = '<div class="m-sheet__grip"></div>';
+    h += '<div class="m-sheet__head">' +
+      '<h2 class="m-sheet__title">Alert me about ' + esc(name) + '</h2>' +
+      '<p class="m-detail__meta" style="margin-top:6px">' + esc(S.market) +
+      ' \u00b7 emailed the morning the report lands</p></div>';
+
+    h += '<div class="m-sheet__scroll"><div class="m-form">';
+
+    if (existing.length) {
+      h += '<div class="m-note m-note--ok">' +
+        plural(existing.length, 'alert') + ' already set for this commodity.</div>';
+    }
+
+    h += '<div class="m-seg" role="radiogroup" aria-label="Alert type">' +
+      [['any_move', 'On a move'], ['price_above', 'Above'], ['price_below', 'Below']]
+        .map(function (o) {
+          return '<button class="m-seg__btn" data-act="alert-kind" data-kind="' + o[0] + '" ' +
+            'role="radio" aria-checked="' + (S.alertKind === o[0]) + '">' + o[1] + '</button>';
+        }).join('') + '</div>';
+
+    var isMove = S.alertKind === 'any_move';
+    h += '<label class="m-field"><span>' +
+      (isMove ? 'Notify when the week-over-week move exceeds'
+              : 'Notify when the price is ' +
+                (S.alertKind === 'price_above' ? 'at or above' : 'at or below')) +
+      '</span>' +
+      '<span class="m-field__unit">' + (isMove ? '' : '$') +
+      '<input id="m-alert-val" type="number" inputmode="decimal" step="0.01" min="0" ' +
+      'value="' + esc(S.alertVal) + '">' + (isMove ? '<em>%</em>' : '') + '</span></label>';
+
+    if (c && c.median != null) {
+      h += '<p class="m-form__fine">' + esc(name) + ' sits at ' + U.fmtPrice(c.median) +
+        ' today in ' + esc(S.market) +
+        (c.chg != null ? ', ' + (c.chg > 0 ? 'up ' : 'down ') +
+          Math.abs(c.chg).toFixed(1) + '% on the week' : '') + '.</p>';
+    }
+
+    if (S.authError) h += '<div class="m-note m-note--bad">' + esc(S.authError) + '</div>';
+
+    h += '<button class="m-btn m-btn--primary m-btn--full" data-act="alert-save"' +
+      (S.authBusy ? ' disabled' : '') + '>' +
+      (S.authBusy ? 'Saving\u2026' : 'Create alert') + '</button>';
     h += '</div></div>';
     return h;
   }
@@ -852,6 +1053,8 @@
     var inner = overlay === 'sort' ? sheetSort()
       : overlay === 'markets' ? sheetMarkets()
       : overlay === 'detail' ? sheetDetail()
+      : overlay === 'auth' ? sheetAuth()
+      : overlay === 'alert' ? sheetAlert()
       : dialogDownload();
     host.innerHTML =
       '<div class="m-scrim" id="m-scrim" data-act="close"></div>' +
@@ -1060,8 +1263,9 @@
       return;
     }
     if (act === 'watch') {
-      U.watchToggle(t.getAttribute('data-com'));
-      refreshOverlay();
+      STORE.toggle(t.getAttribute('data-com')).then(function (r) {
+        if (!r.ok && r.error) toast(r.error);
+      });
       return;
     }
     if (act === 'share') { share(); return; }
@@ -1069,6 +1273,145 @@
     if (act === 'clear') { S.q = ''; S.cat = 'all'; render(); return; }
     if (act === 'reload') { load(); return; }
     if (act === 'close') { closeOverlay(); return; }
+
+    // ── account ──
+    if (act === 'auth') {
+      S.authMode = t.getAttribute('data-mode') || 'signup';
+      S.authError = null; S.authNotice = null;
+      if (overlay === 'auth') refreshOverlay(); else openOverlay('auth');
+      return;
+    }
+    if (act === 'auth-submit') { submitAuth(); return; }
+    if (act === 'signout') {
+      if (window.agraxAuth) window.agraxAuth.logOut();
+      return;
+    }
+
+    // ── alerts ──
+    if (act === 'alert-open') {
+      var com = t.getAttribute('data-com');
+      if (!S.user) {
+        S.authMode = 'signup';
+        S.authError = null;
+        S.authNotice = 'Create a free account to set alerts on ' + com + '.';
+        openOverlay('auth');
+        return;
+      }
+      S.alertFor = com;
+      S.alertKind = 'any_move';
+      S.alertVal = '10';
+      S.authError = null;
+      openOverlay('alert');
+      return;
+    }
+    if (act === 'alert-kind') {
+      S.alertKind = t.getAttribute('data-kind');
+      var cur = commodities().filter(function (x) { return x.name === S.alertFor; })[0];
+      // Seed a sensible default so the field is never blank on switch.
+      S.alertVal = S.alertKind === 'any_move' ? '10'
+        : cur && cur.median != null ? cur.median.toFixed(2) : '';
+      refreshOverlay();
+      return;
+    }
+    if (act === 'alert-save') { saveAlert(); return; }
+    if (act === 'del-alert') {
+      STORE.removeAlert(t.getAttribute('data-id')).then(function (r) {
+        if (!r.ok && r.error) toast(r.error);
+      });
+      return;
+    }
+  }
+
+  // ── ACCOUNT ACTIONS ────────────────────────────────────
+  async function submitAuth() {
+    if (!window.agraxAuth) { S.authError = 'Accounts are unavailable right now.'; refreshOverlay(); return; }
+    var emailEl = el('m-auth-email'), passEl = el('m-auth-pass');
+    var email = emailEl ? emailEl.value.trim() : '';
+    var pass = passEl ? passEl.value : '';
+
+    if (!email || email.indexOf('@') < 1) {
+      S.authError = 'Enter a valid email address.'; refreshOverlay();
+      var e1 = el('m-auth-email'); if (e1) e1.focus();
+      return;
+    }
+    if (S.authMode !== 'reset' && pass.length < 8) {
+      S.authError = 'Passwords need at least 8 characters.'; refreshOverlay();
+      var e2 = el('m-auth-pass'); if (e2) e2.focus();
+      return;
+    }
+
+    S.authBusy = true; S.authError = null; S.authNotice = null; refreshOverlay();
+    try {
+      if (S.authMode === 'signup') {
+        var res = await window.agraxAuth.signUp(email, pass);
+        S.authBusy = false;
+        // Supabase returns a user with no session when confirmation is on.
+        if (res && res.session) {
+          closeOverlay();
+          toast('Account created');
+        } else {
+          S.authNotice = 'Check ' + email + ' for a link to confirm your account.';
+          S.authMode = 'signin';
+          refreshOverlay();
+        }
+      } else if (S.authMode === 'signin') {
+        await window.agraxAuth.logIn(email, pass);
+        S.authBusy = false;
+        closeOverlay();
+        toast('Signed in');
+      } else {
+        await window.agraxAuth.resetPassword(email);
+        S.authBusy = false;
+        S.authNotice = 'If that address has an account, a reset link is on its way.';
+        refreshOverlay();
+      }
+    } catch (e) {
+      S.authBusy = false;
+      S.authError = friendlyAuthError(e);
+      refreshOverlay();
+    }
+  }
+
+  // Supabase messages are terse and sometimes leak internals.
+  function friendlyAuthError(e) {
+    var m = String((e && e.message) || '').toLowerCase();
+    if (m.indexOf('already registered') > -1 || m.indexOf('already been registered') > -1) {
+      return 'That email already has an account. Try signing in.';
+    }
+    if (m.indexOf('invalid login') > -1) return 'That email and password don\u2019t match.';
+    if (m.indexOf('email not confirmed') > -1) return 'Confirm your email first \u2014 check your inbox.';
+    if (m.indexOf('rate limit') > -1 || m.indexOf('too many') > -1) {
+      return 'Too many attempts. Wait a minute and try again.';
+    }
+    if (m.indexOf('password') > -1) return 'That password is too weak. Use at least 8 characters.';
+    if (m.indexOf('fetch') > -1 || m.indexOf('network') > -1) {
+      return 'Couldn\u2019t reach the server. Check your connection.';
+    }
+    return (e && e.message) || 'Something went wrong. Try again.';
+  }
+
+  async function saveAlert() {
+    var input = el('m-alert-val');
+    var val = input ? parseFloat(input.value) : NaN;
+    if (isNaN(val) || val <= 0) {
+      S.authError = 'Enter a number greater than zero.'; refreshOverlay();
+      var v = el('m-alert-val'); if (v) v.focus();
+      return;
+    }
+    S.authBusy = true; S.authError = null; refreshOverlay();
+    var r = await STORE.addAlert({
+      commodity: S.alertFor, market: S.market,
+      kind: S.alertKind, threshold: val
+    });
+    S.authBusy = false;
+    if (r.ok) {
+      closeOverlay();
+      toast('Alert created');
+      if (!STORE.has(S.alertFor)) STORE.toggle(S.alertFor);
+    } else {
+      S.authError = r.error || 'Could not save that alert.';
+      refreshOverlay();
+    }
   }
 
   var qTimer = null;
@@ -1109,6 +1452,17 @@
     document.addEventListener('click', onClick);
     document.addEventListener('input', onInput);
     document.addEventListener('keydown', onKey);
+
+    STORE.onChange(function (st) {
+      var wasSignedIn = !!S.user;
+      S.user = st.user || null;
+      S.watch = (st.watch || []).slice();
+      S.alerts = (st.alerts || []).slice();
+      if (!mounted) return;
+      // Closing the auth sheet on a fresh sign-in avoids a stale form.
+      if (!wasSignedIn && S.user && overlay === 'auth') closeOverlay();
+      render();
+    });
 
     // Deep links from the desktop page / shared URLs
     var p = new URLSearchParams(window.location.search);
