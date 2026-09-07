@@ -1107,23 +1107,31 @@
     function fullKey(r) {
       return [r.variety, r.origin, r.grade, r.package, r.size].map(norm).join('||');
     }
+    // The loose key is the PHYSICAL pack: same origin, same size, same
+    // container. Variety and grade are deliberately excluded because USDA
+    // states them inconsistently between markets — Asheville prints Mexican
+    // 48s in cartons 2 layer with no variety and no grade, New York prints
+    // the identical pack as HASS with a grade parsed from its quality text.
+    // Requiring either to match meant the two never lined up and the panel
+    // showed Asheville alone.
+    //
+    // These are still never merged into the exact list. Each loose row is
+    // labelled with the variety and grade that market actually published,
+    // so the reader can see what differs and decide. AgraX does not assume
+    // Mexican avocados are Hass just because they usually are.
     function packKey(r) {
-      return [r.origin, r.grade, r.package, r.size].map(norm).join('||');
+      return [r.origin, r.package, r.size].map(norm).join('||');
     }
 
     var wantFull = fullKey(row);
     var wantPack = packKey(row);
-    var rowHasVariety = norm(row.variety) !== '';
 
     var exactRows = {}, looseRows = {};
     allRows.forEach(function(r) {
       if (r.commodity !== selectedComName) return;
       if (fullKey(r) === wantFull) {
         (exactRows[r.market] = exactRows[r.market] || []).push(r);
-      } else if (packKey(r) === wantPack && norm(r.variety) !== norm(row.variety) &&
-                 (norm(r.variety) === '' || !rowHasVariety)) {
-        // Same origin, grade, pack and size; one side simply didn't state
-        // a variety. Never the case where both state different varieties.
+      } else if (packKey(r) === wantPack) {
         (looseRows[r.market] = looseRows[r.market] || []).push(r);
       }
     });
@@ -1138,8 +1146,16 @@
         })[0];
         var p = skuPrice(best);
         if (p.price != null) {
+          // Spell out only the attributes that differ from the selected row.
+          var diff = [];
+          if (norm(best.variety) !== norm(row.variety)) {
+            diff.push(best.variety || 'no variety');
+          }
+          if (norm(best.grade) !== norm(row.grade)) {
+            diff.push(best.grade || 'no grade');
+          }
           out.push({ name: mkt, price: p.price, date: best.report_date,
-                     variety: best.variety, isCurrent: mkt === market });
+                     diff: diff.join(' \u00b7 '), isCurrent: mkt === market });
         }
       });
       out.sort(function(a, b) { return a.price - b.price; });
@@ -1239,7 +1255,7 @@
         h += '<div style="display:grid;grid-template-columns:20px minmax(0,1fr) 52px 62px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
         h += '<span style="font-family:var(--mono);font-size:9.5px;color:var(--text-ghost)">' + String(idx + 1).padStart(2, '0') + '</span>';
         h += '<span style="font-size:' + (dim ? '11px' : '11.5px') + ';font-weight:' + (m.isCurrent ? 600 : 400) + ';color:' + (m.isCurrent ? 'var(--text)' : (dim ? 'var(--text-faint)' : 'var(--text-secondary)')) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(m.name) + (m.isCurrent ? ' \u25cf' : '') +
-          (dim && m.variety ? '<span style="color:var(--text-ghost)"> \u00b7 ' + esc(m.variety) + '</span>' : '') + '</span>';
+          (dim && m.diff ? '<span style="color:var(--text-ghost)"> \u00b7 ' + esc(m.diff) + '</span>' : '') + '</span>';
         h += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' + (m.isCurrent ? 'var(--accent)' : 'var(--border-header)') + ';width:' + barW + '%"></div></div>';
         h += '<span style="font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums;color:' + (dim ? 'var(--text-secondary)' : 'var(--text)') + '">$' + m.price.toFixed(2) + '</span>';
         h += '</div>';
@@ -1281,14 +1297,12 @@
       // separate and never ranked together with the exact matches.
       if (looseMarket.length) {
         html += '<div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border)">';
-        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">' +
-          (rowHasVariety ? 'Same pack, variety not stated' : 'Same pack, variety named') + '</span>';
+        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Same pack, different label</span>';
         html += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px;line-height:1.5">' +
-          (rowHasVariety
-            ? 'These markets print ' + esc([row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) +
-              ' without naming a variety. Likely the same product, but USDA does not say so.'
-            : esc(market) + ' prints this pack without naming a variety, so these cannot be matched exactly.') +
-          '</div>';
+          'Same origin, size and container \u2014 ' +
+          esc([row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) +
+          ' \u2014 but USDA labels the variety or grade differently in these markets. ' +
+          'Each row shows what that market published.</div>';
         html += '</div>';
         html += marketRowsHTML(looseMarket, true);
         html += datesLineHTML(looseMarket);
