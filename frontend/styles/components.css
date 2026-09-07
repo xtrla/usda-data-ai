@@ -673,3 +673,86 @@
 /* The name cell itself: allow the ellipsis only as a last resort,
    and keep the disclosure caret from stealing width from the text. */
 .tbl-grid > *:first-child { min-width: 0; }
+
+/* ── SITE HEADER ───────────────────────────────────────────
+   One header across every page. Three regions: identity + nav
+   (left), search (centre, flexible), status + actions (right).
+   ---------------------------------------------------------- */
+.site-header {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--dark);
+  border-bottom: 1px solid #1E1E1E;
+}
+.site-header__inner {
+  display: flex; align-items: center; gap: 22px;
+  height: 52px; padding: 0 20px;
+}
+
+.site-header__logo { flex: none; display: block; line-height: 0; }
+.site-header__logo img { height: 19px; width: auto; display: block; }
+
+.site-header__nav { flex: none; display: flex; align-items: center; gap: 2px; }
+.site-header__nav a {
+  padding: 6px 10px; border-radius: 5px;
+  font-size: 13px; font-weight: 500; letter-spacing: -0.01em;
+  color: #8E8E8E; text-decoration: none;
+  white-space: nowrap;
+}
+.site-header__nav a:hover { color: #E8E8E8; background: #1A1A1A; }
+.site-header__nav a.is-active { color: #fff; background: #1F1F1F; }
+
+.site-header__search {
+  flex: 1 1 auto; min-width: 0; max-width: 460px;
+  position: relative; display: flex; align-items: center;
+}
+.site-header__search svg { position: absolute; left: 10px; pointer-events: none; }
+.site-header__search input {
+  width: 100%; height: 30px;
+  background: var(--dark-input);
+  border: 1px solid var(--dark-input-border); border-radius: 5px;
+  padding: 0 11px 0 30px;
+  color: #fff; font-size: 12.5px; outline: none;
+}
+.site-header__search input::placeholder { color: #6E6E6E; }
+.site-header__search input:focus { border-color: #3A3A3A; background: #171717; }
+
+.site-header__right {
+  flex: none; margin-left: auto;
+  display: flex; align-items: center; gap: 14px;
+}
+.site-header__live {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11.5px; color: #8E8E8E;
+  white-space: nowrap;
+}
+.site-header__live i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #4D7C0F; flex: none;
+}
+.site-header__signin {
+  font-size: 13px; font-weight: 500; color: #B4B4B4;
+  text-decoration: none; white-space: nowrap;
+}
+.site-header__signin:hover { color: #fff; }
+.site-header__cta {
+  height: 30px; padding: 0 14px; border-radius: 5px;
+  background: #fff; color: var(--dark);
+  font-size: 12.5px; font-weight: 600; letter-spacing: -0.01em;
+  display: inline-flex; align-items: center;
+  border: 0; cursor: pointer; white-space: nowrap;
+  text-decoration: none;
+}
+.site-header__cta:hover { background: #E8E8E8; color: var(--dark); }
+
+/* Shed the least essential pieces before anything wraps. */
+@media (max-width: 1080px) {
+  .site-header__live { display: none; }
+}
+@media (max-width: 900px) {
+  .site-header__search { max-width: none; }
+  .site-header__signin { display: none; }
+}
+/* Below the mobile breakpoint the app shell supplies its own header. */
+@media (max-width: 899px) {
+  .site-header { display: none; }
+}
