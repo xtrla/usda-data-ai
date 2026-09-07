@@ -16,6 +16,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Scheduler ─────────────────────────────────────────────────────────────
+# scheduler.py defined start_scheduler() but nothing ever called it. That is
+# why /dates returned two report_dates total: one manual `python ingest.py`
+# run and nothing else. This @on_event hook is the missing wiring.
+#
+# ENABLE_SCHEDULER=1 in Railway keeps this on in prod; unset in local dev
+# so `uvicorn --reload` doesn't kick off a full USDA pull on every save.
+@app.on_event("startup")
+def _boot_scheduler():
+    import os as _os
+    if _os.getenv("ENABLE_SCHEDULER", "0") != "1":
+        return
+    try:
+        from scheduler import start_scheduler
+        start_scheduler()
+    except Exception as e:
+        import logging as _logging
+        _logging.getLogger(__name__).error("Scheduler failed to start: %s", e)
+
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 TABLE = "produce_prices"
