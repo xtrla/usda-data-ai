@@ -145,16 +145,22 @@ def fetch_all(query_builder, page_size: int = 1000, order_by: str = "row_hash"):
         # unordered is still better than not paging at all.
         log.warning("fetch_all: could not order by %s; paging unordered", order_by)
 
-    rows, page = [], 0
+    rows, start = [], 0
     while True:
-        start = page * page_size
         batch = query_builder.range(start, start + page_size - 1).execute().data or []
-        rows.extend(batch)
-        if len(batch) < page_size:
+        if not batch:
             return rows
-        page += 1
-        if page > 200:          # ~200k rows; a guard against a runaway loop
-            log.warning("fetch_all: hit the 200-page guard; result may be truncated")
+        rows.extend(batch)
+        # Advance by what the server ACTUALLY returned, not by page_size.
+        # PostgREST caps each response at db-max-rows, which is not always
+        # the 1000 the client assumes — on this project it is 999. The old
+        # termination test (`len(batch) < page_size`) was therefore true on
+        # the very first page, so this returned 999 of 6732 rows and never
+        # asked for page two. Stopping only on an empty batch makes the
+        # loop correct for any server-side cap.
+        start += len(batch)
+        if len(rows) > 200_000:     # guard against a runaway loop
+            log.warning("fetch_all: hit the 200k-row guard; result may be truncated")
             return rows
 
 

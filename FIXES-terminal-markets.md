@@ -47,7 +47,24 @@ just never called it.
 
 **Changed:** all three now use `fetch_all`.
 
-## 3. `backend/api.py` — `fetch_all` paged without an ORDER BY
+## 3a. `backend/api.py` — `fetch_all` stopped after one page
+
+Confirmed against the live DB: `/reports/terminal?date=2026-09-04` returned
+999 rows; a direct PostgREST `count=exact` on the same filter returned
+**6732**. Deterministic across repeated calls, so not a stability problem —
+a hard stop.
+
+This project's `db-max-rows` is **999**, not the 1000 the client assumed. The
+old termination test was `len(batch) < page_size`, which is true on the very
+first page when the server caps below the requested size. `fetch_all` returned
+999 of 6732 rows and never requested page two.
+
+**Changed:** the loop now advances the offset by the number of rows the server
+actually returned and stops only on an empty batch, which is correct for any
+server-side cap. Unit-tested across caps of 1/500/999/1000/5000 and row counts
+of 0/1/998/999/1000/6732 — no loss, no duplicates.
+
+## 3b. `backend/api.py` — `fetch_all` paged without an ORDER BY
 
 Postgres gives no ordering guarantee across separate `LIMIT`/`OFFSET` queries.
 Paging an unordered result lets the planner hand back the same row on two pages
