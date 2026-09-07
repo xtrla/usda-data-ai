@@ -757,7 +757,20 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "source_report":      report_meta["code"],
         "commodity_type":     report_meta.get("commodity_type", "vegetables"),
     }
-    # Compute row_hash for deduplication
+    # Compute row_hash for deduplication.
+    #
+    # grade MUST be part of the key. Without it, USDA rows that differ only
+    # by grade collapsed into one on `on_conflict=row_hash`: New York's
+    # Ginger Gold 88s U.S. Fancy at 24.00 and the U.S. Extra Fancy 64s at
+    # 32.00 hashed identically, so whichever was written last silently
+    # overwrote the other. Reconciliation found this across every large
+    # market — hundreds of rows dropped and hundreds of prices reporting a
+    # different grade's number.
+    #
+    # Anything that distinguishes one published line from another belongs
+    # here. Prices deliberately do not: they are the value being stored, not
+    # part of the row's identity, and including them would make a corrected
+    # price insert a second row instead of updating the first.
     hash_str = "|".join([
         str(row.get("report_date") or ""),
         str(row.get("source_report") or ""),
@@ -765,6 +778,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         str(row.get("commodity") or ""),
         str(row.get("variety") or ""),
         str(row.get("origin") or ""),
+        str(row.get("grade") or ""),
         str(row.get("package") or ""),
         str(row.get("size") or ""),
         str(row.get("quality_note") or ""),
@@ -874,6 +888,67 @@ def purge_old_rows(slug_id: int, keep_date: str):
                      deleted, cutoff, slug_id, keep_date)
     except Exception as e:
         log.warning("  Could not purge old rows for slug %s: %s", slug_id, e)
+
+
+def prune_stale_hashes(slug_id: int, report_date: str, keep_hashes: set) -> int:
+    """Delete rows for this slug and date whose row_hash we no longer produce.
+
+    Needed whenever the row_hash definition changes. Old rows keep their old
+    hashes, so an upsert can't overwrite them — without this they would sit
+    alongside the new rows as duplicates, and the same SKU would appear twice
+    at two different prices.
+
+    Runs AFTER the upsert, never before: if the upsert failed, the day's data
+    is still whatever was there previously rather than nothing at all.
+    """
+    if not keep_hashes:
+        return 0
+    try:
+        existing, start, page = [], 0, 1000
+        while True:
+            batch = (
+                supabase.table(TABLE)
+                .select("row_hash")
+                .eq("slug_id", str(slug_id))
+                .eq("report_date", report_date)
+                .order("row_hash")
+                .range(start, start + page - 1)
+                .execute()
+                .data
+                or []
+            )
+            if not batch:
+                break
+            existing.extend(r.get("row_hash") for r in batch)
+            start += len(batch)
+            if start > 100_000:
+                break
+
+        stale = [h for h in set(existing) if h and h not in keep_hashes]
+        if not stale:
+            return 0
+
+        # Chunked: a few hundred hashes in one `in.()` would blow the URL
+        # length limit and fail the whole delete.
+        deleted = 0
+        for i in range(0, len(stale), 50):
+            chunk = stale[i:i + 50]
+            res = (
+                supabase.table(TABLE)
+                .delete()
+                .eq("slug_id", str(slug_id))
+                .eq("report_date", report_date)
+                .in_("row_hash", chunk)
+                .execute()
+            )
+            deleted += len(res.data) if res.data else 0
+        if deleted:
+            log.info("  Pruned %d stale-hash rows for slug %s on %s",
+                     deleted, slug_id, report_date)
+        return deleted
+    except Exception as e:
+        log.warning("  Could not prune stale hashes for slug %s: %s", slug_id, e)
+        return 0
 
 
 def upsert_rows(rows: list[dict]) -> int:
@@ -1175,6 +1250,12 @@ def _run_for_date(target_date: str) -> int:
                 upserted = upsert_rows(built)
                 grand_total += upserted
                 log.info("  Upserted %d rows for %s", upserted, code)
+                # Remove anything left over under a hash we no longer emit.
+                prune_stale_hashes(
+                    slug_id,
+                    actual_report_date_str,
+                    {r["row_hash"] for r in built if r.get("row_hash")},
+                )
             except Exception as e:
                 log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
                 # continue explicitly — the for loop's next iteration continues
