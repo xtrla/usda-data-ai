@@ -462,8 +462,10 @@
     });
     weekSel.addEventListener('change', async function() {
       if (weekSel.value === 'latest') {
-        try { allRows = await api.reportLatest('terminal'); } catch (e) {}
-        try { fobRows = await api.reportLatest('shipping_point'); } catch (e) { fobRows = []; }
+        if (typeof api.reportLatest === 'function') {
+          try { allRows = await api.reportLatest('terminal'); } catch (e) {}
+          try { fobRows = await api.reportLatest('shipping_point'); } catch (e) { fobRows = []; }
+        }
         renderAll();
         return;
       }
@@ -480,24 +482,41 @@
       renderAll();
     });
 
-    // Latest known price per SKU per market. A market that didn't print
+    // Latest known price per SKU per market: a market that didn't print
     // today keeps its most recent real price rather than showing empty.
-    var fobPromise = api.reportLatest('shipping_point').catch(function() {
-      return api.reportShippingPoints(latestDate).catch(function() { return []; });
-    });
+    //
+    // Feature-detected, not assumed. A cached older api.js would otherwise
+    // throw a synchronous TypeError here and take the whole page down.
+    var hasLatest = typeof api.reportLatest === 'function';
+    if (!hasLatest) console.warn('AgraX: api.js is stale; using date-merge fallback.');
 
-    try {
-      allRows = await api.reportLatest('terminal');
-    } catch (e) {
-      // Fall back to the old five-date merge if /reports/latest is
-      // unavailable (e.g. API not yet redeployed).
+    var fobPromise = hasLatest
+      ? api.reportLatest('shipping_point').catch(function() {
+          return api.reportShippingPoints(latestDate).catch(function() { return []; });
+        })
+      : api.reportShippingPoints(latestDate).catch(function() { return []; });
+
+    // Merging recent dates is the fallback: it can't reach a market that
+    // has been quiet longer than the window, but it beats an empty table.
+    async function _mergeRecentDates() {
       var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
       var allResults = await Promise.all(datesToLoad.map(function(dt) {
         return api.reportTerminal(dt).catch(function() { return []; });
       }));
       var merged = [];
       allResults.forEach(function(rows) { merged = merged.concat(rows); });
-      allRows = _deduplicateRows(merged);
+      return _deduplicateRows(merged);
+    }
+
+    if (hasLatest) {
+      try {
+        allRows = await api.reportLatest('terminal');
+        if (!allRows || !allRows.length) allRows = await _mergeRecentDates();
+      } catch (e) {
+        allRows = await _mergeRecentDates();
+      }
+    } else {
+      allRows = await _mergeRecentDates();
     }
     fobRows = await fobPromise;
 
