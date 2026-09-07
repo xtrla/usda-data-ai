@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AgraX — frontend diagnostic</title>
+<link rel="stylesheet" href="/styles/tokens.css">
+<style>
+  body { font: 14px/1.5 -apple-system, system-ui, sans-serif; margin: 0; padding: 24px;
+         background: #F3F4F0; color: #0A0A0A; }
+  h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.03em; }
+  .sub { color: #737373; font-size: 13px; margin-bottom: 20px; }
+  section { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+  h2 { font-size: 12px; letter-spacing: .09em; text-transform: uppercase;
+       color: #737373; margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: #737373; font-size: 11px;
+       letter-spacing: .06em; text-transform: uppercase; padding: 6px 8px 6px 0;
+       border-bottom: 1px solid #E4E7DF; }
+  td { padding: 6px 8px 6px 0; border-bottom: 1px solid #F2F4EF;
+       font-variant-numeric: tabular-nums; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .ok { color: #15803D; } .bad { color: #B91C1C; font-weight: 600; }
+  .warn { color: #B45309; }
+  pre { background: #0A0A0A; color: #E8E8E8; padding: 12px; border-radius: 8px;
+        overflow: auto; font-size: 12px; max-height: 300px; }
+  button { height: 34px; padding: 0 14px; border: 0; border-radius: 6px;
+           background: #0A0A0A; color: #fff; font-size: 13px; font-weight: 600;
+           cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>AgraX frontend diagnostic</h1>
+<div class="sub">Runs in your browser against the live API. Read-only.
+  Copy the whole page and send it over.</div>
+
+<section><h2>Environment</h2><div id="env" class="mono"></div></section>
+<section><h2>Endpoints</h2><div id="endpoints"></div></section>
+<section><h2>Rows per market</h2><div id="markets"></div></section>
+<section><h2>Rows per category</h2><div id="cats"></div></section>
+<section><h2>Distinct market strings in the payload</h2>
+  <div class="sub" style="margin:0 0 10px">The browse page matches these
+    exactly against its own list. Anything unmatched renders as an empty market.</div>
+  <div id="raw"></div></section>
+<section><h2>Console</h2><pre id="log"></pre>
+  <button onclick="navigator.clipboard.writeText(document.body.innerText)">Copy all</button></section>
+
+<script src="/js/config.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
+<script>
+(function () {
+  var EXPECTED = ['Los Angeles','Atlanta','Chicago','Detroit','Miami','New York',
+    'Boston','Philadelphia','Baltimore','Columbia','Asheville','Raleigh'];
+  var CATS = ['fruits','vegetables','onions_potatoes','nuts'];
+  var out = [];
+  function log(s) { out.push(s); document.getElementById('log').textContent = out.join('\n'); }
+  function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+
+  document.getElementById('env').innerHTML =
+    'API base: ' + esc(window.agraxAPI ? window.agraxAPI.base : 'agraxAPI MISSING') + '<br>' +
+    'reportLatest available: ' +
+    (window.agraxAPI && typeof window.agraxAPI.reportLatest === 'function'
+      ? '<span class="ok">yes</span>'
+      : '<span class="bad">NO — api.js is stale, hard-refresh</span>') + '<br>' +
+    'Page loaded: ' + new Date().toISOString();
+
+  function table(head, rows) {
+    return '<table><tr>' + head.map(function(h){return '<th>'+esc(h)+'</th>';}).join('') +
+      '</tr>' + rows.map(function(r){
+        return '<tr>' + r.map(function(c){return '<td>'+c+'</td>';}).join('') + '</tr>';
+      }).join('') + '</table>';
+  }
+
+  async function probe(name, fn) {
+    var t0 = performance.now();
+    try {
+      var data = await fn();
+      var ms = Math.round(performance.now() - t0);
+      var n = Array.isArray(data) ? data.length : (data ? 1 : 0);
+      log('OK   ' + name + ' — ' + n + ' rows in ' + ms + 'ms');
+      return data;
+    } catch (e) {
+      log('FAIL ' + name + ' — ' + e.message);
+      return null;
+    }
+  }
+
+  (async function run() {
+    var api = window.agraxAPI;
+    if (!api) { log('agraxAPI missing — scripts did not load'); return; }
+
+    var eps = [];
+    var latest = null, terminal = null;
+
+    if (typeof api.reportLatest === 'function') {
+      latest = await probe('/reports/latest?market_type=terminal&lookback_days=90',
+        function(){ return api.reportLatest('terminal', 90); });
+      eps.push(['/reports/latest', latest ? 'ok' : 'FAILED',
+                latest ? latest.length : 0]);
+    } else {
+      eps.push(['/reports/latest', 'method missing in api.js', 0]);
+    }
+
+    terminal = await probe('/reports/terminal (latest date only)',
+      function(){ return api.reportTerminal(); });
+    eps.push(['/reports/terminal', terminal ? 'ok' : 'FAILED',
+              terminal ? terminal.length : 0]);
+
+    var cov = null;
+    if (typeof api.coverage === 'function') {
+      cov = await probe('/reports/coverage', function(){ return api.coverage(90); });
+      eps.push(['/reports/coverage', cov ? 'ok' : 'FAILED', cov ? cov.length : 0]);
+    }
+
+    document.getElementById('endpoints').innerHTML = table(
+      ['Endpoint','Status','Rows'],
+      eps.map(function(e){
+        var cls = e[1] === 'ok' ? 'ok' : 'bad';
+        return [esc(e[0]), '<span class="'+cls+'">'+esc(e[1])+'</span>', e[2]];
+      }));
+
+    var rows = latest && latest.length ? latest : (terminal || []);
+    var source = (latest && latest.length) ? '/reports/latest' : '/reports/terminal';
+    log('Analysing ' + rows.length + ' rows from ' + source);
+
+    // per market
+    var byMkt = {};
+    rows.forEach(function(r){
+      var m = r.market || '(null)';
+      var a = byMkt[m] || (byMkt[m] = {rows:0, coms:{}, latest:''});
+      a.rows++; a.coms[r.commodity] = 1;
+      var d = String(r.report_date||'');
+      if (d > a.latest) a.latest = d;
+    });
+
+    document.getElementById('markets').innerHTML = table(
+      ['Market','Rows','Commodities','Latest date','Matches app list'],
+      EXPECTED.map(function(m){
+        var a = byMkt[m];
+        if (!a) return [esc(m), '<span class="bad">0</span>', '<span class="bad">0</span>',
+                        '<span class="bad">absent</span>', '<span class="bad">NO ROWS</span>'];
+        return [esc(m), a.rows, Object.keys(a.coms).length, esc(a.latest),
+                '<span class="ok">yes</span>'];
+      }));
+
+    // per category
+    var byCat = {};
+    rows.forEach(function(r){
+      var c = r.commodity_type || '(null)';
+      var a = byCat[c] || (byCat[c] = {rows:0, coms:{}});
+      a.rows++; a.coms[r.commodity] = 1;
+    });
+    var catKeys = Object.keys(byCat).sort();
+    document.getElementById('cats').innerHTML = table(
+      ['commodity_type','Rows','Commodities','Recognised by UI'],
+      catKeys.map(function(c){
+        var known = CATS.indexOf(c) > -1;
+        return [esc(c), byCat[c].rows, Object.keys(byCat[c].coms).length,
+          known ? '<span class="ok">yes</span>'
+                : '<span class="bad">NO — falls to "Other" and is filtered out</span>'];
+      }));
+
+    // raw market strings, to catch naming mismatches
+    var seen = Object.keys(byMkt).sort();
+    document.getElementById('raw').innerHTML = table(
+      ['Market string in data','Rows','In app list'],
+      seen.map(function(m){
+        var known = EXPECTED.indexOf(m) > -1;
+        return [esc(m), byMkt[m].rows,
+          known ? '<span class="ok">yes</span>'
+                : '<span class="warn">no — will never display</span>'];
+      }));
+
+    var missing = EXPECTED.filter(function(m){ return !byMkt[m]; });
+    if (missing.length) log('MISSING FROM PAYLOAD: ' + missing.join(', '));
+    else log('All 12 markets present in the payload.');
+    var unknownCats = catKeys.filter(function(c){ return CATS.indexOf(c) === -1; });
+    if (unknownCats.length) log('UNRECOGNISED commodity_type values: ' + unknownCats.join(', '));
+    log('Done.');
+  })();
+})();
+</script>
+</body>
+</html>

@@ -38,8 +38,15 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Report slug IDs to ingest daily.
 # Add more from https://mymarketnews.ams.usda.gov/public_data
 # market_type: "terminal" or "shipping_point"
-# Staleness threshold: skip fallback data older than this many days
-MAX_FALLBACK_DAYS = 14
+# Staleness threshold for fallback data.
+#
+# AgraX shows the latest known price per market, however old it is — a
+# quiet terminal's three-week-old print is still the last real number a
+# buyer has. At 14 days this cutoff silently DISCARDED those markets at
+# ingest, so they could never appear no matter what the API returned.
+# Raised well past any plausible USDA reporting gap; the UI surfaces the
+# report date so staleness stays visible rather than hidden.
+MAX_FALLBACK_DAYS = 90
 
 def _slug(slug_id, code, market, market_type):
     """Derive commodity_type from report code suffix."""

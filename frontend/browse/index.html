@@ -18,6 +18,16 @@
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/header.js"></script>
+<script>
+  // Header Subscribe from another page lands here with ?subscribe=1
+  document.addEventListener('DOMContentLoaded', function () {
+    if (new URLSearchParams(location.search).get('subscribe')) {
+      var m = document.getElementById('subscribe-modal');
+      if (m) m.style.display = 'flex';
+    }
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/store.js"></script>
@@ -27,20 +37,24 @@
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
 
 <!-- HEADER -->
-<header style="position:sticky;top:0;z-index:60;background:var(--dark);color:#fff;border-bottom:1px solid var(--dark-border)">
-  <div style="display:flex;align-items:center;gap:20px;height:52px;padding:0 20px">
-    <a href="/" style="display:flex;align-items:center;gap:11px;flex:none;color:#fff;text-decoration:none">
-      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block">
-      <span style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--dark-muted)">Browse prices</span>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="site-header__logo" aria-label="AgraX home">
+      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" width="646" height="241">
     </a>
-    <div class="header-search-desk" style="flex:1;max-width:420px;position:relative;display:flex;align-items:center">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:10px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input id="header-search" placeholder='Search commodity, variety, origin, pack — "Hass 48s", "Nogales"' style="width:100%;height:30px;background:var(--dark-input);border:1px solid var(--dark-input-border);border-radius:5px;padding:0 11px 0 30px;color:#fff;font-size:12.5px;outline:none">
+    <nav class="site-header__nav" aria-label="Main">
+      <a href="/browse">Browse</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/about">About</a>
+    </nav>
+    <div class="site-header__search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6E6E6E" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input id="header-search" type="search" autocomplete="off" aria-label="Search produce" placeholder="Search commodity, variety, origin — &quot;Hass 48s&quot;, &quot;Nogales&quot;">
     </div>
-    <div class="header-nav-desk" style="display:flex;align-items:center;gap:8px;flex:none;margin-left:auto">
-      <span id="live-badge" style="display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:500;color:var(--up-live);padding-left:4px"><span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live</span>
-      <span style="width:1px;height:20px;background:var(--dark-input-border)"></span>
-      <button onclick="document.getElementById('subscribe-modal').style.display='flex'" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid var(--dark-input-border);background:var(--dark-input);color:#fff;font-size:12.5px;font-weight:500;cursor:pointer">Subscribe</button>
+    <div class="site-header__right">
+      <span class="site-header__live"><i></i>Live <time></time></span>
+      <a href="#" class="site-header__signin" id="site-signin">Sign in</a>
+      <button type="button" class="site-header__cta" id="site-subscribe">Subscribe</button>
     </div>
   </div>
 </header>
@@ -55,7 +69,7 @@
 </div>
 
 <!-- MAIN LAYOUT -->
-<div class="browse-grid" style="position:relative;flex:1;display:grid;grid-template-columns:minmax(200px,226px) minmax(620px,1fr) minmax(340px,404px);gap:12px;padding:12px 20px 20px;align-items:start" id="main-grid">
+<div class="browse-grid" style="position:relative;flex:1;display:grid;align-items:start" id="main-grid">
 
   <!-- LEFT SIDEBAR -->
   <aside style="position:sticky;top:52px;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card);padding:14px 14px 8px" id="sidebar">
@@ -117,7 +131,7 @@
         <span class="mobile-pill" onclick="window._mobileFilterCat('Nuts')">Nuts</span>
       </div>
       <!-- Column headers -->
-      <div class="col-headers" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 70px 94px;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
+      <div class="col-headers tbl-grid" style="display:grid;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
         <span class="eyebrow">Commodity</span>
         <span class="eyebrow">Reporting</span>
         <span class="eyebrow desk-col">Origins</span>
@@ -156,7 +170,6 @@
     <div style="display:flex;flex-direction:column;gap:9px;flex:none">
       <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
       <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
-      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Pro</span>
       <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Daily email</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:9px;flex:none">
@@ -312,6 +325,7 @@
   let expanded = {};        // which commodity rows are open
   let catOpen = {};          // which sidebar category accordions are open
   let checkedComs = {};      // which commodity checkboxes are ticked
+  let seenComs = {};         // commodities we've offered before
   let checkedOrigins = {};   // which shipping point checkboxes are ticked
   let checkedCountries = {}; // which country/origin checkboxes are ticked
   let sortMode = 'az';
@@ -385,7 +399,7 @@
 
   // Live badge
   var now = new Date();
-  document.getElementById('live-badge').innerHTML = '<span style="width:5px;height:5px;border-radius:3px;background:var(--up-live)"></span>Live ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
+  // Live badge is rendered and ticked by js/header.js.
   document.getElementById('footer-time').textContent = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
 
   // ── HELPERS ──
@@ -436,6 +450,10 @@
     latestDate = dates[0].date;
 
     var weekSel = document.getElementById('week-select');
+    var latestOpt = document.createElement('option');
+    latestOpt.value = 'latest';
+    latestOpt.textContent = 'Latest available';
+    weekSel.appendChild(latestOpt);
     dates.slice(0, 5).forEach(function(d) {
       var opt = document.createElement('option');
       opt.value = d.date;
@@ -443,6 +461,14 @@
       weekSel.appendChild(opt);
     });
     weekSel.addEventListener('change', async function() {
+      if (weekSel.value === 'latest') {
+        if (typeof api.reportLatest === 'function') {
+          try { allRows = await api.reportLatest('terminal'); } catch (e) {}
+          try { fobRows = await api.reportLatest('shipping_point'); } catch (e) { fobRows = []; }
+        }
+        renderAll();
+        return;
+      }
       latestDate = weekSel.value;
       // Load selected date + previous 4 dates for full commodity coverage
       var selIdx = dates.findIndex(function(d) { return d.date === latestDate; });
@@ -456,15 +482,42 @@
       renderAll();
     });
 
-    // Load last 5 dates and merge — ensures all commodities appear even if not reported today
-    var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
-    var allPromises = datesToLoad.map(function(dt) { return api.reportTerminal(dt).catch(function() { return []; }); });
-    var fobPromise = api.reportShippingPoints(latestDate).catch(function() { return []; });
+    // Latest known price per SKU per market: a market that didn't print
+    // today keeps its most recent real price rather than showing empty.
+    //
+    // Feature-detected, not assumed. A cached older api.js would otherwise
+    // throw a synchronous TypeError here and take the whole page down.
+    var hasLatest = typeof api.reportLatest === 'function';
+    if (!hasLatest) console.warn('AgraX: api.js is stale; using date-merge fallback.');
 
-    var allResults = await Promise.all(allPromises);
-    var merged = [];
-    allResults.forEach(function(rows) { merged = merged.concat(rows); });
-    allRows = _deduplicateRows(merged);
+    var fobPromise = hasLatest
+      ? api.reportLatest('shipping_point').catch(function() {
+          return api.reportShippingPoints(latestDate).catch(function() { return []; });
+        })
+      : api.reportShippingPoints(latestDate).catch(function() { return []; });
+
+    // Merging recent dates is the fallback: it can't reach a market that
+    // has been quiet longer than the window, but it beats an empty table.
+    async function _mergeRecentDates() {
+      var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
+      var allResults = await Promise.all(datesToLoad.map(function(dt) {
+        return api.reportTerminal(dt).catch(function() { return []; });
+      }));
+      var merged = [];
+      allResults.forEach(function(rows) { merged = merged.concat(rows); });
+      return _deduplicateRows(merged);
+    }
+
+    if (hasLatest) {
+      try {
+        allRows = await api.reportLatest('terminal');
+        if (!allRows || !allRows.length) allRows = await _mergeRecentDates();
+      } catch (e) {
+        allRows = await _mergeRecentDates();
+      }
+    } else {
+      allRows = await _mergeRecentDates();
+    }
     fobRows = await fobPromise;
 
     // Default: check ALL commodities so table is fully populated on load
@@ -481,7 +534,29 @@
   }
 
   // ── RENDER EVERYTHING ──
+  // Commodities arriving after the initial load (new market, new week)
+  // must default to checked, or they'd be filtered out as "unchecked".
+  function _adoptNewCommodities() {
+    var market = marketShort(currentMarket);
+    var rows = allRows.filter(function(r) { return r.market === market; });
+    if (!rows.length) {
+      // Market name in the data may differ from the label; fall back to a
+      // loose match so we don't skip adoption and render an empty table.
+      var key = market.toLowerCase().split(',')[0].split(' ')[0];
+      rows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(key) > -1;
+      });
+    }
+    rows.forEach(function(r) {
+      var name = r.commodity;
+      if (!name || seenComs[name]) return;
+      seenComs[name] = true;
+      checkedComs[name] = true;
+    });
+  }
+
   function renderAll() {
+    _adoptNewCommodities();
     renderMarketStrip();
     renderSidebar();
     renderTable();
@@ -811,7 +886,7 @@
 
       // Commodity row
       html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
-      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row" style="display:grid;grid-template-columns:minmax(0,1.45fr) 100px minmax(0,1.35fr) 110px 104px 70px 94px;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
+      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row tbl-grid" style="display:grid;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
 
       // Name with caret
       html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
@@ -890,13 +965,13 @@
   // Clear all filters
   window._clearFilters = function() {
     checkedComs = {};
+    seenComs = {};
     checkedOrigins = {};
     checkedCountries = {};
     searchQ = '';
     document.getElementById('header-search').value = '';
-    // Re-check all commodities
     var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
-    byCom.forEach(function(rows, name) { checkedComs[name] = true; });
+    byCom.forEach(function(rows, name) { checkedComs[name] = true; seenComs[name] = true; });
     renderAll();
   };
 
