@@ -13,29 +13,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/tokens.css">
 <link rel="stylesheet" href="/styles/components.css">
-<script src="/js/header.js"></script>
 </head>
 <body>
 <div style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
-<header class="site-header">
-  <div class="site-header__inner">
-    <a href="/" class="site-header__logo" aria-label="AgraX home">
-      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" width="646" height="241">
-    </a>
-    <nav class="site-header__nav" aria-label="Main">
-      <a href="/browse">Browse</a>
-      <a href="/watchlist">Watchlist</a>
-      <a href="/about">About</a>
-    </nav>
-    <div class="site-header__search">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6E6E6E" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input id="site-search" type="search" autocomplete="off" aria-label="Search produce" placeholder="Search commodity, variety, origin — &quot;Hass 48s&quot;, &quot;Nogales&quot;">
-    </div>
-    <div class="site-header__right">
-      <span class="site-header__live"><i></i>Live <time></time></span>
-      <a href="#" class="site-header__signin" id="site-signin">Sign in</a>
-      <button type="button" class="site-header__cta" id="site-subscribe">Subscribe</button>
-    </div>
+<header style="position:sticky;top:0;z-index:60;background:var(--dark);color:#fff;display:flex;align-items:center;gap:20px;height:52px;padding:0 20px;border-bottom:1px solid var(--dark-border)">
+  <a href="/" style="display:flex;align-items:center;gap:11px;flex:none;color:#fff;text-decoration:none">
+    <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:20px;width:auto;display:block">
+    <span style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#525252">Free USDA wholesale prices</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:22px;flex:none;margin-left:auto">
+    <a href="/browse" style="font-size:12.5px;font-weight:500;color:#A3A3A3">Browse</a>
+    <span style="font-size:12.5px;font-weight:500;color:#A3A3A3;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:3px;background:#D97706"></span>Pro</span>
+    <a href="/browse" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid #262626;background:#141414;color:#fff;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center">Subscribe</a>
   </div>
 </header>
 <main class="about-grid" style="flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:44px;max-width:1100px;margin:0 auto;padding:40px 20px 60px">
@@ -73,7 +62,8 @@
     <div style="display:flex;flex-direction:column;gap:9px;flex:none">
       <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
       <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
-      </div>
+      <span style="font-size:12px;color:#A3A3A3">Pro</span>
+    </div>
     <div style="display:flex;flex-direction:column;gap:9px;flex:none">
       <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
       <a href="/about" style="font-size:12px;color:#fff">About</a>
