@@ -4,7 +4,11 @@ from fastapi.responses import JSONResponse
 from supabase import create_client
 import stripe
 import os
+import logging
 from datetime import date, timedelta
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("agrax.api")
 
 app = FastAPI(title="AGRA API", version="2.0.0")
 
@@ -60,12 +64,15 @@ def health():
 @app.get("/dates")
 def get_dates():
     try:
-        result = supabase.table(TABLE).select("report_date").execute()
-        if not result.data:
+        # Must page. Unpaged this saw an arbitrary 1000-row slice, so the
+        # "latest" date it reported was whatever happened to land in that
+        # slice — not the newest date in the table.
+        result_rows = fetch_all(supabase.table(TABLE).select("report_date,row_hash"))
+        if not result_rows:
             return []
-        
+
         date_counts = {}
-        for row in result.data:
+        for row in result_rows:
             d = row["report_date"]
             date_counts[d] = date_counts.get(d, 0) + 1
         
@@ -94,12 +101,15 @@ def search_commodities(q: str, limit: int = 100):
 @app.get("/markets")
 def get_markets():
     try:
-        result = supabase.table(TABLE).select("market, market_type").execute()
-        if not result.data:
+        # The endpoint whose whole job is listing markets was the one
+        # endpoint reading a truncated 1000-row slice, so markets outside
+        # that slice simply did not exist as far as the frontend knew.
+        result_rows = fetch_all(supabase.table(TABLE).select("market, market_type, row_hash"))
+        if not result_rows:
             return []
-        
+
         market_counts = {}
-        for row in result.data:
+        for row in result_rows:
             m = row["market"]
             t = row.get("market_type", "unknown")
             if m not in market_counts:
@@ -112,7 +122,7 @@ def get_markets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def fetch_all(query_builder, page_size: int = 1000):
+def fetch_all(query_builder, page_size: int = 1000, order_by: str = "row_hash"):
     """Page through a PostgREST query and return every row.
 
     Supabase enforces a server-side `db-max-rows` cap (1000 by default)
@@ -120,7 +130,21 @@ def fetch_all(query_builder, page_size: int = 1000):
     plain .limit(50000) therefore returns only the first 1000 rows, so
     markets past that boundary come back empty. Paging with .range()
     is the only way to get a full day of terminal data.
+
+    The ORDER BY is not cosmetic. Postgres gives no ordering guarantee
+    across separate LIMIT/OFFSET queries, so paging an unordered result
+    lets the planner return the same row on two pages and no page at
+    all for another. Dropped rows cluster by physical page, which means
+    a whole market can disappear from one request and come back on the
+    next. Sorting on a unique column (row_hash) makes the window stable.
     """
+    try:
+        query_builder = query_builder.order(order_by)
+    except Exception:
+        # Older postgrest clients, or a view without that column. Paging
+        # unordered is still better than not paging at all.
+        log.warning("fetch_all: could not order by %s; paging unordered", order_by)
+
     rows, page = [], 0
     while True:
         start = page * page_size
@@ -130,6 +154,7 @@ def fetch_all(query_builder, page_size: int = 1000):
             return rows
         page += 1
         if page > 200:          # ~200k rows; a guard against a runaway loop
+            log.warning("fetch_all: hit the 200-page guard; result may be truncated")
             return rows
 
 
@@ -521,21 +546,26 @@ def movement_summary(date: str):
 @app.get("/stats")
 def get_stats():
     try:
-        result = supabase.table(TABLE).select("commodity, market, report_date").limit(200000).execute()
-        if not result.data:
+        # .limit(200000) is a no-op: Supabase's db-max-rows caps the
+        # response server-side, so this reported stats for the first
+        # 1000 rows and called it the whole table.
+        result_rows = fetch_all(
+            supabase.table(TABLE).select("commodity, market, report_date, row_hash")
+        )
+        if not result_rows:
             return {"total_records": 0, "commodities": 0, "markets": 0, "dates": 0}
-        
+
         commodities = set()
         markets = set()
         dates = set()
-        
-        for row in result.data:
+
+        for row in result_rows:
             commodities.add(row["commodity"])
             markets.add(row["market"])
             dates.add(row["report_date"])
-        
+
         return {
-            "total_records": len(result.data),
+            "total_records": len(result_rows),
             "commodities": len(commodities),
             "markets": len(markets),
             "dates": len(dates)
@@ -882,11 +912,19 @@ def week_over_week(market: str = "New York"):
 
     try:
         # Get last two report dates for this market
-        dates_result = supabase.table(TABLE).select("report_date").eq("market_type", "terminal").eq("market", market).order("report_date", desc=True).limit(50000).execute()
-        if not dates_result.data:
+        # Paged: this needs the two most recent *distinct* dates, and one
+        # busy day for a big market can fill the 1000-row cap on its own,
+        # which left prev_date empty and every WoW change reading as flat.
+        date_rows = fetch_all(
+            supabase.table(TABLE)
+            .select("report_date,row_hash")
+            .eq("market_type", "terminal")
+            .eq("market", market)
+        )
+        if not date_rows:
             return {"market": market, "current_date": None, "prev_date": None, "items": []}
 
-        all_dates = sorted(set(r["report_date"] for r in dates_result.data), reverse=True)
+        all_dates = sorted(set(r["report_date"] for r in date_rows), reverse=True)
         if len(all_dates) < 2:
             return {"market": market, "current_date": all_dates[0] if all_dates else None, "prev_date": None, "items": []}
 
@@ -894,11 +932,16 @@ def week_over_week(market: str = "New York"):
         prev_date = all_dates[1]
 
         # Fetch both dates
-        current_rows = supabase.table(TABLE).select("*").eq("market_type", "terminal").eq("market", market).eq("report_date", current_date).limit(50000).execute()
-        prev_rows = supabase.table(TABLE).select("*").eq("market_type", "terminal").eq("market", market).eq("report_date", prev_date).limit(50000).execute()
-
-        current_data = current_rows.data or []
-        prev_data = prev_rows.data or []
+        current_data = fetch_all(
+            supabase.table(TABLE).select("*")
+            .eq("market_type", "terminal").eq("market", market)
+            .eq("report_date", current_date)
+        )
+        prev_data = fetch_all(
+            supabase.table(TABLE).select("*")
+            .eq("market_type", "terminal").eq("market", market)
+            .eq("report_date", prev_date)
+        )
 
         # Build commodity-level medians for each date
         def commodity_prices(rows):
@@ -1128,8 +1171,16 @@ def story_of_the_day(market: str = "New York"):
         # Build data snapshot
         if is_national:
             # Aggregate across all markets
-            all_rows = supabase.table(TABLE).select("commodity,movement,market").eq("market_type", "terminal").eq("report_date", report_date).limit(50000).execute()
-            rows = all_rows.data or []
+            # A full day across all 12 terminals is well over 1000 rows,
+            # so .limit(50000) truncated this to whichever markets landed
+            # in the first page — the national story was written from a
+            # partial slice of the country.
+            rows = fetch_all(
+                supabase.table(TABLE)
+                .select("commodity,movement,market,row_hash")
+                .eq("market_type", "terminal")
+                .eq("report_date", report_date)
+            )
             markets_data = {}
             total_h, total_l, total_s = 0, 0, 0
             for r in rows:

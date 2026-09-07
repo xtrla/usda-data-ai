@@ -293,17 +293,47 @@
       S.dates = dates;
       S.date = dates[0].date;
 
-      // Merge the five most recent report dates so commodities that
-      // didn't print today still appear, then keep the newest per SKU.
-      var span = dates.slice(0, 5).map(function (d) { return d.date; });
-      var results = await Promise.all(span.map(function (d) {
-        return API.reportTerminal(d).catch(function () { return []; });
-      }));
-      var merged = [];
-      results.forEach(function (r) { merged = merged.concat(r || []); });
-      S.rows = dedupe(merged);
+      // Merging the N most recent report dates cannot show all 12
+      // terminals. USDA terminals don't all print on the same day, and
+      // ingest keeps one report date per slug, so a fixed date window
+      // only ever covers the handful of markets whose reports happen to
+      // land inside it. Every other market rendered as "no data yet"
+      // even though its last real price was sitting in the table.
+      //
+      // /reports/latest returns the newest row per SKU per market across
+      // a 90-day window, with each row's own report_date intact so the
+      // UI can still show how stale a quiet market is. This is the same
+      // path the desktop view already uses.
+      async function mergeRecentDates() {
+        var span = dates.slice(0, 5).map(function (d) { return d.date; });
+        var results = await Promise.all(span.map(function (d) {
+          return API.reportTerminal(d).catch(function () { return []; });
+        }));
+        var merged = [];
+        results.forEach(function (r) { merged = merged.concat(r || []); });
+        return dedupe(merged);
+      }
 
-      S.fob = await API.reportShippingPoints(S.date).catch(function () { return []; });
+      // Feature-detected, not assumed: a cached older api.js would throw
+      // a synchronous TypeError here and take the whole tab down.
+      if (typeof API.reportLatest === 'function') {
+        try {
+          S.rows = await API.reportLatest('terminal');
+          if (!S.rows || !S.rows.length) S.rows = await mergeRecentDates();
+        } catch (e) {
+          S.rows = await mergeRecentDates();
+        }
+      } else {
+        S.rows = await mergeRecentDates();
+      }
+
+      if (typeof API.reportLatest === 'function') {
+        S.fob = await API.reportLatest('shipping_point').catch(function () {
+          return API.reportShippingPoints(S.date).catch(function () { return []; });
+        });
+      } else {
+        S.fob = await API.reportShippingPoints(S.date).catch(function () { return []; });
+      }
       S.loading = false;
       render();
 
@@ -346,9 +376,12 @@
     S.summary = null; S.story = null; S.wow = {}; S.open = {};
     render();
     loadMarketExtras();
-    API.reportShippingPoints(S.date).then(function (f) {
-      S.fob = f || []; render();
-    }).catch(function () {});
+    // No FOB refetch here. Shipping-point rows are origin-side prices and
+    // aren't scoped to a terminal market, so switching markets doesn't
+    // invalidate them — and the single-date refetch this used to do
+    // overwrote the full /reports/latest set with one day's rows,
+    // reintroducing the empty-market bug the moment a user tapped a
+    // different city.
   }
 
   // ── VIEWS ──────────────────────────────────────────────

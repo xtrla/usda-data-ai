@@ -17,7 +17,7 @@ import json
 import hashlib
 import logging
 import requests
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -47,6 +47,11 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Raised well past any plausible USDA reporting gap; the UI surfaces the
 # report date so staleness stays visible rather than hidden.
 MAX_FALLBACK_DAYS = 90
+
+# How much price history to retain per slug. Purging down to a single
+# report date per slug is what made week-over-week impossible to compute
+# and left quiet terminals looking empty; see purge_old_rows().
+RETAIN_DAYS = 400
 
 def _slug(slug_id, code, market, market_type):
     """Derive commodity_type from report code suffix."""
@@ -835,21 +840,38 @@ def build_trends_row(raw: dict) -> dict | None:
 
 def purge_old_rows(slug_id: int, keep_date: str):
     """
-    Delete all rows for a slug that are NOT from keep_date.
-    Prevents stale data from old reports polluting results.
-    keep_date format: "YYYY-MM-DD"
+    Delete rows for a slug older than RETAIN_DAYS.
+
+    This used to delete every row for the slug that wasn't keep_date,
+    which left the table holding exactly one report date per slug. Two
+    things broke as a result:
+
+      - /wow and /history had no second date to diff against, so
+        week-over-week was structurally impossible to compute.
+      - The frontend's "merge the last N report dates" fallback couldn't
+        reach markets whose single retained date fell outside the window,
+        so quiet terminals rendered as empty.
+
+    Prices are published as reported and never revised in place, so
+    keeping history costs nothing but storage. Rows are still keyed by
+    row_hash, so re-ingesting the same report is idempotent.
+
+    keep_date format: "YYYY-MM-DD" — retained for signature compatibility
+    and logged, but no longer used as a delete filter.
     """
+    cutoff = (date.today() - timedelta(days=RETAIN_DAYS)).isoformat()
     try:
         result = (
             supabase.table(TABLE)
             .delete()
             .eq("slug_id", str(slug_id))
-            .neq("report_date", keep_date)
+            .lt("report_date", cutoff)
             .execute()
         )
         deleted = len(result.data) if result.data else 0
         if deleted:
-            log.info("  Purged %d stale rows for slug %s (kept %s)", deleted, slug_id, keep_date)
+            log.info("  Purged %d rows older than %s for slug %s (current report %s)",
+                     deleted, cutoff, slug_id, keep_date)
     except Exception as e:
         log.warning("  Could not purge old rows for slug %s: %s", slug_id, e)
 
