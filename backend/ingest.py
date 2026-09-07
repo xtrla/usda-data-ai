@@ -119,11 +119,9 @@ REPORT_SLUGS = [
     _slug(2304, "DU_FV030", "Detroit",      "terminal"),
     _slug(2305, "DU_FV040", "Detroit",      "terminal"),
 
-    # San Francisco
-    _slug(2323, "SX_FV020", "San Francisco","terminal"),
-    _slug(2322, "SX_FV010", "San Francisco","terminal"),
-    _slug(2324, "SX_FV030", "San Francisco","terminal"),
-    _slug(2325, "SX_FV040", "San Francisco","terminal"),
+    # San Francisco — REMOVED. USDA no longer publishes terminal reports for SF
+    # (see the official terminal reports page: 12 cities, no SF). Slugs 2322-2325
+    # return nothing and just waste MARS API calls each morning.
 
     # Columbia SC — confirmed slug 2295 (veg); FV010/030/040 slugs TBD — will 404-skip gracefully
     _slug(2295, "CA_FV020", "Columbia",     "terminal"),

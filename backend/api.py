@@ -202,6 +202,148 @@ def get_coverage(lookback_days: int = 90):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/reports/diagnose")
+def diagnose_pipeline(lookback_days: int = 90):
+    """Combined pipeline health check — no credentials needed to view.
+
+    For every terminal slug configured in ingest.py, returns:
+      - what USDA MARS says (HTTP status + row count from the latest report)
+      - what Supabase has (row count + latest report_date within the window)
+
+    Split shows exactly where the pipeline is breaking per slug:
+      - USDA OK, Supabase empty  -> ingest is skipping this slug
+      - USDA 404                 -> slug ID is stale, needs replacement
+      - Both OK                  -> pipeline is healthy for this slug
+      - USDA OK, Supabase stale  -> ingest hasn't run recently
+    """
+    import ast as _ast
+    import requests as _requests
+    import os as _os
+
+    # Load REPORT_SLUGS from ingest.py without importing (avoids circular deps)
+    try:
+        ingest_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "ingest.py")
+        src = open(ingest_path).read()
+        tree = _ast.parse(src)
+        wanted = [
+            n for n in tree.body
+            if (isinstance(n, _ast.FunctionDef) and n.name == "_slug")
+            or (isinstance(n, _ast.Assign)
+                and any(getattr(t, "id", "") == "REPORT_SLUGS" for t in n.targets))
+        ]
+        ns = {}
+        exec(compile(_ast.Module(body=wanted, type_ignores=[]), "<slugs>", "exec"), ns)
+        slugs = [s for s in ns.get("REPORT_SLUGS", []) if s.get("market_type") == "terminal"]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not load slugs: {e}")
+
+    mars_key = _os.getenv("MARS_API_KEY", "")
+    mars_base = "https://marsapi.ams.usda.gov/services/v1.2"
+
+    # Pull all Supabase terminal rows once in the window, then group per slug
+    cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+    try:
+        db_rows = fetch_all(
+            supabase.table(TABLE)
+            .select("market,commodity_type,report_date")
+            .eq("market_type", "terminal")
+            .gte("report_date", cutoff)
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Supabase query failed: {e}")
+
+    # Bucket by (market, commodity_type) which is what a slug represents
+    from collections import defaultdict as _dd
+    db_buckets = _dd(lambda: {"rows": 0, "latest_date": ""})
+    for r in db_rows:
+        key = (r.get("market"), r.get("commodity_type"))
+        b = db_buckets[key]
+        b["rows"] += 1
+        d = str(r.get("report_date") or "")
+        if d > b["latest_date"]:
+            b["latest_date"] = d
+
+    results = []
+    for slug in slugs:
+        entry = {
+            "market": slug["market"],
+            "commodity_type": slug["commodity_type"],
+            "code": slug["code"],
+            "slug_id": slug["slug_id"],
+            "usda_status": None,
+            "usda_rows": 0,
+            "usda_note": "",
+            "supabase_rows": 0,
+            "supabase_latest": None,
+            "verdict": "",
+        }
+
+        # Supabase side
+        key = (slug["market"], slug["commodity_type"])
+        b = db_buckets.get(key, {"rows": 0, "latest_date": ""})
+        entry["supabase_rows"] = b["rows"]
+        entry["supabase_latest"] = b["latest_date"] or None
+
+        # USDA side (skip if no key configured)
+        if not mars_key:
+            entry["usda_note"] = "MARS_API_KEY not configured on server"
+        else:
+            try:
+                url = f"{mars_base}/reports/{slug['slug_id']}/report details"
+                resp = _requests.get(url, params={"lastReports": 1}, auth=(mars_key, ""), timeout=15)
+                entry["usda_status"] = resp.status_code
+                if resp.status_code == 200:
+                    data = resp.json()
+                    payload = data if isinstance(data, list) else data.get("results", [])
+                    entry["usda_rows"] = len(payload)
+                    if not payload:
+                        entry["usda_note"] = "USDA returned empty result"
+                elif resp.status_code == 404:
+                    entry["usda_note"] = "slug not found — retired or renumbered"
+                elif resp.status_code == 401:
+                    entry["usda_note"] = "MARS_API_KEY rejected"
+                else:
+                    entry["usda_note"] = f"HTTP {resp.status_code}"
+            except Exception as e:
+                entry["usda_note"] = f"request failed: {e}"
+
+        # Verdict
+        us_ok = (entry["usda_status"] == 200 and entry["usda_rows"] > 0)
+        db_ok = entry["supabase_rows"] > 0
+        if us_ok and db_ok:
+            entry["verdict"] = "HEALTHY"
+        elif us_ok and not db_ok:
+            entry["verdict"] = "INGEST_BROKEN"  # USDA has data, we don't
+        elif not us_ok and db_ok:
+            entry["verdict"] = "USDA_DOWN_STALE_OK"  # we have older data still
+        else:
+            entry["verdict"] = "DEAD"  # neither side has anything
+
+        results.append(entry)
+
+    # Roll up per market for the top-of-response summary
+    market_health = {}
+    for e in results:
+        m = e["market"]
+        s = market_health.setdefault(m, {"slugs_total": 0, "slugs_healthy": 0, "supabase_rows": 0})
+        s["slugs_total"] += 1
+        if e["verdict"] == "HEALTHY":
+            s["slugs_healthy"] += 1
+        s["supabase_rows"] += e["supabase_rows"]
+
+    summary = sorted(
+        [{"market": m, **v} for m, v in market_health.items()],
+        key=lambda x: (x["slugs_healthy"], x["market"]),
+    )
+
+    return {
+        "lookback_days": lookback_days,
+        "generated_at": date.today().isoformat(),
+        "market_summary": summary,
+        "per_slug": results,
+    }
+
+
 @app.get("/reports/shipping-points")
 def get_shipping_points(date: str = None):
     """All FOB shipping point rows (excl. National Trends) for a given date."""

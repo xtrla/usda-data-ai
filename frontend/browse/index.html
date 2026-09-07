@@ -314,7 +314,7 @@
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 
-  const MARKETS = ['Los Angeles, CA','Atlanta, GA','Chicago, IL','Detroit, MI','Miami, FL','New York, NY','Boston, MA','Philadelphia, PA','Baltimore, MD','Columbia, SC','Asheville, NC','Raleigh, NC'];
+  const MARKETS = ['Asheville, NC','Atlanta, GA','Baltimore, MD','Boston, MA','Chicago, IL','Columbia, SC','Detroit, MI','Los Angeles, CA','Miami, FL','New York, NY','Philadelphia, PA','Raleigh, NC'];
   const UP = '#16A34A', DOWN = '#DC2626';
 
   // ── STATE ──
@@ -572,8 +572,9 @@
       var rows = byMarket.get(short) || [];
       var count = new Set(rows.map(function(r) { return r.commodity; })).size;
       var isCurrent = short === marketShort(currentMarket);
-      var trend = trendOf(rows);
-      var fg = trend.label === 'Lower' ? DOWN : UP;
+      var hasData = rows.length > 0;
+      var trend = hasData ? trendOf(rows) : { label: 'No data', arrow: '' };
+      var fg = !hasData ? 'var(--text-faint)' : (trend.label === 'Lower' ? DOWN : UP);
       // Calculate a representative change %
       var mktByCom = U.groupBy(rows, function(r) { return r.commodity; });
       var h = 0, l = 0;
@@ -584,14 +585,16 @@
       });
       var pct = mktByCom.size > 0 ? ((h - l) / mktByCom.size * 3).toFixed(1) : '0.0';
       var sign = parseFloat(pct) >= 0 ? '+' : '';
+      var pctDisplay = hasData ? (sign + pct + '%') : '\u2014';
+      var itemsLabel = hasData ? (count + ' items') : 'no data yet';
 
-      return '<div onclick="window._pickMarket(\'' + esc(m) + '\')" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;box-shadow:var(--shadow-chip);border:1px solid ' + (isCurrent ? 'var(--accent)' : '#E9EBE4') + '">' +
+      return '<div onclick="window._pickMarket(\'' + esc(m) + '\')" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;box-shadow:var(--shadow-chip);border:1px solid ' + (isCurrent ? 'var(--accent)' : '#E9EBE4') + (hasData ? '' : ';opacity:.62') + '">' +
         '<div style="display:flex;align-items:center;gap:6px">' +
           '<span style="font-size:11.5px;font-weight:' + (isCurrent ? 600 : 500) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(short) + '</span>' +
-          '<span style="font-family:var(--mono);font-size:10.5px;color:' + fg + ';margin-left:auto">' + sign + pct + '%</span>' +
+          '<span style="font-family:var(--mono);font-size:10.5px;color:' + fg + ';margin-left:auto">' + pctDisplay + '</span>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:6px;margin-top:5px">' +
-          '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + count + ' items</span>' +
+          '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + itemsLabel + '</span>' +
           '<span style="font-size:10px;font-weight:500;color:' + fg + ';margin-left:auto">' + trend.label.toLowerCase() + '</span>' +
         '</div>' +
       '</div>';
