@@ -325,6 +325,7 @@
   let expanded = {};        // which commodity rows are open
   let catOpen = {};          // which sidebar category accordions are open
   let checkedComs = {};      // which commodity checkboxes are ticked
+  let seenComs = {};         // commodities we've offered before
   let checkedOrigins = {};   // which shipping point checkboxes are ticked
   let checkedCountries = {}; // which country/origin checkboxes are ticked
   let sortMode = 'az';
@@ -494,7 +495,29 @@
   }
 
   // ── RENDER EVERYTHING ──
+  // Commodities arriving after the initial load (new market, new week)
+  // must default to checked, or they'd be filtered out as "unchecked".
+  function _adoptNewCommodities() {
+    var market = marketShort(currentMarket);
+    var rows = allRows.filter(function(r) { return r.market === market; });
+    if (!rows.length) {
+      // Market name in the data may differ from the label; fall back to a
+      // loose match so we don't skip adoption and render an empty table.
+      var key = market.toLowerCase().split(',')[0].split(' ')[0];
+      rows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(key) > -1;
+      });
+    }
+    rows.forEach(function(r) {
+      var name = r.commodity;
+      if (!name || seenComs[name]) return;
+      seenComs[name] = true;
+      checkedComs[name] = true;
+    });
+  }
+
   function renderAll() {
+    _adoptNewCommodities();
     renderMarketStrip();
     renderSidebar();
     renderTable();
@@ -903,13 +926,13 @@
   // Clear all filters
   window._clearFilters = function() {
     checkedComs = {};
+    seenComs = {};
     checkedOrigins = {};
     checkedCountries = {};
     searchQ = '';
     document.getElementById('header-search').value = '';
-    // Re-check all commodities
     var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
-    byCom.forEach(function(rows, name) { checkedComs[name] = true; });
+    byCom.forEach(function(rows, name) { checkedComs[name] = true; seenComs[name] = true; });
     renderAll();
   };
 

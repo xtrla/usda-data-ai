@@ -58,8 +58,8 @@ def get_dates():
 @app.get("/commodities/by-date/{date}")
 def get_commodities_by_date(date: str):
     try:
-        result = supabase.table(TABLE).select("*").eq("report_date", date).limit(50000).execute()
-        return result.data or []
+        result_rows = fetch_all(supabase.table(TABLE).select("*").eq("report_date", date))
+        return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -92,6 +92,27 @@ def get_markets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+def fetch_all(query_builder, page_size: int = 1000):
+    """Page through a PostgREST query and return every row.
+
+    Supabase enforces a server-side `db-max-rows` cap (1000 by default)
+    that silently truncates results no matter what `.limit()` says. A
+    plain .limit(50000) therefore returns only the first 1000 rows, so
+    markets past that boundary come back empty. Paging with .range()
+    is the only way to get a full day of terminal data.
+    """
+    rows, page = [], 0
+    while True:
+        start = page * page_size
+        batch = query_builder.range(start, start + page_size - 1).execute().data or []
+        rows.extend(batch)
+        if len(batch) < page_size:
+            return rows
+        page += 1
+        if page > 200:          # ~200k rows; a guard against a runaway loop
+            return rows
+
+
 @app.get("/reports/terminal")
 def get_terminal_report(date: str = None):
     """All terminal market rows for a given date (defaults to latest)."""
@@ -104,8 +125,8 @@ def get_terminal_report(date: str = None):
             if dates_result.data:
                 latest = dates_result.data[0]["report_date"]
                 q = q.eq("report_date", latest)
-        result = q.limit(50000).execute()
-        return result.data or []
+        result_rows = fetch_all(q)
+        return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -121,8 +142,8 @@ def get_shipping_points(date: str = None):
             if dates_result.data:
                 latest = dates_result.data[0]["report_date"]
                 q = q.eq("report_date", latest)
-        result = q.limit(50000).execute()
-        return result.data or []
+        result_rows = fetch_all(q)
+        return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
