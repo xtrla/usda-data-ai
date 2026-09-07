@@ -201,7 +201,10 @@
         var hay = (name + ' ' + rows.map(function (r) {
           return [r.variety, r.origin, r.package, r.size].join(' ');
         }).join(' ')).toLowerCase();
-        if (hay.indexOf(S.q) === -1) return;
+        // All words must appear, in any order, so "hass 48s" finds a Hass
+        // row packed as "2 layer ctn 48s". Matches the desktop behaviour.
+        var terms = S.q.split(/\s+/).filter(Boolean);
+        if (!terms.every(function (t) { return hay.indexOf(t) > -1; })) return;
       }
       var priced = rows.map(function (r) {
         return { row: r, p: skuPrice(r) };

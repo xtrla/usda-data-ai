@@ -620,3 +620,56 @@
     border-left: 4px solid #4D7C0F;
   }
 }
+
+/* ── BROWSE TABLE COLUMNS ──────────────────────────────────
+   Columns: 1 COMMODITY · 2 REPORTING · 3 ORIGINS ·
+            4 SHIPPING POINTS · 5 VOLUME · 6 DATE · 7 USDA TONE
+
+   The commodity name is the row's identity — it must never
+   truncate before a secondary column has been dropped. It
+   previously used minmax(0,…), which let it collapse to zero
+   while the five fixed-width columns kept every pixel.
+   ---------------------------------------------------------- */
+.tbl-grid {
+  grid-template-columns:
+    minmax(190px, 2.1fr)   /* COMMODITY — hard floor, never shrinks below */
+    100px                  /* REPORTING */
+    minmax(90px, 1fr)      /* ORIGINS — absorbs the squeeze instead */
+    110px                  /* SHIPPING POINTS */
+    104px                  /* VOLUME */
+    70px                   /* DATE */
+    94px;                  /* USDA TONE */
+}
+
+/* Drop low-value columns as width tightens, cheapest first.
+   VOLUME and SHIPPING POINTS are frequently em dashes, so they
+   cost the least to lose; tone and origins carry real signal. */
+@media (max-width: 1400px) {
+  .tbl-grid {
+    grid-template-columns:
+      minmax(190px, 2.1fr) 100px minmax(90px, 1fr) 110px 70px 94px;
+  }
+  .tbl-grid > *:nth-child(5) { display: none !important; }   /* VOLUME */
+}
+
+@media (max-width: 1240px) {
+  .tbl-grid {
+    grid-template-columns:
+      minmax(180px, 2.1fr) 100px minmax(80px, 1fr) 70px 94px;
+  }
+  .tbl-grid > *:nth-child(4),
+  .tbl-grid > *:nth-child(5) { display: none !important; }   /* SHIPPING POINTS, VOLUME */
+}
+
+@media (max-width: 1100px) {
+  .tbl-grid {
+    grid-template-columns: minmax(170px, 2.2fr) 96px minmax(70px, 1fr) 90px;
+  }
+  .tbl-grid > *:nth-child(4),
+  .tbl-grid > *:nth-child(5),
+  .tbl-grid > *:nth-child(6) { display: none !important; }   /* + DATE */
+}
+
+/* The name cell itself: allow the ellipsis only as a last resort,
+   and keep the disclosure caret from stealing width from the text. */
+.tbl-grid > *:first-child { min-width: 0; }
