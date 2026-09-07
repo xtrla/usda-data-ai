@@ -454,8 +454,8 @@ def get_history(
         if size:    q = q.eq("size", size)
         if package: q = q.eq("package", package)
 
-        result = q.order("report_date", desc=True).limit(10000).execute()
-        return result.data or []
+        result_rows = fetch_all(q.order("report_date", desc=True))
+        return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

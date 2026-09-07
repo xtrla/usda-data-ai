@@ -1121,16 +1121,11 @@
     html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:7px">' + esc(row.origin || origins.join(' \u00b7 ')) + '</div>';
     html += '</div>';
 
-    // Price section
-    html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
-    html += '<div class="eyebrow">Variety price \u00b7 ' + esc(currentMarket) + '</div>';
-    html += '<div style="font-size:12px;font-weight:500;line-height:1.5;margin-top:7px">' + esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
-    html += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
-    html += '<span style="font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-0.05em;line-height:0.92;font-variant-numeric:tabular-nums">' + priceStr + '</span>';
-    if (sp.src === 'mid' && sp.range) {
-      html += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">' + sp.range + '</span>';
-    }
-    html += '</div>';
+    // Price history — latest print first, older prints beneath with dates.
+    // Rendered as a placeholder here and filled asynchronously by
+    // loadPriceHistory(); the panel must not block on a network call.
+    html += '<div id="price-history" style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+    html += priceHistoryHTML(row, sp, null, true);
     html += '</div>';
 
     // Shipping point FOB
@@ -1213,6 +1208,133 @@
 
     dossierEl.innerHTML = html;
     dossierEl.scrollTop = 0;
+    loadPriceHistory(row, sp);
+  }
+
+  // ── PRICE HISTORY ──
+  // Every price is shown as reported on its own report_date. Nothing is
+  // averaged across dates and no missing date is interpolated — a gap in
+  // the list is a day USDA did not print this SKU.
+  var historyCache = {};
+
+  function skuKey(row) {
+    return [row.market, row.commodity, row.variety, row.origin,
+            row.grade, row.package, row.size].join('||');
+  }
+
+  function priceHistoryHTML(row, sp, hist, loading) {
+    var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+    var h = '';
+    h += '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">Price history \u00b7 ' + esc(currentMarket) + '</span>';
+    if (hist && hist.length > 1) {
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + hist.length + ' prints</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:12px;font-weight:500;line-height:1.5;margin-top:7px">' +
+      esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
+
+    // Latest print, large.
+    var latest = (hist && hist.length) ? hist[0] : null;
+    h += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
+    h += '<span style="font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-0.05em;line-height:0.92;font-variant-numeric:tabular-nums">' +
+      (latest ? '$' + latest.price.toFixed(2) : priceStr) + '</span>';
+    if (latest && latest.lo != null && latest.hi != null && latest.lo !== latest.hi) {
+      h += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">$' +
+        latest.lo.toFixed(2) + ' \u2013 $' + latest.hi.toFixed(2) + '</span>';
+    } else if (!latest && sp.src === 'mid' && sp.range) {
+      h += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">' + sp.range + '</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px">Latest \u00b7 ' +
+      esc(U.fmtDate(latest ? latest.date : row.report_date)) + '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading earlier prints\u2026</div>';
+      return h;
+    }
+    if (!hist || hist.length < 2) {
+      h += '<div style="font-size:11px;color:var(--text-faint);margin-top:12px;line-height:1.5">' +
+        'No earlier prints for this SKU yet. History builds as USDA publishes.</div>';
+      return h;
+    }
+
+    // Earlier prints, newest first, each with its own date and the move
+    // against the print below it.
+    h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Date</span>';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Price</span>';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Change</span>';
+    h += '</div>';
+
+    hist.forEach(function(p, i) {
+      var prev = hist[i + 1];
+      var chg = prev ? p.price - prev.price : null;
+      var pct = (prev && prev.price > 0) ? (chg / prev.price * 100) : null;
+      var fg = chg == null || Math.abs(chg) < 0.005 ? 'var(--text-faint)' : (chg > 0 ? UP : DOWN);
+      var chgStr = chg == null ? '\u2014'
+        : (Math.abs(chg) < 0.005 ? 'flat'
+          : (chg > 0 ? '+' : '\u2212') + Math.abs(pct).toFixed(1) + '%');
+      var isLatest = i === 0;
+      h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)' +
+        (isLatest ? ';background:var(--surface-row)' : '') + '">';
+      h += '<span style="font-family:var(--mono);font-size:11.5px;color:' +
+        (isLatest ? 'var(--text)' : 'var(--text-secondary)') + '">' + esc(U.fmtDate(p.date)) +
+        (isLatest ? ' \u25cf' : '') + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:' + (isLatest ? 600 : 500) +
+        ';text-align:right;font-variant-numeric:tabular-nums">$' + p.price.toFixed(2) + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:11px;text-align:right;color:' + fg + '">' + chgStr + '</span>';
+      h += '</div>';
+    });
+    return h;
+  }
+
+  function loadPriceHistory(row, sp) {
+    var key = skuKey(row);
+    var el = document.getElementById('price-history');
+    if (!el) return;
+
+    function paint(hist) {
+      // The user may have selected a different SKU while this was in flight.
+      var cur = document.getElementById('price-history');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = priceHistoryHTML(row, sp, hist, false);
+    }
+    el.setAttribute('data-key', key);
+
+    if (historyCache[key]) { paint(historyCache[key]); return; }
+
+    api.history({
+      commodity: row.commodity,
+      market: row.market,
+      variety: row.variety,
+      origin: row.origin,
+      size: row.size,
+      package: row.package,
+      days: 365
+    }).then(function(rows) {
+      // One point per report_date. If a date somehow carries more than one
+      // row for the same SKU, keep the first — never average them.
+      var seen = {}, hist = [];
+      (rows || []).forEach(function(r) {
+        var d = r.report_date;
+        if (!d || seen[d]) return;
+        var p = skuPrice(r);
+        if (p.price == null) return;
+        seen[d] = 1;
+        hist.push({
+          date: d,
+          price: p.price,
+          lo: U.num(r.price_low),
+          hi: U.num(r.price_high)
+        });
+      });
+      hist.sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); });
+      historyCache[key] = hist;
+      paint(hist);
+    }).catch(function() {
+      paint([]);
+    });
   }
 
   // ── MARKET SUMMARY ──
