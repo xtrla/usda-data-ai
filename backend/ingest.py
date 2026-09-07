@@ -876,15 +876,40 @@ def upsert_rows(rows: list[dict]) -> int:
     total = 0
     for i in range(0, len(deduped), BATCH):
         chunk = deduped[i : i + BATCH]
-        # merge (ignore_duplicates=False) so origin/movement update when
-        # normalization improves without needing a separate delete pass
-        result = (
-            supabase.table(TABLE)
-            .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
-            .execute()
-        )
-        total += len(chunk)
-        log.info("Upserted batch %d rows", len(chunk))
+        batch_num = (i // BATCH) + 1
+        try:
+            # merge (ignore_duplicates=False) so origin/movement update when
+            # normalization improves without needing a separate delete pass
+            result = (
+                supabase.table(TABLE)
+                .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
+                .execute()
+            )
+            total += len(chunk)
+            log.info("Upserted batch %d rows", len(chunk))
+        except Exception as e:
+            # Log the actual failure loudly with enough context to fix it.
+            # A single bad row or oversized batch shouldn't lose everything.
+            log.error(
+                "Batch %d/%d upsert FAILED (%d rows): %s",
+                batch_num, (len(deduped) + BATCH - 1) // BATCH, len(chunk), e,
+            )
+            # Try one row at a time to isolate the poison row and salvage
+            # the rest. Slow but rare, and beats losing the whole slug.
+            salvaged = 0
+            for one in chunk:
+                try:
+                    supabase.table(TABLE).upsert(
+                        one, on_conflict="row_hash", ignore_duplicates=False
+                    ).execute()
+                    salvaged += 1
+                except Exception as row_err:
+                    log.warning(
+                        "  Poison row skipped (commodity=%s variety=%s): %s",
+                        one.get("commodity"), one.get("variety"), row_err,
+                    )
+            total += salvaged
+            log.info("  Salvaged %d of %d rows from failed batch", salvaged, len(chunk))
 
     return total
 
@@ -1102,20 +1127,37 @@ def _run_for_date(target_date: str) -> int:
 
         # Always purge old rows for this slug once we know the current date —
         # even if build fails, stale data must not remain
-        purge_old_rows(slug_id, actual_report_date_str)
+        try:
+            purge_old_rows(slug_id, actual_report_date_str)
+        except Exception as e:
+            log.error("  Purge failed for %s: %s — continuing to build/upsert anyway", code, e)
 
         built = []
         for raw in raw_rows:
-            row = build_row(raw, report_meta)
-            if row:
-                built.append(row)
+            try:
+                row = build_row(raw, report_meta)
+                if row:
+                    built.append(row)
+            except Exception as e:
+                # One malformed row shouldn't take down 500 good ones
+                log.warning("  build_row failed for %s: %s", code, e)
 
         log.info("  Built %d valid rows", len(built))
 
         if built:
-            upserted = upsert_rows(built)
-            grand_total += upserted
-            log.info("  Upserted %d rows for %s", upserted, code)
+            # A Supabase timeout or bad row here used to escape the loop and
+            # kill every remaining market in REPORT_SLUGS — that's how the
+            # database ended up with only Baltimore/Boston/Atlanta partial.
+            # Catch here so one bad slug can't blank out the rest of the day.
+            try:
+                upserted = upsert_rows(built)
+                grand_total += upserted
+                log.info("  Upserted %d rows for %s", upserted, code)
+            except Exception as e:
+                log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
+                # continue explicitly — the for loop's next iteration continues
+                # even without this, but be loud about the recovery
+                continue
 
     # ── National Trends (FVWTRDS) — separate schema ──────────────────────────
     log.info("Fetching FVWTRDS (slug 1662) — National Trends...")
