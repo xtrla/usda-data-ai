@@ -756,3 +756,64 @@
 @media (max-width: 899px) {
   .site-header { display: none; }
 }
+
+/* ── BROWSE LAYOUT ─────────────────────────────────────────
+   Base three-panel grid. Defined here rather than inline so the
+   breakpoints below can actually override it.
+   ---------------------------------------------------------- */
+.browse-grid#main-grid {
+  grid-template-columns: minmax(200px, 226px) minmax(0, 1fr) minmax(340px, 404px);
+  gap: 12px;
+  padding: 12px 20px 20px;
+}
+
+/* ── BROWSE LAYOUT: THE TABLET RANGE ───────────────────────
+   #main-grid was minmax(200px,226px) minmax(620px,1fr)
+   minmax(340px,404px). Those minimums total 1160px, plus 24px
+   of gaps and 40px of padding = 1224px before the page is
+   forced to scroll horizontally. The existing breakpoints only
+   handled <=979px, so 980-1224px overflowed: the right panel
+   ran off-screen and the table was clipped mid-column.
+
+   Two stages now sit in that gap.
+   ---------------------------------------------------------- */
+
+/* 1180-1224: keep three panels, let them actually shrink. */
+@media (max-width: 1300px) {
+  .browse-grid#main-grid {
+    grid-template-columns: minmax(180px, 210px) minmax(0, 1fr) minmax(300px, 340px);
+    gap: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* 980-1180: three columns no longer fit honestly. Drop the market
+   summary below the table rather than squeezing it to a sliver. */
+@media (max-width: 1180px) {
+  .browse-grid#main-grid {
+    grid-template-columns: minmax(170px, 200px) minmax(0, 1fr);
+  }
+  .browse-grid#main-grid > *:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: none;
+    position: static !important;   /* was sticky in a column that no longer exists */
+    max-height: none !important;
+  }
+}
+
+/* The centre panel and its inner tables carry hard min-widths from
+   inline styles; below 1300 those are what push the page wide. */
+@media (max-width: 1300px) {
+  .browse-grid#main-grid [style*="min-width:620px"],
+  .browse-grid#main-grid [style*="min-width:660px"],
+  .browse-grid#main-grid [style*="min-width:576px"],
+  .browse-grid#main-grid [style*="min-width:640px"] {
+    min-width: 0 !important;
+  }
+}
+
+/* Belt and braces: nothing in the browse layout may force the
+   document wider than the viewport at any width. */
+.browse-grid#main-grid,
+.browse-grid#main-grid > * { min-width: 0; }
