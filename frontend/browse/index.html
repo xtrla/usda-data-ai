@@ -1091,14 +1091,41 @@
       return (a.price || 999) - (b.price || 999);
     });
 
-    // Cross-market data
+    // Cross-market comparison — the SAME SKU in other markets, never an
+    // average. Averaging every row for the commodity blended Hass 32s with
+    // greenskin 18s and produced a number that appeared in no report: the
+    // panel showed New York at $37.08 when New York's actual print for this
+    // SKU was $33.00. A market is listed only if it printed this exact
+    // variety, origin, grade, package and size; markets that didn't are
+    // counted as not reporting rather than approximated.
+    function skuMatchKey(r) {
+      return [r.variety, r.origin, r.grade, r.package, r.size]
+        .map(function(v) { return String(v == null ? '' : v).trim().toLowerCase(); })
+        .join('||');
+    }
+    var wantKey = skuMatchKey(row);
+
     var crossMarket = [];
-    var allByCom = U.groupBy(allRows.filter(function(r) { return r.commodity === selectedComName; }), function(r) { return r.market; });
+    var allByCom = U.groupBy(
+      allRows.filter(function(r) {
+        return r.commodity === selectedComName && skuMatchKey(r) === wantKey;
+      }),
+      function(r) { return r.market; }
+    );
     allByCom.forEach(function(rows, mkt) {
-      var prices = rows.map(function(r) { return skuPrice(r).price; }).filter(function(p) { return p != null; });
-      if (prices.length) {
-        var avg = prices.reduce(function(a, b) { return a + b; }, 0) / prices.length;
-        crossMarket.push({ name: mkt, price: avg, isCurrent: mkt === market });
+      // One print per market. If a market somehow carries more than one row
+      // for an identical SKU, take the most recent — do not average them.
+      var best = rows.slice().sort(function(a, b) {
+        return String(b.report_date || '').localeCompare(String(a.report_date || ''));
+      })[0];
+      var p = skuPrice(best);
+      if (p.price != null) {
+        crossMarket.push({
+          name: mkt,
+          price: p.price,
+          date: best.report_date,
+          isCurrent: mkt === market
+        });
       }
     });
     crossMarket.sort(function(a, b) { return a.price - b.price; });
@@ -1184,9 +1211,11 @@
     if (crossMarket.length > 1) {
       html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
       html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
-      html += '<span class="eyebrow">All ' + crossMarket.length + ' terminal markets</span>';
+      html += '<span class="eyebrow">' + crossMarket.length + ' markets report this SKU</span>';
       html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">cheapest first</span>';
       html += '</div>';
+      html += '<div style="font-size:10.5px;color:var(--text-faint);padding:7px 0 3px;line-height:1.5">' +
+        esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
       crossMarket.forEach(function(m, idx) {
         var barW = maxPrice > 0 ? (26 + (m.price / maxPrice) * 74).toFixed(1) : '50';
         html += '<div style="display:grid;grid-template-columns:20px minmax(0,1fr) 52px 62px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
@@ -1196,6 +1225,23 @@
         html += '<span style="font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">$' + m.price.toFixed(2) + '</span>';
         html += '</div>';
       });
+      // Dates are shown because a market's last print for this SKU may be
+      // older than today's — a stale price is still a real price, but the
+      // reader has to be able to see that it is stale.
+      var dates = U.uniq(crossMarket.map(function(m) { return m.date; }).filter(Boolean));
+      if (dates.length === 1) {
+        html += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:9px">All prints ' + esc(U.fmtDate(dates[0])) + '</div>';
+      } else if (dates.length > 1) {
+        html += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:9px">Prints span ' +
+          esc(U.fmtDate(dates[dates.length - 1])) + ' \u2013 ' + esc(U.fmtDate(dates[0])) + '</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+      html += '<span class="eyebrow">Other terminal markets</span>';
+      html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:8px;line-height:1.55">' +
+        'No other terminal market printed this exact SKU today. Prices are compared like-for-like only \u2014 ' +
+        'never averaged across varieties, packs or sizes.</div>';
       html += '</div>';
     }
 
