@@ -7,3 +7,4 @@ stripe==8.0.0
 anyio==4.4.0
 httpcore==0.17.3
 httpx==0.24.1
+pytz==2024.1
