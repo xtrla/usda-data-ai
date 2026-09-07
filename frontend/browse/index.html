@@ -450,6 +450,10 @@
     latestDate = dates[0].date;
 
     var weekSel = document.getElementById('week-select');
+    var latestOpt = document.createElement('option');
+    latestOpt.value = 'latest';
+    latestOpt.textContent = 'Latest available';
+    weekSel.appendChild(latestOpt);
     dates.slice(0, 5).forEach(function(d) {
       var opt = document.createElement('option');
       opt.value = d.date;
@@ -457,6 +461,12 @@
       weekSel.appendChild(opt);
     });
     weekSel.addEventListener('change', async function() {
+      if (weekSel.value === 'latest') {
+        try { allRows = await api.reportLatest('terminal'); } catch (e) {}
+        try { fobRows = await api.reportLatest('shipping_point'); } catch (e) { fobRows = []; }
+        renderAll();
+        return;
+      }
       latestDate = weekSel.value;
       // Load selected date + previous 4 dates for full commodity coverage
       var selIdx = dates.findIndex(function(d) { return d.date === latestDate; });
@@ -470,15 +480,25 @@
       renderAll();
     });
 
-    // Load last 5 dates and merge — ensures all commodities appear even if not reported today
-    var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
-    var allPromises = datesToLoad.map(function(dt) { return api.reportTerminal(dt).catch(function() { return []; }); });
-    var fobPromise = api.reportShippingPoints(latestDate).catch(function() { return []; });
+    // Latest known price per SKU per market. A market that didn't print
+    // today keeps its most recent real price rather than showing empty.
+    var fobPromise = api.reportLatest('shipping_point').catch(function() {
+      return api.reportShippingPoints(latestDate).catch(function() { return []; });
+    });
 
-    var allResults = await Promise.all(allPromises);
-    var merged = [];
-    allResults.forEach(function(rows) { merged = merged.concat(rows); });
-    allRows = _deduplicateRows(merged);
+    try {
+      allRows = await api.reportLatest('terminal');
+    } catch (e) {
+      // Fall back to the old five-date merge if /reports/latest is
+      // unavailable (e.g. API not yet redeployed).
+      var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
+      var allResults = await Promise.all(datesToLoad.map(function(dt) {
+        return api.reportTerminal(dt).catch(function() { return []; });
+      }));
+      var merged = [];
+      allResults.forEach(function(rows) { merged = merged.concat(rows); });
+      allRows = _deduplicateRows(merged);
+    }
     fobRows = await fobPromise;
 
     // Default: check ALL commodities so table is fully populated on load

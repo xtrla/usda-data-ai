@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from supabase import create_client
 import stripe
 import os
+from datetime import date, timedelta
 
 app = FastAPI(title="AGRA API", version="2.0.0")
 
@@ -129,6 +130,77 @@ def get_terminal_report(date: str = None):
         return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/reports/latest")
+def get_latest_report(market_type: str = "terminal", lookback_days: int = 28):
+    """Latest known row per SKU, per market — regardless of report date.
+
+    USDA terminals don't all print every day: a market can be quiet for a
+    week and its last real price is still the price a buyer needs. Keying
+    on a single report_date makes those markets look empty, which is both
+    wrong and the most confusing possible failure.
+
+    This returns, for every (market, commodity, variety, origin, grade,
+    package, size), the most recent row within the lookback window, with
+    its own report_date intact so the UI can show how stale it is.
+    """
+    try:
+        cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+
+        q = supabase.table(TABLE).select("*").gte("report_date", cutoff)
+        if market_type == "shipping_point":
+            q = q.eq("market_type", "shipping_point").neq("market", "National Trends")
+        else:
+            q = q.eq("market_type", "terminal")
+
+        rows = fetch_all(q)
+
+        # Newest first, then keep the first occurrence of each SKU key.
+        rows.sort(key=lambda r: str(r.get("report_date") or ""), reverse=True)
+        latest, seen = [], set()
+        for r in rows:
+            key = (
+                r.get("market"), r.get("commodity"), r.get("variety"),
+                r.get("origin"), r.get("grade"), r.get("package"), r.get("size"),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            latest.append(r)
+        return latest
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/reports/coverage")
+def get_coverage(lookback_days: int = 28):
+    """Per-market freshness: latest report date and row count.
+
+    Lets the UI say "Chicago — Sep 4" rather than silently showing a
+    market as empty when it simply hasn't printed today.
+    """
+    try:
+        cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+        rows = fetch_all(
+            supabase.table(TABLE)
+            .select("market,report_date")
+            .eq("market_type", "terminal")
+            .gte("report_date", cutoff)
+        )
+        agg = {}
+        for r in rows:
+            m = r.get("market")
+            if not m:
+                continue
+            d = str(r.get("report_date") or "")
+            a = agg.setdefault(m, {"market": m, "latest_date": d, "rows": 0})
+            a["rows"] += 1
+            if d > a["latest_date"]:
+                a["latest_date"] = d
+        return sorted(agg.values(), key=lambda a: a["market"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/reports/shipping-points")
 def get_shipping_points(date: str = None):
