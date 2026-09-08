@@ -4,7 +4,11 @@ from fastapi.responses import JSONResponse
 from supabase import create_client
 import stripe
 import os
+import logging
 from datetime import date, timedelta
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("agrax.api")
 
 app = FastAPI(title="AGRA API", version="2.0.0")
 
@@ -15,6 +19,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── Scheduler ─────────────────────────────────────────────────────────────
+# scheduler.py defined start_scheduler() but nothing ever called it. That is
+# why /dates returned two report_dates total: one manual `python ingest.py`
+# run and nothing else. This @on_event hook is the missing wiring.
+#
+# ENABLE_SCHEDULER=1 in Railway keeps this on in prod; unset in local dev
+# so `uvicorn --reload` doesn't kick off a full USDA pull on every save.
+@app.on_event("startup")
+def _boot_scheduler():
+    import os as _os
+    if _os.getenv("ENABLE_SCHEDULER", "0") != "1":
+        return
+    try:
+        from scheduler import start_scheduler
+        start_scheduler()
+    except Exception as e:
+        import logging as _logging
+        _logging.getLogger(__name__).error("Scheduler failed to start: %s", e)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
@@ -41,12 +64,15 @@ def health():
 @app.get("/dates")
 def get_dates():
     try:
-        result = supabase.table(TABLE).select("report_date").execute()
-        if not result.data:
+        # Must page. Unpaged this saw an arbitrary 1000-row slice, so the
+        # "latest" date it reported was whatever happened to land in that
+        # slice — not the newest date in the table.
+        result_rows = fetch_all(supabase.table(TABLE).select("report_date,row_hash"))
+        if not result_rows:
             return []
-        
+
         date_counts = {}
-        for row in result.data:
+        for row in result_rows:
             d = row["report_date"]
             date_counts[d] = date_counts.get(d, 0) + 1
         
@@ -75,12 +101,15 @@ def search_commodities(q: str, limit: int = 100):
 @app.get("/markets")
 def get_markets():
     try:
-        result = supabase.table(TABLE).select("market, market_type").execute()
-        if not result.data:
+        # The endpoint whose whole job is listing markets was the one
+        # endpoint reading a truncated 1000-row slice, so markets outside
+        # that slice simply did not exist as far as the frontend knew.
+        result_rows = fetch_all(supabase.table(TABLE).select("market, market_type, row_hash"))
+        if not result_rows:
             return []
-        
+
         market_counts = {}
-        for row in result.data:
+        for row in result_rows:
             m = row["market"]
             t = row.get("market_type", "unknown")
             if m not in market_counts:
@@ -93,7 +122,7 @@ def get_markets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def fetch_all(query_builder, page_size: int = 1000):
+def fetch_all(query_builder, page_size: int = 1000, order_by: str = "row_hash"):
     """Page through a PostgREST query and return every row.
 
     Supabase enforces a server-side `db-max-rows` cap (1000 by default)
@@ -101,16 +130,37 @@ def fetch_all(query_builder, page_size: int = 1000):
     plain .limit(50000) therefore returns only the first 1000 rows, so
     markets past that boundary come back empty. Paging with .range()
     is the only way to get a full day of terminal data.
+
+    The ORDER BY is not cosmetic. Postgres gives no ordering guarantee
+    across separate LIMIT/OFFSET queries, so paging an unordered result
+    lets the planner return the same row on two pages and no page at
+    all for another. Dropped rows cluster by physical page, which means
+    a whole market can disappear from one request and come back on the
+    next. Sorting on a unique column (row_hash) makes the window stable.
     """
-    rows, page = [], 0
+    try:
+        query_builder = query_builder.order(order_by)
+    except Exception:
+        # Older postgrest clients, or a view without that column. Paging
+        # unordered is still better than not paging at all.
+        log.warning("fetch_all: could not order by %s; paging unordered", order_by)
+
+    rows, start = [], 0
     while True:
-        start = page * page_size
         batch = query_builder.range(start, start + page_size - 1).execute().data or []
-        rows.extend(batch)
-        if len(batch) < page_size:
+        if not batch:
             return rows
-        page += 1
-        if page > 200:          # ~200k rows; a guard against a runaway loop
+        rows.extend(batch)
+        # Advance by what the server ACTUALLY returned, not by page_size.
+        # PostgREST caps each response at db-max-rows, which is not always
+        # the 1000 the client assumes — on this project it is 999. The old
+        # termination test (`len(batch) < page_size`) was therefore true on
+        # the very first page, so this returned 999 of 6732 rows and never
+        # asked for page two. Stopping only on an empty batch makes the
+        # loop correct for any server-side cap.
+        start += len(batch)
+        if len(rows) > 200_000:     # guard against a runaway loop
+            log.warning("fetch_all: hit the 200k-row guard; result may be truncated")
             return rows
 
 
@@ -132,7 +182,7 @@ def get_terminal_report(date: str = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/reports/latest")
-def get_latest_report(market_type: str = "terminal", lookback_days: int = 28):
+def get_latest_report(market_type: str = "terminal", lookback_days: int = 90):
     """Latest known row per SKU, per market — regardless of report date.
 
     USDA terminals don't all print every day: a market can be quiet for a
@@ -162,6 +212,12 @@ def get_latest_report(market_type: str = "terminal", lookback_days: int = 28):
             key = (
                 r.get("market"), r.get("commodity"), r.get("variety"),
                 r.get("origin"), r.get("grade"), r.get("package"), r.get("size"),
+                # quality_note distinguishes genuinely different prints of the
+                # same pack. USDA publishes Mexican Hass 48s three times — a
+                # base price, a "Few" price and a "fine appearance" price —
+                # and they are not the same product to a buyer. Leaving this
+                # out of the key silently kept one of the three at random.
+                r.get("quality_note"),
             )
             if key in seen:
                 continue
@@ -173,7 +229,7 @@ def get_latest_report(market_type: str = "terminal", lookback_days: int = 28):
 
 
 @app.get("/reports/coverage")
-def get_coverage(lookback_days: int = 28):
+def get_coverage(lookback_days: int = 90):
     """Per-market freshness: latest report date and row count.
 
     Lets the UI say "Chicago — Sep 4" rather than silently showing a
@@ -200,6 +256,148 @@ def get_coverage(lookback_days: int = 28):
         return sorted(agg.values(), key=lambda a: a["market"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/reports/diagnose")
+def diagnose_pipeline(lookback_days: int = 90):
+    """Combined pipeline health check — no credentials needed to view.
+
+    For every terminal slug configured in ingest.py, returns:
+      - what USDA MARS says (HTTP status + row count from the latest report)
+      - what Supabase has (row count + latest report_date within the window)
+
+    Split shows exactly where the pipeline is breaking per slug:
+      - USDA OK, Supabase empty  -> ingest is skipping this slug
+      - USDA 404                 -> slug ID is stale, needs replacement
+      - Both OK                  -> pipeline is healthy for this slug
+      - USDA OK, Supabase stale  -> ingest hasn't run recently
+    """
+    import ast as _ast
+    import requests as _requests
+    import os as _os
+
+    # Load REPORT_SLUGS from ingest.py without importing (avoids circular deps)
+    try:
+        ingest_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "ingest.py")
+        src = open(ingest_path).read()
+        tree = _ast.parse(src)
+        wanted = [
+            n for n in tree.body
+            if (isinstance(n, _ast.FunctionDef) and n.name == "_slug")
+            or (isinstance(n, _ast.Assign)
+                and any(getattr(t, "id", "") == "REPORT_SLUGS" for t in n.targets))
+        ]
+        ns = {}
+        exec(compile(_ast.Module(body=wanted, type_ignores=[]), "<slugs>", "exec"), ns)
+        slugs = [s for s in ns.get("REPORT_SLUGS", []) if s.get("market_type") == "terminal"]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not load slugs: {e}")
+
+    mars_key = _os.getenv("MARS_API_KEY", "")
+    mars_base = "https://marsapi.ams.usda.gov/services/v1.2"
+
+    # Pull all Supabase terminal rows once in the window, then group per slug
+    cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+    try:
+        db_rows = fetch_all(
+            supabase.table(TABLE)
+            .select("market,commodity_type,report_date")
+            .eq("market_type", "terminal")
+            .gte("report_date", cutoff)
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Supabase query failed: {e}")
+
+    # Bucket by (market, commodity_type) which is what a slug represents
+    from collections import defaultdict as _dd
+    db_buckets = _dd(lambda: {"rows": 0, "latest_date": ""})
+    for r in db_rows:
+        key = (r.get("market"), r.get("commodity_type"))
+        b = db_buckets[key]
+        b["rows"] += 1
+        d = str(r.get("report_date") or "")
+        if d > b["latest_date"]:
+            b["latest_date"] = d
+
+    results = []
+    for slug in slugs:
+        entry = {
+            "market": slug["market"],
+            "commodity_type": slug["commodity_type"],
+            "code": slug["code"],
+            "slug_id": slug["slug_id"],
+            "usda_status": None,
+            "usda_rows": 0,
+            "usda_note": "",
+            "supabase_rows": 0,
+            "supabase_latest": None,
+            "verdict": "",
+        }
+
+        # Supabase side
+        key = (slug["market"], slug["commodity_type"])
+        b = db_buckets.get(key, {"rows": 0, "latest_date": ""})
+        entry["supabase_rows"] = b["rows"]
+        entry["supabase_latest"] = b["latest_date"] or None
+
+        # USDA side (skip if no key configured)
+        if not mars_key:
+            entry["usda_note"] = "MARS_API_KEY not configured on server"
+        else:
+            try:
+                url = f"{mars_base}/reports/{slug['slug_id']}/report details"
+                resp = _requests.get(url, params={"lastReports": 1}, auth=(mars_key, ""), timeout=15)
+                entry["usda_status"] = resp.status_code
+                if resp.status_code == 200:
+                    data = resp.json()
+                    payload = data if isinstance(data, list) else data.get("results", [])
+                    entry["usda_rows"] = len(payload)
+                    if not payload:
+                        entry["usda_note"] = "USDA returned empty result"
+                elif resp.status_code == 404:
+                    entry["usda_note"] = "slug not found — retired or renumbered"
+                elif resp.status_code == 401:
+                    entry["usda_note"] = "MARS_API_KEY rejected"
+                else:
+                    entry["usda_note"] = f"HTTP {resp.status_code}"
+            except Exception as e:
+                entry["usda_note"] = f"request failed: {e}"
+
+        # Verdict
+        us_ok = (entry["usda_status"] == 200 and entry["usda_rows"] > 0)
+        db_ok = entry["supabase_rows"] > 0
+        if us_ok and db_ok:
+            entry["verdict"] = "HEALTHY"
+        elif us_ok and not db_ok:
+            entry["verdict"] = "INGEST_BROKEN"  # USDA has data, we don't
+        elif not us_ok and db_ok:
+            entry["verdict"] = "USDA_DOWN_STALE_OK"  # we have older data still
+        else:
+            entry["verdict"] = "DEAD"  # neither side has anything
+
+        results.append(entry)
+
+    # Roll up per market for the top-of-response summary
+    market_health = {}
+    for e in results:
+        m = e["market"]
+        s = market_health.setdefault(m, {"slugs_total": 0, "slugs_healthy": 0, "supabase_rows": 0})
+        s["slugs_total"] += 1
+        if e["verdict"] == "HEALTHY":
+            s["slugs_healthy"] += 1
+        s["supabase_rows"] += e["supabase_rows"]
+
+    summary = sorted(
+        [{"market": m, **v} for m, v in market_health.items()],
+        key=lambda x: (x["slugs_healthy"], x["market"]),
+    )
+
+    return {
+        "lookback_days": lookback_days,
+        "generated_at": date.today().isoformat(),
+        "market_summary": summary,
+        "per_slug": results,
+    }
 
 
 @app.get("/reports/shipping-points")
@@ -248,9 +446,18 @@ def get_history(
     origin: str = None,
     size: str = None,
     package: str = None,
+    grade: str = None,
+    quality: str = None,
     days: int = 90,
 ):
-    """Return time-series rows for the given SKU filters, most recent first."""
+    """Return time-series rows for the given SKU filters, most recent first.
+
+    grade and quality are part of a SKU's identity, not decoration. Without
+    them a history for Mexican Hass 48s mixed the base print, the "Few"
+    print and the "fine appearance" print into one series, so the chart
+    jumped between three different products and every change figure was
+    meaningless. Callers that omit them still get the looser behaviour.
+    """
     try:
         from datetime import date, timedelta
         cutoff = (date.today() - timedelta(days=days)).isoformat()
@@ -261,9 +468,14 @@ def get_history(
         if origin:  q = q.eq("origin", origin)
         if size:    q = q.eq("size", size)
         if package: q = q.eq("package", package)
+        if grade:   q = q.eq("grade", grade)
+        # An explicit empty string means "the print with no quality note",
+        # which is a real and distinct record — not "don't filter".
+        if quality is not None:
+            q = q.eq("quality_note", quality) if quality else q.is_("quality_note", "null")
 
-        result = q.order("report_date", desc=True).limit(10000).execute()
-        return result.data or []
+        result_rows = fetch_all(q.order("report_date", desc=True))
+        return result_rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -360,21 +572,26 @@ def movement_summary(date: str):
 @app.get("/stats")
 def get_stats():
     try:
-        result = supabase.table(TABLE).select("commodity, market, report_date").limit(200000).execute()
-        if not result.data:
+        # .limit(200000) is a no-op: Supabase's db-max-rows caps the
+        # response server-side, so this reported stats for the first
+        # 1000 rows and called it the whole table.
+        result_rows = fetch_all(
+            supabase.table(TABLE).select("commodity, market, report_date, row_hash")
+        )
+        if not result_rows:
             return {"total_records": 0, "commodities": 0, "markets": 0, "dates": 0}
-        
+
         commodities = set()
         markets = set()
         dates = set()
-        
-        for row in result.data:
+
+        for row in result_rows:
             commodities.add(row["commodity"])
             markets.add(row["market"])
             dates.add(row["report_date"])
-        
+
         return {
-            "total_records": len(result.data),
+            "total_records": len(result_rows),
             "commodities": len(commodities),
             "markets": len(markets),
             "dates": len(dates)
@@ -721,11 +938,19 @@ def week_over_week(market: str = "New York"):
 
     try:
         # Get last two report dates for this market
-        dates_result = supabase.table(TABLE).select("report_date").eq("market_type", "terminal").eq("market", market).order("report_date", desc=True).limit(50000).execute()
-        if not dates_result.data:
+        # Paged: this needs the two most recent *distinct* dates, and one
+        # busy day for a big market can fill the 1000-row cap on its own,
+        # which left prev_date empty and every WoW change reading as flat.
+        date_rows = fetch_all(
+            supabase.table(TABLE)
+            .select("report_date,row_hash")
+            .eq("market_type", "terminal")
+            .eq("market", market)
+        )
+        if not date_rows:
             return {"market": market, "current_date": None, "prev_date": None, "items": []}
 
-        all_dates = sorted(set(r["report_date"] for r in dates_result.data), reverse=True)
+        all_dates = sorted(set(r["report_date"] for r in date_rows), reverse=True)
         if len(all_dates) < 2:
             return {"market": market, "current_date": all_dates[0] if all_dates else None, "prev_date": None, "items": []}
 
@@ -733,11 +958,16 @@ def week_over_week(market: str = "New York"):
         prev_date = all_dates[1]
 
         # Fetch both dates
-        current_rows = supabase.table(TABLE).select("*").eq("market_type", "terminal").eq("market", market).eq("report_date", current_date).limit(50000).execute()
-        prev_rows = supabase.table(TABLE).select("*").eq("market_type", "terminal").eq("market", market).eq("report_date", prev_date).limit(50000).execute()
-
-        current_data = current_rows.data or []
-        prev_data = prev_rows.data or []
+        current_data = fetch_all(
+            supabase.table(TABLE).select("*")
+            .eq("market_type", "terminal").eq("market", market)
+            .eq("report_date", current_date)
+        )
+        prev_data = fetch_all(
+            supabase.table(TABLE).select("*")
+            .eq("market_type", "terminal").eq("market", market)
+            .eq("report_date", prev_date)
+        )
 
         # Build commodity-level medians for each date
         def commodity_prices(rows):
@@ -967,8 +1197,16 @@ def story_of_the_day(market: str = "New York"):
         # Build data snapshot
         if is_national:
             # Aggregate across all markets
-            all_rows = supabase.table(TABLE).select("commodity,movement,market").eq("market_type", "terminal").eq("report_date", report_date).limit(50000).execute()
-            rows = all_rows.data or []
+            # A full day across all 12 terminals is well over 1000 rows,
+            # so .limit(50000) truncated this to whichever markets landed
+            # in the first page — the national story was written from a
+            # partial slice of the country.
+            rows = fetch_all(
+                supabase.table(TABLE)
+                .select("commodity,movement,market,row_hash")
+                .eq("market_type", "terminal")
+                .eq("report_date", report_date)
+            )
             markets_data = {}
             total_h, total_l, total_s = 0, 0, 0
             for r in rows:

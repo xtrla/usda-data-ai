@@ -17,7 +17,7 @@ import json
 import hashlib
 import logging
 import requests
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -47,6 +47,11 @@ MARS_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 # Raised well past any plausible USDA reporting gap; the UI surfaces the
 # report date so staleness stays visible rather than hidden.
 MAX_FALLBACK_DAYS = 90
+
+# How much price history to retain per slug. Purging down to a single
+# report date per slug is what made week-over-week impossible to compute
+# and left quiet terminals looking empty; see purge_old_rows().
+RETAIN_DAYS = 400
 
 def _slug(slug_id, code, market, market_type):
     """Derive commodity_type from report code suffix."""
@@ -119,11 +124,9 @@ REPORT_SLUGS = [
     _slug(2304, "DU_FV030", "Detroit",      "terminal"),
     _slug(2305, "DU_FV040", "Detroit",      "terminal"),
 
-    # San Francisco
-    _slug(2323, "SX_FV020", "San Francisco","terminal"),
-    _slug(2322, "SX_FV010", "San Francisco","terminal"),
-    _slug(2324, "SX_FV030", "San Francisco","terminal"),
-    _slug(2325, "SX_FV040", "San Francisco","terminal"),
+    # San Francisco — REMOVED. USDA no longer publishes terminal reports for SF
+    # (see the official terminal reports page: 12 cities, no SF). Slugs 2322-2325
+    # return nothing and just waste MARS API calls each morning.
 
     # Columbia SC — confirmed slug 2295 (veg); FV010/030/040 slugs TBD — will 404-skip gracefully
     _slug(2295, "CA_FV020", "Columbia",     "terminal"),
@@ -754,7 +757,20 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "source_report":      report_meta["code"],
         "commodity_type":     report_meta.get("commodity_type", "vegetables"),
     }
-    # Compute row_hash for deduplication
+    # Compute row_hash for deduplication.
+    #
+    # grade MUST be part of the key. Without it, USDA rows that differ only
+    # by grade collapsed into one on `on_conflict=row_hash`: New York's
+    # Ginger Gold 88s U.S. Fancy at 24.00 and the U.S. Extra Fancy 64s at
+    # 32.00 hashed identically, so whichever was written last silently
+    # overwrote the other. Reconciliation found this across every large
+    # market — hundreds of rows dropped and hundreds of prices reporting a
+    # different grade's number.
+    #
+    # Anything that distinguishes one published line from another belongs
+    # here. Prices deliberately do not: they are the value being stored, not
+    # part of the row's identity, and including them would make a corrected
+    # price insert a second row instead of updating the first.
     hash_str = "|".join([
         str(row.get("report_date") or ""),
         str(row.get("source_report") or ""),
@@ -762,6 +778,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         str(row.get("commodity") or ""),
         str(row.get("variety") or ""),
         str(row.get("origin") or ""),
+        str(row.get("grade") or ""),
         str(row.get("package") or ""),
         str(row.get("size") or ""),
         str(row.get("quality_note") or ""),
@@ -837,23 +854,101 @@ def build_trends_row(raw: dict) -> dict | None:
 
 def purge_old_rows(slug_id: int, keep_date: str):
     """
-    Delete all rows for a slug that are NOT from keep_date.
-    Prevents stale data from old reports polluting results.
-    keep_date format: "YYYY-MM-DD"
+    Delete rows for a slug older than RETAIN_DAYS.
+
+    This used to delete every row for the slug that wasn't keep_date,
+    which left the table holding exactly one report date per slug. Two
+    things broke as a result:
+
+      - /wow and /history had no second date to diff against, so
+        week-over-week was structurally impossible to compute.
+      - The frontend's "merge the last N report dates" fallback couldn't
+        reach markets whose single retained date fell outside the window,
+        so quiet terminals rendered as empty.
+
+    Prices are published as reported and never revised in place, so
+    keeping history costs nothing but storage. Rows are still keyed by
+    row_hash, so re-ingesting the same report is idempotent.
+
+    keep_date format: "YYYY-MM-DD" — retained for signature compatibility
+    and logged, but no longer used as a delete filter.
     """
+    cutoff = (date.today() - timedelta(days=RETAIN_DAYS)).isoformat()
     try:
         result = (
             supabase.table(TABLE)
             .delete()
             .eq("slug_id", str(slug_id))
-            .neq("report_date", keep_date)
+            .lt("report_date", cutoff)
             .execute()
         )
         deleted = len(result.data) if result.data else 0
         if deleted:
-            log.info("  Purged %d stale rows for slug %s (kept %s)", deleted, slug_id, keep_date)
+            log.info("  Purged %d rows older than %s for slug %s (current report %s)",
+                     deleted, cutoff, slug_id, keep_date)
     except Exception as e:
         log.warning("  Could not purge old rows for slug %s: %s", slug_id, e)
+
+
+def prune_stale_hashes(slug_id: int, report_date: str, keep_hashes: set) -> int:
+    """Delete rows for this slug and date whose row_hash we no longer produce.
+
+    Needed whenever the row_hash definition changes. Old rows keep their old
+    hashes, so an upsert can't overwrite them — without this they would sit
+    alongside the new rows as duplicates, and the same SKU would appear twice
+    at two different prices.
+
+    Runs AFTER the upsert, never before: if the upsert failed, the day's data
+    is still whatever was there previously rather than nothing at all.
+    """
+    if not keep_hashes:
+        return 0
+    try:
+        existing, start, page = [], 0, 1000
+        while True:
+            batch = (
+                supabase.table(TABLE)
+                .select("row_hash")
+                .eq("slug_id", str(slug_id))
+                .eq("report_date", report_date)
+                .order("row_hash")
+                .range(start, start + page - 1)
+                .execute()
+                .data
+                or []
+            )
+            if not batch:
+                break
+            existing.extend(r.get("row_hash") for r in batch)
+            start += len(batch)
+            if start > 100_000:
+                break
+
+        stale = [h for h in set(existing) if h and h not in keep_hashes]
+        if not stale:
+            return 0
+
+        # Chunked: a few hundred hashes in one `in.()` would blow the URL
+        # length limit and fail the whole delete.
+        deleted = 0
+        for i in range(0, len(stale), 50):
+            chunk = stale[i:i + 50]
+            res = (
+                supabase.table(TABLE)
+                .delete()
+                .eq("slug_id", str(slug_id))
+                .eq("report_date", report_date)
+                .in_("row_hash", chunk)
+                .execute()
+            )
+            deleted += len(res.data) if res.data else 0
+        if deleted:
+            log.info("  Pruned %d stale-hash rows for slug %s on %s",
+                     deleted, slug_id, report_date)
+        return deleted
+    except Exception as e:
+        log.warning("  Could not prune stale hashes for slug %s: %s", slug_id, e)
+        return 0
 
 
 def upsert_rows(rows: list[dict]) -> int:
@@ -878,15 +973,40 @@ def upsert_rows(rows: list[dict]) -> int:
     total = 0
     for i in range(0, len(deduped), BATCH):
         chunk = deduped[i : i + BATCH]
-        # merge (ignore_duplicates=False) so origin/movement update when
-        # normalization improves without needing a separate delete pass
-        result = (
-            supabase.table(TABLE)
-            .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
-            .execute()
-        )
-        total += len(chunk)
-        log.info("Upserted batch %d rows", len(chunk))
+        batch_num = (i // BATCH) + 1
+        try:
+            # merge (ignore_duplicates=False) so origin/movement update when
+            # normalization improves without needing a separate delete pass
+            result = (
+                supabase.table(TABLE)
+                .upsert(chunk, on_conflict="row_hash", ignore_duplicates=False)
+                .execute()
+            )
+            total += len(chunk)
+            log.info("Upserted batch %d rows", len(chunk))
+        except Exception as e:
+            # Log the actual failure loudly with enough context to fix it.
+            # A single bad row or oversized batch shouldn't lose everything.
+            log.error(
+                "Batch %d/%d upsert FAILED (%d rows): %s",
+                batch_num, (len(deduped) + BATCH - 1) // BATCH, len(chunk), e,
+            )
+            # Try one row at a time to isolate the poison row and salvage
+            # the rest. Slow but rare, and beats losing the whole slug.
+            salvaged = 0
+            for one in chunk:
+                try:
+                    supabase.table(TABLE).upsert(
+                        one, on_conflict="row_hash", ignore_duplicates=False
+                    ).execute()
+                    salvaged += 1
+                except Exception as row_err:
+                    log.warning(
+                        "  Poison row skipped (commodity=%s variety=%s): %s",
+                        one.get("commodity"), one.get("variety"), row_err,
+                    )
+            total += salvaged
+            log.info("  Salvaged %d of %d rows from failed batch", salvaged, len(chunk))
 
     return total
 
@@ -1102,23 +1222,45 @@ def _run_for_date(target_date: str) -> int:
         actual_report_date_str = actual_report_date.isoformat()
         log.info("  Got %d raw rows, report_date=%s (fallback=%s)", len(raw_rows), actual_report_date_str, used_fallback)
 
+        # Always purge old rows for this slug once we know the current date —
+        # even if build fails, stale data must not remain
+        try:
+            purge_old_rows(slug_id, actual_report_date_str)
+        except Exception as e:
+            log.error("  Purge failed for %s: %s — continuing to build/upsert anyway", code, e)
+
         built = []
         for raw in raw_rows:
-            row = build_row(raw, report_meta)
-            if row:
-                built.append(row)
+            try:
+                row = build_row(raw, report_meta)
+                if row:
+                    built.append(row)
+            except Exception as e:
+                # One malformed row shouldn't take down 500 good ones
+                log.warning("  build_row failed for %s: %s", code, e)
 
         log.info("  Built %d valid rows", len(built))
 
         if built:
-            upserted = upsert_rows(built)
-            grand_total += upserted
-            log.info("  Upserted %d rows for %s", upserted, code)
-            # Purge old rows ONLY after successful upsert — never delete
-            # data unless we have fresh data to replace it with
-            purge_old_rows(slug_id, actual_report_date_str)
-        else:
-            log.warning("  No valid rows built for %s — skipping purge to preserve existing data", code)
+            # A Supabase timeout or bad row here used to escape the loop and
+            # kill every remaining market in REPORT_SLUGS — that's how the
+            # database ended up with only Baltimore/Boston/Atlanta partial.
+            # Catch here so one bad slug can't blank out the rest of the day.
+            try:
+                upserted = upsert_rows(built)
+                grand_total += upserted
+                log.info("  Upserted %d rows for %s", upserted, code)
+                # Remove anything left over under a hash we no longer emit.
+                prune_stale_hashes(
+                    slug_id,
+                    actual_report_date_str,
+                    {r["row_hash"] for r in built if r.get("row_hash")},
+                )
+            except Exception as e:
+                log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
+                # continue explicitly — the for loop's next iteration continues
+                # even without this, but be loud about the recovery
+                continue
 
     # ── National Trends (FVWTRDS) — separate schema ──────────────────────────
     log.info("Fetching FVWTRDS (slug 1662) — National Trends...")

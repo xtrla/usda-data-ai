@@ -2,10 +2,10 @@ name: Daily Data Update
 
 on:
   schedule:
-    - cron: '30 9 * * 1-5'   # 5:30 AM ET (09:30 UTC)
-    - cron: '0 11 * * 1-5'   # 7:00 AM ET (11:00 UTC)
-    - cron: '0 16 * * 1-5'   # 12:00 PM ET (16:00 UTC)
-  workflow_dispatch:
+    - cron: '0 13 * * 1-5'  # 9am ET (13:00 UTC)  — catch early publishers
+    - cron: '0 16 * * 1-5'  # 12pm ET (16:00 UTC) — catch mid-morning reports
+    - cron: '0 20 * * 1-5'  # 4pm ET  (20:00 UTC) — catch late afternoon reports
+  workflow_dispatch:          # allows manual trigger from GitHub Actions tab
 
 jobs:
   update-data:
@@ -25,7 +25,7 @@ jobs:
           cd backend
           pip install -r requirements.txt
 
-      - name: Run price ingestion (terminal + shipping point + gap backfill)
+      - name: Run ingestion
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -34,7 +34,12 @@ jobs:
           cd backend
           python ingest.py
 
-      - name: Run movement ingestion (shipment volumes)
+      # ingest_movement.py existed but nothing ever ran it, so produce_movement
+      # stayed empty and every volume bar in the UI rendered blank.
+      # continue-on-error: prices are the product; a movement failure should
+      # not fail a run that already loaded them successfully.
+      - name: Run movement ingestion
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -42,17 +47,3 @@ jobs:
         run: |
           cd backend
           python ingest_movement.py
-        continue-on-error: true  # Don't fail the whole run if movement fails
-
-      - name: Send price alerts
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          FRONTEND_URL: https://www.agra-x.com
-          # Flip to "1" to evaluate and log without emailing anyone.
-          ALERT_DRY_RUN: ${{ vars.ALERT_DRY_RUN }}
-        run: |
-          cd backend
-          python send_alerts.py
-        continue-on-error: true  # A send failure must not fail the ingest

@@ -44,11 +44,11 @@ const api = {
   // GET /reports/latest — latest known row per SKU per market, regardless
   // of report date. A market that hasn't printed today still returns its
   // last real price, so no terminal ever renders as empty.
-  reportLatest: (marketType = 'terminal', lookbackDays = 28) =>
+  reportLatest: (marketType = 'terminal', lookbackDays = 90) =>
     _fetch(`/reports/latest?market_type=${encodeURIComponent(marketType)}&lookback_days=${lookbackDays}`),
 
   // GET /reports/coverage — per-market freshness, for showing "Chicago · Sep 4".
-  coverage: (lookbackDays = 28) =>
+  coverage: (lookbackDays = 90) =>
     _fetch(`/reports/coverage?lookback_days=${lookbackDays}`),
 
   // GET /reports/terminal?date=
@@ -63,10 +63,12 @@ const api = {
   reportTrends: (date) =>
     _fetch(`/reports/trends${date ? `?date=${encodeURIComponent(date)}` : ''}`),
 
-  // GET /history?commodity=&market=&variety=&origin=&size=&package=&days=
+  // GET /history?commodity=&market=&variety=&origin=&size=&package=&grade=&quality=&days=
+  // Empty-string params are preserved: quality='' means the print with
+  // no quality note, which is a real record, not an absent filter.
   history: (params = {}) => {
     const q = Object.entries(params)
-      .filter(([, v]) => v != null && v !== '')
+      .filter(([, v]) => v != null)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join('&');
     return _fetch(`/history${q ? `?${q}` : ''}`);

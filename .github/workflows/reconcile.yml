@@ -1,0 +1,36 @@
+name: Reconcile against USDA
+
+# Runs after the last weekday ingest so it checks fresh data, and can be
+# triggered by hand any time. Fails the run when the database and USDA
+# disagree, so drift shows up as a red build instead of a support email.
+
+on:
+  schedule:
+    - cron: '30 20 * * 1-5'   # 4:30pm ET, ~30 min after the last ingest
+  workflow_dispatch:
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Reconcile
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          MARS_API_KEY: ${{ secrets.USDA_API_KEY }}
+        run: |
+          cd backend
+          python reconcile.py --verbose
