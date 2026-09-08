@@ -74,6 +74,13 @@ const api = {
     return _fetch(`/history${q ? `?${q}` : ''}`);
   },
 
+  // GET /recalls?days=&commodity=
+  recalls: (commodity = null, days = 120) =>
+    _fetch(`/recalls?days=${days}` + (commodity ? `&commodity=${encodeURIComponent(commodity)}` : '')),
+
+  // GET /recalls/commodities?days=
+  recallsByCommodity: (days = 120) => _fetch(`/recalls/commodities?days=${days}`),
+
   // GET /movement/latest
   movementLatest: () => _fetch('/movement/latest'),
 

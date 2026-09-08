@@ -483,6 +483,56 @@ def get_history(
 # MOVEMENT (produce_movement — USDA WA_FV175 truck/air/boat data)
 # ─────────────────────────────────────────────────────────────
 
+RECALLS_TABLE = "produce_recalls"
+
+@app.get("/recalls")
+def recalls(days: int = 120, commodity: str = None):
+    """FDA food recalls matched to commodities we price, newest first.
+
+    Not USDA price data and never mixed with it. FDA states this dataset must
+    not be used to issue public recall alerts and that it does not update a
+    recall's status after classification, so every row is "as published on
+    report_date" and carries an fda_url for the reader to check live status.
+    """
+    try:
+        from datetime import date as _date, timedelta
+        cutoff = (_date.today() - timedelta(days=days)).isoformat()
+        q = (supabase.table(RECALLS_TABLE).select("*")
+             .gte("report_date", cutoff)
+             .order("report_date", desc=True))
+        if commodity:
+            q = q.eq("commodity", commodity)
+        return fetch_all(q, order_by="recall_number")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/recalls/commodities")
+def recalls_by_commodity(days: int = 120):
+    """Count of open-window recalls per commodity, for badging the table."""
+    try:
+        from datetime import date as _date, timedelta
+        cutoff = (_date.today() - timedelta(days=days)).isoformat()
+        rows = fetch_all(
+            supabase.table(RECALLS_TABLE).select("commodity,classification,report_date")
+            .gte("report_date", cutoff),
+            order_by="commodity",
+        )
+        out = {}
+        for r in rows:
+            c = r.get("commodity")
+            if not c:
+                continue
+            e = out.setdefault(c, {"commodity": c, "count": 0, "class_i": 0, "latest": None})
+            e["count"] += 1
+            if (r.get("classification") or "").strip() == "Class I":
+                e["class_i"] += 1
+            d = r.get("report_date")
+            if d and (e["latest"] is None or d > e["latest"]):
+                e["latest"] = d
+        return sorted(out.values(), key=lambda x: -x["count"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/movement/dates")
 def movement_dates():
     """List available movement report dates, most recent first."""
@@ -1273,6 +1323,23 @@ def story_of_the_day(market: str = "New York"):
             except:
                 top_movers = []
 
+            # National flat-day guard, same reasoning as the per-market one:
+            # with nothing moving, a generated paragraph is filler by
+            # construction. State the count and stop.
+            if not top_movers:
+                return {
+                    "headline": f"Quiet session across terminal markets on {report_date}.",
+                    "body": (
+                        f"{total_h} commodity prints came in higher, {total_l} lower and "
+                        f"{total_s} unchanged across {len(market_summaries)} terminal markets. "
+                        f"No commodity at {top_market} showed a measurable week-over-week change."
+                    ),
+                    "source": SOURCE_LINE,
+                    "date": report_date,
+                    "market": cache_key,
+                    "generated": False,
+                }
+
             # As with the per-market story, decide here whether a national
             # cause-and-effect claim is defensible. A direction is only
             # "national" if a clear majority of markets agree; otherwise the
@@ -1330,6 +1397,40 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
             summary = market_summary(market=market)
             wow_data = week_over_week(market=market)
             movers_items = wow_data.get("items", [])[:10]
+
+            # If nothing actually moved, there is no story. Calling the model
+            # here produced pure filler: "no major shifts in supply or demand
+            # signals overnight", "monitor afternoon reports", "buyers should
+            # expect stable pricing" — none of which is in the data, and USDA
+            # publishes no afternoon report at all. The prompt demanded four
+            # sentences, so four sentences got invented.
+            #
+            # A flat day is a fact worth stating plainly. State it, and don't
+            # spend a model call dressing it up.
+            real_moves = [
+                m for m in movers_items
+                if m.get("change_pct") is not None and abs(m["change_pct"]) >= 2.0
+            ]
+            if not real_moves:
+                reporting = summary.get("commodities") or 0
+                hi = summary.get("tone_higher") or 0
+                lo = summary.get("tone_lower") or 0
+                body = (
+                    f"{reporting} commodities reported at {market} on {report_date}. "
+                    f"{hi} printed higher and {lo} printed lower than the previous report; "
+                    f"the rest were unchanged. No commodity moved more than 2%."
+                )
+                if not summary.get("movement_loads"):
+                    body += " No shipment movement was published for this market."
+                return {
+                    "headline": f"Quiet session at {market} — no commodity moved more than 2%.",
+                    "body": body,
+                    "source": SOURCE_LINE,
+                    "date": report_date,
+                    "market": cache_key,
+                    "generated": False,
+                }
+
 
             # Decide HERE whether the data can support a cause-and-effect
             # claim, rather than instructing the model to decide.
@@ -1400,6 +1501,8 @@ RULES:
 {causal_rule}
 - Every figure you cite must be traceable to the DATA. If you are unsure of a number, leave it out rather than approximating.
 - Write in plain produce industry language. No jargon. A buyer in a truck at 5 AM should understand this instantly.
+- This is {market} ONLY. Never write "nationwide", "across the nation", "national" or otherwise imply these figures cover other markets. They do not.
+- Do not reference overnight activity, afternoon reports or intraday trading. USDA publishes one report per market per day and nothing else exists.
 - End with one sentence on what the numbers show going into today. Do not predict prices or claim to know what will happen.
 - Do NOT say "I" or "we." Just state the facts.
 

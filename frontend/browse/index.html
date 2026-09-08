@@ -341,6 +341,11 @@
   // is selected so the reader always lands on the number they clicked for.
   let detailTab = 'price';
 
+  // FDA recalls, keyed by commodity. Kept strictly separate from price data:
+  // this is an FDA record, not a USDA price, and the two are never blended
+  // into one figure or one sentence.
+  let recallsByCom = {};
+
   // A SKU is identified by what it IS, never by its index in a sorted array.
   // The table sorts by variety-size-quality while the detail panel sorted by
   // variety alone, so index N meant two different rows: clicking 48s "fine
@@ -501,6 +506,13 @@
       allResults.forEach(function(rows) { merged = merged.concat(rows); });
       allRows = _deduplicateRows(merged);
       try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) { fobRows = []; }
+      // Non-blocking: a recall API hiccup must never stop prices rendering.
+      api.recallsByCommodity(120).then(function(list) {
+        var m = {};
+        (list || []).forEach(function(r) { if (r.commodity) m[r.commodity] = r; });
+        recallsByCom = m;
+        renderTable();
+      }).catch(function() {});
       renderAll();
     });
 
@@ -926,12 +938,24 @@
 
       // Commodity row
       html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
+      var rc = recallsByCom[d.name];
       html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row tbl-grid" style="display:grid;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
 
       // Name with caret
       html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
       html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2.4" stroke-linecap="round" style="flex:none;transform:' + (isExp ? 'rotate(90deg)' : 'none') + '"><polyline points="9 6 15 12 9 18"></polyline></svg>';
       html += '<span style="font-size:16px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(d.name) + '</span>';
+      // FDA recall badge. Deliberately not styled like a price or a tone: it
+      // is a different kind of fact from a different agency, and conflating
+      // the two would undercut "every price as reported".
+      if (rc && rc.count) {
+        html += '<span title="' + rc.count + ' FDA recall' + (rc.count > 1 ? 's' : '') +
+          ' since ' + esc(rc.latest || '') + '" style="flex:none;font-size:9.5px;font-weight:600;' +
+          'letter-spacing:0.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;' +
+          'border:1px solid ' + (rc.class_i ? 'var(--down)' : 'var(--border)') + ';' +
+          'color:' + (rc.class_i ? 'var(--down)' : 'var(--text-faint)') + '">FDA recall' +
+          (rc.count > 1 ? ' \u00d7' + rc.count : '') + '</span>';
+      }
       html += '</div>';
       // Reporting
       html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">' + d.skuCount + ' reporting</span>';
@@ -1274,8 +1298,10 @@
       { id: 'fob',      label: 'FOB' },
       { id: 'movement', label: 'Movement' },
       { id: 'markets',  label: 'Markets' },
-      { id: 'overview', label: 'Overview' }
+      { id: 'overview', label: 'Overview' },
+      { id: 'recalls',  label: 'Recalls' }
     ];
+    var comRecall = recallsByCom[selectedComName];
     html += '<div id="dossier-tabs" style="display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--border);overflow-x:auto">';
     TABS.forEach(function(t) {
       var on = t.id === detailTab;
@@ -1283,7 +1309,10 @@
         'style="flex:none;appearance:none;background:none;border:none;cursor:pointer;padding:11px 10px;' +
         'font-family:inherit;font-size:11.5px;font-weight:' + (on ? 600 : 400) + ';' +
         'color:' + (on ? 'var(--text)' : 'var(--text-faint)') + ';' +
-        'box-shadow:' + (on ? 'inset 0 -2px 0 var(--accent)' : 'none') + '">' + t.label + '</button>';
+        'box-shadow:' + (on ? 'inset 0 -2px 0 var(--accent)' : 'none') + '">' + t.label +
+        (t.id === 'recalls' && comRecall && comRecall.count
+          ? '<span style="margin-left:4px;font-size:9px;color:' + (comRecall.class_i ? 'var(--down)' : 'var(--text-faint)') + '">\u25cf</span>'
+          : '') + '</button>';
     });
     html += '</div>';
 
@@ -1429,6 +1458,12 @@
       html += '</div>';
     }
 
+    if (detailTab === 'recalls') {
+      html += '<div id="recalls-pane" style="padding:16px 20px">';
+      html += recallsHTML(row, null, true);
+      html += '</div>';
+    }
+
     if (detailTab === 'overview') {
       html += overviewHTML(row, sp, marketRows, fobEntries, crossMarket.concat(looseMarket));
     }
@@ -1446,6 +1481,7 @@
     // back and forth doesn't re-hit the API.
     if (detailTab === 'price') loadPriceHistory(row, sp);
     if (detailTab === 'movement') loadMovement(row);
+    if (detailTab === 'recalls') loadRecalls(row);
   }
 
   window._setDetailTab = function(id) {
@@ -1453,6 +1489,102 @@
     detailTab = id;
     renderDetail();
   };
+
+  // ── FDA RECALLS ──
+  // FDA enforcement records, shown beside prices but never merged with them.
+  // FDA states this data must not be used to issue public recall alerts and
+  // that it does not update a record's status after classification, so each
+  // row is labelled as published-on-date and links back to FDA for live
+  // status. AgraX does not interpret, rank or summarise them.
+  var recallCache = {};
+
+  function recallsHTML(row, list, loading) {
+    var h = '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">FDA recalls \u00b7 ' + esc(row.commodity) + '</span>';
+    if (list && list.length) {
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">last 120 days</span>';
+    }
+    h += '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading recalls\u2026</div>';
+      return h;
+    }
+    if (!list || !list.length) {
+      h += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.55">' +
+        'No FDA recall matched ' + esc(row.commodity) + ' in the last 120 days.</div>';
+      h += recallFooter();
+      return h;
+    }
+
+    list.forEach(function(r) {
+      var isClassI = (r.classification || '').trim() === 'Class I';
+      h += '<div style="margin-top:14px;padding:12px;border:1px solid ' +
+        (isClassI ? 'var(--down)' : 'var(--border)') + ';border-radius:8px">';
+      h += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+      h += '<span style="font-size:9.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;' +
+        'padding:2px 6px;border-radius:4px;background:' + (isClassI ? 'var(--down)' : 'var(--surface-row)') +
+        ';color:' + (isClassI ? '#fff' : 'var(--text-secondary)') + '">' + esc(r.classification || 'Unclassified') + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint)">' + esc(r.recall_number || '') + '</span>';
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + esc(U.fmtDate(r.report_date)) + '</span>';
+      h += '</div>';
+      if (r.reason) {
+        h += '<div style="font-size:12px;font-weight:500;margin-top:8px;line-height:1.5">' + esc(r.reason) + '</div>';
+      }
+      if (r.product_description) {
+        h += '<div style="font-size:11px;color:var(--text-secondary);margin-top:6px;line-height:1.5">' +
+          esc(r.product_description.slice(0, 220)) + (r.product_description.length > 220 ? '\u2026' : '') + '</div>';
+      }
+      if (r.recalling_firm) {
+        h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:6px">' + esc(r.recalling_firm) +
+          (r.voluntary_mandated ? ' \u00b7 ' + esc(r.voluntary_mandated) : '') + '</div>';
+      }
+      if (r.distribution) {
+        h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:4px">Distribution: ' +
+          esc(r.distribution.slice(0, 140)) + (r.distribution.length > 140 ? '\u2026' : '') + '</div>';
+      }
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-top:9px">';
+      h += '<span style="font-size:10.5px;color:var(--text-faint)">Status at publication: ' +
+        esc(r.status || 'not stated') + '</span>';
+      if (r.fda_url) {
+        h += '<a href="' + esc(r.fda_url) + '" target="_blank" rel="noopener" ' +
+          'style="font-size:11px;font-weight:500;margin-left:auto">Check FDA \u2192</a>';
+      }
+      h += '</div></div>';
+    });
+    h += recallFooter();
+    return h;
+  }
+
+  function recallFooter() {
+    return '<div style="font-size:10px;color:var(--text-faint);margin-top:14px;line-height:1.55;' +
+      'padding-top:10px;border-top:1px solid var(--border)">' +
+      'Source: FDA food enforcement reports. Not USDA price data, and not a recall alert service. ' +
+      'FDA does not update a record\u2019s status after classification, so what is shown is the status ' +
+      'as published on that date. Follow the FDA link for current status.</div>';
+  }
+
+  function loadRecalls(row) {
+    var key = row.commodity;
+    var el = document.getElementById('recalls-pane');
+    if (!el) return;
+    el.setAttribute('data-key', key);
+
+    function paint(list) {
+      var cur = document.getElementById('recalls-pane');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = recallsHTML(row, list, false);
+    }
+    if (recallCache[key]) { paint(recallCache[key]); return; }
+
+    api.recalls(row.commodity, 120).then(function(list) {
+      var arr = (list || []).slice().sort(function(a, b) {
+        return String(b.report_date || '').localeCompare(String(a.report_date || ''));
+      });
+      recallCache[key] = arr;
+      paint(arr);
+    }).catch(function() { paint([]); });
+  }
 
   // ── MOVEMENT ──
   // Shipment volume for this commodity, as USDA reported it. Volumes are
