@@ -336,10 +336,21 @@
   let checkedCountries = {}; // which country/origin checkboxes are ticked
   let sortMode = 'az';
   let searchQ = '';
-  let selectedSku = null;     // 'CommodityName::skuIdx' or null
+  let selectedSku = null;     // 'CommodityName::rowKey' or null
   // Active tab in the SKU detail panel. Resets to 'price' whenever a new SKU
   // is selected so the reader always lands on the number they clicked for.
   let detailTab = 'price';
+
+  // A SKU is identified by what it IS, never by its index in a sorted array.
+  // The table sorts by variety-size-quality while the detail panel sorted by
+  // variety alone, so index N meant two different rows: clicking 48s "fine
+  // appearance" opened 36s. row_hash is unique per published line; the
+  // composite is a fallback for rows that arrive without one.
+  function rowKey(r) {
+    if (r.row_hash) return r.row_hash;
+    return [r.market, r.commodity, r.variety, r.origin, r.grade,
+            r.package, r.size, r.quality_note].join('~');
+  }
   let selectedComName = null;  // commodity name of selected SKU
 
   const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
@@ -953,14 +964,14 @@
             || (a.size || '').localeCompare(b.size || '')
             || (a.quality_note || '').localeCompare(b.quality_note || '');
         });
-        sorted.forEach(function(row, skuIdx) {
+        sorted.forEach(function(row) {
           var sp = skuPrice(row);
           var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
           var sub = sp.src === 'mid' && sp.range ? sp.range : '';
-          var skuId = esc(d.name) + '::' + skuIdx;
+          var skuId = esc(d.name) + '::' + rowKey(row);
           var isSelected = selectedSku === skuId;
 
-          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
+          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',\'' + esc(rowKey(row)) + '\')" style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
           html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (isSelected ? 'var(--accent)' : 'inherit') + '">' + esc(row.variety || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
@@ -988,7 +999,7 @@
         html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
         html += '<span class="eyebrow" style="flex:none">Movement</span>';
         html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
-        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',0);return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">View details \u2192</a>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',\'' + esc(rowKey(sorted[0])) + '\');return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">View details \u2192</a>';
         html += '</div></div>';
       }
 
@@ -1021,15 +1032,15 @@
   };
 
   // Select a SKU → show dossier in right panel (desktop) or navigate (mobile)
-  window._selectSku = function(comName, skuIdx) {
+  window._selectSku = function(comName, skuKeyStr) {
     // New SKU: always start on Price.
-    if (selectedSku !== comName + '::' + skuIdx) detailTab = 'price';
+    if (selectedSku !== comName + '::' + skuKeyStr) detailTab = 'price';
     // On mobile, navigate to the standalone detail page
     if (window.innerWidth < 980) {
       window.location.href = '/app/commodity?c=' + encodeURIComponent(comName) + '&market=' + encodeURIComponent(marketShort(currentMarket));
       return;
     }
-    var newId = comName + '::' + skuIdx;
+    var newId = comName + '::' + skuKeyStr;
     if (selectedSku === newId) {
       selectedSku = null;
       selectedComName = null;
@@ -1081,10 +1092,17 @@
       // Fallback
       marketRows = allRows.filter(function(r) { return r.commodity === selectedComName; });
     }
-    var sorted = marketRows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
-    var skuIdx = parseInt(selectedSku.split('::')[1]);
-    var row = sorted[skuIdx];
-    if (!row) { dossierEl.innerHTML = ''; return; }
+    // Look the row up by identity. Split on the FIRST '::' only: a row_hash
+    // never contains one, but a commodity name might.
+    var sep = selectedSku.indexOf('::');
+    var wantKey = sep >= 0 ? selectedSku.slice(sep + 2) : '';
+    var row = marketRows.filter(function(r) { return rowKey(r) === wantKey; })[0];
+    if (!row) {
+      // The SKU left the view - a filter changed, or a new report replaced it.
+      dossierEl.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text-dim)">' +
+        'That price is no longer in view. Pick another row.</div>';
+      return;
+    }
 
     var sp = skuPrice(row);
     var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
