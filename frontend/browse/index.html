@@ -331,6 +331,9 @@
   let sortMode = 'az';
   let searchQ = '';
   let selectedSku = null;     // 'CommodityName::skuIdx' or null
+  // Active tab in the SKU detail panel. Resets to 'price' whenever a new SKU
+  // is selected so the reader always lands on the number they clicked for.
+  let detailTab = 'price';
   let selectedComName = null;  // commodity name of selected SKU
 
   const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
@@ -867,6 +870,16 @@
     var filterLabel = activeComs.length || activeOrigins.length || searchQ
       ? comList.length + ' of ' + byCom.size + ' commodities match'
       : comList.length + ' of ' + byCom.size + ' commodities \u00b7 ' + totalPrices + ' prices reporting';
+    // Say plainly which report date is loaded, and how many SKUs are older
+    // than it. This is the fastest way to tell at a glance whether the site
+    // pulled today's data or is showing yesterday's.
+    var staleCount = marketRows.filter(function(r) {
+      return latestDate && r.report_date && r.report_date !== latestDate;
+    }).length;
+    if (latestDate) {
+      filterLabel += ' \u00b7 ' + U.fmtDate(latestDate);
+      if (staleCount) filterLabel += ' (' + staleCount + ' older)';
+    }
     document.getElementById('toolbar-count').textContent = filterLabel;
 
     var anyOpen = Object.keys(expanded).some(function(k) { return expanded[k]; });
@@ -920,8 +933,8 @@
       // Expanded SKU table
       if (isExp) {
         html += '<div style="padding:0 0 16px 19px;animation:agxFade .14s ease-out;overflow-x:auto">';
-        html += '<div style="display:grid;min-width:640px;grid-template-columns:1fr 0.8fr 0.52fr 0.9fr 0.38fr 0.62fr 0.86fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
-        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow">Quality</span><span class="eyebrow" style="text-align:right">Price</span>';
+        html += '<div style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
+        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow">Quality</span><span class="eyebrow">Date</span><span class="eyebrow" style="text-align:right">Price</span>';
         html += '</div>';
 
         var sorted = d.rows.slice().sort(function(a, b) {
@@ -936,7 +949,7 @@
           var skuId = esc(d.name) + '::' + skuIdx;
           var isSelected = selectedSku === skuId;
 
-          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:640px;grid-template-columns:1fr 0.8fr 0.52fr 0.9fr 0.38fr 0.62fr 0.86fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
+          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
           html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (isSelected ? 'var(--accent)' : 'inherit') + '">' + esc(row.variety || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
@@ -946,6 +959,14 @@
           // "fine appearance" print of Mexican Hass 48s runs several dollars
           // above the base print of the identical pack.
           html += '<span style="color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize">' + esc(row.quality_note || '\u2014') + '</span>';
+          // Per-SKU date. The commodity row shows one date, but /reports/latest
+          // returns the newest print per SKU across a 90-day window, so packs
+          // inside one commodity can be days apart. Without this a stale price
+          // was indistinguishable from today's.
+          var skuStale = latestDate && row.report_date && row.report_date !== latestDate;
+          html += '<span title="' + esc(row.report_date || '') + '" style="font-family:var(--mono);font-size:11px;white-space:nowrap;color:' +
+            (skuStale ? 'var(--warn, #9a6b00)' : 'var(--text-faint)') + '">' +
+            esc(U.fmtDate(row.report_date)) + (skuStale ? ' \u2022' : '') + '</span>';
           html += '<div style="text-align:right">';
           html += '<div style="font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap">' + priceStr + '</div>';
           if (sub) html += '<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px;white-space:nowrap">' + sub + '</div>';
@@ -990,6 +1011,8 @@
 
   // Select a SKU → show dossier in right panel (desktop) or navigate (mobile)
   window._selectSku = function(comName, skuIdx) {
+    // New SKU: always start on Price.
+    if (selectedSku !== comName + '::' + skuIdx) detailTab = 'price';
     // On mobile, navigate to the standalone detail page
     if (window.innerWidth < 980) {
       window.location.href = '/app/commodity?c=' + encodeURIComponent(comName) + '&market=' + encodeURIComponent(marketShort(currentMarket));
@@ -1201,16 +1224,45 @@
     html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:7px">' + esc(row.origin || origins.join(' \u00b7 ')) + '</div>';
     html += '</div>';
 
+    // ── TABS ──
+    // The panel had five stacked sections and the lower three were below the
+    // fold on every screen, so most of what AgraX knows about a SKU was
+    // effectively invisible. Tabs surface all five at equal weight.
+    var TABS = [
+      { id: 'price',    label: 'Price' },
+      { id: 'fob',      label: 'FOB' },
+      { id: 'movement', label: 'Movement' },
+      { id: 'markets',  label: 'Markets' },
+      { id: 'overview', label: 'Overview' }
+    ];
+    html += '<div id="dossier-tabs" style="display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--border);overflow-x:auto">';
+    TABS.forEach(function(t) {
+      var on = t.id === detailTab;
+      html += '<button onclick="window._setDetailTab(\'' + t.id + '\')" ' +
+        'style="flex:none;appearance:none;background:none;border:none;cursor:pointer;padding:11px 10px;' +
+        'font-family:inherit;font-size:11.5px;font-weight:' + (on ? 600 : 400) + ';' +
+        'color:' + (on ? 'var(--text)' : 'var(--text-faint)') + ';' +
+        'box-shadow:' + (on ? 'inset 0 -2px 0 var(--accent)' : 'none') + '">' + t.label + '</button>';
+    });
+    html += '</div>';
+
     // Price history — latest print first, older prints beneath with dates.
     // Rendered as a placeholder here and filled asynchronously by
     // loadPriceHistory(); the panel must not block on a network call.
-    html += '<div id="price-history" style="padding:16px 20px;border-bottom:1px solid var(--border)">';
-    html += priceHistoryHTML(row, sp, null, true);
-    html += '</div>';
+    if (detailTab === 'price') {
+      html += '<div id="price-history" style="padding:16px 20px">';
+      html += priceHistoryHTML(row, sp, historyCache[skuKey(row)] || null, !historyCache[skuKey(row)]);
+      html += '</div>';
+    }
 
     // Shipping point FOB
     var fobEntries = Object.values(fobByOrigin);
-    if (fobEntries.length) {
+    if (detailTab === 'fob' && !fobEntries.length) {
+      html += '<div style="padding:16px 20px"><span class="eyebrow">Shipping point FOB</span>' +
+        '<div style="font-size:11.5px;color:var(--text-faint);margin-top:8px;line-height:1.55">' +
+        'No shipping point price published for ' + esc(selectedComName) + ' today.</div></div>';
+    }
+    if (detailTab === 'fob' && fobEntries.length) {
       var relevantEntries = fobEntries.filter(function(f) { return f.relevant; });
       var otherEntries = fobEntries.filter(function(f) { return !f.relevant; });
       var label = selectedOrigin ? esc(selectedComName) + ' \u00b7 ' + esc(row.origin) + ' origin' : esc(selectedComName) + ' \u00b7 all districts';
@@ -1288,7 +1340,7 @@
       return '';
     }
 
-    if (crossMarket.length || looseMarket.length) {
+    if (detailTab === 'markets' && (crossMarket.length || looseMarket.length)) {
       html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
       html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
       html += '<span class="eyebrow">Same SKU, other markets</span>';
@@ -1321,13 +1373,23 @@
         html += datesLineHTML(looseMarket);
       }
       html += '</div>';
-    } else {
-      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+    } else if (detailTab === 'markets') {
+      html += '<div style="padding:16px 20px">';
       html += '<span class="eyebrow">Other terminal markets</span>';
       html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:8px;line-height:1.55">' +
         'No other terminal market printed this pack today. Prices are compared like-for-like only \u2014 ' +
         'never averaged across varieties, packs or sizes.</div>';
       html += '</div>';
+    }
+
+    if (detailTab === 'movement') {
+      html += '<div id="movement-pane" style="padding:16px 20px">';
+      html += movementHTML(row, null, true);
+      html += '</div>';
+    }
+
+    if (detailTab === 'overview') {
+      html += overviewHTML(row, sp, marketRows, fobEntries, crossMarket.concat(looseMarket));
     }
 
     // Action buttons
@@ -1339,7 +1401,200 @@
 
     dossierEl.innerHTML = html;
     dossierEl.scrollTop = 0;
-    loadPriceHistory(row, sp);
+    // Only fetch for the visible tab; both results are cached, so switching
+    // back and forth doesn't re-hit the API.
+    if (detailTab === 'price') loadPriceHistory(row, sp);
+    if (detailTab === 'movement') loadMovement(row);
+  }
+
+  window._setDetailTab = function(id) {
+    if (detailTab === id) return;
+    detailTab = id;
+    renderDetail();
+  };
+
+  // ── MOVEMENT ──
+  // Shipment volume for this commodity, as USDA reported it. Volumes are
+  // summed per date across origins; nothing is averaged and no missing day
+  // is filled in.
+  var movementCache = {};
+
+  function fmtLbs(n) {
+    if (n == null) return '\u2014';
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B lbs';
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M lbs';
+    if (n >= 1e3) return Math.round(n / 1e3) + 'K lbs';
+    return Math.round(n) + ' lbs';
+  }
+
+  function movementHTML(row, data, loading) {
+    var h = '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">Shipment volume \u00b7 ' + esc(row.commodity) + '</span>';
+    h += '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading movement\u2026</div>';
+      return h;
+    }
+    if (!data || !data.byDate.length) {
+      h += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.55">' +
+        'No shipment volume published for ' + esc(row.commodity) + '. USDA reports movement ' +
+        'for a subset of commodities.</div>';
+      return h;
+    }
+
+    var latest = data.byDate[0];
+    var prev = data.byDate[1];
+    h += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
+    h += '<span style="font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-0.04em;line-height:1;font-variant-numeric:tabular-nums">' +
+      fmtLbs(latest.lbs) + '</span>';
+    if (prev && prev.lbs > 0) {
+      var pct = (latest.lbs - prev.lbs) / prev.lbs * 100;
+      var fg = Math.abs(pct) < 0.5 ? 'var(--text-faint)' : (pct > 0 ? UP : DOWN);
+      h += '<span style="font-family:var(--mono);font-size:11.5px;color:' + fg + ';padding-bottom:2px">' +
+        (pct > 0 ? '+' : '\u2212') + Math.abs(pct).toFixed(1) + '%</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px">Latest \u00b7 ' +
+      esc(U.fmtDate(latest.date)) + '</div>';
+
+    // Origins on the most recent date.
+    if (latest.origins.length) {
+      h += '<div style="margin-top:16px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Origins \u00b7 ' + esc(U.fmtDate(latest.date)) + '</span>';
+      h += '</div>';
+      var maxO = latest.origins[0].lbs || 1;
+      latest.origins.slice(0, 8).forEach(function(o) {
+        var w = (18 + (o.lbs / maxO) * 82).toFixed(1);
+        var isRowOrigin = String(o.name || '').toLowerCase() === String(row.origin || '').toLowerCase();
+        h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 46px 72px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
+        h += '<span style="font-size:11.5px;font-weight:' + (isRowOrigin ? 600 : 400) + ';color:' +
+          (isRowOrigin ? 'var(--text)' : 'var(--text-secondary)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+          esc(o.name) + (isRowOrigin ? ' \u25cf' : '') + '</span>';
+        h += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' +
+          (isRowOrigin ? 'var(--accent)' : 'var(--border-header)') + ';width:' + w + '%"></div></div>';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text-secondary)">' + fmtLbs(o.lbs) + '</span>';
+        h += '</div>';
+      });
+    }
+
+    // Daily totals.
+    if (data.byDate.length > 1) {
+      h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;margin-top:16px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Date</span>';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Volume</span>';
+      h += '</div>';
+      data.byDate.slice(0, 14).forEach(function(d, i) {
+        h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)' +
+          (i === 0 ? ';background:var(--surface-row)' : '') + '">';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;color:' +
+          (i === 0 ? 'var(--text)' : 'var(--text-secondary)') + '">' + esc(U.fmtDate(d.date)) + (i === 0 ? ' \u25cf' : '') + '</span>';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums">' + fmtLbs(d.lbs) + '</span>';
+        h += '</div>';
+      });
+    }
+
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:10px;line-height:1.5">' +
+      'National truck, air and boat movement as reported by USDA. Volume is not ' +
+      'specific to this pack or terminal market.</div>';
+    return h;
+  }
+
+  function loadMovement(row) {
+    var key = row.commodity;
+    var el = document.getElementById('movement-pane');
+    if (!el) return;
+    el.setAttribute('data-key', key);
+
+    function paint(data) {
+      var cur = document.getElementById('movement-pane');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = movementHTML(row, data, false);
+    }
+    if (movementCache[key]) { paint(movementCache[key]); return; }
+
+    api.movementForCommodity(row.commodity, 30).then(function(rows) {
+      var byDateMap = {};
+      (rows || []).forEach(function(r) {
+        var d = r.report_date;
+        var lbs = U.num(r.total_pounds) || 0;
+        if (!d || lbs <= 0) return;
+        if (!byDateMap[d]) byDateMap[d] = { date: d, lbs: 0, originMap: {} };
+        byDateMap[d].lbs += lbs;
+        var o = r.origin_name || r.origin_code || 'Unknown';
+        byDateMap[d].originMap[o] = (byDateMap[d].originMap[o] || 0) + lbs;
+      });
+      var byDate = Object.keys(byDateMap).map(function(d) {
+        var e = byDateMap[d];
+        e.origins = Object.keys(e.originMap).map(function(n) {
+          return { name: n, lbs: e.originMap[n] };
+        }).sort(function(a, b) { return b.lbs - a.lbs; });
+        return e;
+      }).sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); });
+
+      var data = { byDate: byDate };
+      movementCache[key] = data;
+      paint(data);
+    }).catch(function() {
+      paint({ byDate: [] });
+    });
+  }
+
+  // ── OVERVIEW ──
+  // One screen that answers "what am I looking at and how does it sit" —
+  // the SKU's own numbers plus where it stands against FOB and other cities.
+  function overviewHTML(row, sp, marketRows, fobEntries, allCross) {
+    function stat(label, value, sub) {
+      return '<div style="border:1px solid var(--border);border-radius:8px;padding:11px 12px">' +
+        '<div style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">' + esc(label) + '</div>' +
+        '<div style="font-family:var(--mono);font-size:19px;font-weight:500;letter-spacing:-0.03em;margin-top:6px;font-variant-numeric:tabular-nums">' + value + '</div>' +
+        (sub ? '<div style="font-size:10.5px;color:var(--text-faint);margin-top:3px">' + sub + '</div>' : '') +
+        '</div>';
+    }
+
+    var h = '<div style="padding:16px 20px">';
+    h += '<span class="eyebrow">Overview \u00b7 ' + esc(currentMarket) + '</span>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">';
+
+    h += stat('This print', sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014',
+              esc(U.fmtDate(row.report_date)));
+    h += stat('Packs listed', String(marketRows.length),
+              'for ' + esc(row.commodity));
+
+    // Spread across markets printing this pack.
+    if (allCross.length > 1) {
+      var prices = allCross.map(function(m) { return m.price; });
+      var lo = Math.min.apply(null, prices), hi = Math.max.apply(null, prices);
+      h += stat('Across markets', '$' + lo.toFixed(2) + '\u2013$' + hi.toFixed(2),
+                allCross.length + ' markets printing this pack');
+      var rank = allCross.slice().sort(function(a, b) { return a.price - b.price; })
+        .findIndex(function(m) { return m.isCurrent; });
+      h += stat('This market ranks',
+                rank >= 0 ? '#' + (rank + 1) : '\u2014',
+                rank >= 0 ? 'cheapest first, of ' + allCross.length : '');
+    } else {
+      h += stat('Across markets', '\u2014', 'only this market printed it');
+      h += stat('This market ranks', '\u2014', '');
+    }
+
+    // FOB spread.
+    var relevant = fobEntries.filter(function(f) { return f.relevant && f.price != null; });
+    var primary = relevant.length ? relevant[0] : fobEntries.filter(function(f) { return f.price != null; })[0];
+    if (primary && sp.price != null) {
+      var mk = sp.price - primary.price;
+      h += stat('Over FOB', (mk >= 0 ? '+$' : '\u2212$') + Math.abs(mk).toFixed(2),
+                'vs ' + esc(primary.name) + ' at $' + primary.price.toFixed(2));
+    } else {
+      h += stat('Over FOB', '\u2014', 'no matching shipping point');
+    }
+    h += stat('USDA tone', esc(row.movement || 'Not stated'), 'as reported');
+
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:12px;line-height:1.55">' +
+      'Every figure here is a published USDA number or a difference between two of them. ' +
+      'Nothing is blended across varieties, packs or dates.</div>';
+    h += '</div>';
+    return h;
   }
 
   // ── PRICE HISTORY ──

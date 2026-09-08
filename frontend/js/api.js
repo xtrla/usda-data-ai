@@ -77,6 +77,10 @@ const api = {
   // GET /movement/latest
   movementLatest: () => _fetch('/movement/latest'),
 
+  // GET /movement/commodity/{commodity}?days=
+  movementForCommodity: (commodity, days = 30) =>
+    _fetch(`/movement/commodity/${encodeURIComponent(commodity)}?days=${days}`),
+
   // GET /movement/summary/{date}
   movementSummary: (date) => _fetch(`/movement/summary/${encodeURIComponent(date)}`),
 
