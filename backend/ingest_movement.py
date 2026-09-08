@@ -189,6 +189,40 @@ def fetch_latest_movement(slug_id: int) -> list[dict]:
 
 
 # ── Parse a raw MARS row into a produce_movement record ────────────────────
+
+# ── FIELD RESOLUTION ────────────────────────────────────────
+# The MARS movement endpoints don't use the same field names as the price
+# endpoints, and they differ between reports. Hard-coding a guessed list
+# meant WA_FV170 returned 1,159 good rows and every one was discarded as
+# "no commodity/volume".
+#
+# These resolve a field by looking for a pattern in the actual keys, so a
+# rename or a report-specific spelling doesn't silently drop a whole day.
+
+def _find_key(raw: dict, *patterns) -> str | None:
+    """First key whose lowered name contains one of the patterns.
+
+    Exact matches win over substring matches so that "commodity" is never
+    beaten by "commodity_group" when both are present.
+    """
+    keys = list(raw.keys())
+    lowered = {k: k.lower().replace(" ", "_") for k in keys}
+    for pat in patterns:
+        for k in keys:
+            if lowered[k] == pat:
+                return k
+    for pat in patterns:
+        for k in keys:
+            if pat in lowered[k]:
+                return k
+    return None
+
+
+def _get(raw: dict, *patterns):
+    k = _find_key(raw, *patterns)
+    return raw.get(k) if k else None
+
+
 def parse_movement_row(raw: dict, slug_info: dict) -> dict | None:
     """
     Parse a single MARS API movement row into a produce_movement record.
@@ -204,16 +238,15 @@ def parse_movement_row(raw: dict, slug_info: dict) -> dict | None:
       - quantity (generic)
     """
     # Commodity
-    commodity = raw.get("commodity") or raw.get("Commodity") or raw.get("item") or ""
+    commodity = _get(raw, "commodity", "item", "product") or ""
     commodity = normalize_commodity(commodity)
     if not commodity or commodity == "Unknown":
         return None
 
     # Report date — MARS returns various date formats
-    report_date = (
-        raw.get("report_date") or raw.get("published_date")
-        or raw.get("report_begin_date") or raw.get("date") or ""
-    )
+    report_date = _get(
+        raw, "report_date", "published_date", "report_begin_date", "date"
+    ) or ""
     if not report_date:
         return None
     # Normalize date to YYYY-MM-DD
@@ -222,14 +255,13 @@ def parse_movement_row(raw: dict, slug_info: dict) -> dict | None:
         return None
 
     # Origin
-    origin_raw = (
-        raw.get("origin") or raw.get("district") or raw.get("reporting_area")
-        or raw.get("state") or raw.get("city") or ""
-    )
+    origin_raw = _get(
+        raw, "origin", "district", "reporting_area", "region", "state", "city"
+    ) or ""
     origin_code, origin_name = normalize_origin(origin_raw)
 
     # Transport mode
-    trans_raw = raw.get("trans_mode") or raw.get("transportation_mode") or raw.get("mode") or ""
+    trans_raw = _get(raw, "trans_mode", "transportation_mode", "transportation", "mode") or ""
     trans_code, trans_full = normalize_trans_mode(trans_raw)
 
     # Volume — try multiple fields, convert to pounds
@@ -276,35 +308,44 @@ def parse_movement_row(raw: dict, slug_info: dict) -> dict | None:
 def _extract_volume(raw: dict) -> float | None:
     """
     Extract volume in pounds from a MARS movement row.
-    USDA reports volume in different units depending on the report:
-      - total_pounds: already in pounds
-      - package_count / quantity: count of packages (assume ~25 lbs/pkg avg)
-      - total_10000_units: multiply by 10,000
-      - hundredweight / cwt: multiply by 100
+
+    Resolved by pattern rather than exact key, because the movement reports
+    spell these differently from the price reports and from each other.
+    Order matters: most specific unit first, so a row carrying both a
+    package count and a pound total is read as pounds.
     """
-    # Direct pounds
-    for field in ("total_pounds", "lbs", "pounds", "weight"):
-        val = _num(raw.get(field))
+    # Direct pounds. The guards matter: "hundredweight" contains "weight"
+    # and would otherwise be read as a raw pound figure, reporting 50 lbs
+    # where USDA meant 5,000.
+    k = _find_key(raw, "total_pounds", "pounds", "lbs", "weight")
+    if k and not any(x in k.lower().replace(" ", "_")
+                     for x in ("10000", "hundred", "cwt", "avg", "average", "per_")):
+        val = _num(raw.get(k))
         if val is not None and val > 0:
             return val
 
     # 10,000 lb units (FV170 format)
-    for field in ("total_10000_units", "units_10000", "ten_thousand_units"):
-        val = _num(raw.get(field))
+    k = _find_key(raw, "total_10000_units", "units_10000", "10000", "ten_thousand")
+    if k:
+        val = _num(raw.get(k))
         if val is not None and val > 0:
             return val * 10000
 
     # Hundredweight
-    for field in ("hundredweight", "cwt"):
-        val = _num(raw.get(field))
+    k = _find_key(raw, "hundredweight", "cwt")
+    if k:
+        val = _num(raw.get(k))
         if val is not None and val > 0:
             return val * 100
 
-    # Package count — rough conversion at 25 lbs/package average
-    for field in ("package_count", "quantity", "pkgs", "total_packages"):
-        val = _num(raw.get(field))
+    # Package or load counts. Approximate — 25 lbs per package is a rough
+    # average across produce and should not be presented as a measured
+    # weight.
+    k = _find_key(raw, "package_count", "total_packages", "pkgs", "quantity", "loads", "count")
+    if k:
+        val = _num(raw.get(k))
         if val is not None and val > 0:
-            return val * 25  # approximate
+            return val * 25
 
     return None
 
@@ -438,6 +479,18 @@ def run(target_date: str = None):
         log.info("  Parsed %d rows, skipped %d (no commodity/volume)", len(parsed), skipped)
 
         if not parsed:
+            # Everything was discarded. That is almost always a field-name
+            # mismatch rather than an empty report, so print what USDA
+            # actually sent — otherwise the next person is guessing at key
+            # names the same way this parser originally did.
+            if raw_rows:
+                sample = raw_rows[0]
+                log.warning("  ALL %d rows skipped for %s. Field names USDA returned:",
+                            len(raw_rows), slug["code"])
+                for k in sorted(sample.keys()):
+                    v = sample.get(k)
+                    v = (str(v)[:60] + "…") if v is not None and len(str(v)) > 60 else v
+                    log.warning("      %-28s = %r", k, v)
             continue
 
         # Log a sample row for debugging
