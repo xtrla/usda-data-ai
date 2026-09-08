@@ -101,6 +101,12 @@
   <!-- CENTER TABLE -->
   <main style="min-width:0;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card);padding:0 16px 8px" id="main-col">
     <!-- Toolbar -->
+    <!-- Market summary as a horizontal strip. It used to live in the right
+         panel, which meant the panel had to stay mounted permanently and the
+         table lost 400px of width for it. Here it costs one row and vanishes
+         when a SKU is open. -->
+    <div id="summary-strip" style="padding:0 0 12px"></div>
+
     <div style="position:sticky;top:52px;z-index:30;background:var(--card);padding:14px 0 0;border-radius:10px 10px 0 0;overflow:hidden" id="toolbar">
       <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:10px">
         <span class="eyebrow">Commodities at <span id="toolbar-market">—</span></span>
@@ -615,6 +621,11 @@
     expanded = {};
     document.getElementById('market-summary').style.display = 'block';
     document.getElementById('dossier-panel').style.display = 'none';
+    var grid = document.getElementById('main-grid');
+    if (grid) grid.removeAttribute('data-detail-open');
+    // Stale until the new market's summary lands; blank beats wrong.
+    summaryCache = null;
+    renderSummaryStrip();
     renderAll();
     renderSummary();
   };
@@ -1036,6 +1047,10 @@
     renderTable();
     document.getElementById('market-summary').style.display = 'block';
     document.getElementById('dossier-panel').style.display = 'none';
+    // Give the width back to the table and put the summary strip back.
+    var grid = document.getElementById('main-grid');
+    if (grid) grid.removeAttribute('data-detail-open');
+    renderSummaryStrip();
   };
 
   // Render the dossier panel
@@ -1043,14 +1058,22 @@
     var summaryEl = document.getElementById('market-summary');
     var dossierEl = document.getElementById('dossier-panel');
 
+    var grid = document.getElementById('main-grid');
+
     if (!selectedComName || !selectedSku) {
+      // Nothing selected: collapse the panel and give the table the width.
       summaryEl.style.display = 'block';
       dossierEl.style.display = 'none';
+      if (grid) grid.removeAttribute('data-detail-open');
+      renderSummaryStrip();
       return;
     }
 
     summaryEl.style.display = 'none';
     dossierEl.style.display = 'block';
+    if (grid) grid.setAttribute('data-detail-open', '');
+    var strip = document.getElementById('summary-strip');
+    if (strip) strip.innerHTML = '';
 
     var market = marketShort(currentMarket);
     var marketRows = allRows.filter(function(r) { return r.market === market && r.commodity === selectedComName; });
@@ -1728,11 +1751,56 @@
   }
 
   // ── MARKET SUMMARY ──
+  // Cached so the strip can render synchronously on every table redraw
+  // without re-hitting the API.
+  var summaryCache = null;
+
+  function renderSummaryStrip() {
+    var el = document.getElementById('summary-strip');
+    if (!el) return;
+    var sm = summaryCache;
+    if (!sm) { el.innerHTML = ''; return; }
+
+    var onBoard = (sm.tone_higher || 0) + (sm.tone_lower || 0) + (sm.tone_steady || 0);
+    var ship = (sm.shipping_point_movement || []).slice(0, 3);
+
+    function cell(label, value, sub, fg) {
+      return '<div style="flex:1 1 128px;min-width:118px;padding:9px 12px;border-right:1px solid var(--border)">' +
+        '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">' + label + '</div>' +
+        '<div style="font-family:var(--mono);font-size:17px;font-weight:500;letter-spacing:-0.035em;margin-top:4px;color:' + (fg || 'var(--text)') + '">' + value + '</div>' +
+        '<div style="font-size:10px;color:var(--text-faint);margin-top:1px">' + sub + '</div></div>';
+    }
+
+    var h = '<div style="display:flex;flex-wrap:wrap;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden">';
+    h += cell('Reporting', sm.commodities || '\u2014', 'commodities today');
+    h += cell('Tone higher', sm.tone_higher != null ? sm.tone_higher : '\u2014', 'of ' + onBoard + ' on board', 'var(--up)');
+    h += cell('Tone lower', sm.tone_lower != null ? sm.tone_lower : '\u2014', 'of ' + onBoard + ' on board', 'var(--down)');
+    h += cell('Movement', sm.movement_loads ? sm.movement_loads.toLocaleString() : '\u2014', 'loads this week');
+
+    if (ship.length) {
+      h += '<div style="flex:2 1 260px;min-width:240px;padding:9px 12px">';
+      h += '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Shipping point movement</div>';
+      h += '<div style="display:flex;gap:16px;margin-top:5px;flex-wrap:wrap">';
+      ship.forEach(function(pt) {
+        var fg = pt.wow_pct != null ? (pt.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
+        var chg = pt.wow_pct != null ? (pt.wow_pct >= 0 ? '+' : '') + pt.wow_pct + '%' : '';
+        h += '<div><div style="font-size:11px;color:var(--text-secondary);white-space:nowrap">' + esc(pt.name) + '</div>' +
+          '<div style="font-family:var(--mono);font-size:12.5px">' + (pt.loads ? pt.loads.toLocaleString() : '\u2014') +
+          (chg ? ' <span style="font-size:10px;color:' + fg + '">' + chg + '</span>' : '') + '</div></div>';
+      });
+      h += '</div></div>';
+    }
+    h += '</div>';
+    el.innerHTML = h;
+  }
+
   async function renderSummary() {
     var market = marketShort(currentMarket);
     document.getElementById('sum-market').textContent = currentMarket;
     try {
       var summary = await api.marketSummary(market);
+      summaryCache = summary;
+      renderSummaryStrip();
       var stats = [
         { label: 'Reporting', value: summary.commodities || '\u2014', sub: 'commodities today', fg: 'var(--text)' },
         { label: 'Tone higher', value: summary.tone_higher != null ? summary.tone_higher : '\u2014', sub: 'of ' + ((summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)) + ' on board', fg: 'var(--up)' },
