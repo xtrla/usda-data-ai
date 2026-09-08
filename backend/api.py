@@ -508,8 +508,33 @@ def movement_latest():
         if not dates_result.data:
             return {"date": None, "rows": []}
         latest = dates_result.data[0]["report_date"]
-        rows = supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", latest).limit(50000).execute()
-        return {"date": latest, "rows": rows.data or []}
+        # Paged: .limit() cannot beat db-max-rows (999 on this project), so
+        # this returned a single page of a multi-thousand-row day.
+        rows = fetch_all(
+            supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", latest)
+        )
+        return {"date": latest, "rows": rows}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/movement/commodity/{commodity}")
+def movement_for_commodity(commodity: str, days: int = 30):
+    """Movement history for one commodity, newest first.
+
+    Powers the Movement tab in the SKU panel. Grouped by date and origin so
+    the reader can see whether supply into the country is tightening or
+    flooding for the thing they are actually looking at.
+    """
+    try:
+        from datetime import date as _date, timedelta
+        cutoff = (_date.today() - timedelta(days=days)).isoformat()
+        rows = fetch_all(
+            supabase.table(MOVEMENT_TABLE).select("*")
+            .eq("commodity", commodity)
+            .gte("report_date", cutoff)
+            .order("report_date", desc=True)
+        )
+        return rows
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -517,8 +542,9 @@ def movement_latest():
 def movement_by_date(date: str):
     """All movement rows for a specific date."""
     try:
-        result = supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", date).limit(50000).execute()
-        return result.data or []
+        return fetch_all(
+            supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", date)
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -526,8 +552,9 @@ def movement_by_date(date: str):
 def movement_summary(date: str):
     """Aggregated movement view: totals, by mode, by origin, top commodities."""
     try:
-        result = supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", date).limit(50000).execute()
-        rows = result.data or []
+        rows = fetch_all(
+            supabase.table(MOVEMENT_TABLE).select("*").eq("report_date", date)
+        )
         if not rows:
             return {"date": date, "total_pounds": 0, "row_count": 0, "by_mode": [], "by_origin": [], "by_commodity": []}
 
