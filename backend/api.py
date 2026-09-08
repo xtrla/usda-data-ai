@@ -1273,12 +1273,38 @@ def story_of_the_day(market: str = "New York"):
             except:
                 top_movers = []
 
+            # As with the per-market story, decide here whether a national
+            # cause-and-effect claim is defensible. A direction is only
+            # "national" if a clear majority of markets agree; otherwise the
+            # story is a set of local moves and must be told that way.
+            markets_counted = len(market_summaries) or 1
+            higher_led = sum(1 for m in market_summaries if m["higher"] > m["lower"])
+            lower_led = sum(1 for m in market_summaries if m["lower"] > m["higher"])
+            dominant = max(higher_led, lower_led)
+            direction_is_national = dominant >= (markets_counted * 2 / 3)
+
+            if direction_is_national:
+                national_rule = (
+                    f"- {dominant} of {markets_counted} markets moved the same direction, so a "
+                    f"national picture is supportable. Describe it, but name the markets that "
+                    f"ran against it rather than smoothing them over."
+                )
+            else:
+                national_rule = (
+                    f"- Markets split: {higher_led} leaned higher, {lower_led} leaned lower, out "
+                    f"of {markets_counted}. There is NO single national direction today. Do not "
+                    f"claim one. Report the split and describe individual markets instead."
+                )
+
             data_snapshot = {
                 "scope": "national — all 12 USDA terminal markets",
                 "date": report_date,
                 "total_commodities_higher": total_h,
                 "total_commodities_lower": total_l,
                 "total_commodities_steady": total_s,
+                "markets_leaning_higher": higher_led,
+                "markets_leaning_lower": lower_led,
+                "direction_is_national": direction_is_national,
                 "markets": market_summaries,
                 "biggest_movers_at_" + top_market: top_movers,
             }
@@ -1291,9 +1317,12 @@ DATA:
 
 RULES:
 - Write a headline (1 sentence, under 15 words) about the national market picture today.
-- Write a body paragraph (3-4 sentences) that gives the big picture across markets. Which markets are tightening? Which are easing? Mention 2-3 specific commodities and their direction.
+- Write a body paragraph (3-4 sentences) giving the picture across markets. Mention 2-3 specific commodities and their direction.
+{national_rule}
+- Use ONLY figures that appear in the DATA above. Never state a number that is not in the data.
+- Do not attribute price moves to weather, fuel, labour, holidays, trade or any other cause. None of that is in this data.
 - Write for a produce buyer checking prices at 5 AM. Plain language. No jargon.
-- End with one sentence about what to watch today.
+- End with one sentence on what the numbers show. Do not predict prices.
 - Do NOT say "I" or "we." Just state the facts.
 
 Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
@@ -1301,6 +1330,46 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
             summary = market_summary(market=market)
             wow_data = week_over_week(market=market)
             movers_items = wow_data.get("items", [])[:10]
+
+            # Decide HERE whether the data can support a cause-and-effect
+            # claim, rather than instructing the model to decide.
+            #
+            # The old rule was unconditional: "If movement is down and prices
+            # are up, say supply is tightening." Movement and price move
+            # together for plenty of reasons that aren't supply — a holiday
+            # week, a reporting gap, one big market skewing the average — and
+            # the model asserted a cause with full confidence either way.
+            # A story that says supply is tightening when it isn't is exactly
+            # the kind of error "every price as reported" is meant to prevent.
+            mv_pct = summary.get("movement_wow")
+            has_movement = mv_pct is not None and summary.get("movement_loads")
+
+            # 15% is the threshold below which a week-over-week movement swing
+            # is not distinguishable from normal weekly noise in these reports.
+            CAUSAL_THRESHOLD = 15.0
+            movement_is_decisive = bool(has_movement and abs(mv_pct) >= CAUSAL_THRESHOLD)
+
+            if movement_is_decisive:
+                direction = "fallen" if mv_pct < 0 else "risen"
+                causal_rule = (
+                    f"- Shipment movement has {direction} {abs(mv_pct):.0f}% week over week, "
+                    f"which is a large enough swing to discuss as a driver. You may connect it "
+                    f"to the price changes, but only for commodities where the direction "
+                    f"actually matches. Do not claim it explains moves that run the other way."
+                )
+            elif has_movement:
+                causal_rule = (
+                    f"- Shipment movement changed {mv_pct:+.0f}% week over week. That is within "
+                    f"normal weekly variation and does NOT explain today's price moves. Report "
+                    f"what prices did without naming a cause. Do not say supply is tightening, "
+                    f"loosening, or flooding."
+                )
+            else:
+                causal_rule = (
+                    "- No shipment movement data is available for this market today. Report the "
+                    "price changes only. Do not speculate about supply, demand or any other "
+                    "cause. Do not describe supply as tight, loose or flooding."
+                )
 
             data_snapshot = {
                 "market": market,
@@ -1311,6 +1380,7 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
                 "tone_steady": summary.get("tone_steady"),
                 "movement_loads": summary.get("movement_loads"),
                 "movement_wow_pct": summary.get("movement_wow"),
+                "movement_supports_causal_claim": movement_is_decisive,
                 "shipping_point_movement": summary.get("shipping_point_movement", [])[:6],
                 "biggest_changes": [
                     {"commodity": m["commodity"], "change_pct": m["change_pct"], "current_price": m["current_price"], "tone": m["tone"]}
@@ -1326,10 +1396,11 @@ DATA:
 
 RULES:
 - Write a bold headline (1 sentence, under 15 words) that captures the single most important market move today.
-- Write a body paragraph (3-4 sentences) that explains WHY — connect shipping point movement to price changes. Mention specific commodities, dollar amounts, and percentages from the data.
+- Write a body paragraph (3-4 sentences). Mention specific commodities, dollar amounts, and percentages, using ONLY figures that appear in the DATA above. Never state a number that is not in the data.
+{causal_rule}
+- Every figure you cite must be traceable to the DATA. If you are unsure of a number, leave it out rather than approximating.
 - Write in plain produce industry language. No jargon. A buyer in a truck at 5 AM should understand this instantly.
-- If movement is down and prices are up, say supply is tightening. If movement is up and prices are flat, say supply is flooding.
-- End with one actionable sentence — buy ahead, negotiate, hold, or wait.
+- End with one sentence on what the numbers show going into today. Do not predict prices or claim to know what will happen.
 - Do NOT say "I" or "we." Just state the facts.
 
 Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
