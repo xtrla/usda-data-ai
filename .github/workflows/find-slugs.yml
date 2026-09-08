@@ -1,0 +1,37 @@
+name: Find slug IDs
+
+# Manual only. Looks up the real MARS slug IDs for reports whose IDs were
+# estimated by hand and now 404. Uses the MARS_API_KEY secret that already
+# exists, so no key ever has to be handled locally.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pattern:
+        description: 'Report code or name to search (blank = movement reports)'
+        required: false
+        default: ''
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Look up slug IDs
+        env:
+          MARS_API_KEY: ${{ secrets.USDA_API_KEY }}
+        run: |
+          cd backend
+          python find_slugs.py ${{ github.event.inputs.pattern }}
