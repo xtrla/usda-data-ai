@@ -63,10 +63,12 @@ const api = {
   reportTrends: (date) =>
     _fetch(`/reports/trends${date ? `?date=${encodeURIComponent(date)}` : ''}`),
 
-  // GET /history?commodity=&market=&variety=&origin=&size=&package=&days=
+  // GET /history?commodity=&market=&variety=&origin=&size=&package=&grade=&quality=&days=
+  // Empty-string params are preserved: quality='' means the print with
+  // no quality note, which is a real record, not an absent filter.
   history: (params = {}) => {
     const q = Object.entries(params)
-      .filter(([, v]) => v != null && v !== '')
+      .filter(([, v]) => v != null)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join('&');
     return _fetch(`/history${q ? `?${q}` : ''}`);

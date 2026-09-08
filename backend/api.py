@@ -212,6 +212,12 @@ def get_latest_report(market_type: str = "terminal", lookback_days: int = 90):
             key = (
                 r.get("market"), r.get("commodity"), r.get("variety"),
                 r.get("origin"), r.get("grade"), r.get("package"), r.get("size"),
+                # quality_note distinguishes genuinely different prints of the
+                # same pack. USDA publishes Mexican Hass 48s three times — a
+                # base price, a "Few" price and a "fine appearance" price —
+                # and they are not the same product to a buyer. Leaving this
+                # out of the key silently kept one of the three at random.
+                r.get("quality_note"),
             )
             if key in seen:
                 continue
@@ -440,9 +446,18 @@ def get_history(
     origin: str = None,
     size: str = None,
     package: str = None,
+    grade: str = None,
+    quality: str = None,
     days: int = 90,
 ):
-    """Return time-series rows for the given SKU filters, most recent first."""
+    """Return time-series rows for the given SKU filters, most recent first.
+
+    grade and quality are part of a SKU's identity, not decoration. Without
+    them a history for Mexican Hass 48s mixed the base print, the "Few"
+    print and the "fine appearance" print into one series, so the chart
+    jumped between three different products and every change figure was
+    meaningless. Callers that omit them still get the looser behaviour.
+    """
     try:
         from datetime import date, timedelta
         cutoff = (date.today() - timedelta(days=days)).isoformat()
@@ -453,6 +468,11 @@ def get_history(
         if origin:  q = q.eq("origin", origin)
         if size:    q = q.eq("size", size)
         if package: q = q.eq("package", package)
+        if grade:   q = q.eq("grade", grade)
+        # An explicit empty string means "the print with no quality note",
+        # which is a real and distinct record — not "don't filter".
+        if quality is not None:
+            q = q.eq("quality_note", quality) if quality else q.is_("quality_note", "null")
 
         result_rows = fetch_all(q.order("report_date", desc=True))
         return result_rows

@@ -133,7 +133,9 @@
       return String(b.report_date || '').localeCompare(String(a.report_date || ''));
     });
     rows.forEach(function (r) {
-      var k = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size].join('||');
+      // quality_note included: a "fine appearance" print is a separate
+      // price from the base print of the same pack, not a duplicate of it.
+      var k = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size, r.quality_note].join('||');
       if (!seen[k]) { seen[k] = 1; out.push(r); }
     });
     return out;

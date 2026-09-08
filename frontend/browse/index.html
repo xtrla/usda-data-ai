@@ -410,7 +410,9 @@
     rows.sort(function(a, b) { return (b.report_date || '').localeCompare(a.report_date || ''); });
     var result = [];
     rows.forEach(function(r) {
-      var key = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size].join('||');
+      // quality_note included: USDA's base, "Few" and "fine appearance"
+      // prints of the same pack are different products at different prices.
+      var key = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size, r.quality_note].join('||');
       if (!seen[key]) {
         seen[key] = true;
         result.push(r);
@@ -918,11 +920,15 @@
       // Expanded SKU table
       if (isExp) {
         html += '<div style="padding:0 0 16px 19px;animation:agxFade .14s ease-out;overflow-x:auto">';
-        html += '<div style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
-        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow" style="text-align:right">Price</span>';
+        html += '<div style="display:grid;min-width:640px;grid-template-columns:1fr 0.8fr 0.52fr 0.9fr 0.38fr 0.62fr 0.86fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
+        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow">Quality</span><span class="eyebrow" style="text-align:right">Price</span>';
         html += '</div>';
 
-        var sorted = d.rows.slice().sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+        var sorted = d.rows.slice().sort(function(a, b) {
+          return (a.variety || '').localeCompare(b.variety || '')
+            || (a.size || '').localeCompare(b.size || '')
+            || (a.quality_note || '').localeCompare(b.quality_note || '');
+        });
         sorted.forEach(function(row, skuIdx) {
           var sp = skuPrice(row);
           var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
@@ -930,12 +936,16 @@
           var skuId = esc(d.name) + '::' + skuIdx;
           var isSelected = selectedSku === skuId;
 
-          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:576px;grid-template-columns:1fr 0.84fr 0.54fr 0.96fr 0.4fr 0.9fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
+          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',' + skuIdx + ')" style="display:grid;min-width:640px;grid-template-columns:1fr 0.8fr 0.52fr 0.9fr 0.38fr 0.62fr 0.86fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
           html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (isSelected ? 'var(--accent)' : 'inherit') + '">' + esc(row.variety || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
           html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.package || '\u2014') + '</span>';
           html += '<span style="font-family:var(--mono);color:var(--text-secondary);white-space:nowrap">' + esc(row.size || '\u2014') + '</span>';
+          // Quality is a price-bearing attribute, not a footnote: USDA's
+          // "fine appearance" print of Mexican Hass 48s runs several dollars
+          // above the base print of the identical pack.
+          html += '<span style="color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize">' + esc(row.quality_note || '\u2014') + '</span>';
           html += '<div style="text-align:right">';
           html += '<div style="font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap">' + priceStr + '</div>';
           if (sub) html += '<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px;white-space:nowrap">' + sub + '</div>';
@@ -1034,7 +1044,7 @@
     var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
     var trend = trendOf(marketRows);
     var origins = U.uniq(marketRows.map(function(r) { return r.origin; }).filter(Boolean));
-    var skuLabel = [row.variety, row.grade, row.size, row.package].filter(Boolean).join(' \u00b7 ');
+    var skuLabel = [row.variety, row.grade, row.size, row.package, row.quality_note].filter(Boolean).join(' \u00b7 ');
 
     // FOB data — match shipping points to the selected variety's origin
     var selectedOrigin = (row.origin || '').toLowerCase();
@@ -1105,7 +1115,7 @@
     // labelled, and the reader decides.
     function norm(v) { return String(v == null ? '' : v).trim().toLowerCase(); }
     function fullKey(r) {
-      return [r.variety, r.origin, r.grade, r.package, r.size].map(norm).join('||');
+      return [r.variety, r.origin, r.grade, r.package, r.size, r.quality_note].map(norm).join('||');
     }
     // The loose key is the PHYSICAL pack: same origin, same size, same
     // container. Variety and grade are deliberately excluded because USDA
@@ -1153,6 +1163,9 @@
           }
           if (norm(best.grade) !== norm(row.grade)) {
             diff.push(best.grade || 'no grade');
+          }
+          if (norm(best.quality_note) !== norm(row.quality_note)) {
+            diff.push(best.quality_note || 'base print');
           }
           out.push({ name: mkt, price: p.price, date: best.report_date,
                      diff: diff.join(' \u00b7 '), isCurrent: mkt === market });
@@ -1282,7 +1295,7 @@
       html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">cheapest first</span>';
       html += '</div>';
       html += '<div style="font-size:10.5px;color:var(--text-faint);padding:7px 0 3px;line-height:1.5">' +
-        esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
+        esc([row.variety, row.grade, row.size, row.package, row.origin, row.quality_note].filter(Boolean).join(' \u00b7 ')) + '</div>';
 
       if (crossMarket.length) {
         html += marketRowsHTML(crossMarket, false);
@@ -1337,7 +1350,7 @@
 
   function skuKey(row) {
     return [row.market, row.commodity, row.variety, row.origin,
-            row.grade, row.package, row.size].join('||');
+            row.grade, row.package, row.size, row.quality_note].join('||');
   }
 
   function priceHistoryHTML(row, sp, hist, loading) {
@@ -1350,7 +1363,7 @@
     }
     h += '</div>';
     h += '<div style="font-size:12px;font-weight:500;line-height:1.5;margin-top:7px">' +
-      esc([row.variety, row.grade, row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) + '</div>';
+      esc([row.variety, row.grade, row.size, row.package, row.origin, row.quality_note].filter(Boolean).join(' \u00b7 ')) + '</div>';
 
     // Latest print, large.
     var latest = (hist && hist.length) ? hist[0] : null;
@@ -1429,6 +1442,10 @@
       origin: row.origin,
       size: row.size,
       package: row.package,
+      grade: row.grade,
+      // Empty string is meaningful here: it asks for the print with no
+      // quality note, which is a distinct record from the qualified ones.
+      quality: row.quality_note || '',
       days: 365
     }).then(function(rows) {
       // One point per report_date. If a date somehow carries more than one
@@ -1692,7 +1709,7 @@
       rows = allRows.filter(function(r) { return r.market === market; });
     }
 
-    var headers = ['Commodity','Variety','Origin','Grade','Package','Size','Price Low','Price High','Mostly Low','Mostly High','Movement','Market','Report Date'];
+    var headers = ['Commodity','Variety','Origin','Grade','Package','Size','Quality','Price Low','Price High','Mostly Low','Mostly High','Movement','Market','Report Date'];
     var csvRows = [headers.join(',')];
     rows.forEach(function(r) {
       csvRows.push([
@@ -1702,6 +1719,7 @@
         '"' + (r.grade || '') + '"',
         '"' + (r.package || '') + '"',
         '"' + (r.size || '') + '"',
+        '"' + (r.quality_note || '') + '"',
         r.price_low || '',
         r.price_high || '',
         r.price_mostly_low || '',
