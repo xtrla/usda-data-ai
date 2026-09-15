@@ -81,10 +81,17 @@
     requestAnimationFrame(function () {
       pending = false;
       window.DC.mount(HOST, TPL, SCOPE);
+      if (window.agraxSearch) window.agraxSearch.rebind();
     });
   }
 
   function applyTerminalRows(rows) {
+    if (window.agraxSearch) {
+      window.agraxSearch.attach(rows, function (hit) {
+        window.location.href = '/browse?market=' + encodeURIComponent(hit.market || '') +
+                               '&c=' + encodeURIComponent(hit.commodity);
+      });
+    }
     var byMarket = {}, commodities = {}, byCat = {};
     rows.forEach(function (r) {
       if (r.market) byMarket[r.market] = (byMarket[r.market] || 0) + 1;

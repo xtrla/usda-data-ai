@@ -31,6 +31,34 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
   .dc-wide   { display: none; }
   .dc-narrow { display: block; }
 }
+
+/* iOS Safari zooms the page when a focused input has a font smaller than
+   16px. The design's inputs are 13-15px, which is right for desktop, so the
+   size is bumped only on touch layouts rather than changing the design.
+   Using maximum-scale in the viewport tag would also stop the zoom, but it
+   disables pinch-zoom for everyone, which is an accessibility regression. */
+@media (max-width: 899px) {
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* Search suggestions. Positioned against the input's own wrapper so the
+   dropdown tracks the field on both layouts without duplicating markup. */
+.agx-sug {
+  position: absolute; z-index: 200; left: 0; right: 0; top: calc(100% + 6px);
+  background: #fff; border: 1px solid #E4E6DF; border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(23,26,22,0.13); overflow: hidden; display: none;
+}
+.agx-sug[data-open] { display: block; }
+.agx-sug__item {
+  display: flex; align-items: baseline; gap: 10px; width: 100%;
+  padding: 10px 14px; border: 0; background: none; cursor: pointer;
+  text-align: left; font-family: inherit; border-bottom: 1px solid #F1F2ED;
+}
+.agx-sug__item:last-child { border-bottom: 0; }
+.agx-sug__item:hover, .agx-sug__item[data-active] { background: #F4F6F1; }
+.agx-sug__label { font-size: 13px; font-weight: 500; color: #171A16; }
+.agx-sug__sub { font-size: 11.5px; color: #8A8F86; margin-left: auto; white-space: nowrap; }
+@media (max-width: 899px) { .agx-sug__item { padding: 13px 14px; } }
 </style>
 </head>
 <body>
@@ -83,7 +111,7 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
         <p style="margin:12px 0 0;max-width:640px;font-size:15px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Terminal market prints, shipping point FOB and movement data for {{ coverCommodities }} commodities, cleaned and cross-linked the morning they post.</p>
         <div style="margin-top:18px;position:relative;display:flex;align-items:center;max-width:640px">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:16px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-          <input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety or origin" style="width:100%;height:46px;background:#F4F4F0;border:0;border-radius:23px;padding:0 108px 0 42px;font-size:15px;letter-spacing:-0.005em;outline:none">
+          <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety or origin" style="width:100%;height:46px;background:#F4F4F0;border:0;border-radius:23px;padding:0 108px 0 42px;font-size:15px;letter-spacing:-0.005em;outline:none">
           <a href="/browse" style="position:absolute;right:5px;height:36px;padding:0 18px;border-radius:18px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:inline-flex;align-items:center" class="h1">Search</a>
         </div>
         <div style="margin-top:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
@@ -220,7 +248,7 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
     <a href="/" style="flex:none;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block"></a>
     <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#fff;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
+      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#fff;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
     </div>
   </div>
 
@@ -367,6 +395,7 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
 <script src="/js/api.js"></script>
 <script src="/js/dc-runtime.js"></script>
 <script src="/js/agrax-data.js"></script>
+<script src="/js/agrax-search.js"></script>
 <script src="/js/home-app.js"></script>
 </body>
 </html>

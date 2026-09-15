@@ -667,6 +667,8 @@
       pending = false;
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
       applyScroll();
+      // Inputs are replaced on every render, so rebind afterwards.
+      if (window.agraxSearch) window.agraxSearch.rebind();
     });
   }
 
@@ -699,6 +701,16 @@
     api.reportCurrent('terminal').then(function (rows) {
       S.rows = rows || [];
       setMarkets();
+      if (window.agraxSearch) {
+        window.agraxSearch.attach(S.rows, function (hit) {
+          // Every suggestion resolves to a real commodity page. Switch market
+          // too when the match lives in a different one.
+          if (hit.market && hit.market !== S.market) S.market = hit.market;
+          S.detail = hit.commodity;
+          scrollToTop();
+          rerender();
+        });
+      }
       rerender();
     }).catch(function () {
       api.dates().then(function (dates) {
