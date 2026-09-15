@@ -275,26 +275,26 @@ QUALITY_QUALIFIERS = [
     "holdovers",
 ]
 
-def extract_quality_note(
-    quality_field: str | None,
-    size_field: str | None = None,
-    market_note: str | None = None,
-) -> str | None:
+def extract_quality_note(*fields: str | None) -> str | None:
     """
-    Extract quality/condition qualifier from MARS API fields.
+    Extract the quality/condition qualifier from whichever MARS field holds it.
 
-    The qualifier can live in:
-      - quality_field  (raw.get("quality") or raw.get("condition"))
-      - size_field     (raw.get("item_size") — USDA sometimes embeds it here)
-      - market_note    (raw.get("market_note") — fallback)
+    USDA does not keep these in one place. Depending on the report the
+    qualifier turns up in `appearance`, `quality`, `condition`, or attached to
+    `item_size` — New York's avocado line reads "40s fair quality 36.00-38.00
+    fine appearance 40.00", where it rides along with the size.
 
-    Returns None for standard/unqualified stock.
+    This matters well beyond display. quality_note is part of row_hash, so two
+    prints that differ only by qualifier hash identically when it comes back
+    None, and the upsert overwrites one with the other. A missed qualifier is
+    a lost price, not a missing label.
+
+    Takes any number of fields so a new source can be added at the call site
+    without changing the signature. Returns None for unqualified stock.
     """
-    combined = " ".join(filter(None, [
-        str(quality_field or "").lower(),
-        str(size_field or "").lower(),
-        str(market_note or "").lower(),
-    ])).strip()
+    combined = " ".join(
+        str(f or "").lower() for f in fields if f
+    ).strip()
 
     if not combined:
         return None
@@ -744,7 +744,15 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
         "grade":              extract_grade(grade_text) or grade_field.title() or None,
-        "quality_note":       extract_quality_note(appearance_field, quality_field, condition_field),
+        # size_field is passed because USDA frequently embeds the qualifier
+        # there rather than in a field of its own: New York's avocado line
+        # prints "40s fair quality 36.00-38.00 fine appearance 40.00", and the
+        # qualifier arrives attached to the size. Omitting it meant both rows
+        # came back with no quality_note, collided on row_hash, and one of the
+        # two prices was silently overwritten by the other.
+        "quality_note":       extract_quality_note(
+                                  appearance_field, quality_field,
+                                  condition_field, size_field),
         "organic":            organic_flag,
         "price_low":          price_low,
         "price_high":         price_high,
@@ -1107,13 +1115,20 @@ def _run_for_date(target_date: str) -> int:
     log.info("Ingesting for %s", target_date)
     grand_total = 0
 
-    # Nuclear cleanup: delete any rows older than 30 days regardless of slug
-    cutoff = (date.today() - __import__('datetime').timedelta(days=30)).isoformat()
+    # Age-based cleanup, bounded by RETAIN_DAYS rather than a separate figure.
+    #
+    # This was hardcoded to 30 days while purge_old_rows kept 400, so the two
+    # disagreed and the stricter one silently won: anything backfilled beyond
+    # a month would be deleted on the next daily run, with no error and no
+    # obvious cause. History is the thing week-over-week and price charts are
+    # built on, so the retention window needs one owner.
+    cutoff = (date.today() - timedelta(days=RETAIN_DAYS)).isoformat()
     try:
         result = supabase.table(TABLE).delete().lt("report_date", cutoff).execute()
         deleted = len(result.data) if result.data else 0
         if deleted:
-            log.info("Cleanup: deleted %d rows older than %s", deleted, cutoff)
+            log.info("Cleanup: deleted %d rows older than %s (RETAIN_DAYS=%d)",
+                     deleted, cutoff, RETAIN_DAYS)
     except Exception as e:
         log.warning("Cleanup failed: %s", e)
 

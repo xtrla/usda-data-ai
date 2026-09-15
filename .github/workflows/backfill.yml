@@ -1,0 +1,55 @@
+name: Backfill dates
+
+# Manual only. Loads every USDA publishing day in a range, using the same
+# ingest path as the daily run, so backfilled rows are identical to live ones.
+# Uses the secrets already configured — no key handling needed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: 'Start date (YYYY-MM-DD)'
+        required: true
+        default: '2026-09-04'
+      end:
+        description: 'End date (YYYY-MM-DD, blank = today)'
+        required: false
+        default: ''
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    # ~45 USDA calls per date, plus a pause between dates.
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Backfill
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          MARS_API_KEY: ${{ secrets.USDA_API_KEY }}
+        run: |
+          cd backend
+          python backfill.py "${{ github.event.inputs.start }}" ${{ github.event.inputs.end }}
+
+      - name: Backfill movement
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          MARS_API_KEY: ${{ secrets.USDA_API_KEY }}
+        run: |
+          cd backend
+          python ingest_movement.py

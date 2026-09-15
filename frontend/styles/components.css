@@ -762,9 +762,23 @@
    breakpoints below can actually override it.
    ---------------------------------------------------------- */
 .browse-grid#main-grid {
-  grid-template-columns: minmax(200px, 226px) minmax(0, 1fr) minmax(340px, 404px);
+  /* Two columns by default. The detail panel is not a permanent fixture:
+     with it always mounted the table lost ~400px and the Price column was
+     clipped mid-number ("$51.0", header reading "PRI"). The panel now
+     appears only when a SKU is selected, via [data-detail-open]. */
+  grid-template-columns: minmax(200px, 226px) minmax(0, 1fr);
   gap: 12px;
   padding: 12px 20px 20px;
+}
+
+.browse-grid#main-grid[data-detail-open] {
+  grid-template-columns: minmax(200px, 226px) minmax(0, 1fr) minmax(340px, 404px);
+}
+
+/* Hidden rather than removed so its scroll position and any in-flight
+   fetch survive a close/reopen. */
+.browse-grid#main-grid:not([data-detail-open]) > #right-panel {
+  display: none;
 }
 
 /* ── BROWSE LAYOUT: THE TABLET RANGE ───────────────────────
@@ -781,10 +795,13 @@
 /* 1180-1224: keep three panels, let them actually shrink. */
 @media (max-width: 1300px) {
   .browse-grid#main-grid {
-    grid-template-columns: minmax(180px, 210px) minmax(0, 1fr) minmax(300px, 340px);
+    grid-template-columns: minmax(180px, 210px) minmax(0, 1fr);
     gap: 10px;
     padding-left: 14px;
     padding-right: 14px;
+  }
+  .browse-grid#main-grid[data-detail-open] {
+    grid-template-columns: minmax(180px, 210px) minmax(0, 1fr) minmax(300px, 340px);
   }
 }
 

@@ -38,6 +38,17 @@ jobs:
       # stayed empty and every volume bar in the UI rendered blank.
       # continue-on-error: prices are the product; a movement failure should
       # not fail a run that already loaded them successfully.
+      # FDA recalls. continue-on-error for the same reason as movement:
+      # prices are the product and must not fail on a secondary source.
+      - name: Run recall ingestion
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          cd backend
+          python ingest_recalls.py
+
       - name: Run movement ingestion
         continue-on-error: true
         env:

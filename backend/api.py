@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
+import time
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from supabase import create_client
 import stripe
@@ -10,7 +12,47 @@ from datetime import date, timedelta
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("agrax.api")
 
+# Short-lived response cache for the heavy read endpoints.
+#
+# /reports/latest pages roughly 7,000 rows out of Supabase 999 at a time —
+# seven sequential round trips before the first byte reaches the browser, on
+# every single page load. The underlying data changes once a weekday morning,
+# so serving the same result for a few minutes costs nothing in accuracy and
+# removes the wait for everyone after the first visitor.
+_CACHE = {}
+_CACHE_TTL = 300  # seconds
+
+# Columns the price table and detail view actually read.
+#
+# select("*") also returned supply_note and trading_activity — free-text
+# commentary that can run to a paragraph per row and appears nowhere in the
+# UI. Across thousands of rows that was the bulk of the payload. Anything
+# needed later can be added here; the endpoints that genuinely need every
+# column still ask for it.
+LIST_COLUMNS = ",".join([
+    "row_hash", "market", "market_type", "commodity", "commodity_type",
+    "variety", "origin", "grade", "package", "size", "quality_note",
+    "price_low", "price_high", "price_mostly_low", "price_mostly_high",
+    "movement", "report_date", "source_report", "organic",
+])
+
+
+def cached(key, producer, ttl=_CACHE_TTL):
+    now = time.time()
+    hit = _CACHE.get(key)
+    if hit and now - hit[0] < ttl:
+        return hit[1]
+    value = producer()
+    _CACHE[key] = (now, value)
+    return value
+
 app = FastAPI(title="AGRA API", version="2.0.0")
+
+# Compress responses. A day of terminal prices is several megabytes of JSON
+# and JSON of this shape — the same field names repeated thousands of times —
+# compresses roughly eight to one. This is the single largest win available on
+# load time and costs one line.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 app.add_middleware(
     CORSMiddleware,
@@ -122,7 +164,7 @@ def get_markets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def fetch_all(query_builder, page_size: int = 1000, order_by: str = "row_hash"):
+def fetch_all(query_builder, page_size: int = 10000, order_by: str = "row_hash"):
     """Page through a PostgREST query and return every row.
 
     Supabase enforces a server-side `db-max-rows` cap (1000 by default)
@@ -130,6 +172,12 @@ def fetch_all(query_builder, page_size: int = 1000, order_by: str = "row_hash"):
     plain .limit(50000) therefore returns only the first 1000 rows, so
     markets past that boundary come back empty. Paging with .range()
     is the only way to get a full day of terminal data.
+
+    page_size is requested large on purpose. PostgREST caps each response at
+    the project's db-max-rows, so asking for more than the cap simply returns
+    the cap — but if that cap is raised in Supabase settings, this immediately
+    does fewer round trips without a code change. At 999 rows a day of prices
+    took seven sequential trips to the database before the browser saw a byte.
 
     The ORDER BY is not cosmetic. Postgres gives no ordering guarantee
     across separate LIMIT/OFFSET queries, so paging an unordered result
@@ -181,6 +229,53 @@ def get_terminal_report(date: str = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/reports/current")
+def get_current_report(market_type: str = "terminal", lookback_days: int = 90):
+    """Each market's most recent REAL report, with older lines tagged.
+
+    /reports/latest returns the newest row per published line, which builds a
+    composite no USDA document ever contained: New York's avocados came back
+    as 20 rows drawn from several dates, while the Sep 14 report published 14.
+    Presented as one list that is a synthetic report, which is exactly what
+    "every price as reported" is meant to rule out.
+
+    So the unit here is the report, not the line. For each market we take its
+    latest report_date — falling back per market, since a quiet terminal's
+    last real report is still a real report — and mark those rows current.
+    Lines that have not printed since are returned too, flagged and dated, so
+    the UI can offer them as history rather than mixing them into today.
+
+    Each row gains:
+      is_current     — part of that market's latest report
+      market_date    — the date of that market's latest report
+    """
+    try:
+        cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+        return cached(("current", market_type, cutoff),
+                      lambda: _current_uncached(market_type, cutoff))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def _current_uncached(market_type: str, cutoff: str):
+    rows = _latest_uncached(market_type, cutoff)
+
+    # Each market's own latest report date.
+    market_dates = {}
+    for r in rows:
+        m, d = r.get("market"), r.get("report_date")
+        if not m or not d:
+            continue
+        if m not in market_dates or d > market_dates[m]:
+            market_dates[m] = d
+
+    for r in rows:
+        md = market_dates.get(r.get("market"))
+        r["market_date"] = md
+        r["is_current"] = bool(md and r.get("report_date") == md)
+    return rows
+
+
 @app.get("/reports/latest")
 def get_latest_report(market_type: str = "terminal", lookback_days: int = 90):
     """Latest known row per SKU, per market — regardless of report date.
@@ -196,8 +291,15 @@ def get_latest_report(market_type: str = "terminal", lookback_days: int = 90):
     """
     try:
         cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
+        return cached(("latest", market_type, cutoff),
+                      lambda: _latest_uncached(market_type, cutoff))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-        q = supabase.table(TABLE).select("*").gte("report_date", cutoff)
+
+def _latest_uncached(market_type: str, cutoff: str):
+    try:
+        q = supabase.table(TABLE).select(LIST_COLUMNS).gte("report_date", cutoff)
         if market_type == "shipping_point":
             q = q.eq("market_type", "shipping_point").neq("market", "National Trends")
         else:
@@ -482,6 +584,56 @@ def get_history(
 # ─────────────────────────────────────────────────────────────
 # MOVEMENT (produce_movement — USDA WA_FV175 truck/air/boat data)
 # ─────────────────────────────────────────────────────────────
+
+RECALLS_TABLE = "produce_recalls"
+
+@app.get("/recalls")
+def recalls(days: int = 120, commodity: str = None):
+    """FDA food recalls matched to commodities we price, newest first.
+
+    Not USDA price data and never mixed with it. FDA states this dataset must
+    not be used to issue public recall alerts and that it does not update a
+    recall's status after classification, so every row is "as published on
+    report_date" and carries an fda_url for the reader to check live status.
+    """
+    try:
+        from datetime import date as _date, timedelta
+        cutoff = (_date.today() - timedelta(days=days)).isoformat()
+        q = (supabase.table(RECALLS_TABLE).select("*")
+             .gte("report_date", cutoff)
+             .order("report_date", desc=True))
+        if commodity:
+            q = q.eq("commodity", commodity)
+        return fetch_all(q, order_by="recall_number")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/recalls/commodities")
+def recalls_by_commodity(days: int = 120):
+    """Count of open-window recalls per commodity, for badging the table."""
+    try:
+        from datetime import date as _date, timedelta
+        cutoff = (_date.today() - timedelta(days=days)).isoformat()
+        rows = fetch_all(
+            supabase.table(RECALLS_TABLE).select("commodity,classification,report_date")
+            .gte("report_date", cutoff),
+            order_by="commodity",
+        )
+        out = {}
+        for r in rows:
+            c = r.get("commodity")
+            if not c:
+                continue
+            e = out.setdefault(c, {"commodity": c, "count": 0, "class_i": 0, "latest": None})
+            e["count"] += 1
+            if (r.get("classification") or "").strip() == "Class I":
+                e["class_i"] += 1
+            d = r.get("report_date")
+            if d and (e["latest"] is None or d > e["latest"]):
+                e["latest"] = d
+        return sorted(out.values(), key=lambda x: -x["count"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/movement/dates")
 def movement_dates():
@@ -1273,12 +1425,55 @@ def story_of_the_day(market: str = "New York"):
             except:
                 top_movers = []
 
+            # National flat-day guard, same reasoning as the per-market one:
+            # with nothing moving, a generated paragraph is filler by
+            # construction. State the count and stop.
+            if not top_movers:
+                return {
+                    "headline": f"Quiet session across terminal markets on {report_date}.",
+                    "body": (
+                        f"{total_h} commodity prints came in higher, {total_l} lower and "
+                        f"{total_s} unchanged across {len(market_summaries)} terminal markets. "
+                        f"No commodity at {top_market} showed a measurable week-over-week change."
+                    ),
+                    "source": SOURCE_LINE,
+                    "date": report_date,
+                    "market": cache_key,
+                    "generated": False,
+                }
+
+            # As with the per-market story, decide here whether a national
+            # cause-and-effect claim is defensible. A direction is only
+            # "national" if a clear majority of markets agree; otherwise the
+            # story is a set of local moves and must be told that way.
+            markets_counted = len(market_summaries) or 1
+            higher_led = sum(1 for m in market_summaries if m["higher"] > m["lower"])
+            lower_led = sum(1 for m in market_summaries if m["lower"] > m["higher"])
+            dominant = max(higher_led, lower_led)
+            direction_is_national = dominant >= (markets_counted * 2 / 3)
+
+            if direction_is_national:
+                national_rule = (
+                    f"- {dominant} of {markets_counted} markets moved the same direction, so a "
+                    f"national picture is supportable. Describe it, but name the markets that "
+                    f"ran against it rather than smoothing them over."
+                )
+            else:
+                national_rule = (
+                    f"- Markets split: {higher_led} leaned higher, {lower_led} leaned lower, out "
+                    f"of {markets_counted}. There is NO single national direction today. Do not "
+                    f"claim one. Report the split and describe individual markets instead."
+                )
+
             data_snapshot = {
                 "scope": "national — all 12 USDA terminal markets",
                 "date": report_date,
                 "total_commodities_higher": total_h,
                 "total_commodities_lower": total_l,
                 "total_commodities_steady": total_s,
+                "markets_leaning_higher": higher_led,
+                "markets_leaning_lower": lower_led,
+                "direction_is_national": direction_is_national,
                 "markets": market_summaries,
                 "biggest_movers_at_" + top_market: top_movers,
             }
@@ -1291,9 +1486,12 @@ DATA:
 
 RULES:
 - Write a headline (1 sentence, under 15 words) about the national market picture today.
-- Write a body paragraph (3-4 sentences) that gives the big picture across markets. Which markets are tightening? Which are easing? Mention 2-3 specific commodities and their direction.
+- Write a body paragraph (3-4 sentences) giving the picture across markets. Mention 2-3 specific commodities and their direction.
+{national_rule}
+- Use ONLY figures that appear in the DATA above. Never state a number that is not in the data.
+- Do not attribute price moves to weather, fuel, labour, holidays, trade or any other cause. None of that is in this data.
 - Write for a produce buyer checking prices at 5 AM. Plain language. No jargon.
-- End with one sentence about what to watch today.
+- End with one sentence on what the numbers show. Do not predict prices.
 - Do NOT say "I" or "we." Just state the facts.
 
 Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
@@ -1301,6 +1499,80 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
             summary = market_summary(market=market)
             wow_data = week_over_week(market=market)
             movers_items = wow_data.get("items", [])[:10]
+
+            # If nothing actually moved, there is no story. Calling the model
+            # here produced pure filler: "no major shifts in supply or demand
+            # signals overnight", "monitor afternoon reports", "buyers should
+            # expect stable pricing" — none of which is in the data, and USDA
+            # publishes no afternoon report at all. The prompt demanded four
+            # sentences, so four sentences got invented.
+            #
+            # A flat day is a fact worth stating plainly. State it, and don't
+            # spend a model call dressing it up.
+            real_moves = [
+                m for m in movers_items
+                if m.get("change_pct") is not None and abs(m["change_pct"]) >= 2.0
+            ]
+            if not real_moves:
+                reporting = summary.get("commodities") or 0
+                hi = summary.get("tone_higher") or 0
+                lo = summary.get("tone_lower") or 0
+                body = (
+                    f"{reporting} commodities reported at {market} on {report_date}. "
+                    f"{hi} printed higher and {lo} printed lower than the previous report; "
+                    f"the rest were unchanged. No commodity moved more than 2%."
+                )
+                if not summary.get("movement_loads"):
+                    body += " No shipment movement was published for this market."
+                return {
+                    "headline": f"Quiet session at {market} — no commodity moved more than 2%.",
+                    "body": body,
+                    "source": SOURCE_LINE,
+                    "date": report_date,
+                    "market": cache_key,
+                    "generated": False,
+                }
+
+
+            # Decide HERE whether the data can support a cause-and-effect
+            # claim, rather than instructing the model to decide.
+            #
+            # The old rule was unconditional: "If movement is down and prices
+            # are up, say supply is tightening." Movement and price move
+            # together for plenty of reasons that aren't supply — a holiday
+            # week, a reporting gap, one big market skewing the average — and
+            # the model asserted a cause with full confidence either way.
+            # A story that says supply is tightening when it isn't is exactly
+            # the kind of error "every price as reported" is meant to prevent.
+            mv_pct = summary.get("movement_wow")
+            has_movement = mv_pct is not None and summary.get("movement_loads")
+
+            # 15% is the threshold below which a week-over-week movement swing
+            # is not distinguishable from normal weekly noise in these reports.
+            CAUSAL_THRESHOLD = 15.0
+            movement_is_decisive = bool(has_movement and abs(mv_pct) >= CAUSAL_THRESHOLD)
+
+            if movement_is_decisive:
+                direction = "fallen" if mv_pct < 0 else "risen"
+                causal_rule = (
+                    f"- Shipment movement has {direction} {abs(mv_pct):.0f}% week over week, "
+                    f"which is a large enough swing to discuss as a driver. You may connect it "
+                    f"to the price changes, but only for commodities where the direction "
+                    f"actually matches. Do not claim it explains moves that run the other way."
+                )
+            elif has_movement:
+                causal_rule = (
+                    f"- Shipment movement changed {mv_pct:+.0f}% week over week. That is within "
+                    f"normal weekly variation and does NOT explain today's price moves. Report "
+                    f"what prices did without naming a cause. Do not say supply is tightening, "
+                    f"loosening, or flooding."
+                )
+            else:
+                causal_rule = (
+                    "- No shipment movement data is available for this market today. Report the "
+                    "price changes only. Do not speculate about supply, demand or any other "
+                    "cause. Do not describe supply as tight, loose or flooding."
+                )
 
             data_snapshot = {
                 "market": market,
@@ -1311,6 +1583,7 @@ Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""
                 "tone_steady": summary.get("tone_steady"),
                 "movement_loads": summary.get("movement_loads"),
                 "movement_wow_pct": summary.get("movement_wow"),
+                "movement_supports_causal_claim": movement_is_decisive,
                 "shipping_point_movement": summary.get("shipping_point_movement", [])[:6],
                 "biggest_changes": [
                     {"commodity": m["commodity"], "change_pct": m["change_pct"], "current_price": m["current_price"], "tone": m["tone"]}
@@ -1326,10 +1599,13 @@ DATA:
 
 RULES:
 - Write a bold headline (1 sentence, under 15 words) that captures the single most important market move today.
-- Write a body paragraph (3-4 sentences) that explains WHY — connect shipping point movement to price changes. Mention specific commodities, dollar amounts, and percentages from the data.
+- Write a body paragraph (3-4 sentences). Mention specific commodities, dollar amounts, and percentages, using ONLY figures that appear in the DATA above. Never state a number that is not in the data.
+{causal_rule}
+- Every figure you cite must be traceable to the DATA. If you are unsure of a number, leave it out rather than approximating.
 - Write in plain produce industry language. No jargon. A buyer in a truck at 5 AM should understand this instantly.
-- If movement is down and prices are up, say supply is tightening. If movement is up and prices are flat, say supply is flooding.
-- End with one actionable sentence — buy ahead, negotiate, hold, or wait.
+- This is {market} ONLY. Never write "nationwide", "across the nation", "national" or otherwise imply these figures cover other markets. They do not.
+- Do not reference overnight activity, afternoon reports or intraday trading. USDA publishes one report per market per day and nothing else exists.
+- End with one sentence on what the numbers show going into today. Do not predict prices or claim to know what will happen.
 - Do NOT say "I" or "we." Just state the facts.
 
 Respond ONLY in JSON: {{"headline": "...", "body": "..."}}"""

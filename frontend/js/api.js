@@ -41,6 +41,12 @@ const api = {
   // GET /markets → [{market, type, count}]
   markets: () => _fetch('/markets'),
 
+  // GET /reports/current?market_type=&lookback_days=
+  // Each market's most recent real report, with lines that haven't printed
+  // since tagged is_current:false rather than blended in.
+  reportCurrent: (marketType = 'terminal', lookbackDays = 90) =>
+    _fetch(`/reports/current?market_type=${marketType}&lookback_days=${lookbackDays}`),
+
   // GET /reports/latest — latest known row per SKU per market, regardless
   // of report date. A market that hasn't printed today still returns its
   // last real price, so no terminal ever renders as empty.
@@ -73,6 +79,13 @@ const api = {
       .join('&');
     return _fetch(`/history${q ? `?${q}` : ''}`);
   },
+
+  // GET /recalls?days=&commodity=
+  recalls: (commodity = null, days = 120) =>
+    _fetch(`/recalls?days=${days}` + (commodity ? `&commodity=${encodeURIComponent(commodity)}` : '')),
+
+  // GET /recalls/commodities?days=
+  recallsByCommodity: (days = 120) => _fetch(`/recalls/commodities?days=${days}`),
 
   // GET /movement/latest
   movementLatest: () => _fetch('/movement/latest'),

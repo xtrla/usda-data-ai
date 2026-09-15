@@ -1,0 +1,2436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse wholesale produce prices — AgraX</title>
+<meta name="description" content="Live wholesale produce prices from 12 U.S. terminal markets with FOB origin pricing and shipment volumes. Updated every weekday from USDA Market News.">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-white-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-white-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-white-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-white-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/components.css">
+<link rel="stylesheet" href="/styles/mobile.css">
+<script src="/js/config.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/header.js"></script>
+<script>
+  // Header Subscribe from another page lands here with ?subscribe=1
+  document.addEventListener('DOMContentLoaded', function () {
+    if (new URLSearchParams(location.search).get('subscribe')) {
+      var m = document.getElementById('subscribe-modal');
+      if (m) m.style.display = 'flex';
+    }
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/mobile-app.js"></script>
+</head>
+<body>
+<div id="app" style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="site-header__logo" aria-label="AgraX home">
+      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" width="646" height="241">
+    </a>
+    <nav class="site-header__nav" aria-label="Main">
+      <a href="/browse">Browse</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/about">About</a>
+    </nav>
+    <div class="site-header__search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6E6E6E" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input id="header-search" type="search" autocomplete="off" aria-label="Search produce" placeholder="Search commodity, variety, origin — &quot;Hass 48s&quot;, &quot;Nogales&quot;">
+    </div>
+    <div class="site-header__right">
+      <span class="site-header__live"><i></i>Live <time></time></span>
+      <a href="#" class="site-header__signin" id="site-signin">Sign in</a>
+      <button type="button" class="site-header__cta" id="site-subscribe">Subscribe</button>
+    </div>
+  </div>
+</header>
+
+<!-- MARKET STRIP -->
+<div style="padding:12px 20px 0;display:flex;align-items:stretch;gap:8px" id="market-strip-wrap">
+  <div style="flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;padding-right:14px;border-right:1px solid var(--border-soft)">
+    <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim)">Terminal markets</span>
+    <span style="font-size:12.5px;font-weight:600;letter-spacing:-0.02em">12 reporting</span>
+  </div>
+  <div style="flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px" id="market-strip"></div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="browse-grid" style="position:relative;flex:1;display:grid;align-items:start" id="main-grid">
+
+  <!-- LEFT SIDEBAR -->
+  <aside style="position:sticky;top:52px;z-index:40;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card);padding:14px 14px 8px" id="sidebar">
+    <!-- Categories -->
+    <div>
+      <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Categories</div>
+      <div id="cat-list"></div>
+    </div>
+    <!-- Shipping Point -->
+    <div style="margin-top:20px">
+      <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Shipping point</div>
+      <div id="origin-list" style="padding:10px 0;display:flex;flex-direction:column;gap:9px"></div>
+    </div>
+    <!-- Country of Origin -->
+    <div style="margin-top:20px">
+      <div class="eyebrow" style="padding-bottom:9px;border-bottom:1px solid var(--border)">Country / Origin</div>
+      <div id="country-list" style="padding:10px 0;display:flex;flex-direction:column;gap:9px"></div>
+    </div>
+    <!-- Watchlist -->
+    <div style="margin-top:20px">
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:9px;border-bottom:1px solid var(--border)">
+        <span class="eyebrow">Watchlist</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text-label);margin-left:auto" id="watch-count">0</span>
+      </div>
+      <div id="watch-list"></div>
+    </div>
+  </aside>
+
+  <!-- CENTER TABLE -->
+  <main style="min-width:0;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card);padding:0 16px 8px" id="main-col">
+    <!-- Toolbar -->
+    <!-- Market summary as a horizontal strip. It used to live in the right
+         panel, which meant the panel had to stay mounted permanently and the
+         table lost 400px of width for it. Here it costs one row and vanishes
+         when a SKU is open. -->
+    <div id="summary-strip" style="padding:0 0 12px"></div>
+
+    <div style="position:sticky;top:52px;z-index:30;background:var(--card);padding:14px 0 0;border-radius:10px 10px 0 0;overflow:hidden" id="toolbar">
+      <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:10px">
+        <span class="eyebrow">Commodities at <span id="toolbar-market">—</span></span>
+        <span style="font-size:12px;color:var(--text-dim)" id="toolbar-count">Loading…</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:12px">
+        <div style="position:relative;display:flex;align-items:center;flex:1;min-width:180px;max-width:300px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:9px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+          <input id="table-filter" placeholder="Filter this table" style="width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 10px 0 28px;font-size:12px;outline:none">
+        </div>
+        <select id="week-select" style="height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:12px;font-weight:500;padding:0 8px;flex:none"></select>
+        <select id="sort-select" style="height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:12px;font-weight:500;padding:0 8px;flex:none">
+          <option value="az">Commodity A–Z</option>
+          <option value="skus">Most prices reporting</option>
+          <option value="higher">Tone: Higher first</option>
+          <option value="lower">Tone: Lower first</option>
+        </select>
+        <button id="toggle-all" class="btn btn--ghost">Expand all</button>
+        <button id="download-btn" class="btn btn--primary">Download</button>
+        <button id="share-btn" class="btn btn--ghost" style="display:flex;align-items:center;gap:6px">Share <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      </div>
+      <!-- Mobile category filter pills -->
+      <div id="mobile-cats" class="mobile-only" style="display:none;overflow-x:auto;gap:6px;padding:8px 0;-webkit-overflow-scrolling:touch">
+        <span class="mobile-pill is-active" onclick="window._mobileFilterCat('all')">All</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Fruits')">Fruits</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Vegetables')">Vegetables</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Onions & Potatoes')">Onions & Potatoes</span>
+        <span class="mobile-pill" onclick="window._mobileFilterCat('Nuts')">Nuts</span>
+      </div>
+      <!-- Column headers -->
+      <div class="col-headers tbl-grid" style="display:grid;gap:10px;padding:9px 0;border-top:1px solid var(--border);border-bottom:2px solid var(--border-strong)">
+        <span class="eyebrow">Commodity</span>
+        <span class="eyebrow">Reporting</span>
+        <span class="eyebrow desk-col">Origins</span>
+        <span class="eyebrow desk-col">Shipping points</span>
+        <span class="eyebrow desk-col">Volume</span>
+        <span class="eyebrow">Date</span>
+        <span class="eyebrow" style="text-align:right">USDA tone</span>
+      </div>
+    </div>
+    <!-- Rows -->
+    <div id="table-body" style="overflow-x:auto">
+      <div style="padding:40px 0;text-align:center;color:var(--text-dim);font-size:12px">Loading…</div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL (Market Summary / Detail) -->
+  <aside style="position:sticky;top:52px;z-index:40;max-height:calc(100vh - 72px);overflow-y:auto;background:var(--card);border-radius:10px;box-shadow:var(--shadow-card)" id="right-panel">
+    <div style="padding:20px" id="market-summary">
+      <div class="eyebrow">Market summary · <span id="sum-market">—</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px" id="sum-stats"></div>
+      <div class="eyebrow" style="margin-top:22px;padding-bottom:9px;border-bottom:1px solid var(--border)">Shipping point movement</div>
+      <div id="sum-ship"></div>
+      <p style="margin:16px 0 0;font-size:12px;line-height:1.65;color:var(--text-dim)">Open any commodity for its prices, shipping-point FOB, weekly movement and all 12 terminal markets — without leaving this page.</p>
+    </div>
+    <div style="display:none" id="dossier-panel"></div>
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--dark);color:#fff;padding:28px 20px 22px;margin-top:auto">
+  <div style="display:flex;align-items:flex-start;gap:56px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px;max-width:520px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:-0.02em">AgraX</div>
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.75;color:#737373">Prices sourced from USDA Agricultural Marketing Service Specialty Crops Terminal Market and Shipping Point reports. Updated every weekday morning. AgraX is not affiliated with the USDA.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
+      <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Daily email</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
+      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
+      <a href="/about" style="font-size:12px;color:#A3A3A3">About</a>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" onclick="document.getElementById('contact-modal').style.display='flex'">Contact</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer" onclick="document.getElementById('advertise-modal').style.display='flex'">Advertise</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Privacy</span>
+      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Terms</span>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--dark-border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
+    <span>© 2026 AgraX. Wholesale produce pricing.</span>
+    <span>Source: USDA AMS · Terminal + Shipping Point · Last sync <span id="footer-time">—</span></span>
+  </div>
+</footer>
+
+<!-- Contact Modal -->
+<div id="contact-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Contact us</h3>
+      <span onclick="document.getElementById('contact-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <textarea placeholder="Message" rows="4" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
+      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Advertise Modal -->
+<div id="advertise-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Reach produce buyers where they check prices</h3>
+      <span onclick="document.getElementById('advertise-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:18px">
+      <p style="margin:8px 0">• Sponsored row in the browse table — seen by every visitor</p>
+      <p style="margin:8px 0">• Sponsored card in the market summary panel</p>
+      <p style="margin:8px 0">• Newsletter sponsorship — delivered every morning to verified buyers</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <input placeholder="Name" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Company" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <input placeholder="Email" style="width:100%;height:38px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:13px;outline:none">
+      <textarea placeholder="What are you looking to promote?" rows="3" style="width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;outline:none;resize:vertical"></textarea>
+      <button class="btn btn--primary" style="height:42px;width:100%;font-size:14px;border-radius:7px">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subscribe Modal -->
+<div id="subscribe-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,10,10,0.42);align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <h3 style="font-size:17px;font-weight:600;flex:1">Wholesale prices, every morning</h3>
+      <span onclick="document.getElementById('subscribe-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:18px">One email every weekday: your commodities, what moved, and the shipping points behind them. Unsubscribe any time.</p>
+    <div id="subscribe-success" style="display:none;margin-bottom:12px"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <input id="sub-email" type="email" placeholder="you@company.com" style="width:100%;height:42px;border:1px solid var(--border);border-radius:7px;padding:0 14px;font-size:14px;outline:none">
+      <input id="sub-name" type="text" placeholder="Name (optional)" style="width:100%;height:42px;border:1px solid var(--border);border-radius:7px;padding:0 14px;font-size:14px;outline:none">
+      <button onclick="window._subscribe()" class="btn btn--primary" style="height:44px;width:100%;font-size:14px;border-radius:7px">Subscribe</button>
+    </div>
+    <p style="font-size:11px;color:var(--text-faint);margin-top:12px;text-align:center">No spam. USDA data only. Unsubscribe in one click.</p>
+  </div>
+</div>
+
+</div><!-- end #app -->
+<div id="dl-modal" class="modal-overlay" style="display:none">
+  <div class="modal modal--md" style="padding:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <h3 style="font-size:17px;font-weight:600;letter-spacing:-0.02em;flex:1">Download report</h3>
+      <span onclick="document.getElementById('dl-modal').style.display='none'" style="cursor:pointer;font-size:18px;color:var(--text-faint);line-height:1">&times;</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+      <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer" id="dl-opt-view">
+        <input type="radio" name="dl-scope" value="view" checked style="accent-color:var(--accent)">
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">This view</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">Current search, filters and sort — every price expanded.</div></div>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint)" id="dl-count-view">—</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer">
+        <input type="radio" name="dl-scope" value="full" style="accent-color:var(--accent)">
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">Full report</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">Every commodity reporting at this market this week.</div></div>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text-faint)" id="dl-count-full">—</span>
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:18px">
+      <button id="dl-csv" onclick="window._selectFormat('csv')" style="flex:1;height:42px;border-radius:8px;border:2px solid var(--accent);background:#fff;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer">CSV</button>
+      <button id="dl-pdf" onclick="window._selectFormat('pdf')" style="flex:1;height:42px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer">PDF</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="document.getElementById('dl-modal').style.display='none'" class="btn btn--ghost" style="height:36px;padding:0 16px">Cancel</button>
+      <button onclick="window._doDownload()" class="btn btn--primary" style="height:36px;padding:0 16px;flex:1" id="dl-go">Download CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Dropdown (positioned near share button) -->
+<div id="share-dropdown" style="display:none;position:fixed;z-index:100;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-dropdown);padding:8px;min-width:200px">
+  <div onclick="window._shareLink()" style="padding:8px 10px;border-radius:5px;cursor:pointer;font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--surface-row)'" onmouseout="this.style.background='transparent'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    Copy link
+  </div>
+  <div onclick="window._shareEmail()" style="padding:8px 10px;border-radius:5px;cursor:pointer;font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--surface-row)'" onmouseout="this.style.background='transparent'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
+    Email this view
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-bottom-nav">
+  <a href="/" class="mobile-bottom-nav__item">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Today
+  </a>
+  <a href="/browse" class="mobile-bottom-nav__item is-active">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Browse
+  </a>
+  <span class="mobile-bottom-nav__item" onclick="document.getElementById('sidebar').classList.toggle('is-open')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
+    Filters
+  </span>
+  <span class="mobile-bottom-nav__item" onclick="document.getElementById('header-search').focus();window.scrollTo(0,0)">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    Search
+  </span>
+</nav>
+
+
+<script>
+(async function() {
+  const U = window.agraxUtil;
+  const api = window.agraxAPI;
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+
+  const MARKETS = ['Asheville, NC','Atlanta, GA','Baltimore, MD','Boston, MA','Chicago, IL','Columbia, SC','Detroit, MI','Los Angeles, CA','Miami, FL','New York, NY','Philadelphia, PA','Raleigh, NC'];
+  const UP = '#16A34A', DOWN = '#DC2626';
+
+  // ── STATE ──
+  let allRows = [];
+  let fobRows = [];
+  let latestDate = null;
+  let currentMarket = U.selMarket() || 'New York';
+  let expanded = {};        // which commodity rows are open
+  let catOpen = {};          // which sidebar category accordions are open
+  let checkedComs = {};      // which commodity checkboxes are ticked
+  let seenComs = {};         // commodities we've offered before
+  let checkedOrigins = {};   // which shipping point checkboxes are ticked
+  let checkedCountries = {}; // which country/origin checkboxes are ticked
+  let sortMode = 'az';
+  let searchQ = '';
+  let selectedSku = null;     // 'CommodityName::rowKey' or null
+  // Active tab in the SKU detail panel. Resets to 'price' whenever a new SKU
+  // is selected so the reader always lands on the number they clicked for.
+  let detailTab = 'price';
+
+  // FDA recalls, keyed by commodity. Kept strictly separate from price data:
+  // this is an FDA record, not a USDA price, and the two are never blended
+  // into one figure or one sentence.
+  let recallsByCom = {};
+
+  // A SKU is identified by what it IS, never by its index in a sorted array.
+  // The table sorts by variety-size-quality while the detail panel sorted by
+  // variety alone, so index N meant two different rows: clicking 48s "fine
+  // appearance" opened 36s. row_hash is unique per published line; the
+  // composite is a fallback for rows that arrive without one.
+  function rowKey(r) {
+    if (r.row_hash) return r.row_hash;
+    return [r.market, r.commodity, r.variety, r.origin, r.grade,
+            r.package, r.size, r.quality_note].join('~');
+  }
+  let selectedComName = null;  // commodity name of selected SKU
+
+  const marketShort = (m) => m.replace(/, [A-Z]{2}$/, '');
+  const marketFull = (m) => {
+    const map = {'New York':'New York, NY','Boston':'Boston, MA','Philadelphia':'Philadelphia, PA','Baltimore':'Baltimore, MD','Chicago':'Chicago, IL','Detroit':'Detroit, MI','Atlanta':'Atlanta, GA','Miami':'Miami, FL','Los Angeles':'Los Angeles, CA','Columbia':'Columbia, SC','Asheville':'Asheville, NC','Raleigh':'Raleigh, NC'};
+    return map[m] || m;
+  };
+
+  // URL params
+  const urlP = new URLSearchParams(window.location.search);
+  if (urlP.get('market')) currentMarket = urlP.get('market');
+  if (urlP.get('q')) {
+    var rawQ = urlP.get('q');
+    // Must be lowercased here: the match below compares against
+    // name.toLowerCase(), so a capitalised param could never hit.
+    searchQ = rawQ.trim().toLowerCase();
+    document.getElementById('header-search').value = rawQ;
+  }
+
+  // ── EVENT WIRING ──
+  document.getElementById('header-search').addEventListener('input', function(e) {
+    searchQ = e.target.value.trim().toLowerCase();
+    document.getElementById('table-filter').value = e.target.value;
+    renderAll();
+  });
+  document.getElementById('header-search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { searchQ = e.target.value.trim().toLowerCase(); renderAll(); }
+  });
+  // Table-level filter
+  document.addEventListener('DOMContentLoaded', function() {
+    var tf = document.getElementById('table-filter');
+    if (tf) {
+      tf.addEventListener('input', function(e) {
+        searchQ = e.target.value.trim().toLowerCase();
+        document.getElementById('header-search').value = e.target.value;
+        renderAll();
+      });
+    }
+  });
+  // Also wire it immediately in case DOM is already ready
+  setTimeout(function() {
+    var tf = document.getElementById('table-filter');
+    if (tf && !tf._wired) {
+      tf._wired = true;
+      tf.addEventListener('input', function(e) {
+        searchQ = e.target.value.trim().toLowerCase();
+        document.getElementById('header-search').value = e.target.value;
+        renderAll();
+      });
+    }
+  }, 100);
+  document.getElementById('sort-select').addEventListener('change', function(e) {
+    sortMode = e.target.value;
+    renderAll();
+  });
+  document.getElementById('toggle-all').addEventListener('click', function() {
+    var anyOpen = Object.keys(expanded).some(function(k) { return expanded[k]; });
+    if (anyOpen) {
+      expanded = {};
+    } else {
+      var byCom = U.groupBy(allRows.filter(function(r) { return r.market === marketShort(currentMarket); }), function(r) { return r.commodity; });
+      byCom.forEach(function(rows, name) { expanded[name] = true; });
+    }
+    renderAll();
+  });
+
+  // Live badge
+  var now = new Date();
+  // Live badge is rendered and ticked by js/header.js.
+  document.getElementById('footer-time').textContent = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}) + ' ET';
+
+  // ── HELPERS ──
+  // Deduplicate rows from multiple dates — keep the most recent per commodity+variety+origin+market+pack+size
+  function _deduplicateRows(rows) {
+    var seen = {};
+    // Sort newest first so the first occurrence is the most recent
+    rows.sort(function(a, b) { return (b.report_date || '').localeCompare(a.report_date || ''); });
+    var result = [];
+    rows.forEach(function(r) {
+      // quality_note included: USDA's base, "Few" and "fine appearance"
+      // prints of the same pack are different products at different prices.
+      var key = [r.market, r.commodity, r.variety, r.origin, r.grade, r.package, r.size, r.quality_note].join('||');
+      if (!seen[key]) {
+        seen[key] = true;
+        result.push(r);
+      }
+    });
+    return result;
+  }
+
+  function skuPrice(row) {
+    var mLow = U.num(row.price_mostly_low), mHigh = U.num(row.price_mostly_high);
+    if (mLow != null && mHigh != null) return { price: (mLow + mHigh) / 2, src: 'mostly' };
+    if (mLow != null) return { price: mLow, src: 'mostly' };
+    if (mHigh != null) return { price: mHigh, src: 'mostly' };
+    var low = U.num(row.price_low), high = U.num(row.price_high);
+    if (low != null && high != null) {
+      if (low === high) return { price: low, src: 'reported' };
+      return { price: (low + high) / 2, src: 'mid', range: '$' + low.toFixed(2) + ' \u2013 $' + high.toFixed(2) };
+    }
+    if (low != null) return { price: low, src: 'reported' };
+    if (high != null) return { price: high, src: 'reported' };
+    return { price: null, src: null };
+  }
+
+  function trendOf(rows) {
+    for (var i = 0; i < rows.length; i++) {
+      var m = (rows[i].movement || rows[i].trend || '').toLowerCase();
+      if (m.indexOf('higher') > -1 || m === 'up') return { label: 'Higher', arrow: '\u2191', cls: 'tone--higher' };
+      if (m.indexOf('lower') > -1 || m === 'down') return { label: 'Lower', arrow: '\u2193', cls: 'tone--lower' };
+    }
+    return { label: 'Steady', arrow: '\u2192', cls: 'tone--steady' };
+  }
+
+  // ── LOAD DATA ──
+  try {
+    var dates = await api.dates();
+    if (!dates || !dates.length) throw new Error('No data available');
+    latestDate = dates[0].date;
+
+    var weekSel = document.getElementById('week-select');
+    var latestOpt = document.createElement('option');
+    latestOpt.value = 'latest';
+    latestOpt.textContent = 'Latest available';
+    weekSel.appendChild(latestOpt);
+    dates.slice(0, 5).forEach(function(d) {
+      var opt = document.createElement('option');
+      opt.value = d.date;
+      opt.textContent = 'Week of ' + U.fmtDate(d.date);
+      weekSel.appendChild(opt);
+    });
+    weekSel.addEventListener('change', async function() {
+      if (weekSel.value === 'latest') {
+        if (typeof api.reportLatest === 'function') {
+          try { allRows = await api.reportLatest('terminal'); } catch (e) {}
+          try { fobRows = await api.reportLatest('shipping_point'); } catch (e) { fobRows = []; }
+        }
+        renderAll();
+        return;
+      }
+      latestDate = weekSel.value;
+      // Load selected date + previous 4 dates for full commodity coverage
+      var selIdx = dates.findIndex(function(d) { return d.date === latestDate; });
+      var datesToLoad = dates.slice(selIdx, selIdx + 5).map(function(d) { return d.date; });
+      var allPromises = datesToLoad.map(function(dt) { return api.reportTerminal(dt).catch(function() { return []; }); });
+      var allResults = await Promise.all(allPromises);
+      var merged = [];
+      allResults.forEach(function(rows) { merged = merged.concat(rows); });
+      allRows = _deduplicateRows(merged);
+      try { fobRows = await api.reportShippingPoints(latestDate); } catch(e) { fobRows = []; }
+      // Non-blocking: a recall API hiccup must never stop prices rendering.
+      api.recallsByCommodity(120).then(function(list) {
+        var m = {};
+        (list || []).forEach(function(r) { if (r.commodity) m[r.commodity] = r; });
+        recallsByCom = m;
+        renderTable();
+      }).catch(function() {});
+      renderAll();
+    });
+
+    // Latest known price per SKU per market: a market that didn't print
+    // today keeps its most recent real price rather than showing empty.
+    //
+    // Feature-detected, not assumed. A cached older api.js would otherwise
+    // throw a synchronous TypeError here and take the whole page down.
+    var hasLatest = typeof api.reportLatest === 'function';
+    if (!hasLatest) console.warn('AgraX: api.js is stale; using date-merge fallback.');
+
+    var fobPromise = hasLatest
+      ? api.reportLatest('shipping_point').catch(function() {
+          return api.reportShippingPoints(latestDate).catch(function() { return []; });
+        })
+      : api.reportShippingPoints(latestDate).catch(function() { return []; });
+
+    // Merging recent dates is the fallback: it can't reach a market that
+    // has been quiet longer than the window, but it beats an empty table.
+    async function _mergeRecentDates() {
+      var datesToLoad = dates.slice(0, 5).map(function(d) { return d.date; });
+      var allResults = await Promise.all(datesToLoad.map(function(dt) {
+        return api.reportTerminal(dt).catch(function() { return []; });
+      }));
+      var merged = [];
+      allResults.forEach(function(rows) { merged = merged.concat(rows); });
+      return _deduplicateRows(merged);
+    }
+
+    if (hasLatest) {
+      try {
+        allRows = await api.reportLatest('terminal');
+        if (!allRows || !allRows.length) allRows = await _mergeRecentDates();
+      } catch (e) {
+        allRows = await _mergeRecentDates();
+      }
+    } else {
+      allRows = await _mergeRecentDates();
+    }
+    fobRows = await fobPromise;
+
+    // Default: check ALL commodities so table is fully populated on load
+    var allByCom = U.groupBy(allRows, function(r) { return r.commodity; });
+    allByCom.forEach(function(rows, name) { checkedComs[name] = true; });
+
+    // Open nothing by default — all collapsed
+    catOpen = {};
+
+    renderAll();
+    renderSummary();
+  } catch (err) {
+    document.getElementById('table-body').innerHTML = '<div class="err-banner">' + esc(err.message) + '</div>';
+  }
+
+  // ── RENDER EVERYTHING ──
+  // Commodities arriving after the initial load (new market, new week)
+  // must default to checked, or they'd be filtered out as "unchecked".
+  function _adoptNewCommodities() {
+    var market = marketShort(currentMarket);
+    var rows = allRows.filter(function(r) { return r.market === market; });
+    if (!rows.length) {
+      // Market name in the data may differ from the label; fall back to a
+      // loose match so we don't skip adoption and render an empty table.
+      var key = market.toLowerCase().split(',')[0].split(' ')[0];
+      rows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(key) > -1;
+      });
+    }
+    rows.forEach(function(r) {
+      var name = r.commodity;
+      if (!name || seenComs[name]) return;
+      seenComs[name] = true;
+      checkedComs[name] = true;
+    });
+  }
+
+  function renderAll() {
+    _adoptNewCommodities();
+    renderMarketStrip();
+    renderSidebar();
+    renderTable();
+  }
+
+  // ── MARKET STRIP ──
+  function renderMarketStrip() {
+    var strip = document.getElementById('market-strip');
+    var byMarket = U.groupBy(allRows, function(r) { return r.market; });
+
+    strip.innerHTML = MARKETS.map(function(m) {
+      var short = marketShort(m);
+      var rows = byMarket.get(short) || [];
+      var count = new Set(rows.map(function(r) { return r.commodity; })).size;
+      var isCurrent = short === marketShort(currentMarket);
+      var hasData = rows.length > 0;
+      var trend = hasData ? trendOf(rows) : { label: 'No data', arrow: '' };
+      var fg = !hasData ? 'var(--text-faint)' : (trend.label === 'Lower' ? DOWN : UP);
+      // Calculate a representative change %
+      var mktByCom = U.groupBy(rows, function(r) { return r.commodity; });
+      var h = 0, l = 0;
+      mktByCom.forEach(function(rs) {
+        var mv = (rs[0].movement || rs[0].trend || '').toLowerCase();
+        if (mv.indexOf('higher') > -1 || mv === 'up') h++;
+        else if (mv.indexOf('lower') > -1 || mv === 'down') l++;
+      });
+      var pct = mktByCom.size > 0 ? ((h - l) / mktByCom.size * 3).toFixed(1) : '0.0';
+      var sign = parseFloat(pct) >= 0 ? '+' : '';
+      var pctDisplay = hasData ? (sign + pct + '%') : '\u2014';
+      var itemsLabel = hasData ? (count + ' items') : 'no data yet';
+
+      return '<div onclick="window._pickMarket(\'' + esc(m) + '\')" style="flex:none;min-width:132px;background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;box-shadow:var(--shadow-chip);border:1px solid ' + (isCurrent ? 'var(--accent)' : '#E9EBE4') + (hasData ? '' : ';opacity:.62') + '">' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<span style="font-size:11.5px;font-weight:' + (isCurrent ? 600 : 500) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(short) + '</span>' +
+          '<span style="font-family:var(--mono);font-size:10.5px;color:' + fg + ';margin-left:auto">' + pctDisplay + '</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:5px">' +
+          '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + itemsLabel + '</span>' +
+          '<span style="font-size:10px;font-weight:500;color:' + fg + ';margin-left:auto">' + trend.label.toLowerCase() + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  window._pickMarket = function(m) {
+    currentMarket = m;
+    U.setSelMarket(marketShort(m));
+    // Reset dossier — go back to market summary for new market
+    selectedSku = null;
+    selectedComName = null;
+    expanded = {};
+    document.getElementById('market-summary').style.display = 'block';
+    document.getElementById('dossier-panel').style.display = 'none';
+    var grid = document.getElementById('main-grid');
+    if (grid) grid.removeAttribute('data-detail-open');
+    // Stale until the new market's summary lands; blank beats wrong.
+    summaryCache = null;
+    renderSummaryStrip();
+    renderAll();
+    renderSummary();
+  };
+
+  // ── SIDEBAR ──
+  function renderSidebar() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+
+    // Build category → commodity map
+    var catItems = {};
+    byCom.forEach(function(rows, name) {
+      var cat = U.catLabel(rows[0] && rows[0].commodity_type);
+      if (!catItems[cat]) catItems[cat] = [];
+      catItems[cat].push(name);
+    });
+    Object.keys(catItems).forEach(function(k) { catItems[k].sort(); });
+
+    // Categories accordion
+    var catHtml = '';
+    ['Fruits', 'Vegetables', 'Onions & Potatoes', 'Nuts'].forEach(function(cat) {
+      var items = catItems[cat] || [];
+      var isOpen = !!catOpen[cat];
+      var allChecked = items.length > 0 && items.every(function(n) { return !!checkedComs[n]; });
+      var someChecked = items.some(function(n) { return !!checkedComs[n]; });
+
+      catHtml += '<div>';
+      catHtml += '<div style="padding:9px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--surface-row)">';
+      // Category checkbox — selects/deselects all items in this category
+      catHtml += '<input type="checkbox" ' + (allChecked ? 'checked' : '') + (someChecked && !allChecked ? ' style="opacity:0.5"' : '') + ' onchange="window._toggleCatAll(\'' + esc(cat) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none;cursor:pointer">';
+      // Expand caret
+      catHtml += '<svg onclick="window._toggleCat(\'' + esc(cat) + '\')" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round" style="flex:none;transform:' + (isOpen ? 'rotate(90deg)' : 'none') + ';cursor:pointer"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      catHtml += '<span onclick="window._toggleCat(\'' + esc(cat) + '\')" style="font-size:12.5px;font-weight:500;flex:1;min-width:0;cursor:pointer">' + esc(cat) + '</span>';
+      catHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint)">' + items.length + '</span>';
+      catHtml += '</div>';
+      if (isOpen) {
+        catHtml += '<div style="padding:8px 0 10px 18px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--surface-row)">';
+        items.forEach(function(name) {
+          var checked = !!checkedComs[name];
+          catHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
+          catHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCom(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+          catHtml += '<span style="flex:1;min-width:0">' + esc(name) + '</span>';
+          catHtml += '</label>';
+        });
+        catHtml += '</div>';
+      }
+      catHtml += '</div>';
+    });
+    document.getElementById('cat-list').innerHTML = catHtml;
+
+    // Shipping point checkboxes
+    var originCounts = {};
+    fobRows.forEach(function(r) {
+      var o = r.market || r.origin || 'Unknown';
+      if (o === 'National Trends') return;
+      originCounts[o] = (originCounts[o] || 0) + 1;
+    });
+    var originHtml = '';
+    Object.entries(originCounts).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(pair) {
+      var name = pair[0], count = pair[1];
+      var checked = !!checkedOrigins[name];
+      originHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer">';
+      originHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckOrigin(\'' + esc(name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+      originHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</span>';
+      originHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + count + '</span>';
+      originHtml += '</label>';
+    });
+    document.getElementById('origin-list').innerHTML = originHtml;
+
+    // Country of Origin checkboxes — grouped by region
+    var countryCounts = {};
+    marketRows.forEach(function(r) {
+      var o = r.origin;
+      if (!o || o === 'None') return;
+      countryCounts[o] = (countryCounts[o] || 0) + 1;
+    });
+
+    // Classify each origin into a region
+    var US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming','Orange County New York'];
+    var MEX_CA = ['Mexico','Guatemala','Costa Rica','Honduras','Nicaragua','El Salvador','Belize','Panama'];
+    var SOUTH_AM = ['Chile','Peru','Ecuador','Colombia','Brazil','Argentina','Uruguay','Paraguay','Bolivia','Venezuela'];
+
+    function regionOf(name) {
+      if (US_STATES.some(function(s) { return name.indexOf(s) > -1; })) return 'Domestic';
+      if (MEX_CA.some(function(s) { return name.indexOf(s) > -1; })) return 'Mexico & Central America';
+      if (SOUTH_AM.some(function(s) { return name.indexOf(s) > -1; })) return 'South America';
+      return 'Other imports';
+    }
+
+    var regionGroups = { 'Domestic': [], 'Mexico & Central America': [], 'South America': [], 'Other imports': [] };
+    Object.entries(countryCounts).forEach(function(pair) {
+      var name = pair[0], count = pair[1];
+      var region = regionOf(name);
+      regionGroups[region].push({ name: name, count: count });
+    });
+    // Sort each group by count desc
+    Object.values(regionGroups).forEach(function(arr) {
+      arr.sort(function(a, b) { return b.count - a.count; });
+    });
+
+    var countryHtml = '';
+    ['Domestic', 'Mexico & Central America', 'South America', 'Other imports'].forEach(function(region) {
+      var items = regionGroups[region];
+      if (!items.length) return;
+      var totalCount = items.reduce(function(a, b) { return a + b.count; }, 0);
+      countryHtml += '<div style="margin-top:10px">';
+      countryHtml += '<div style="display:flex;align-items:center;gap:6px;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--surface-row)">';
+      countryHtml += '<span style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);flex:1">' + region + '</span>';
+      countryHtml += '<span style="font-family:var(--mono);font-size:9px;color:var(--text-label)">' + totalCount + '</span>';
+      countryHtml += '</div>';
+      items.forEach(function(item) {
+        var checked = !!checkedCountries[item.name];
+        countryHtml += '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;padding:3px 0">';
+        countryHtml += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="window._toggleCheckCountry(\'' + esc(item.name) + '\')" style="width:12px;height:12px;accent-color:var(--accent);margin:0;flex:none">';
+        countryHtml += '<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(item.name) + '</span>';
+        countryHtml += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-label)">' + item.count + '</span>';
+        countryHtml += '</label>';
+      });
+      countryHtml += '</div>';
+    });
+    document.getElementById('country-list').innerHTML = countryHtml;
+
+    // Watchlist
+    var wl = U.watchList();
+    document.getElementById('watch-count').textContent = wl.length;
+    var watchHtml = '';
+    if (wl.length) {
+      wl.forEach(function(name) {
+        var rows = byCom.get(name);
+        var trend = rows ? trendOf(rows) : { label: 'Steady', arrow: '\u2192', cls: 'tone--steady' };
+        watchHtml += '<div style="padding:9px 0;border-bottom:1px solid var(--surface-row);cursor:pointer" onclick="window._toggleCom(\'' + esc(name) + '\')">';
+        watchHtml += '<div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(name) + '</div>';
+        watchHtml += '<div style="display:flex;align-items:center;gap:7px;margin-top:5px">';
+        watchHtml += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);flex:1;min-width:0">' + (rows ? rows.length + ' reporting' : '\u2014') + '</span>';
+        watchHtml += '<span class="tone tone--sm ' + trend.cls + '"><span>' + trend.arrow + '</span>' + trend.label + '</span>';
+        watchHtml += '</div></div>';
+      });
+    } else {
+      watchHtml = '<div style="padding:12px 0;font-size:11.5px;color:var(--text-dim)">No items watched yet.</div>';
+    }
+    document.getElementById('watch-list').innerHTML = watchHtml;
+  }
+
+  // Global handlers
+  window._toggleCat = function(name) { catOpen[name] = !catOpen[name]; renderSidebar(); };
+  window._toggleCatAll = function(cat) {
+    // Get all commodities in this category
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+    var items = [];
+    byCom.forEach(function(rows, name) {
+      var c = U.catLabel(rows[0] && rows[0].commodity_type);
+      if (c === cat) items.push(name);
+    });
+    // If all checked → uncheck all; otherwise check all
+    var allChecked = items.every(function(n) { return !!checkedComs[n]; });
+    items.forEach(function(n) { checkedComs[n] = !allChecked; });
+    renderAll();
+  };
+  window._toggleCheckCom = function(name) { checkedComs[name] = !checkedComs[name]; renderAll(); };
+  window._toggleCheckOrigin = function(name) { checkedOrigins[name] = !checkedOrigins[name]; renderAll(); };
+  window._toggleCheckCountry = function(name) { checkedCountries[name] = !checkedCountries[name]; renderAll(); };
+  window._toggleCom = function(name) { expanded[name] = !expanded[name]; renderAll(); };
+
+  // ── TABLE ──
+  function renderTable() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+
+    // Fallback: if no rows match, try finding the closest market name
+    if (marketRows.length === 0 && allRows.length > 0) {
+      var marketLower = market.toLowerCase();
+      marketRows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(marketLower.split(',')[0].split(' ')[0]) > -1;
+      });
+      if (marketRows.length > 0) {
+        // Found data under a different market name — use that
+        market = marketRows[0].market;
+        console.log('AgraX: market name adjusted to "' + market + '"');
+      }
+    }
+
+    var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+
+    document.getElementById('toolbar-market').textContent = currentMarket;
+
+    // Active filters
+    var activeComs = Object.keys(checkedComs).filter(function(k) { return checkedComs[k]; });
+    var activeOrigins = Object.keys(checkedOrigins).filter(function(k) { return checkedOrigins[k]; });
+    var activeCountries = Object.keys(checkedCountries).filter(function(k) { return checkedCountries[k]; });
+
+    // Build commodity list
+    var comList = [];
+    byCom.forEach(function(rows, name) {
+      // Search filter — commodity name plus variety, origin, pack and size,
+      // which is what the input's placeholder advertises.
+      if (searchQ) {
+        var hay = name;
+        for (var si = 0; si < rows.length; si++) {
+          var sr = rows[si];
+          hay += ' ' + (sr.variety || '') + ' ' + (sr.origin || '') +
+                 ' ' + (sr.package || '') + ' ' + (sr.size || '');
+        }
+        hay = hay.toLowerCase();
+        // Every word must appear somewhere, in any order, so a query like
+        // "hass 48s" matches a Hass row packed as "2 layer ctn 48s".
+        var terms = searchQ.split(/\s+/).filter(Boolean);
+        var hit = terms.every(function(t) { return hay.indexOf(t) > -1; });
+        if (!hit) return;
+      }
+      // Commodity checkbox filter
+      if (activeComs.length && activeComs.indexOf(name) === -1) return;
+      // Origin filter — check if any of this commodity's origins match
+      if (activeOrigins.length) {
+        var comOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var comFob = fobRows.filter(function(r) { return r.commodity === name; });
+        var fobOrigins = comFob.map(function(r) { return r.market || r.origin; }).filter(Boolean);
+        var allOrigins = comOrigins.concat(fobOrigins);
+        var hasMatch = activeOrigins.some(function(o) {
+          return allOrigins.some(function(ao) { return ao && ao.indexOf(o.split(',')[0]) > -1; });
+        });
+        if (!hasMatch) return;
+      }
+      // Country of origin filter
+      if (activeCountries.length) {
+        var rowOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var countryMatch = activeCountries.some(function(c) {
+          return rowOrigins.some(function(ro) { return ro === c; });
+        });
+        if (!countryMatch) return;
+      }
+
+      var origins = U.uniq(rows.map(function(r) { return r.origin; }).filter(Boolean));
+      var trend = trendOf(rows);
+      var comFob2 = fobRows.filter(function(r) { return r.commodity === name; });
+      var shipPts = U.uniq(comFob2.map(function(r) { return r.market || r.origin; }).filter(Boolean));
+
+      comList.push({ name: name, rows: rows, origins: origins, trend: trend, shipPts: shipPts, skuCount: rows.length, reportDate: rows[0].report_date || latestDate || '' });
+    });
+
+    // Sort
+    var sorters = {
+      az: function(a, b) { return a.name.localeCompare(b.name); },
+      skus: function(a, b) { return b.skuCount - a.skuCount || a.name.localeCompare(b.name); },
+      higher: function(a, b) { return (a.trend.label === 'Higher' ? 0 : 1) - (b.trend.label === 'Higher' ? 0 : 1) || a.name.localeCompare(b.name); },
+      lower: function(a, b) { return (a.trend.label === 'Lower' ? 0 : 1) - (b.trend.label === 'Lower' ? 0 : 1) || a.name.localeCompare(b.name); },
+    };
+    comList.sort(sorters[sortMode] || sorters.az);
+
+    var totalPrices = marketRows.length;
+    var filterLabel = activeComs.length || activeOrigins.length || searchQ
+      ? comList.length + ' of ' + byCom.size + ' commodities match'
+      : comList.length + ' of ' + byCom.size + ' commodities \u00b7 ' + totalPrices + ' prices reporting';
+    // Say plainly which report date is loaded, and how many SKUs are older
+    // than it. This is the fastest way to tell at a glance whether the site
+    // pulled today's data or is showing yesterday's.
+    var staleCount = marketRows.filter(function(r) {
+      return latestDate && r.report_date && r.report_date !== latestDate;
+    }).length;
+    if (latestDate) {
+      filterLabel += ' \u00b7 ' + U.fmtDate(latestDate);
+      if (staleCount) filterLabel += ' (' + staleCount + ' older)';
+    }
+    document.getElementById('toolbar-count').textContent = filterLabel;
+
+    var anyOpen = Object.keys(expanded).some(function(k) { return expanded[k]; });
+    document.getElementById('toggle-all').textContent = anyOpen ? 'Collapse all' : 'Expand all';
+
+    // Render
+    var tbody = document.getElementById('table-body');
+    if (!comList.length) {
+      tbody.innerHTML = '<div style="padding:40px 0;display:flex;flex-direction:column;gap:8px">' +
+        '<div style="font-size:14px;font-weight:500">No commodities match.</div>' +
+        '<span onclick="window._clearFilters()" style="font-size:12.5px;font-weight:500;color:var(--accent);cursor:pointer">Clear search and filters</span>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    comList.forEach(function(d, i) {
+      var isExp = !!expanded[d.name];
+      var origLabel = d.origins.slice(0, 3).join(' \u00b7 ');
+      if (d.origins.length > 3) origLabel += ' +' + (d.origins.length - 3);
+      var shipLabel = d.shipPts.length ? d.shipPts.length + ' districts \u00b7 ' + d.shipPts[0] : '\u2014';
+
+      // Commodity row
+      html += '<div style="border-bottom:1px solid var(--border);background:' + (isExp ? 'var(--surface-active)' : 'transparent') + '">';
+      var rc = recallsByCom[d.name];
+      html += '<div onclick="window._toggleCom(\'' + esc(d.name) + '\')" class="com-row tbl-grid" style="display:grid;gap:10px;align-items:center;padding:12px 0;cursor:pointer">';
+
+      // Name with caret
+      html += '<div style="display:flex;align-items:center;gap:9px;min-width:0">';
+      html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2.4" stroke-linecap="round" style="flex:none;transform:' + (isExp ? 'rotate(90deg)' : 'none') + '"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      html += '<span style="font-size:16px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(d.name) + '</span>';
+      // FDA recall badge. Deliberately not styled like a price or a tone: it
+      // is a different kind of fact from a different agency, and conflating
+      // the two would undercut "every price as reported".
+      if (rc && rc.count) {
+        html += '<span title="' + rc.count + ' FDA recall' + (rc.count > 1 ? 's' : '') +
+          ' since ' + esc(rc.latest || '') + '" style="flex:none;font-size:9.5px;font-weight:600;' +
+          'letter-spacing:0.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;' +
+          'border:1px solid ' + (rc.class_i ? 'var(--down)' : 'var(--border)') + ';' +
+          'color:' + (rc.class_i ? 'var(--down)' : 'var(--text-faint)') + '">FDA recall' +
+          (rc.count > 1 ? ' \u00d7' + rc.count : '') + '</span>';
+      }
+      html += '</div>';
+      // Reporting
+      html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-secondary);white-space:nowrap">' + d.skuCount + ' reporting</span>';
+      // Origins
+      html += '<span class="desk-col-js" style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(origLabel) + '</span>';
+      // Shipping points
+      html += '<span class="desk-col-js" style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(shipLabel) + '</span>';
+      // Movement bars
+      html += '<div class="desk-col-js" style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:14px;display:flex;align-items:flex-end;gap:2px">';
+      [6,8,7,9,8,5].forEach(function(h, j) {
+        html += '<span style="flex:1;height:' + h + 'px;background:' + (j === 5 ? (d.trend.label === 'Lower' ? DOWN : d.trend.label === 'Higher' ? UP : '#E4E7DF') : '#E4E7DF') + ';border-radius:1px"></span>';
+      });
+      html += '</div><span style="font-family:var(--mono);font-size:11.5px;color:var(--text-dim);flex:none">\u2014</span></div>';
+      // Date
+      html += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);white-space:nowrap">' + esc(d.reportDate) + '</span>';
+      // Tone badge
+      html += '<div style="display:flex;justify-content:flex-end"><span class="tone ' + d.trend.cls + '"><span>' + d.trend.arrow + '</span>' + d.trend.label + '</span></div>';
+
+      html += '</div>'; // close grid row
+
+      // Expanded SKU table
+      if (isExp) {
+        html += '<div style="padding:0 0 16px 19px;animation:agxFade .14s ease-out;overflow-x:auto">';
+        html += '<div style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">';
+        html += '<span class="eyebrow">Variety</span><span class="eyebrow">Origin</span><span class="eyebrow">Grade</span><span class="eyebrow">Pack</span><span class="eyebrow">Size</span><span class="eyebrow">Quality</span><span class="eyebrow">Date</span><span class="eyebrow" style="text-align:right">Price</span>';
+        html += '</div>';
+
+        var sorted = d.rows.slice().sort(function(a, b) {
+          return (a.variety || '').localeCompare(b.variety || '')
+            || (a.size || '').localeCompare(b.size || '')
+            || (a.quality_note || '').localeCompare(b.quality_note || '');
+        });
+        sorted.forEach(function(row) {
+          var sp = skuPrice(row);
+          var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+          var sub = sp.src === 'mid' && sp.range ? sp.range : '';
+          var skuId = esc(d.name) + '::' + rowKey(row);
+          var isSelected = selectedSku === skuId;
+
+          html += '<div onclick="window._selectSku(\'' + esc(d.name) + '\',\'' + esc(rowKey(row)) + '\')" style="display:grid;min-width:700px;grid-template-columns:0.94fr 0.74fr 0.48fr 0.84fr 0.36fr 0.58fr 0.5fr 0.8fr;gap:8px;align-items:center;padding:8px 6px;margin:0 -6px;border-bottom:1px solid var(--surface-row);font-size:12px;border-radius:4px;cursor:pointer;background:' + (isSelected ? 'var(--surface-active)' : 'transparent') + ';box-shadow:' + (isSelected ? 'inset 2px 0 0 var(--accent)' : 'none') + '">';
+          html += '<span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (isSelected ? 'var(--accent)' : 'inherit') + '">' + esc(row.variety || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.origin || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap">' + esc(row.grade || '\u2014') + '</span>';
+          html += '<span style="color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(row.package || '\u2014') + '</span>';
+          html += '<span style="font-family:var(--mono);color:var(--text-secondary);white-space:nowrap">' + esc(row.size || '\u2014') + '</span>';
+          // Quality is a price-bearing attribute, not a footnote: USDA's
+          // "fine appearance" print of Mexican Hass 48s runs several dollars
+          // above the base print of the identical pack.
+          html += '<span style="color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize">' + esc(row.quality_note || '\u2014') + '</span>';
+          // Per-SKU date. The commodity row shows one date, but /reports/latest
+          // returns the newest print per SKU across a 90-day window, so packs
+          // inside one commodity can be days apart. Without this a stale price
+          // was indistinguishable from today's.
+          var skuStale = latestDate && row.report_date && row.report_date !== latestDate;
+          html += '<span title="' + esc(row.report_date || '') + '" style="font-family:var(--mono);font-size:11px;white-space:nowrap;color:' +
+            (skuStale ? 'var(--warn, #9a6b00)' : 'var(--text-faint)') + '">' +
+            esc(U.fmtDate(row.report_date)) + (skuStale ? ' \u2022' : '') + '</span>';
+          html += '<div style="text-align:right">';
+          html += '<div style="font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap">' + priceStr + '</div>';
+          if (sub) html += '<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:1px;white-space:nowrap">' + sub + '</div>';
+          html += '</div></div>';
+        });
+
+        // Footer with link
+        html += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px">';
+        html += '<span class="eyebrow" style="flex:none">Movement</span>';
+        html += '<span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);flex:none">' + d.skuCount + ' prices</span>';
+        html += '<a onclick="window._selectSku(\'' + esc(d.name) + '\',\'' + esc(rowKey(sorted[0])) + '\');return false" href="#" style="font-size:12px;font-weight:500;flex:none;margin-left:auto">View details \u2192</a>';
+        html += '</div></div>';
+      }
+
+      html += '</div>'; // close commodity wrapper
+
+      // Self-promo row after 4th item
+      if (i === 3 && comList.length > 5) {
+        html += '<div onclick="document.getElementById(\'subscribe-modal\').style.display=\'flex\'" style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);background:var(--surface-ad);cursor:pointer">';
+        html += '<span style="flex:none;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);border:1px solid var(--border-soft);border-radius:4px;padding:3px 6px">AgraX</span>';
+        html += '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">Wholesale prices in your inbox every weekday morning</span><span style="font-size:11.5px;color:var(--text-muted)">One email: your commodities, what moved, and the shipping points behind them.</span></span>';
+        html += '<span onclick="document.getElementById(\'subscribe-modal\').style.display=\'flex\'" style="flex:none;font-size:11.5px;font-weight:500;color:var(--accent);cursor:pointer">Subscribe \u2192</span>';
+        html += '</div>';
+      }
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  // Clear all filters
+  window._clearFilters = function() {
+    checkedComs = {};
+    seenComs = {};
+    checkedOrigins = {};
+    checkedCountries = {};
+    searchQ = '';
+    document.getElementById('header-search').value = '';
+    var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
+    byCom.forEach(function(rows, name) { checkedComs[name] = true; seenComs[name] = true; });
+    renderAll();
+  };
+
+  // Select a SKU → show dossier in right panel (desktop) or navigate (mobile)
+  window._selectSku = function(comName, skuKeyStr) {
+    // New SKU: always start on Price.
+    if (selectedSku !== comName + '::' + skuKeyStr) detailTab = 'price';
+    // On mobile, navigate to the standalone detail page
+    if (window.innerWidth < 980) {
+      window.location.href = '/app/commodity?c=' + encodeURIComponent(comName) + '&market=' + encodeURIComponent(marketShort(currentMarket));
+      return;
+    }
+    var newId = comName + '::' + skuKeyStr;
+    if (selectedSku === newId) {
+      selectedSku = null;
+      selectedComName = null;
+    } else {
+      selectedSku = newId;
+      selectedComName = comName;
+    }
+    renderTable();
+    renderDetail();
+  };
+
+  window._closeDetail = function() {
+    selectedSku = null;
+    selectedComName = null;
+    renderTable();
+    document.getElementById('market-summary').style.display = 'block';
+    document.getElementById('dossier-panel').style.display = 'none';
+    // Give the width back to the table and put the summary strip back.
+    var grid = document.getElementById('main-grid');
+    if (grid) grid.removeAttribute('data-detail-open');
+    renderSummaryStrip();
+  };
+
+  // Render the dossier panel
+  function renderDetail() {
+    var summaryEl = document.getElementById('market-summary');
+    var dossierEl = document.getElementById('dossier-panel');
+
+    var grid = document.getElementById('main-grid');
+
+    if (!selectedComName || !selectedSku) {
+      // Nothing selected: collapse the panel and give the table the width.
+      summaryEl.style.display = 'block';
+      dossierEl.style.display = 'none';
+      if (grid) grid.removeAttribute('data-detail-open');
+      renderSummaryStrip();
+      return;
+    }
+
+    summaryEl.style.display = 'none';
+    dossierEl.style.display = 'block';
+    if (grid) grid.setAttribute('data-detail-open', '');
+    var strip = document.getElementById('summary-strip');
+    if (strip) strip.innerHTML = '';
+
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market && r.commodity === selectedComName; });
+    if (!marketRows.length) {
+      // Fallback
+      marketRows = allRows.filter(function(r) { return r.commodity === selectedComName; });
+    }
+    // Look the row up by identity. Split on the FIRST '::' only: a row_hash
+    // never contains one, but a commodity name might.
+    var sep = selectedSku.indexOf('::');
+    var wantKey = sep >= 0 ? selectedSku.slice(sep + 2) : '';
+    var row = marketRows.filter(function(r) { return rowKey(r) === wantKey; })[0];
+    if (!row) {
+      // The SKU left the view - a filter changed, or a new report replaced it.
+      dossierEl.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text-dim)">' +
+        'That price is no longer in view. Pick another row.</div>';
+      return;
+    }
+
+    var sp = skuPrice(row);
+    var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+    var trend = trendOf(marketRows);
+    var origins = U.uniq(marketRows.map(function(r) { return r.origin; }).filter(Boolean));
+    var skuLabel = [row.variety, row.grade, row.size, row.package, row.quality_note].filter(Boolean).join(' \u00b7 ');
+
+    // FOB data — match shipping points to the selected variety's origin
+    var selectedOrigin = (row.origin || '').toLowerCase();
+    var comFob = fobRows.filter(function(r) { return r.commodity === selectedComName; });
+    var fobByOrigin = {};
+    comFob.forEach(function(r) {
+      var o = r.market || r.origin || 'Unknown';
+      if (o === 'National Trends') return;
+      if (!fobByOrigin[o]) {
+        var p = skuPrice(r);
+        fobByOrigin[o] = { name: o, price: p.price, fobOrigin: (r.origin || '').toLowerCase() };
+      }
+    });
+
+    // Origin → likely shipping point mapping
+    var ORIGIN_SP_MAP = {
+      'mexico':       ['Nogales', 'Laredo', 'McAllen', 'Pharr', 'Texas'],
+      'california':   ['Oxnard', 'Fresno', 'Salinas', 'Los Angeles', 'San Diego'],
+      'arizona':      ['Nogales', 'Phoenix'],
+      'texas':        ['Laredo', 'McAllen', 'Pharr', 'Weslaco', 'Texas'],
+      'florida':      ['Orlando', 'Immokalee', 'Florida', 'Miami'],
+      'georgia':      ['Thomasville', 'Vidalia', 'Atlanta'],
+      'peru':         ['Miami Imports', 'Philadelphia', 'Port'],
+      'chile':        ['Philadelphia', 'Miami Imports', 'Port'],
+      'dom. rep.':    ['Miami Imports'],
+      'dominican republic': ['Miami Imports'],
+      'guatemala':    ['Miami Imports', 'Nogales', 'Port'],
+      'honduras':     ['Miami Imports', 'Port'],
+      'costa rica':   ['Miami Imports', 'Port'],
+      'ecuador':      ['Miami Imports', 'Port'],
+      'colombia':     ['Miami Imports', 'Port'],
+      'canada':       ['Detroit', 'Buffalo'],
+      'british columbia': ['Seattle'],
+      'oregon':       ['Portland', 'Salem', 'Oregon'],
+      'washington':   ['Seattle', 'Washington', 'Yakima'],
+      'idaho':        ['Idaho', 'Ontario'],
+      'new york':     ['New York', 'Orange County'],
+      'new jersey':   ['New Jersey', 'Philadelphia'],
+      'pennsylvania': ['Philadelphia', 'Pennsylvania'],
+    };
+
+    // Score each FOB district by relevance to this variety's origin
+    var fobEntries = Object.values(fobByOrigin);
+    var relevantSPs = ORIGIN_SP_MAP[selectedOrigin] || [];
+    fobEntries.forEach(function(f) {
+      f.relevant = relevantSPs.some(function(sp) {
+        return f.name.toLowerCase().indexOf(sp.toLowerCase()) > -1;
+      });
+    });
+    // Sort: relevant first, then by price
+    fobEntries.sort(function(a, b) {
+      if (a.relevant && !b.relevant) return -1;
+      if (!a.relevant && b.relevant) return 1;
+      return (a.price || 999) - (b.price || 999);
+    });
+
+    // Cross-market comparison — the SAME SKU in other markets, never an
+    // average. Averaging every row for the commodity blended Hass 32s with
+    // greenskin 18s and produced a number that appeared in no report: the
+    // panel showed New York at $37.08 when New York's actual print for this
+    // SKU was $33.00.
+    //
+    // Matching runs in two tiers because USDA's own granularity varies by
+    // market. New York states "HASS"; Asheville prints the same Mexican
+    // 48s in cartons 2 layer with no variety at all. Those are very likely
+    // the same product, but USDA did not say so, so they are never merged
+    // into one ranked list — the second tier is shown separately and
+    // labelled, and the reader decides.
+    function norm(v) { return String(v == null ? '' : v).trim().toLowerCase(); }
+    function fullKey(r) {
+      return [r.variety, r.origin, r.grade, r.package, r.size, r.quality_note].map(norm).join('||');
+    }
+    // The loose key is the PHYSICAL pack: same origin, same size, same
+    // container. Variety and grade are deliberately excluded because USDA
+    // states them inconsistently between markets — Asheville prints Mexican
+    // 48s in cartons 2 layer with no variety and no grade, New York prints
+    // the identical pack as HASS with a grade parsed from its quality text.
+    // Requiring either to match meant the two never lined up and the panel
+    // showed Asheville alone.
+    //
+    // These are still never merged into the exact list. Each loose row is
+    // labelled with the variety and grade that market actually published,
+    // so the reader can see what differs and decide. AgraX does not assume
+    // Mexican avocados are Hass just because they usually are.
+    function packKey(r) {
+      return [r.origin, r.package, r.size].map(norm).join('||');
+    }
+
+    var wantFull = fullKey(row);
+    var wantPack = packKey(row);
+
+    var exactRows = {}, looseRows = {};
+    allRows.forEach(function(r) {
+      if (r.commodity !== selectedComName) return;
+      if (fullKey(r) === wantFull) {
+        (exactRows[r.market] = exactRows[r.market] || []).push(r);
+      } else if (packKey(r) === wantPack) {
+        (looseRows[r.market] = looseRows[r.market] || []).push(r);
+      }
+    });
+
+    function toEntries(byMarket) {
+      var out = [];
+      Object.keys(byMarket).forEach(function(mkt) {
+        // One print per market. If a market carries more than one row for an
+        // identical SKU, take the most recent — do not average them.
+        var best = byMarket[mkt].slice().sort(function(a, b) {
+          return String(b.report_date || '').localeCompare(String(a.report_date || ''));
+        })[0];
+        var p = skuPrice(best);
+        if (p.price != null) {
+          // Spell out only the attributes that differ from the selected row.
+          var diff = [];
+          if (norm(best.variety) !== norm(row.variety)) {
+            diff.push(best.variety || 'no variety');
+          }
+          if (norm(best.grade) !== norm(row.grade)) {
+            diff.push(best.grade || 'no grade');
+          }
+          if (norm(best.quality_note) !== norm(row.quality_note)) {
+            diff.push(best.quality_note || 'base print');
+          }
+          out.push({ name: mkt, price: p.price, date: best.report_date,
+                     diff: diff.join(' \u00b7 '), isCurrent: mkt === market });
+        }
+      });
+      out.sort(function(a, b) { return a.price - b.price; });
+      return out;
+    }
+
+    var crossMarket = toEntries(exactRows);
+    var looseMarket = toEntries(looseRows).filter(function(m) {
+      return !exactRows[m.name];
+    });
+    // Bars are scaled across both tiers so the two lists stay visually
+    // comparable to each other.
+    var allPrices = crossMarket.concat(looseMarket).map(function(m) { return m.price; });
+    var maxPrice = allPrices.length ? Math.max.apply(null, allPrices) : 1;
+
+    var html = '';
+
+    // Header
+    html += '<div style="padding:18px 20px 16px;border-bottom:1px solid var(--border)">';
+    html += '<div style="display:flex;align-items:center;gap:10px">';
+    html += '<span class="eyebrow">' + esc(selectedComName) + ' \u00b7 variety</span>';
+    html += '<span onclick="window._closeDetail()" style="margin-left:auto;cursor:pointer;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary)">';
+    html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>Close</span>';
+    html += '</div>';
+    html += '<h2 style="margin:10px 0 0;font-size:24px;font-weight:500;letter-spacing:-0.035em;line-height:1.05">' + esc(row.variety || selectedComName) + '</h2>';
+    html += '<div style="display:flex;align-items:center;gap:9px;margin-top:10px;flex-wrap:wrap">';
+    html += '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary)">' + esc(skuLabel) + '</span>';
+    html += '<span class="tone tone--sm ' + trend.cls + '"><span>' + trend.arrow + '</span>' + trend.label + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:7px">' + esc(row.origin || origins.join(' \u00b7 ')) + '</div>';
+    html += '</div>';
+
+    // ── TABS ──
+    // The panel had five stacked sections and the lower three were below the
+    // fold on every screen, so most of what AgraX knows about a SKU was
+    // effectively invisible. Tabs surface all five at equal weight.
+    var TABS = [
+      { id: 'price',    label: 'Price' },
+      { id: 'fob',      label: 'FOB' },
+      { id: 'movement', label: 'Movement' },
+      { id: 'markets',  label: 'Markets' },
+      { id: 'overview', label: 'Overview' },
+      { id: 'recalls',  label: 'Recalls' }
+    ];
+    var comRecall = recallsByCom[selectedComName];
+    html += '<div id="dossier-tabs" style="display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--border);overflow-x:auto">';
+    TABS.forEach(function(t) {
+      var on = t.id === detailTab;
+      html += '<button onclick="window._setDetailTab(\'' + t.id + '\')" ' +
+        'style="flex:none;appearance:none;background:none;border:none;cursor:pointer;padding:11px 10px;' +
+        'font-family:inherit;font-size:11.5px;font-weight:' + (on ? 600 : 400) + ';' +
+        'color:' + (on ? 'var(--text)' : 'var(--text-faint)') + ';' +
+        'box-shadow:' + (on ? 'inset 0 -2px 0 var(--accent)' : 'none') + '">' + t.label +
+        (t.id === 'recalls' && comRecall && comRecall.count
+          ? '<span style="margin-left:4px;font-size:9px;color:' + (comRecall.class_i ? 'var(--down)' : 'var(--text-faint)') + '">\u25cf</span>'
+          : '') + '</button>';
+    });
+    html += '</div>';
+
+    // Price history — latest print first, older prints beneath with dates.
+    // Rendered as a placeholder here and filled asynchronously by
+    // loadPriceHistory(); the panel must not block on a network call.
+    if (detailTab === 'price') {
+      html += '<div id="price-history" style="padding:16px 20px">';
+      html += priceHistoryHTML(row, sp, historyCache[skuKey(row)] || null, !historyCache[skuKey(row)]);
+      html += '</div>';
+    }
+
+    // Shipping point FOB
+    var fobEntries = Object.values(fobByOrigin);
+    if (detailTab === 'fob' && !fobEntries.length) {
+      html += '<div style="padding:16px 20px"><span class="eyebrow">Shipping point FOB</span>' +
+        '<div style="font-size:11.5px;color:var(--text-faint);margin-top:8px;line-height:1.55">' +
+        'No shipping point price published for ' + esc(selectedComName) + ' today.</div></div>';
+    }
+    if (detailTab === 'fob' && fobEntries.length) {
+      var relevantEntries = fobEntries.filter(function(f) { return f.relevant; });
+      var otherEntries = fobEntries.filter(function(f) { return !f.relevant; });
+      var label = selectedOrigin ? esc(selectedComName) + ' \u00b7 ' + esc(row.origin) + ' origin' : esc(selectedComName) + ' \u00b7 all districts';
+
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+      html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
+      html += '<span class="eyebrow">Shipping point FOB</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + label + '</span>';
+      html += '</div>';
+      html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;padding:8px 0 6px">';
+      html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">District</span>';
+      html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">FOB</span>';
+      html += '</div>';
+
+      // Relevant districts first (full weight)
+      relevantEntries.forEach(function(f) {
+        html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)">';
+        html += '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
+        html += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
+        html += '</div>';
+      });
+
+      // Other districts (dimmed)
+      if (otherEntries.length) {
+        html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
+        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint)">Other districts</span>';
+        html += '</div>';
+        otherEntries.forEach(function(f) {
+          html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-row)">';
+          html += '<span style="font-size:11.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name) + '</span>';
+          html += '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint);text-align:right;font-variant-numeric:tabular-nums">' + (f.price != null ? '$' + f.price.toFixed(2) : '\u2014') + '</span>';
+          html += '</div>';
+        });
+      }
+
+      // Markup — use the top relevant FOB for the calculation
+      var primaryFob = relevantEntries.length ? relevantEntries[0] : fobEntries[0];
+      if (sp.price != null && primaryFob && primaryFob.price != null) {
+        var markup = sp.price - primaryFob.price;
+        var markupPct = primaryFob.price > 0 ? Math.round(markup / primaryFob.price * 100) : 0;
+        html += '<div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">';
+        html += '<span style="font-size:11.5px;color:var(--text-dim);flex:1">Terminal over FOB</span>';
+        html += '<span style="font-family:var(--mono);font-size:13px;font-weight:500">+$' + markup.toFixed(2) + '</span>';
+        html += '<span style="font-family:var(--mono);font-size:11px;color:var(--text-faint)">+' + markupPct + '%</span>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    // Cross-market comparison
+    function marketRowsHTML(list, dim) {
+      var h = '';
+      list.forEach(function(m, idx) {
+        var barW = maxPrice > 0 ? (26 + (m.price / maxPrice) * 74).toFixed(1) : '50';
+        h += '<div style="display:grid;grid-template-columns:20px minmax(0,1fr) 52px 62px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
+        h += '<span style="font-family:var(--mono);font-size:9.5px;color:var(--text-ghost)">' + String(idx + 1).padStart(2, '0') + '</span>';
+        h += '<span style="font-size:' + (dim ? '11px' : '11.5px') + ';font-weight:' + (m.isCurrent ? 600 : 400) + ';color:' + (m.isCurrent ? 'var(--text)' : (dim ? 'var(--text-faint)' : 'var(--text-secondary)')) + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(m.name) + (m.isCurrent ? ' \u25cf' : '') +
+          (dim && m.diff ? '<span style="color:var(--text-ghost)"> \u00b7 ' + esc(m.diff) + '</span>' : '') + '</span>';
+        h += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' + (m.isCurrent ? 'var(--accent)' : 'var(--border-header)') + ';width:' + barW + '%"></div></div>';
+        h += '<span style="font-family:var(--mono);font-size:12px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums;color:' + (dim ? 'var(--text-secondary)' : 'var(--text)') + '">$' + m.price.toFixed(2) + '</span>';
+        h += '</div>';
+      });
+      return h;
+    }
+
+    function datesLineHTML(list) {
+      var dates = U.uniq(list.map(function(m) { return m.date; }).filter(Boolean)).sort();
+      if (dates.length === 1) {
+        return '<div style="font-size:10.5px;color:var(--text-faint);margin-top:9px">All prints ' + esc(U.fmtDate(dates[0])) + '</div>';
+      }
+      if (dates.length > 1) {
+        return '<div style="font-size:10.5px;color:var(--text-faint);margin-top:9px">Prints span ' +
+          esc(U.fmtDate(dates[0])) + ' \u2013 ' + esc(U.fmtDate(dates[dates.length - 1])) + '</div>';
+      }
+      return '';
+    }
+
+    if (detailTab === 'markets' && (crossMarket.length || looseMarket.length)) {
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--border)">';
+      html += '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
+      html += '<span class="eyebrow">Same SKU, other markets</span>';
+      html += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">cheapest first</span>';
+      html += '</div>';
+      html += '<div style="font-size:10.5px;color:var(--text-faint);padding:7px 0 3px;line-height:1.5">' +
+        esc([row.variety, row.grade, row.size, row.package, row.origin, row.quality_note].filter(Boolean).join(' \u00b7 ')) + '</div>';
+
+      if (crossMarket.length) {
+        html += marketRowsHTML(crossMarket, false);
+        html += datesLineHTML(crossMarket);
+      } else {
+        html += '<div style="font-size:11.5px;color:var(--text-faint);padding:6px 0;line-height:1.55">' +
+          'No other market printed this exact SKU.</div>';
+      }
+
+      // Second tier: same origin, grade, pack and size, but the two sides
+      // don't agree on variety because one of them didn't state one. Kept
+      // separate and never ranked together with the exact matches.
+      if (looseMarket.length) {
+        html += '<div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border)">';
+        html += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Same pack, different label</span>';
+        html += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px;line-height:1.5">' +
+          'Same origin, size and container \u2014 ' +
+          esc([row.size, row.package, row.origin].filter(Boolean).join(' \u00b7 ')) +
+          ' \u2014 but USDA labels the variety or grade differently in these markets. ' +
+          'Each row shows what that market published.</div>';
+        html += '</div>';
+        html += marketRowsHTML(looseMarket, true);
+        html += datesLineHTML(looseMarket);
+      }
+      html += '</div>';
+    } else if (detailTab === 'markets') {
+      html += '<div style="padding:16px 20px">';
+      html += '<span class="eyebrow">Other terminal markets</span>';
+      html += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:8px;line-height:1.55">' +
+        'No other terminal market printed this pack today. Prices are compared like-for-like only \u2014 ' +
+        'never averaged across varieties, packs or sizes.</div>';
+      html += '</div>';
+    }
+
+    if (detailTab === 'movement') {
+      html += '<div id="movement-pane" style="padding:16px 20px">';
+      html += movementHTML(row, null, true);
+      html += '</div>';
+    }
+
+    if (detailTab === 'recalls') {
+      html += '<div id="recalls-pane" style="padding:16px 20px">';
+      html += recallsHTML(row, null, true);
+      html += '</div>';
+    }
+
+    if (detailTab === 'overview') {
+      html += overviewHTML(row, sp, marketRows, fobEntries, crossMarket.concat(looseMarket));
+    }
+
+    // Action buttons
+    html += '<div style="padding:4px 20px 20px;display:flex;gap:6px;flex-wrap:wrap">';
+    html += '<button class="btn btn--primary" style="font-size:12px">Watch</button>';
+    html += '<button class="btn btn--ghost" style="font-size:12px">Set alert</button>';
+    html += '<button class="btn btn--ghost" style="font-size:12px">Export prices</button>';
+    html += '</div>';
+
+    dossierEl.innerHTML = html;
+    dossierEl.scrollTop = 0;
+    // Only fetch for the visible tab; both results are cached, so switching
+    // back and forth doesn't re-hit the API.
+    if (detailTab === 'price') loadPriceHistory(row, sp);
+    if (detailTab === 'movement') loadMovement(row);
+    if (detailTab === 'recalls') loadRecalls(row);
+  }
+
+  window._setDetailTab = function(id) {
+    if (detailTab === id) return;
+    detailTab = id;
+    renderDetail();
+  };
+
+  // ── FDA RECALLS ──
+  // FDA enforcement records, shown beside prices but never merged with them.
+  // FDA states this data must not be used to issue public recall alerts and
+  // that it does not update a record's status after classification, so each
+  // row is labelled as published-on-date and links back to FDA for live
+  // status. AgraX does not interpret, rank or summarise them.
+  var recallCache = {};
+
+  function recallsHTML(row, list, loading) {
+    var h = '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">FDA recalls \u00b7 ' + esc(row.commodity) + '</span>';
+    if (list && list.length) {
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">last 120 days</span>';
+    }
+    h += '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading recalls\u2026</div>';
+      return h;
+    }
+    if (!list || !list.length) {
+      h += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.55">' +
+        'No FDA recall matched ' + esc(row.commodity) + ' in the last 120 days.</div>';
+      h += recallFooter();
+      return h;
+    }
+
+    list.forEach(function(r) {
+      var isClassI = (r.classification || '').trim() === 'Class I';
+      h += '<div style="margin-top:14px;padding:12px;border:1px solid ' +
+        (isClassI ? 'var(--down)' : 'var(--border)') + ';border-radius:8px">';
+      h += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+      h += '<span style="font-size:9.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;' +
+        'padding:2px 6px;border-radius:4px;background:' + (isClassI ? 'var(--down)' : 'var(--surface-row)') +
+        ';color:' + (isClassI ? '#fff' : 'var(--text-secondary)') + '">' + esc(r.classification || 'Unclassified') + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint)">' + esc(r.recall_number || '') + '</span>';
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + esc(U.fmtDate(r.report_date)) + '</span>';
+      h += '</div>';
+      if (r.reason) {
+        h += '<div style="font-size:12px;font-weight:500;margin-top:8px;line-height:1.5">' + esc(r.reason) + '</div>';
+      }
+      if (r.product_description) {
+        h += '<div style="font-size:11px;color:var(--text-secondary);margin-top:6px;line-height:1.5">' +
+          esc(r.product_description.slice(0, 220)) + (r.product_description.length > 220 ? '\u2026' : '') + '</div>';
+      }
+      if (r.recalling_firm) {
+        h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:6px">' + esc(r.recalling_firm) +
+          (r.voluntary_mandated ? ' \u00b7 ' + esc(r.voluntary_mandated) : '') + '</div>';
+      }
+      if (r.distribution) {
+        h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:4px">Distribution: ' +
+          esc(r.distribution.slice(0, 140)) + (r.distribution.length > 140 ? '\u2026' : '') + '</div>';
+      }
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-top:9px">';
+      h += '<span style="font-size:10.5px;color:var(--text-faint)">Status at publication: ' +
+        esc(r.status || 'not stated') + '</span>';
+      if (r.fda_url) {
+        h += '<a href="' + esc(r.fda_url) + '" target="_blank" rel="noopener" ' +
+          'style="font-size:11px;font-weight:500;margin-left:auto">Check FDA \u2192</a>';
+      }
+      h += '</div></div>';
+    });
+    h += recallFooter();
+    return h;
+  }
+
+  function recallFooter() {
+    return '<div style="font-size:10px;color:var(--text-faint);margin-top:14px;line-height:1.55;' +
+      'padding-top:10px;border-top:1px solid var(--border)">' +
+      'Source: FDA food enforcement reports. Not USDA price data, and not a recall alert service. ' +
+      'FDA does not update a record\u2019s status after classification, so what is shown is the status ' +
+      'as published on that date. Follow the FDA link for current status.</div>';
+  }
+
+  function loadRecalls(row) {
+    var key = row.commodity;
+    var el = document.getElementById('recalls-pane');
+    if (!el) return;
+    el.setAttribute('data-key', key);
+
+    function paint(list) {
+      var cur = document.getElementById('recalls-pane');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = recallsHTML(row, list, false);
+    }
+    if (recallCache[key]) { paint(recallCache[key]); return; }
+
+    api.recalls(row.commodity, 120).then(function(list) {
+      var arr = (list || []).slice().sort(function(a, b) {
+        return String(b.report_date || '').localeCompare(String(a.report_date || ''));
+      });
+      recallCache[key] = arr;
+      paint(arr);
+    }).catch(function() { paint([]); });
+  }
+
+  // ── MOVEMENT ──
+  // Shipment volume for this commodity, as USDA reported it. Volumes are
+  // summed per date across origins; nothing is averaged and no missing day
+  // is filled in.
+  var movementCache = {};
+
+  function fmtLbs(n) {
+    if (n == null) return '\u2014';
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B lbs';
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M lbs';
+    if (n >= 1e3) return Math.round(n / 1e3) + 'K lbs';
+    return Math.round(n) + ' lbs';
+  }
+
+  function movementHTML(row, data, loading) {
+    var h = '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">Shipment volume \u00b7 ' + esc(row.commodity) + '</span>';
+    h += '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading movement\u2026</div>';
+      return h;
+    }
+    if (!data || !data.byDate.length) {
+      h += '<div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;line-height:1.55">' +
+        'No shipment volume published for ' + esc(row.commodity) + '. USDA reports movement ' +
+        'for a subset of commodities.</div>';
+      return h;
+    }
+
+    var latest = data.byDate[0];
+    var prev = data.byDate[1];
+    h += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
+    h += '<span style="font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-0.04em;line-height:1;font-variant-numeric:tabular-nums">' +
+      fmtLbs(latest.lbs) + '</span>';
+    if (prev && prev.lbs > 0) {
+      var pct = (latest.lbs - prev.lbs) / prev.lbs * 100;
+      var fg = Math.abs(pct) < 0.5 ? 'var(--text-faint)' : (pct > 0 ? UP : DOWN);
+      h += '<span style="font-family:var(--mono);font-size:11.5px;color:' + fg + ';padding-bottom:2px">' +
+        (pct > 0 ? '+' : '\u2212') + Math.abs(pct).toFixed(1) + '%</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px">Latest \u00b7 ' +
+      esc(U.fmtDate(latest.date)) + '</div>';
+
+    // Origins on the most recent date.
+    if (latest.origins.length) {
+      h += '<div style="margin-top:16px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Origins \u00b7 ' + esc(U.fmtDate(latest.date)) + '</span>';
+      h += '</div>';
+      var maxO = latest.origins[0].lbs || 1;
+      latest.origins.slice(0, 8).forEach(function(o) {
+        var w = (18 + (o.lbs / maxO) * 82).toFixed(1);
+        var isRowOrigin = String(o.name || '').toLowerCase() === String(row.origin || '').toLowerCase();
+        h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 46px 72px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)">';
+        h += '<span style="font-size:11.5px;font-weight:' + (isRowOrigin ? 600 : 400) + ';color:' +
+          (isRowOrigin ? 'var(--text)' : 'var(--text-secondary)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+          esc(o.name) + (isRowOrigin ? ' \u25cf' : '') + '</span>';
+        h += '<div style="height:3px;background:var(--surface-row)"><div style="height:3px;background:' +
+          (isRowOrigin ? 'var(--accent)' : 'var(--border-header)') + ';width:' + w + '%"></div></div>';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text-secondary)">' + fmtLbs(o.lbs) + '</span>';
+        h += '</div>';
+      });
+    }
+
+    // Daily totals.
+    if (data.byDate.length > 1) {
+      h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;margin-top:16px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Date</span>';
+      h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Volume</span>';
+      h += '</div>';
+      data.byDate.slice(0, 14).forEach(function(d, i) {
+        h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--surface-row)' +
+          (i === 0 ? ';background:var(--surface-row)' : '') + '">';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;color:' +
+          (i === 0 ? 'var(--text)' : 'var(--text-secondary)') + '">' + esc(U.fmtDate(d.date)) + (i === 0 ? ' \u25cf' : '') + '</span>';
+        h += '<span style="font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums">' + fmtLbs(d.lbs) + '</span>';
+        h += '</div>';
+      });
+    }
+
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:10px;line-height:1.5">' +
+      'National truck, air and boat movement as reported by USDA. Volume is not ' +
+      'specific to this pack or terminal market.</div>';
+    return h;
+  }
+
+  function loadMovement(row) {
+    var key = row.commodity;
+    var el = document.getElementById('movement-pane');
+    if (!el) return;
+    el.setAttribute('data-key', key);
+
+    function paint(data) {
+      var cur = document.getElementById('movement-pane');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = movementHTML(row, data, false);
+    }
+    if (movementCache[key]) { paint(movementCache[key]); return; }
+
+    api.movementForCommodity(row.commodity, 30).then(function(rows) {
+      var byDateMap = {};
+      (rows || []).forEach(function(r) {
+        var d = r.report_date;
+        var lbs = U.num(r.total_pounds) || 0;
+        if (!d || lbs <= 0) return;
+        if (!byDateMap[d]) byDateMap[d] = { date: d, lbs: 0, originMap: {} };
+        byDateMap[d].lbs += lbs;
+        var o = r.origin_name || r.origin_code || 'Unknown';
+        byDateMap[d].originMap[o] = (byDateMap[d].originMap[o] || 0) + lbs;
+      });
+      var byDate = Object.keys(byDateMap).map(function(d) {
+        var e = byDateMap[d];
+        e.origins = Object.keys(e.originMap).map(function(n) {
+          return { name: n, lbs: e.originMap[n] };
+        }).sort(function(a, b) { return b.lbs - a.lbs; });
+        return e;
+      }).sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); });
+
+      var data = { byDate: byDate };
+      movementCache[key] = data;
+      paint(data);
+    }).catch(function() {
+      paint({ byDate: [] });
+    });
+  }
+
+  // ── OVERVIEW ──
+  // One screen that answers "what am I looking at and how does it sit" —
+  // the SKU's own numbers plus where it stands against FOB and other cities.
+  function overviewHTML(row, sp, marketRows, fobEntries, allCross) {
+    function stat(label, value, sub) {
+      return '<div style="border:1px solid var(--border);border-radius:8px;padding:11px 12px">' +
+        '<div style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">' + esc(label) + '</div>' +
+        '<div style="font-family:var(--mono);font-size:19px;font-weight:500;letter-spacing:-0.03em;margin-top:6px;font-variant-numeric:tabular-nums">' + value + '</div>' +
+        (sub ? '<div style="font-size:10.5px;color:var(--text-faint);margin-top:3px">' + sub + '</div>' : '') +
+        '</div>';
+    }
+
+    var h = '<div style="padding:16px 20px">';
+    h += '<span class="eyebrow">Overview \u00b7 ' + esc(currentMarket) + '</span>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">';
+
+    h += stat('This print', sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014',
+              esc(U.fmtDate(row.report_date)));
+    h += stat('Packs listed', String(marketRows.length),
+              'for ' + esc(row.commodity));
+
+    // Spread across markets printing this pack.
+    if (allCross.length > 1) {
+      var prices = allCross.map(function(m) { return m.price; });
+      var lo = Math.min.apply(null, prices), hi = Math.max.apply(null, prices);
+      h += stat('Across markets', '$' + lo.toFixed(2) + '\u2013$' + hi.toFixed(2),
+                allCross.length + ' markets printing this pack');
+      var rank = allCross.slice().sort(function(a, b) { return a.price - b.price; })
+        .findIndex(function(m) { return m.isCurrent; });
+      h += stat('This market ranks',
+                rank >= 0 ? '#' + (rank + 1) : '\u2014',
+                rank >= 0 ? 'cheapest first, of ' + allCross.length : '');
+    } else {
+      h += stat('Across markets', '\u2014', 'only this market printed it');
+      h += stat('This market ranks', '\u2014', '');
+    }
+
+    // FOB spread.
+    var relevant = fobEntries.filter(function(f) { return f.relevant && f.price != null; });
+    var primary = relevant.length ? relevant[0] : fobEntries.filter(function(f) { return f.price != null; })[0];
+    if (primary && sp.price != null) {
+      var mk = sp.price - primary.price;
+      h += stat('Over FOB', (mk >= 0 ? '+$' : '\u2212$') + Math.abs(mk).toFixed(2),
+                'vs ' + esc(primary.name) + ' at $' + primary.price.toFixed(2));
+    } else {
+      h += stat('Over FOB', '\u2014', 'no matching shipping point');
+    }
+    h += stat('USDA tone', esc(row.movement || 'Not stated'), 'as reported');
+
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:12px;line-height:1.55">' +
+      'Every figure here is a published USDA number or a difference between two of them. ' +
+      'Nothing is blended across varieties, packs or dates.</div>';
+    h += '</div>';
+    return h;
+  }
+
+  // ── PRICE HISTORY ──
+  // Every price is shown as reported on its own report_date. Nothing is
+  // averaged across dates and no missing date is interpolated — a gap in
+  // the list is a day USDA did not print this SKU.
+  var historyCache = {};
+
+  function skuKey(row) {
+    return [row.market, row.commodity, row.variety, row.origin,
+            row.grade, row.package, row.size, row.quality_note].join('||');
+  }
+
+  function priceHistoryHTML(row, sp, hist, loading) {
+    var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+    var h = '';
+    h += '<div style="display:flex;align-items:baseline;gap:8px">';
+    h += '<span class="eyebrow">Price history \u00b7 ' + esc(currentMarket) + '</span>';
+    if (hist && hist.length > 1) {
+      h += '<span style="font-size:10.5px;color:var(--text-faint);margin-left:auto">' + hist.length + ' prints</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:12px;font-weight:500;line-height:1.5;margin-top:7px">' +
+      esc([row.variety, row.grade, row.size, row.package, row.origin, row.quality_note].filter(Boolean).join(' \u00b7 ')) + '</div>';
+
+    // Latest print, large.
+    var latest = (hist && hist.length) ? hist[0] : null;
+    h += '<div style="display:flex;align-items:flex-end;gap:9px;margin-top:10px">';
+    h += '<span style="font-family:var(--mono);font-size:30px;font-weight:500;letter-spacing:-0.05em;line-height:0.92;font-variant-numeric:tabular-nums">' +
+      (latest ? '$' + latest.price.toFixed(2) : priceStr) + '</span>';
+    if (latest && latest.lo != null && latest.hi != null && latest.lo !== latest.hi) {
+      h += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">$' +
+        latest.lo.toFixed(2) + ' \u2013 $' + latest.hi.toFixed(2) + '</span>';
+    } else if (!latest && sp.src === 'mid' && sp.range) {
+      h += '<span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding-bottom:3px">' + sp.range + '</span>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:10.5px;color:var(--text-faint);margin-top:5px">Latest \u00b7 ' +
+      esc(U.fmtDate(latest ? latest.date : row.report_date)) + '</div>';
+
+    if (loading) {
+      h += '<div style="font-size:11px;color:var(--text-ghost);margin-top:12px">Loading earlier prints\u2026</div>';
+      return h;
+    }
+    if (!hist || hist.length < 2) {
+      h += '<div style="font-size:11px;color:var(--text-faint);margin-top:12px;line-height:1.5">' +
+        'No earlier prints for this SKU yet. History builds as USDA publishes.</div>';
+      return h;
+    }
+
+    // Earlier prints, newest first, each with its own date and the move
+    // against the print below it.
+    h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim)">Date</span>';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Price</span>';
+    h += '<span style="font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);text-align:right">Change</span>';
+    h += '</div>';
+
+    hist.forEach(function(p, i) {
+      var prev = hist[i + 1];
+      var chg = prev ? p.price - prev.price : null;
+      var pct = (prev && prev.price > 0) ? (chg / prev.price * 100) : null;
+      var fg = chg == null || Math.abs(chg) < 0.005 ? 'var(--text-faint)' : (chg > 0 ? UP : DOWN);
+      var chgStr = chg == null ? '\u2014'
+        : (Math.abs(chg) < 0.005 ? 'flat'
+          : (chg > 0 ? '+' : '\u2212') + Math.abs(pct).toFixed(1) + '%');
+      var isLatest = i === 0;
+      h += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--surface-row)' +
+        (isLatest ? ';background:var(--surface-row)' : '') + '">';
+      h += '<span style="font-family:var(--mono);font-size:11.5px;color:' +
+        (isLatest ? 'var(--text)' : 'var(--text-secondary)') + '">' + esc(U.fmtDate(p.date)) +
+        (isLatest ? ' \u25cf' : '') + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:12.5px;font-weight:' + (isLatest ? 600 : 500) +
+        ';text-align:right;font-variant-numeric:tabular-nums">$' + p.price.toFixed(2) + '</span>';
+      h += '<span style="font-family:var(--mono);font-size:11px;text-align:right;color:' + fg + '">' + chgStr + '</span>';
+      h += '</div>';
+    });
+    return h;
+  }
+
+  function loadPriceHistory(row, sp) {
+    var key = skuKey(row);
+    var el = document.getElementById('price-history');
+    if (!el) return;
+
+    function paint(hist) {
+      // The user may have selected a different SKU while this was in flight.
+      var cur = document.getElementById('price-history');
+      if (!cur || cur.getAttribute('data-key') !== key) return;
+      cur.innerHTML = priceHistoryHTML(row, sp, hist, false);
+    }
+    el.setAttribute('data-key', key);
+
+    if (historyCache[key]) { paint(historyCache[key]); return; }
+
+    api.history({
+      commodity: row.commodity,
+      market: row.market,
+      variety: row.variety,
+      origin: row.origin,
+      size: row.size,
+      package: row.package,
+      grade: row.grade,
+      // Empty string is meaningful here: it asks for the print with no
+      // quality note, which is a distinct record from the qualified ones.
+      quality: row.quality_note || '',
+      days: 365
+    }).then(function(rows) {
+      // One point per report_date. If a date somehow carries more than one
+      // row for the same SKU, keep the first — never average them.
+      var seen = {}, hist = [];
+      (rows || []).forEach(function(r) {
+        var d = r.report_date;
+        if (!d || seen[d]) return;
+        var p = skuPrice(r);
+        if (p.price == null) return;
+        seen[d] = 1;
+        hist.push({
+          date: d,
+          price: p.price,
+          lo: U.num(r.price_low),
+          hi: U.num(r.price_high)
+        });
+      });
+      hist.sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); });
+      historyCache[key] = hist;
+      paint(hist);
+    }).catch(function() {
+      paint([]);
+    });
+  }
+
+  // ── MARKET SUMMARY ──
+  // Cached so the strip can render synchronously on every table redraw
+  // without re-hitting the API.
+  var summaryCache = null;
+
+  function renderSummaryStrip() {
+    var el = document.getElementById('summary-strip');
+    if (!el) return;
+    var sm = summaryCache;
+    if (!sm) { el.innerHTML = ''; return; }
+
+    var onBoard = (sm.tone_higher || 0) + (sm.tone_lower || 0) + (sm.tone_steady || 0);
+    var ship = (sm.shipping_point_movement || []).slice(0, 3);
+
+    function cell(label, value, sub, fg) {
+      return '<div style="flex:1 1 128px;min-width:118px;padding:9px 12px;border-right:1px solid var(--border)">' +
+        '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">' + label + '</div>' +
+        '<div style="font-family:var(--mono);font-size:17px;font-weight:500;letter-spacing:-0.035em;margin-top:4px;color:' + (fg || 'var(--text)') + '">' + value + '</div>' +
+        '<div style="font-size:10px;color:var(--text-faint);margin-top:1px">' + sub + '</div></div>';
+    }
+
+    var h = '<div style="display:flex;flex-wrap:wrap;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden">';
+    h += cell('Reporting', sm.commodities || '\u2014', 'commodities today');
+    h += cell('Tone higher', sm.tone_higher != null ? sm.tone_higher : '\u2014', 'of ' + onBoard + ' on board', 'var(--up)');
+    h += cell('Tone lower', sm.tone_lower != null ? sm.tone_lower : '\u2014', 'of ' + onBoard + ' on board', 'var(--down)');
+    h += cell('Movement', sm.movement_loads ? sm.movement_loads.toLocaleString() : '\u2014', 'loads this week');
+
+    if (ship.length) {
+      h += '<div style="flex:2 1 260px;min-width:240px;padding:9px 12px">';
+      h += '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">Shipping point movement</div>';
+      h += '<div style="display:flex;gap:16px;margin-top:5px;flex-wrap:wrap">';
+      ship.forEach(function(pt) {
+        var fg = pt.wow_pct != null ? (pt.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
+        var chg = pt.wow_pct != null ? (pt.wow_pct >= 0 ? '+' : '') + pt.wow_pct + '%' : '';
+        h += '<div><div style="font-size:11px;color:var(--text-secondary);white-space:nowrap">' + esc(pt.name) + '</div>' +
+          '<div style="font-family:var(--mono);font-size:12.5px">' + (pt.loads ? pt.loads.toLocaleString() : '\u2014') +
+          (chg ? ' <span style="font-size:10px;color:' + fg + '">' + chg + '</span>' : '') + '</div></div>';
+      });
+      h += '</div></div>';
+    }
+    h += '</div>';
+    el.innerHTML = h;
+  }
+
+  async function renderSummary() {
+    var market = marketShort(currentMarket);
+    document.getElementById('sum-market').textContent = currentMarket;
+    try {
+      var summary = await api.marketSummary(market);
+      summaryCache = summary;
+      renderSummaryStrip();
+      var stats = [
+        { label: 'Reporting', value: summary.commodities || '\u2014', sub: 'commodities today', fg: 'var(--text)' },
+        { label: 'Tone higher', value: summary.tone_higher != null ? summary.tone_higher : '\u2014', sub: 'of ' + ((summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)) + ' on board', fg: 'var(--up)' },
+        { label: 'Tone lower', value: summary.tone_lower != null ? summary.tone_lower : '\u2014', sub: 'of ' + ((summary.tone_higher||0)+(summary.tone_lower||0)+(summary.tone_steady||0)) + ' on board', fg: 'var(--down)' },
+        { label: 'Movement', value: summary.movement_loads ? summary.movement_loads.toLocaleString() : '\u2014', sub: 'loads this week', fg: 'var(--text)' },
+      ];
+      document.getElementById('sum-stats').innerHTML = stats.map(function(s) {
+        return '<div style="border:1px solid var(--border);border-radius:8px;padding:11px 12px">' +
+          '<div style="font-size:9px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-dim)">' + s.label + '</div>' +
+          '<div style="font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-0.035em;margin-top:6px;color:' + s.fg + '">' + s.value + '</div>' +
+          '<div style="font-size:10.5px;color:var(--text-faint);margin-top:2px">' + s.sub + '</div></div>';
+      }).join('');
+
+      var shipData = summary.shipping_point_movement || [];
+      document.getElementById('sum-ship').innerHTML = shipData.length ? shipData.map(function(p) {
+        var fg = p.wow_pct != null ? (p.wow_pct >= 0 ? UP : DOWN) : 'var(--text-faint)';
+        var chg = p.wow_pct != null ? (p.wow_pct >= 0 ? '+' : '') + p.wow_pct + '%' : '\u2014';
+        return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 62px 54px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--surface-row)">' +
+          '<span style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.name) + '</span>' +
+          '<span style="font-family:var(--mono);font-size:11.5px;color:var(--text-secondary);text-align:right">' + (p.loads ? p.loads.toLocaleString() : '\u2014') + '</span>' +
+          '<span style="font-family:var(--mono);font-size:11px;color:' + fg + ';text-align:right">' + chg + '</span></div>';
+      }).join('') : '<div style="padding:12px 0;font-size:12px;color:var(--text-dim)">No movement data yet.</div>';
+    } catch(e) {
+      document.getElementById('sum-stats').innerHTML = '<div style="grid-column:1/-1;font-size:12px;color:var(--text-dim)">Summary unavailable.</div>';
+    }
+  }
+
+  // ── AUTH ──
+  var authMode = 'signin'; // 'signin' or 'signup'
+
+  window._openAuth = function(mode) {
+    authMode = mode || 'signin';
+    document.getElementById('auth-title').textContent = authMode === 'signup' ? 'Create account' : 'Sign in';
+    document.getElementById('auth-submit').textContent = authMode === 'signup' ? 'Create account' : 'Sign in';
+    document.getElementById('auth-name-field').style.display = authMode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-toggle-text').textContent = authMode === 'signup' ? 'Already have an account?' : "Don't have an account?";
+    document.getElementById('auth-toggle-link').textContent = authMode === 'signup' ? 'Sign in' : 'Create one';
+    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('auth-success').style.display = 'none';
+    document.getElementById('auth-modal').style.display = 'flex';
+  };
+
+  window._authToggle = function() {
+    window._openAuth(authMode === 'signin' ? 'signup' : 'signin');
+  };
+
+  window._authSubmit = async function() {
+    var email = document.getElementById('auth-email').value.trim();
+    var pass = document.getElementById('auth-pass').value;
+    var errEl = document.getElementById('auth-error');
+    var successEl = document.getElementById('auth-success');
+    errEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (!email || !pass) { errEl.textContent = 'Email and password required.'; errEl.style.display = 'flex'; return; }
+
+    try {
+      if (typeof window.AGRAX_SUPABASE_URL !== 'undefined') {
+        var endpoint = authMode === 'signup' ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password';
+        var body = { email: email, password: pass };
+        if (authMode === 'signup') {
+          var name = document.getElementById('auth-name').value.trim();
+          body.data = { name: name };
+        }
+        var resp = await fetch(window.AGRAX_SUPABASE_URL + endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': window.AGRAX_SUPABASE_ANON_KEY },
+          body: JSON.stringify(body)
+        });
+        var data = await resp.json();
+        if (data.error) { errEl.textContent = data.error.message || data.error; errEl.style.display = 'flex'; return; }
+        if (data.access_token) {
+          localStorage.setItem('agrax:token', data.access_token);
+          localStorage.setItem('agrax:user', JSON.stringify(data.user));
+          _updateAuthUI(data.user);
+          document.getElementById('auth-modal').style.display = 'none';
+        } else if (authMode === 'signup') {
+          successEl.textContent = 'Check your email to confirm your account.';
+          successEl.style.display = 'flex';
+        }
+      } else {
+        errEl.textContent = 'Auth not configured.';
+        errEl.style.display = 'flex';
+      }
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'flex';
+    }
+  };
+
+  window._logout = function() {
+    localStorage.removeItem('agrax:token');
+    localStorage.removeItem('agrax:user');
+    _updateAuthUI(null);
+  };
+
+  function _updateAuthUI(user) {
+    var signinEl = document.getElementById('auth-signin');
+    var createEl = document.getElementById('auth-create');
+    var userEl = document.getElementById('auth-user');
+    if (user) {
+      signinEl.style.display = 'none';
+      createEl.style.display = 'none';
+      userEl.style.display = 'inline';
+      userEl.textContent = (user.email || '').split('@')[0] + ' · Sign out';
+    } else {
+      signinEl.style.display = 'inline';
+      createEl.style.display = 'inline-flex';
+      userEl.style.display = 'none';
+    }
+  }
+
+  // Check for existing session
+  try {
+    var storedUser = localStorage.getItem('agrax:user');
+    if (storedUser) _updateAuthUI(JSON.parse(storedUser));
+  } catch(e) {}
+
+  // ── Helper: get rows matching current filters (same logic as renderTable) ──
+  function _getFilteredRows() {
+    var market = marketShort(currentMarket);
+    var marketRows = allRows.filter(function(r) { return r.market === market; });
+    if (!marketRows.length) {
+      var marketLower = market.toLowerCase();
+      marketRows = allRows.filter(function(r) {
+        return r.market && r.market.toLowerCase().indexOf(marketLower.split(',')[0].split(' ')[0]) > -1;
+      });
+    }
+    var activeComs = Object.keys(checkedComs).filter(function(k) { return checkedComs[k]; });
+    var activeCountries = Object.keys(checkedCountries).filter(function(k) { return checkedCountries[k]; });
+    var filtered = [];
+    var byCom = {};
+    marketRows.forEach(function(r) { if (!byCom[r.commodity]) byCom[r.commodity] = []; byCom[r.commodity].push(r); });
+    Object.keys(byCom).forEach(function(name) {
+      var rows = byCom[name];
+      if (searchQ && name.toLowerCase().indexOf(searchQ) === -1) return;
+      if (activeComs.length && activeComs.indexOf(name) === -1) return;
+      if (activeCountries.length) {
+        var rowOrigins = rows.map(function(r) { return r.origin; }).filter(Boolean);
+        var match = activeCountries.some(function(c) { return rowOrigins.some(function(ro) { return ro === c; }); });
+        if (!match) return;
+      }
+      filtered = filtered.concat(rows);
+    });
+    return filtered;
+  }
+
+  // ── MOBILE CATEGORY FILTER ──
+  var mobileActiveCat = 'all';
+  window._mobileFilterCat = function(cat) {
+    mobileActiveCat = cat;
+    // Update pill styles
+    var pills = document.querySelectorAll('#mobile-cats .mobile-pill');
+    pills.forEach(function(p) {
+      var pCat = p.textContent.trim();
+      if ((cat === 'all' && pCat === 'All') || pCat === cat) {
+        p.classList.add('is-active');
+      } else {
+        p.classList.remove('is-active');
+      }
+    });
+    // If a category is selected, check/uncheck commodities accordingly
+    if (cat === 'all') {
+      // Check all commodities
+      var byCom = U.groupBy(allRows, function(r) { return r.commodity; });
+      byCom.forEach(function(rows, name) { checkedComs[name] = true; });
+    } else {
+      // Uncheck all first, then check only this category
+      var market = marketShort(currentMarket);
+      var marketRows = allRows.filter(function(r) { return r.market === market; });
+      var byCom = U.groupBy(marketRows, function(r) { return r.commodity; });
+      Object.keys(checkedComs).forEach(function(k) { checkedComs[k] = false; });
+      byCom.forEach(function(rows, name) {
+        var c = U.catLabel(rows[0] && rows[0].commodity_type);
+        if (c === cat) checkedComs[name] = true;
+      });
+    }
+    renderAll();
+  };
+
+  // ── DOWNLOAD FORMAT TOGGLE ──
+  var dlFormat = 'csv';
+
+  window._selectFormat = function(fmt) {
+    dlFormat = fmt;
+    var csvBtn = document.getElementById('dl-csv');
+    var pdfBtn = document.getElementById('dl-pdf');
+    var goBtn = document.getElementById('dl-go');
+    if (fmt === 'csv') {
+      csvBtn.style.border = '2px solid var(--accent)';
+      csvBtn.style.color = 'var(--accent)';
+      pdfBtn.style.border = '1px solid var(--border)';
+      pdfBtn.style.color = 'var(--text-secondary)';
+      goBtn.textContent = 'Download CSV';
+    } else {
+      pdfBtn.style.border = '2px solid var(--accent)';
+      pdfBtn.style.color = 'var(--accent)';
+      csvBtn.style.border = '1px solid var(--border)';
+      csvBtn.style.color = 'var(--text-secondary)';
+      goBtn.textContent = 'Download PDF';
+    }
+  };
+
+  window._doDownload = function() {
+    if (dlFormat === 'pdf') {
+      window._downloadPDF();
+    } else {
+      window._downloadCSV();
+    }
+  };
+
+  // ── DOWNLOAD CSV ──
+  document.getElementById('download-btn').addEventListener('click', function() {
+    var market = marketShort(currentMarket);
+    var allMktRows = allRows.filter(function(r) { return r.market === market; });
+    var filteredRows = _getFilteredRows();
+    document.getElementById('dl-count-view').textContent = filteredRows.length + ' prices';
+    document.getElementById('dl-count-full').textContent = allMktRows.length + ' prices';
+    document.getElementById('dl-modal').style.display = 'flex';
+  });
+
+  window._downloadCSV = function() {
+    var market = marketShort(currentMarket);
+    var scope = document.querySelector('input[name="dl-scope"]:checked');
+    var rows;
+    if (scope && scope.value === 'view') {
+      rows = _getFilteredRows();
+    } else {
+      rows = allRows.filter(function(r) { return r.market === market; });
+    }
+
+    var headers = ['Commodity','Variety','Origin','Grade','Package','Size','Quality','Price Low','Price High','Mostly Low','Mostly High','Movement','Market','Report Date'];
+    var csvRows = [headers.join(',')];
+    rows.forEach(function(r) {
+      csvRows.push([
+        '"' + (r.commodity || '') + '"',
+        '"' + (r.variety || '') + '"',
+        '"' + (r.origin || '') + '"',
+        '"' + (r.grade || '') + '"',
+        '"' + (r.package || '') + '"',
+        '"' + (r.size || '') + '"',
+        '"' + (r.quality_note || '') + '"',
+        r.price_low || '',
+        r.price_high || '',
+        r.price_mostly_low || '',
+        r.price_mostly_high || '',
+        '"' + (r.movement || '') + '"',
+        '"' + (r.market || '') + '"',
+        r.report_date || ''
+      ].join(','));
+    });
+
+    var blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'agrax-' + market.replace(/[^a-zA-Z]/g, '-').toLowerCase() + '-' + (latestDate || 'export') + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('dl-modal').style.display = 'none';
+  };
+
+  // ── DOWNLOAD PDF ──
+  window._downloadPDF = function() {
+    var market = marketShort(currentMarket);
+    var scope = document.querySelector('input[name="dl-scope"]:checked');
+    var rows;
+    if (scope && scope.value === 'view') {
+      rows = _getFilteredRows();
+    } else {
+      rows = allRows.filter(function(r) { return r.market === market; });
+    }
+
+    // Group by commodity
+    var byCom = {};
+    rows.forEach(function(r) {
+      if (!byCom[r.commodity]) byCom[r.commodity] = [];
+      byCom[r.commodity].push(r);
+    });
+
+    // Build a print-ready HTML document — clean, white, print-friendly
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+    html += '<title>AgraX \u2014 ' + esc(currentMarket) + ' \u2014 Wholesale Prices</title>';
+    html += '<style>';
+    html += '*{box-sizing:border-box;margin:0;padding:0}';
+    html += 'body{font-family:system-ui,-apple-system,sans-serif;font-size:9px;color:#1a1a1a;margin:0;padding:40px 36px;line-height:1.4}';
+    html += '.hdr{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:16px;border-bottom:3px solid #1a1a1a;margin-bottom:14px}';
+    html += '.brand{display:flex;align-items:center;gap:8px}';
+    html += '.brand-x{font-size:28px;font-weight:900;letter-spacing:-0.04em;line-height:0.85}';
+    html += '.brand-name{font-size:13px;font-weight:700;letter-spacing:-0.02em;margin-top:2px}';
+    html += '.hdr-right{text-align:right}';
+    html += '.hdr-label{font-size:6.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#666;margin-bottom:4px}';
+    html += '.hdr-title{font-size:20px;font-weight:600;letter-spacing:-0.03em;line-height:1.15}';
+    html += '.hdr-meta{font-size:8px;color:#888;margin-top:3px}';
+    html += '.stats{display:flex;border:1px solid #ddd;border-radius:4px;margin-bottom:16px;overflow:hidden}';
+    html += '.stat{flex:1;padding:10px 14px;border-right:1px solid #ddd}';
+    html += '.stat:last-child{border-right:none}';
+    html += '.stat-label{font-size:6px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px}';
+    html += '.stat-val{font-family:ui-monospace,monospace;font-size:15px;font-weight:700;letter-spacing:-0.02em}';
+    html += '.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px}';
+    html += '.sec-title{font-size:12px;font-weight:700}';
+    html += '.sec-sub{font-size:6.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#888}';
+    html += 'table{width:100%;border-collapse:collapse}';
+    html += 'th{text-align:left;font-size:6.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;padding:6px 6px;border-bottom:2px solid #333}';
+    html += 'td{padding:6px 6px;border-bottom:1px solid #e0e0e0;font-size:8.5px}';
+    html += 'tr:nth-child(even){background:#f7f7f5}';
+    html += '.com{font-weight:700;font-size:9.5px}';
+    html += '.mono{font-family:ui-monospace,monospace}';
+    html += '.price{text-align:right;font-family:ui-monospace,monospace;font-weight:700;font-size:9.5px}';
+    html += '.range{text-align:right;font-family:ui-monospace,monospace;font-size:7.5px;color:#777}';
+    html += '.up{color:#16803d}';
+    html += '.dn{color:#b91c1c}';
+    html += '.date{font-family:ui-monospace,monospace;font-size:7.5px;color:#888}';
+    html += '.footer{margin-top:20px;padding-top:8px;border-top:1px solid #ddd;font-size:7px;color:#aaa;display:flex;justify-content:space-between}';
+    html += '@media print{@page{size:portrait letter;margin:12mm 10mm}}';
+    html += '</style></head><body>';
+
+    // Count tones
+    var toneH = 0, toneL = 0, toneS = 0;
+    var comNames = Object.keys(byCom);
+    comNames.forEach(function(cn) {
+      var mv = (byCom[cn][0].movement || byCom[cn][0].trend || '').toLowerCase();
+      if (mv.indexOf('higher') > -1 || mv === 'up') toneH++;
+      else if (mv.indexOf('lower') > -1 || mv === 'down') toneL++;
+      else toneS++;
+    });
+
+    // Format week date
+    var weekLabel = latestDate || '';
+    try { var dp = new Date(weekLabel + 'T00:00:00'); weekLabel = dp.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch(e) {}
+
+    // Header
+    html += '<div class="hdr">';
+    html += '<div>';
+    html += '<div class="brand"><img src="https://www.agra-x.com/assets/agrax-mark-transparent.png" style="height:28px;width:auto" onerror="this.style.display=\'none\'"><span class="brand-name">AgraX</span></div>';
+    html += '</div>';
+    html += '<div class="hdr-right">';
+    html += '<div class="hdr-label">Wholesale price report</div>';
+    html += '<div class="hdr-title">' + esc(currentMarket) + '</div>';
+    html += '<div class="hdr-meta">Week to ' + weekLabel + ' \u00b7 USDA AMS reported</div>';
+    html += '</div></div>';
+
+    // Stats
+    html += '<div class="stats">';
+    html += '<div class="stat"><div class="stat-label">Produce</div><div class="stat-val">' + comNames.length + '</div></div>';
+    html += '<div class="stat"><div class="stat-label">Higher</div><div class="stat-val up">' + toneH + '</div></div>';
+    html += '<div class="stat"><div class="stat-label">Lower</div><div class="stat-val dn">' + toneL + '</div></div>';
+    html += '<div class="stat"><div class="stat-label">Steady</div><div class="stat-val">' + toneS + '</div></div>';
+    html += '</div>';
+
+    // Table — ALL varieties expanded, grouped by commodity
+    html += '<div class="sec-head"><div class="sec-title">Wholesale prices</div><div class="sec-sub">Mostly, per unit as reported</div></div>';
+    html += '<table><thead><tr>';
+    html += '<th>Produce</th><th>Variety</th><th>Origin</th><th>Grade \u00b7 Package</th><th style="text-align:right">Range</th><th style="text-align:right">Mostly</th><th>Tone</th><th>Date</th>';
+    html += '</tr></thead><tbody>';
+
+    comNames.sort().forEach(function(comName) {
+      var comRows = byCom[comName];
+      var tone = '';
+      var mv = (comRows[0].movement || comRows[0].trend || '').toLowerCase();
+      if (mv.indexOf('higher') > -1 || mv === 'up') tone = 'Higher';
+      else if (mv.indexOf('lower') > -1 || mv === 'down') tone = 'Lower';
+      else tone = 'Steady';
+      var toneCls = tone === 'Higher' ? 'up' : tone === 'Lower' ? 'dn' : '';
+
+      comRows.sort(function(a, b) { return (a.variety || '').localeCompare(b.variety || ''); });
+      comRows.forEach(function(r, idx) {
+        var sp = skuPrice(r);
+        var priceStr = sp.price != null ? '$' + sp.price.toFixed(2) : '\u2014';
+        var lo = r.price_low != null ? parseFloat(r.price_low).toFixed(2) : '';
+        var hi = r.price_high != null ? parseFloat(r.price_high).toFixed(2) : '';
+        var rangeStr = lo && hi && lo !== hi ? lo + '\u2013' + hi : '';
+        var gradePack = [r.grade, r.package].filter(Boolean).join(' \u00b7 ');
+        var reportDate = r.report_date || latestDate || '';
+
+        html += '<tr>';
+        html += '<td class="com">' + (idx === 0 ? esc(comName) : '') + '</td>';
+        html += '<td>' + esc(r.variety || '\u2014') + '</td>';
+        html += '<td>' + esc(r.origin || '\u2014') + '</td>';
+        html += '<td>' + esc(gradePack || '\u2014') + '</td>';
+        html += '<td class="range">' + rangeStr + '</td>';
+        html += '<td class="price">' + priceStr + '</td>';
+        html += '<td class="' + toneCls + '">' + (idx === 0 ? tone : '') + '</td>';
+        html += '<td class="date">' + esc(reportDate) + '</td>';
+        html += '</tr>';
+      });
+    });
+
+    html += '</tbody></table>';
+    html += '<div class="footer"><span>AgraX \u00b7 agra-x.com \u00b7 Source: USDA AMS Terminal Market \u00b7 Independent of the USDA</span><span>Generated ' + new Date().toLocaleDateString() + '</span></div>';
+    html += '<script>window.onload=function(){window.print();}<\/script>';
+    html += '</body></html>';
+
+    // Open in new window for printing → Save as PDF
+    var w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+    document.getElementById('dl-modal').style.display = 'none';
+  };
+
+  // ── SHARE ──
+  document.getElementById('share-btn').addEventListener('click', function(e) {
+    var dd = document.getElementById('share-dropdown');
+    if (dd.style.display === 'none') {
+      var rect = e.target.getBoundingClientRect();
+      dd.style.top = (rect.bottom + 6) + 'px';
+      dd.style.right = (window.innerWidth - rect.right) + 'px';
+      dd.style.left = 'auto';
+      dd.style.display = 'block';
+    } else {
+      dd.style.display = 'none';
+    }
+  });
+  document.addEventListener('click', function(e) {
+    var dd = document.getElementById('share-dropdown');
+    if (dd.style.display === 'block' && !e.target.closest('#share-dropdown') && !e.target.closest('#share-btn')) {
+      dd.style.display = 'none';
+    }
+  });
+
+  window._shareLink = function() {
+    var url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+    }
+    document.getElementById('share-dropdown').style.display = 'none';
+    // Brief toast
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = '<span class="toast__dot"></span>Link copied to clipboard';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '80px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.zIndex = '300';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2500);
+  };
+
+  window._shareEmail = function() {
+    var subject = 'AgraX — ' + currentMarket + ' prices';
+    var body = 'Check wholesale produce prices at ' + currentMarket + ': ' + window.location.href;
+    window.open('mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
+    document.getElementById('share-dropdown').style.display = 'none';
+  };
+
+  // ── SUBSCRIBE ──
+  window._subscribe = function() {
+    var email = document.getElementById('sub-email').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    // For now, show success — wire to actual email service later
+    var successEl = document.getElementById('subscribe-success');
+    successEl.innerHTML = '<span class="toast__dot"></span>You\'re subscribed. First email arrives tomorrow morning.';
+    successEl.style.display = 'flex';
+    successEl.style.marginBottom = '12px';
+    document.getElementById('sub-email').value = '';
+    document.getElementById('sub-name').value = '';
+  };
+
+  // ── FOOTER MODALS ──
+  var footerContact = document.getElementById('footer-contact');
+  if (footerContact) footerContact.addEventListener('click', function() {
+    document.getElementById('contact-modal').style.display = 'flex';
+  });
+  var footerAdvertise = document.getElementById('footer-advertise');
+  if (footerAdvertise) footerAdvertise.addEventListener('click', function() {
+    document.getElementById('advertise-modal').style.display = 'flex';
+  });
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      if (e.target === el) el.style.display = 'none';
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
