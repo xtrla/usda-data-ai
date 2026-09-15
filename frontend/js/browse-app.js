@@ -398,6 +398,14 @@
     s.history = S.historyCache[s.key] || [];
     s.chartLowTxt = s.history.length ? s.history[s.history.length - 1].date : '';
     s.chartHighTxt = s.history.length ? s.history[0].date : '';
+    // These read "10 prints", "6 earlier prints" and "5 of 12" in the export.
+    // Real counts, and empty rather than a guess when history has not loaded.
+    s.printsTxt = s.history.length ? s.history.length + ' prints' : '';
+    var shown = Math.min(s.history.length, 4);
+    s.earlierTxt = s.history.length > shown
+      ? (s.history.length - shown) + ' earlier prints' : '';
+    s.terminalsTxt = s.terminals.length
+      ? s.terminals.length + ' of ' + S.markets.length : '';
     s.termPts = '';
     s.fobPts = '';
 
@@ -468,6 +476,15 @@
       // one. See dc-runtime.js — this is no longer a JS breakpoint.
       wide: true,
       narrow: true,
+
+      /* The nav stamp. This was a second hardcoded date, separate from the
+       * overview one — fixing the header alone left the top of the page still
+       * reading Sep 4. Derived from the same rows so the two can never
+       * disagree again. */
+      stamp: (function () {
+        var d = latestDateIn(S.rows);
+        return d ? U.fmtDate(d) + ' ' + MID + ' prints posted' : '';
+      })(),
 
       terminal: S.market,
       terminalShort: S.market,

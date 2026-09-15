@@ -74,7 +74,7 @@
       <input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#1D211D;border:0;border-radius:16px;padding:0 14px 0 34px;font-size:13px;color:#fff;outline:none">
     </span>
     <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#9A9F98;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#3D9E5F"></span>4 Sep 2026 · prints posted 05:02 ET</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#9A9F98;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#3D9E5F"></span>{{ stamp }}</span>
       <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
     </div>
     </div>
@@ -540,7 +540,7 @@
                 <div data-shot="chart" style="min-width:0">
                   <div style="display:flex;align-items:baseline;gap:8px">
                     <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Price history</span>
-                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">10 prints</span>
+                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ s.printsTxt }}</span>
                   </div>
                   <div style="display:flex;align-items:center;gap:14px;margin-top:9px">
                     <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#4A5148"><span style="width:14px;height:2px;background:#186B39"></span>Terminal · {{ terminalShort }}</span>
@@ -556,8 +556,8 @@
                     <polyline points="{{ s.fobPts }}" fill="none" stroke="#8A4B2A" stroke-width="1.85" stroke-linejoin="round" stroke-linecap="round"></polyline>
                   </svg>
                   <div style="display:flex;justify-content:space-between">
-                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">22 AUG</span>
-                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">04 SEP</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">{{ s.chartLowTxt }}</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">{{ s.chartHighTxt }}</span>
                   </div>
                   <div style="display:grid;grid-template-columns:minmax(36px,0.8fr) minmax(0,1fr) minmax(0,1fr);gap:6px;margin-top:12px;padding-bottom:7px;border-bottom:1px solid #E4E6DF">
                     <span style="font-size:8.5px;font-weight:500;letter-spacing:-0.005em;color:#6B7268">Date</span>
@@ -571,13 +571,13 @@
                       <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;text-align:right;font-variant-numeric:tabular-nums">{{ p.term }}</span>
                     </div>
                   </template>
-                  <div style="height:34px;display:flex;align-items:center;cursor:pointer"><span style="font-size:12px;font-weight:500;color:#186B39">6 earlier prints</span></div>
+                  <div style="height:34px;display:flex;align-items:center;cursor:pointer"><span style="font-size:12px;font-weight:500;color:#186B39">{{ s.earlierTxt }}</span></div>
                 </div>
 
                 <div style="min-width:0">
                   <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid #E4E6DF">
                     <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Across terminals</span>
-                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">5 of 12</span>
+                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ s.terminalsTxt }}</span>
                   </div>
                   <template data-for="s.terminals" data-as="m">
                     <div data-on-click="m.onSelect" style="position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) 74px;gap:10px;align-items:center;height:34px;border-bottom:1px solid #E9EDE7;cursor:pointer" class="h6">

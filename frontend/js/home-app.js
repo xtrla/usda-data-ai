@@ -61,7 +61,12 @@
       categories: CATEGORY_ORDER.map(function (c) {
         return { name: c.name, items: '', count: '' };
       }),
-      terminals: []
+      terminals: [],
+      // "What AgraX covers" had three more hardcoded figures. Same sources
+      // as the hero stats so they cannot drift apart.
+      coverTerminals: DASH,
+      coverDistricts: DASH,
+      coverLoads: DASH
     };
     return scope;
   }
@@ -105,6 +110,7 @@
     SCOPE.stats[0].value = fmt(Object.keys(commodities).length);
     SCOPE.stats[1].value = fmt(rows.length);
     SCOPE.stats[1].note = 'across ' + SCOPE.terminals.length + ' terminals';
+    SCOPE.coverTerminals = String(SCOPE.terminals.length);
     paint();
   }
 
@@ -142,7 +148,7 @@
         if (n && n !== 'National Trends') d[n] = 1;
       });
       var count = Object.keys(d).length;
-      if (count) { SCOPE.stats[2].value = fmt(count); paint(); }
+      if (count) { SCOPE.stats[2].value = fmt(count); SCOPE.coverDistricts = fmt(count); paint(); }
     }).catch(function () {});
 
     api.movementLatest().then(function (mv) {
@@ -151,7 +157,7 @@
         var c = D.num(r.package_count);
         if (c != null) total += c;
       });
-      if (total > 0) { SCOPE.stats[3].value = fmt(total); paint(); }
+      if (total > 0) { SCOPE.stats[3].value = fmt(total); SCOPE.coverLoads = fmt(total); paint(); }
     }).catch(function () {});
   }
 
