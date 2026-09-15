@@ -270,6 +270,25 @@
     }).filter(function (r) { return r.skusTxt !== DASH; });
   }
 
+  /* Market order.
+   *
+   * Alphabetical put Asheville first, which is one of the smallest terminals
+   * in the system — a buyer opening the page met the market least likely to
+   * be theirs. This is the rough order of volume and of how often these
+   * markets get quoted in the trade, with anything not listed following by
+   * price count so a new terminal still lands somewhere sensible.
+   */
+  var MARKET_PRIORITY = [
+    'New York', 'Los Angeles', 'Chicago', 'Philadelphia', 'Miami',
+    'Boston', 'Atlanta', 'Dallas', 'Baltimore', 'Detroit',
+    'St. Louis', 'Columbia'
+  ];
+
+  function marketRank(name) {
+    var i = MARKET_PRIORITY.indexOf(name);
+    return i === -1 ? MARKET_PRIORITY.length : i;
+  }
+
   function buildTerminals() {
     var byMarket = {};
     S.rows.forEach(function (r) {
@@ -277,7 +296,11 @@
       if (!byMarket[r.market]) byMarket[r.market] = [];
       byMarket[r.market].push(r);
     });
-    return Object.keys(byMarket).sort().map(function (m) {
+    return Object.keys(byMarket).sort(function (a, b) {
+      return marketRank(a) - marketRank(b)
+          || byMarket[b].length - byMarket[a].length
+          || a.localeCompare(b);
+    }).map(function (m) {
       var list = byMarket[m];
       var up = 0, down = 0;
       list.forEach(function (r) {
@@ -296,6 +319,7 @@
         up: chip.up, down: chip.down, flat: chip.flat,
         chipDot: chip.chipFg, color: chip.chipFg,
         active: m === S.market,
+        activeFlag: m === S.market ? 'true' : '',
         onSelect: function () {
           S.market = m; S.detail = null; S.page = 0;
           scrollToTop();
@@ -645,6 +669,62 @@
 
   function scrollToTop() { scrollNext = 'top'; }
 
+  /* Keep the market strip where the reader left it.
+   *
+   * The strip is rebuilt on every render, so its horizontal scroll resets to
+   * zero. Selecting a market near the end of the list threw the strip back to
+   * the start, and the pill you had just tapped scrolled out of sight — the
+   * selection looked like it had landed on whichever market happened to be
+   * first. Restore the position, then make sure the active pill is visible.
+   */
+  function restoreStrips() {
+    document.querySelectorAll('[data-market-strip]').forEach(function (strip) {
+      if (stripScrollLeft != null) strip.scrollLeft = stripScrollLeft;
+
+      var pill = strip.querySelector('[data-active-pill="true"]');
+      if (!pill) return;
+      var left = pill.offsetLeft;
+      var right = left + pill.offsetWidth;
+      var viewL = strip.scrollLeft;
+      var viewR = viewL + strip.clientWidth;
+      // Only move if the selection is actually off-screen; nudging a pill
+      // that is already visible reads as the page twitching.
+      if (left < viewL) {
+        strip.scrollLeft = Math.max(0, left - 14);
+      } else if (right > viewR) {
+        strip.scrollLeft = right - strip.clientWidth + 14;
+      }
+    });
+  }
+
+  var stripScrollLeft = null;
+
+  /* Same problem on the desktop rail, which scrolls vertically: picking a
+   * market low in the list snapped the rail back to the top. */
+  function restoreRail() {
+    var rail = document.querySelector('[data-market-rail]');
+    if (!rail) return;
+    if (railScrollTop != null) rail.scrollTop = railScrollTop;
+
+    var row = rail.querySelector('[data-active-pill="true"]');
+    if (!row) return;
+    var top = row.offsetTop, bottom = top + row.offsetHeight;
+    if (top < rail.scrollTop) {
+      rail.scrollTop = Math.max(0, top - 8);
+    } else if (bottom > rail.scrollTop + rail.clientHeight) {
+      rail.scrollTop = bottom - rail.clientHeight + 8;
+    }
+  }
+
+  var railScrollTop = null;
+
+  function captureStrips() {
+    var strip = document.querySelector('[data-market-strip]');
+    if (strip) stripScrollLeft = strip.scrollLeft;
+    var rail = document.querySelector('[data-market-rail]');
+    if (rail) railScrollTop = rail.scrollTop;
+  }
+
   function applyScroll() {
     if (!scrollNext) return;
     var target = scrollNext;
@@ -665,7 +745,10 @@
     pending = true;
     requestAnimationFrame(function () {
       pending = false;
+      captureStrips();
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
+      restoreStrips();
+      restoreRail();
       applyScroll();
       // Inputs are replaced on every render, so rebind afterwards.
       if (window.agraxSearch) window.agraxSearch.rebind();

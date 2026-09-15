@@ -172,9 +172,9 @@
           <div style="flex:none;min-height:34px;padding:7px 12px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid #E4E6DF">
             <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal markets</span>
           </div>
-          <div style="flex:1;height:0;min-height:0;overflow-y:auto;scrollbar-width:thin">
+          <div style="flex:1;height:0;min-height:0;overflow-y:auto;scrollbar-width:thin" data-market-rail>
             <template data-for="terminals" data-as="t">
-              <span data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
+              <span data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
                 <template data-if="t.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
                 <template data-if="t.up"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#186B39;flex:none"></span></template>
                 <template data-if="t.down"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#8A4B2A;flex:none"></span></template>
@@ -703,9 +703,9 @@
       </div>
     </div>
 
-    <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px">
+    <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
       <template data-for="terminals" data-as="t">
-        <span data-on-click="t.onSelect" style="flex:none;height:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ t.chipBg }};color:{{ t.chipFg }};border:1px solid {{ t.chipBd }}">
+        <span data-market-pill data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="flex:none;height:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ t.chipBg }};color:{{ t.chipFg }};border:1px solid {{ t.chipBd }}">
           <span style="width:5px;height:5px;border-radius:50%;background:{{ t.chipDot }}"></span>{{ t.name }}
           <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;opacity:0.7">{{ t.skuCount }}</span>
         </span>
