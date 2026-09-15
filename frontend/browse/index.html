@@ -126,22 +126,26 @@
 <div style="min-height:100vh;display:flex;flex-direction:column">
 
   <template data-if="wide">
-  <header style="background:#0A0B0A;padding:0 20px;display:flex;justify-content:center">
+  <header style="background:#fff;border-bottom:1px solid #EDEEE9;padding:0 20px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:24px;width:64px;display:block"></a>
+    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <nav style="display:flex;align-items:center;gap:2px;flex:none">
-      <a href="/" style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h11">Home</a>
-      <span data-on-click="onBackToTable" style="height:30px;padding:0 12px;border-radius:15px;background:#1D211D;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Browse</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Movers</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Watchlist</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Reports</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;background:#EFF1EB;color:#072B18;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Home</span>
+      <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Movers</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Watchlist</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Reports</span>
     </nav>
-    <span style="position:relative;display:flex;align-items:center;flex:1 1 260px;min-width:200px;max-width:440px">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#1D211D;border:0;border-radius:16px;padding:0 14px 0 34px;font-size:13px;color:#fff;outline:none">
-    </span>
+    <!-- Browse needs search in the header. On the home page search lives in
+         the hero, so the shared header has none; here there is no hero and
+         search is the fastest route to a commodity. Styled to match the rest
+         of the header rather than reintroducing the old dark bar. -->
+    <div style="flex:1;min-width:150px;max-width:340px;position:relative;display:flex;align-items:center">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px;pointer-events:none"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#F4F4F0;border:1px solid #EDEEE9;border-radius:16px;padding:0 14px 0 32px;font-size:13px;color:#171A16;outline:none">
+    </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#9A9F98;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#3D9E5F"></span>{{ stamp }}</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#6B7268;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#186B39"></span>{{ stamp }}</span>
       <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
     </div>
     </div>
@@ -695,13 +699,13 @@
   <template data-if="narrow">
   <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
 
-    <div style="flex:none;background:#0A0B0A;padding:11px 14px;display:flex;align-items:center;gap:12px">
-      <a href="/" style="flex:none;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block"></a>
-      <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-        <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#fff;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
-      </div>
+    <div style="flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:11px 14px;display:flex;align-items:center;gap:12px">
+    <a href="/" style="flex:none;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:68px;height:25px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
     </div>
+  </div>
 
     <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
       <template data-for="terminals" data-as="t">

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
+body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
   a { color:#186B39; text-decoration:none; }
   a:hover { color:#14562F; }
   ::-webkit-scrollbar { height:6px; width:6px; }
@@ -18,61 +18,49 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
 /* hover rules lifted from style-hover */
 .h0:hover{background:#14562F !important}
 .h1:hover{background:#14562F;color:#fff !important}
-.h2:hover{background:#E8EAE4;color:#171A16 !important}
-.h3:hover{color:#171A16 !important}
-.h4:hover{color:#186B39 !important}
-.h5:hover{color:#fff !important}
+.h2:hover{background:#16412A !important}
+.h3:hover{background:rgba(255,255,255,0.28);color:#fff !important}
+.h4:hover{color:#072B18 !important}
+.h5:hover{color:#171A16 !important}
+.h6:hover{color:#171A16;border-color:#B7C4AF !important}
+.h7:hover{color:#186B39 !important}
 
-/* Desktop and mobile are two separate layouts in the design export, not one
-   fluid grid. Both are rendered; this picks which is painted. 900px is the
-   breakpoint the design was authored against. */
+/* Desktop and mobile are separate layouts in the export; CSS picks one. */
 .dc-narrow { display: none; }
 @media (max-width: 899px) {
   .dc-wide   { display: none; }
   .dc-narrow { display: block; }
-}
-
-/* iOS Safari zooms the page when a focused input has a font smaller than
-   16px. The design's inputs are 13-15px, which is right for desktop, so the
-   size is bumped only on touch layouts rather than changing the design.
-   Using maximum-scale in the viewport tag would also stop the zoom, but it
-   disables pinch-zoom for everyone, which is an accessibility regression. */
-@media (max-width: 899px) {
+  /* iOS zooms a focused input under 16px. */
   input, select, textarea { font-size: 16px !important; }
 }
 
-/* Search suggestions. Positioned against the input's own wrapper so the
-   dropdown tracks the field on both layouts without duplicating markup. */
-.agx-sug {
-  position: absolute; z-index: 200; left: 0; right: 0; top: calc(100% + 6px);
-  background: #fff; border: 1px solid #E4E6DF; border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(23,26,22,0.13); overflow: hidden; display: none;
-}
-.agx-sug[data-open] { display: block; }
-.agx-sug__item {
-  display: flex; align-items: baseline; gap: 10px; width: 100%;
-  padding: 10px 14px; border: 0; background: none; cursor: pointer;
-  text-align: left; font-family: inherit; border-bottom: 1px solid #F1F2ED;
-}
-.agx-sug__item:last-child { border-bottom: 0; }
-.agx-sug__item:hover, .agx-sug__item[data-active] { background: #F4F6F1; }
-.agx-sug__label { font-size: 13px; font-weight: 500; color: #171A16; }
-.agx-sug__sub { font-size: 11.5px; color: #8A8F86; margin-left: auto; white-space: nowrap; }
-@media (max-width: 899px) { .agx-sug__item { padding: 13px 14px; } }
+/* Search suggestions. */
+.agx-sug { position:absolute; z-index:200; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #E4E6DF; border-radius:10px;
+  box-shadow:0 8px 28px rgba(23,26,22,0.13); overflow:hidden; display:none; }
+.agx-sug[data-open] { display:block; }
+.agx-sug__item { display:flex; align-items:baseline; gap:10px; width:100%;
+  padding:10px 14px; border:0; background:none; cursor:pointer; text-align:left;
+  font-family:inherit; border-bottom:1px solid #F1F2ED; }
+.agx-sug__item:last-child { border-bottom:0; }
+.agx-sug__item:hover, .agx-sug__item[data-active] { background:#F4F6F1; }
+.agx-sug__label { font-size:13px; font-weight:500; color:#171A16; }
+.agx-sug__sub { font-size:11.5px; color:#8A8F86; margin-left:auto; white-space:nowrap; }
+@media (max-width: 899px) { .agx-sug__item { padding:13px 14px; } }
+
 </style>
 </head>
 <body>
 
-<!-- Markup exported from Claude Design, unmodified apart from link targets.
-     Held in a template so the controller can mount it with live data and
-     re-render without the original being lost. -->
+<!-- Exported from Claude Design. Styles unmodified; the design tool's sample
+     data script was removed so every figure comes from the API. -->
 <template id="page-template">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 
 <style>
-  body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
+  body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
   a { color:#186B39; text-decoration:none; }
   a:hover { color:#14562F; }
   ::-webkit-scrollbar { height:6px; width:6px; }
@@ -81,156 +69,172 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
 
 
 <template data-if="wide">
-<div style="min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
+<div style="min-height:100vh;display:flex;flex-direction:column;background:#FAFAF9">
 
-  <header style="background:#0A0B0A;padding:0 20px;display:flex;justify-content:center">
+  <header style="background:#fff;border-bottom:1px solid #EDEEE9;padding:0 20px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height: 24px; width: 66px; display: block"></a>
+    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <nav style="display:flex;align-items:center;gap:2px;flex:none">
-      <span style="height:30px;padding:0 12px;border-radius:15px;background:#1D211D;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Home</span>
-      <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h5">Browse</a>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h5">Movers</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h5">Watchlist</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h5">Reports</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;background:#EFF1EB;color:#072B18;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Home</span>
+      <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Movers</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Watchlist</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Reports</span>
     </nav>
     <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#9A9F98;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#3D9E5F"></span>{{ stamp }}</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#6B7268;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#186B39"></span>{{ stamp }}</span>
       <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
     </div>
     </div>
   </header>
 
-  <section style="position:relative;background:#fff;border-bottom:1px solid #EDEEE9;padding:34px 20px 26px;display:flex;justify-content:center;overflow:hidden">
-    <div style="position:absolute;top:0;left:0;bottom:0;width:62%;-webkit-mask-image:linear-gradient(to left, transparent 0%, rgba(0,0,0,0.35) 34%, rgba(0,0,0,0.8) 72%, #000 100%);mask-image:linear-gradient(to left, transparent 0%, rgba(0,0,0,0.35) 34%, rgba(0,0,0,0.8) 72%, #000 100%)">
-      <div data-slot="home-hero-right" style="width:100%;height:100%"></div>
+  <section style="position:relative;background:#171A16;padding:104px 20px 96px;display:flex;justify-content:center;overflow:hidden">
+    <img src="/assets/farm-hero.webp" alt="Rows of young trees in an orchard at first light" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+    <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right, rgba(20,26,18,0.62) 0%, rgba(20,26,18,0.40) 44%, rgba(20,26,18,0.10) 100%)"></div>
+    <div style="position:relative;width:100%;max-width:1440px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.82)">Grounded in the market.</div>
+      <h1 style="margin:18px 0 0;font-size:72px;font-weight:400;letter-spacing:-0.03em;line-height:1.02;color:#fff;text-wrap:balance">From the field.<br>To your next decision.</h1>
+      <p style="margin:24px 0 0;max-width:560px;font-size:17px;line-height:1.5;color:rgba(255,255,255,0.92);letter-spacing:-0.005em;text-wrap:pretty">The produce market moves every morning.<br>See the prices, the origins, and the details that matter.</p>
+      <div style="margin-top:30px;position:relative;display:flex;align-items:center;max-width:600px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:18px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+        <input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety or origin" style="width:100%;height:52px;background:#fff;border:0;border-radius:26px;padding:0 114px 0 44px;font-size:15.5px;letter-spacing:-0.005em;outline:none;color:#171A16">
+        <a href="/browse" style="position:absolute;right:5px;height:42px;padding:0 20px;border-radius:21px;background:#186B39;color:#fff;font-size:14.5px;font-weight:500;display:inline-flex;align-items:center" class="h1">Search</a>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12.5px;color:rgba(255,255,255,0.82)">Popular</span>
+        <template data-for="popular" data-as="p">
+          <a href="/browse" style="height:30px;padding:0 13px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
+        </template>
+      </div>
     </div>
-    <div style="position:absolute;top:0;left:0;bottom:0;width:62%;pointer-events:none;backdrop-filter:blur(34px) saturate(1.08);-webkit-backdrop-filter:blur(34px) saturate(1.08);background:linear-gradient(to left, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.80) 45%, rgba(255,255,255,0.66) 100%)"></div>
-    <div style="position:relative;width:100%;max-width:1440px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);gap:32px;align-items:end">
-      <div style="min-width:0">
-        <h1 style="margin:0;font-size:38px;font-weight:600;letter-spacing:-0.035em;line-height:1.05;text-wrap:balance">Every USDA produce price, down to the pack and size.</h1>
-        <p style="margin:12px 0 0;max-width:640px;font-size:15px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Terminal market prints, shipping point FOB and movement data for {{ coverCommodities }} commodities, cleaned and cross-linked the morning they post.</p>
-        <div style="margin-top:18px;position:relative;display:flex;align-items:center;max-width:640px">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:16px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-          <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety or origin" style="width:100%;height:46px;background:#F4F4F0;border:0;border-radius:23px;padding:0 108px 0 42px;font-size:15px;letter-spacing:-0.005em;outline:none">
-          <a href="/browse" style="position:absolute;right:5px;height:36px;padding:0 18px;border-radius:18px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:inline-flex;align-items:center" class="h1">Search</a>
+  </section>
+
+  <section style="background:#FAFAF9;border-bottom:1px solid #EDEEE9;padding:26px 20px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 28px">
+      <template data-for="stats" data-as="s">
+        <div style="min-width:0">
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:24px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ s.value }}</div>
+          <div style="margin-top:7px;font-size:12.5px;letter-spacing:-0.005em">{{ s.label }}</div>
+          <div style="margin-top:2px;font-size:11.5px;color:#8A8F86;letter-spacing:-0.005em">{{ s.note }}</div>
         </div>
-        <div style="margin-top:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-          <span style="font-size:12.5px;color:#8A8F86">Popular</span>
-          <template data-for="popular" data-as="p">
-            <a href="/browse" style="height:28px;padding:0 12px;border-radius:14px;background:#F4F4F0;color:#171A16;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h2">{{ p.name }}</a>
+      </template>
+    </div>
+  </section>
+
+  <section style="background:#FAFAF9;padding:76px 20px 64px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px">
+      <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">01 / What AgraX covers</div>
+      <h2 style="margin: 18px 0 0; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.2; text-wrap: balance">The whole journey.<br>A clearer market picture.</h2>
+
+      <div style="margin-top:44px;position:relative">
+        <div style="position:absolute;left:0;right:0;top:10px;height:1px;background:#D7DBD1"></div>
+        <div style="position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px">
+          <template data-for="stations" data-as="s">
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:9px">
+                <span style="width:21px;height:21px;border-radius:50%;background:#FAFAF9;border:1px solid #186B39;display:inline-flex;align-items:center;justify-content:center;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#186B39">{{ s.n }}</span>
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:#6B7268">{{ s.stage }}</span>
+              </div>
+              <div style="margin-top:20px;font-size:19px;font-weight:600;letter-spacing:-0.025em">{{ s.title }}</div>
+              <p style="margin:8px 0 0;font-size:13.5px;line-height:1.6;color:#4A5147;letter-spacing:-0.005em;text-wrap:pretty">{{ s.body }}</p>
+              <div style="margin-top:16px;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268;font-variant-numeric:tabular-nums">{{ s.metric }}</div>
+              <a href="/browse" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500">{{ s.cta }}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+              </a>
+            </div>
           </template>
         </div>
       </div>
-      <div style="min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:18px 20px">
-        <template data-for="stats" data-as="s">
-          <div style="min-width:0">
-            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:26px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ s.value }}</div>
-            <div style="margin-top:7px;font-size:12.5px;letter-spacing:-0.005em">{{ s.label }}</div>
-            <div style="margin-top:2px;font-size:11.5px;color:#8A8F86;letter-spacing:-0.005em">{{ s.note }}</div>
-          </div>
-        </template>
-      </div>
-    </div>
-  </section>
-
-  <section style="background:#fff;padding:76px 20px 64px;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px">
-      <div style="display:flex;align-items:baseline;gap:20px;flex-wrap:wrap">
-        <h2 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1.2">What AgraX covers</h2>
-        <span style="font-size:13.5px;color:#6B7268;letter-spacing:-0.005em">Terminal prints, origin FOB, and the movement behind every row.</span>
-      </div>
-
-      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 40px">
-        <div style="min-width:0;border-top:1px solid #E4E6DF;padding-top:18px">
-          <div style="margin-top:18px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:30px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">{{ coverTerminals }}</span>
-            <span style="font-size:12.5px;color:#6B7268;letter-spacing:-0.005em">terminals daily</span>
-          </div>
-          <div style="margin-top:12px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Terminal markets</div>
-          <p style="margin:6px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Wholesale prints from {{ coverTerminals }} city terminals, priced by variety, origin, grade, pack and size.</p>
-        </div>
-        <div style="min-width:0;border-top:1px solid #E4E6DF;padding-top:18px">
-          <div style="margin-top:18px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:30px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">{{ coverDistricts }}</span>
-            <span style="font-size:12.5px;color:#6B7268;letter-spacing:-0.005em">districts</span>
-          </div>
-          <div style="margin-top:12px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Shipping point FOB</div>
-          <p style="margin:6px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Origin prices from {{ coverDistricts }} districts, set beside the terminal row they feed so the spread reads at a glance.</p>
-        </div>
-        <div style="min-width:0;border-top:1px solid #E4E6DF;padding-top:18px">
-          <div style="margin-top:18px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:30px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">{{ coverLoads }}</span>
-            <span style="font-size:12.5px;color:#6B7268;letter-spacing:-0.005em">loads tracked this week</span>
-          </div>
-          <div style="margin-top:12px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Movement data</div>
-          <p style="margin:6px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Truck arrivals by origin and commodity, so a price move reads against the supply behind it.</p>
-        </div>
-      </div>
 
     </div>
   </section>
 
-  <section style="background:#fff;padding:76px 20px 0;display:flex;justify-content:center">
+  <section style="background:#EEF1E9;padding:68px 20px 68px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px">
-      <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
-        <h2 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1.2">Categories</h2>
-        <a href="/browse" style="margin-left:auto;font-size:13.5px;font-weight:500;white-space:nowrap">Browse all commodities</a>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:40px;align-items:end">
+        <div style="min-width:0">
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7A8476">02 / Commodity categories</div>
+          <h2 style="margin: 16px 0 0; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.2">Start with what you buy.</h2>
+        </div>
+        <p style="margin:0;font-size:13.5px;line-height:1.6;color:#5A6156;letter-spacing:-0.005em">Four USDA report groups.<br>Every specification, clearly organized.</p>
       </div>
 
-      <div style="margin-top:28px">
-        <template data-for="categories" data-as="c">
-          <a href="/browse" style="display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr) 92px;gap:24px;align-items:baseline;padding:22px 0;border-top:1px solid #EDEEE9;color:#171A16" class="h4">
-            <span style="font-size:22px;font-weight:600;letter-spacing:-0.025em">{{ c.name }}</span>
-            <span style="min-width:0;font-size:13.5px;color:#8A8F86;letter-spacing:-0.005em;text-wrap:pretty">{{ c.items }}</span>
-            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;color:#6B7268;text-align:right;white-space:nowrap">{{ c.count }}</span>
-          </a>
-        </template>
+      <div style="margin-top:32px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.6c-3.1 0-5.2 2.3-5.2 5.4 0 3.5 2.5 6.5 5.2 6.5s5.2-3 5.2-6.5c0-3.1-2.1-5.4-5.2-5.4Z"></path><path d="M12 8.6V7"></path><path d="M12.6 7.6c1.2-1.5 3-1.9 4.2-1.8-.2 1.4-1.5 2.6-3 2.8-.7.1-1.1 0-1.2-.2-.1-.3 0-.6 0-.8Z"></path></svg>
+          <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Fruit</span>
+          <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catFruit }} commodities reporting</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+        </a>
+        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M13.8 12.4 6.5 19.7a1 1 0 0 1-1.6-1L10.5 9.3c.9-1.4 3-1.6 4-.6s.7 2.9-.7 3.7Z"></path><path d="M12.9 8.4V4.8"></path><path d="M13.4 7.6c1.3-1.5 2.9-1.7 3.6-1.5"></path><path d="M12.4 7.6C11.2 6.1 9.7 5.9 9 6.1"></path><path d="M11.4 13.6l1.6.7"></path><path d="M9.2 15.8l1.6.7"></path></svg>
+          <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Vegetables</span>
+          <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catVegetables }} commodities reporting</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+        </a>
+        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+          <svg width="70" height="52" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="14.6" r="5.4"></circle><path d="M9 9.2V4.6"></path><path d="M9 6.6C7.6 5 6.2 4.8 5.5 5"></path><path d="M9 6.6C10.4 5 11.8 4.8 12.5 5"></path><ellipse cx="23.6" cy="16.2" rx="4.6" ry="3.8"></ellipse><circle cx="22.3" cy="15.2" r=".5"></circle><circle cx="25" cy="16.8" r=".5"></circle><circle cx="23" cy="17.8" r=".5"></circle></svg>
+          <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Onions &amp; potatoes</span>
+          <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catOnions }} commodities reporting</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+        </a>
+        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+          <svg width="70" height="52" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6c3 2.1 3.8 6.7 1.9 10.8-.5 1.1-1.2 2.5-1.9 3.6-.7-1.1-1.4-2.5-1.9-3.6C6.2 12.3 7 7.7 10 5.6Z"></path><path d="M10 7.8v10.2"></path><path d="M22.4 6.4c2.9 2.1 3.7 6.7 1.8 10.8-.5 1.1-1.2 2.5-1.8 3.6-.7-1.1-1.4-2.5-1.8-3.6-1.9-4.1-1.1-8.7 1.8-10.8Z"></path><path d="M22.4 8.6v10"></path></svg>
+          <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Nuts</span>
+          <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catNuts }} commodities reporting</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+        </a>
       </div>
     </div>
   </section>
 
-  <section style="background:#fff;padding:76px 20px 0;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px">
-      <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
-        <h2 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1.2">Terminal markets</h2>
-        <span style="font-size:13.5px;color:#8A8F86;letter-spacing:-0.005em">All twelve cities reporting today</span>
+  <section style="background:#FFFFFF;padding:84px 20px 84px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px;display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.6fr);gap:56px;align-items:start">
+      <div style="min-width:0">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">03 / Terminal markets</div>
+        <h2 style="margin: 16px 0 0; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.2; text-wrap: balance">A national view.<br>Your local market.</h2>
+        <p style="margin:14px 0 0;font-size:13.5px;line-height:1.6;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Choose a city to see its current published report.</p>
+        <div style="margin-top:28px;display:flex;align-items:center;gap:12px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.09em;color:#9AA096">
+          <span>NY</span><span style="width:34px;height:1px;background:#DCDFD6"></span>
+          <span>LA</span><span style="width:34px;height:1px;background:#DCDFD6"></span>
+          <span>CHI</span>
+        </div>
       </div>
-      <div style="margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 48px">
+      <div style="min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px">
         <template data-for="terminals" data-as="t">
-          <a href="/browse" style="min-width:0;display:flex;align-items:baseline;gap:16px;padding:15px 0;border-top:1px solid #EDEEE9;color:#171A16" class="h4">
-            <span style="min-width:0;flex:1;font-size:15.5px;font-weight:500;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
-            <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;color:#6B7268;font-variant-numeric:tabular-nums">{{ t.count }}</span>
+          <a href="/browse" style="min-width:0;display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h7">
+            <span style="min-width:0;flex:1;font-size:15px;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
+            <span style="flex:none;font-size:11.5px;color:#8A8F86;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.lines }}</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9AA096" stroke-width="2.2" stroke-linecap="round" style="flex:none"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
           </a>
         </template>
       </div>
     </div>
   </section>
 
-  <section style="background:#fff;padding:80px 20px 88px;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:36px 72px;align-items:start">
-      <div style="min-width:0;max-width:520px">
-        <h2 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1.2;text-wrap:balance">Where the numbers come from</h2>
-        <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">USDA AMS Market News publishes each terminal and shipping point report as free text. AgraX parses every line into a priced row, keeps the source wording, and marks how each price was derived.</p>
-        <a href="/about" style="display:inline-block;margin-top:20px;font-size:13.5px;font-weight:500">About the data</a>
+
+  <section style="background:#EEF1E9;padding:72px 20px 72px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start">
+      <div style="min-width:0">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#5E7A55">The AgraX morning read</div>
+        <h2 style="margin:18px 0 0;font-size:34px;font-weight:600;letter-spacing:-0.03em;line-height:1.2;text-wrap:balance">Get produce market updates.</h2>
+        <p style="margin:16px 0 0;font-size:13.5px;line-height:1.6;color:#5A6156;letter-spacing:-0.005em;text-wrap:pretty">Receive a summary of USDA produce prices and market activity by email.</p>
       </div>
       <div style="min-width:0">
-        <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid #EDEEE9">
-          <span style="height:22px;padding:0 10px;border-radius:11px;background:#EAF3EA;color:#1F5F32;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;justify-self:start">mostly</span>
-          <span style="font-size:13.5px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">Transaction-weighted price. The gold standard, and what most of the market traded at.</span>
+        <label style="display:block;font-size:13px;color:#3F463C;letter-spacing:-0.005em">Your work email</label>
+        <div style="margin-top:10px;display:flex;align-items:stretch">
+          <input type="email" placeholder="you@company.com" style="min-width:0;flex:1;height:48px;background:#fff;border:1px solid #DDE2D6;border-right:0;padding:0 16px;font-size:15px;letter-spacing:-0.005em;outline:none;color:#171A16">
+          <button type="button" style="flex:none;height:48px;padding:0 20px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:10px;cursor:pointer" class="h2">Sign me up
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+          </button>
         </div>
-        <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid #EDEEE9">
-          <span style="height:22px;padding:0 10px;border-radius:11px;background:#FAF1E2;color:#7A5A1E;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;justify-self:start">mid-range</span>
-          <span style="font-size:13.5px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">Calculated midpoint of a reported low-to-high range.</span>
-        </div>
-        <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid #EDEEE9;border-bottom:1px solid #EDEEE9">
-          <span style="height:22px;padding:0 10px;border-radius:11px;background:#F0F1EE;color:#5A6158;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;justify-self:start">reported</span>
-          <span style="font-size:13.5px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">A single clean print, where the reported low and high are identical.</span>
-        </div>
+        <p style="margin:12px 0 0;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">Signup preview · Email subscriptions are not connected yet.</p>
+        <div style="margin-top:28px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#9AA096">Grounded in USDA market data</div>
       </div>
     </div>
   </section>
 
-  <footer style="margin-top:auto;background:#fff;border-top:1px solid #EDEEE9;padding:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <footer style="margin-top:auto;background:#FAFAF9;border-top:1px solid #EDEEE9;padding:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
     <img src="/assets/agrax-logo-black.png" alt="AgraX" style="height:14px;width:auto;display:block;opacity:0.55">
     <span style="font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em">USDA AMS Market News · terminal and shipping point reports · updated 05:26 ET</span>
     <div style="margin-left:auto;display:flex;align-items:center;gap:18px">
@@ -242,31 +246,30 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
 </template>
 
 <template data-if="narrow">
-<div style="min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
+<div style="min-height:100vh;display:flex;flex-direction:column;background:#FAFAF9">
 
-  <div style="flex:none;background:#0A0B0A;padding:11px 14px;display:flex;align-items:center;gap:12px">
-    <a href="/" style="flex:none;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block"></a>
+  <div style="flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:11px 14px;display:flex;align-items:center;gap:12px">
+    <a href="/" style="flex:none;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:68px;height:25px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#fff;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
+      <input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
     </div>
   </div>
 
-  <section style="position:relative;flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:20px 14px 18px;overflow:hidden">
-    <div style="position:absolute;inset:0;-webkit-mask-image:linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.45) 62%, transparent 100%);mask-image:linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.45) 62%, transparent 100%)">
-      <div data-slot="home-hero-right" style="width:100%;height:100%"></div>
-    </div>
-    <div style="position:absolute;inset:0;pointer-events:none;backdrop-filter:blur(30px) saturate(1.08);-webkit-backdrop-filter:blur(30px) saturate(1.08);background:linear-gradient(to bottom, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.93) 70%, #fff 100%)"></div>
+  <section style="position:relative;flex:none;background:#171A16;border-bottom:1px solid #EDEEE9;padding:40px 14px 34px;overflow:hidden">
+    <img src="/assets/farm-hero.webp" alt="Rows of young trees in an orchard at first light" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+    <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom, rgba(20,26,18,0.60) 0%, rgba(20,26,18,0.44) 55%, rgba(20,26,18,0.34) 100%)"></div>
     <div style="position:relative">
-      <h1 style="margin:0;font-size:27px;font-weight:600;letter-spacing:-0.03em;line-height:1.1;text-wrap:balance">Every USDA produce price, down to the pack and size.</h1>
-      <p style="margin:10px 0 0;font-size:13.5px;line-height:1.5;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Terminal market prints, shipping point FOB and movement data for {{ coverCommodities }} commodities, cleaned and cross-linked the morning they post.</p>
+      <div style="font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.82)">Grounded in the market.</div>
+      <h1 style="margin:12px 0 0;font-size:34px;font-weight:400;letter-spacing:-0.03em;line-height:1.05;color:#fff;text-wrap:balance">From the field.<br>To your next decision.</h1>
+      <p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.92);letter-spacing:-0.005em;text-wrap:pretty">The produce market moves every morning. See the prices, the origins, and the details that matter.</p>
       <a href="/browse" style="margin-top:14px;height:42px;border-radius:21px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:7px" class="h1">Search prices
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
       </a>
       <div style="margin-top:12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:-14px;margin-right:-14px;padding:0 14px">
-        <span style="flex:none;font-size:11.5px;color:#8A8F86;display:inline-flex;align-items:center">Popular</span>
+        <span style="flex:none;font-size:11.5px;color:rgba(255,255,255,0.82);display:inline-flex;align-items:center">Popular</span>
         <template data-for="popular" data-as="p">
-          <a href="/browse" style="flex:none;height:30px;padding:0 12px;border-radius:15px;background:#F4F4F0;color:#171A16;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h2">{{ p.name }}</a>
+          <a href="/browse" style="flex:none;height:30px;padding:0 12px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
         </template>
       </div>
       <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#DCDFD6;border-radius:8px;overflow:hidden">
@@ -281,97 +284,93 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
     </div>
   </section>
 
-  <section style="background:#fff;padding:34px 14px 26px">
-    <h2 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2">What AgraX covers</h2>
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
-      <div style="border-top:1px solid #E4E6DF;padding-top:14px">
-        <div style="height:150px;border-radius:8px;border:1px solid rgba(23,26,22,0.12);box-shadow:0 2px 8px rgba(23,26,22,0.06);background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center">
-          <img src="/assets/shot-rows.png" alt="Price rows showing variety, origin, pack and size with the terminal price" style="height:100%;width:auto;max-width:100%;object-fit:contain;display:block">
+  <section style="background:#FAFAF9;padding:34px 14px 26px">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">01 / What AgraX covers</div>
+    <h2 style="margin:12px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2;text-wrap:balance">The whole journey.<br>A clearer market picture.</h2>
+    <p style="margin:10px 0 0;font-size:13.5px;line-height:1.6;color:#4A5147;letter-spacing:-0.005em;text-wrap:pretty">Connect the price at origin to the terminal market. Keep the published details in view.</p>
+    <div style="margin-top:24px;display:flex;flex-direction:column">
+      <template data-for="stations" data-as="s">
+        <div style="border-top:1px solid #EDEEE9;padding:18px 0">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="width:20px;height:20px;border-radius:50%;background:#FAFAF9;border:1px solid #186B39;display:inline-flex;align-items:center;justify-content:center;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#186B39">{{ s.n }}</span>
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:#6B7268">{{ s.stage }}</span>
+          </div>
+          <div style="margin-top:12px;font-size:17px;font-weight:600;letter-spacing:-0.025em">{{ s.title }}</div>
+          <p style="margin:7px 0 0;font-size:13px;line-height:1.55;color:#4A5147;letter-spacing:-0.005em;text-wrap:pretty">{{ s.body }}</p>
+          <div style="margin-top:12px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268;font-variant-numeric:tabular-nums">{{ s.metric }}</span>
+            <a href="/browse" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500">{{ s.cta }}
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+            </a>
+          </div>
         </div>
-        <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:24px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">12</span>
-          <span style="font-size:11.5px;color:#6B7268">terminals daily</span>
-        </div>
-        <div style="margin-top:10px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Terminal markets</div>
-        <p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Wholesale prints from {{ coverTerminals }} city terminals, priced by variety, origin, grade, pack and size.</p>
-      </div>
-      <div style="border-top:1px solid #E4E6DF;padding-top:14px">
-        <div style="height:150px;border-radius:8px;border:1px solid rgba(23,26,22,0.12);box-shadow:0 2px 8px rgba(23,26,22,0.06);background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center">
-          <img src="/assets/shot-spread.png" alt="FOB, terminal and spread columns for three price rows" style="height:100%;width:auto;max-width:100%;object-fit:contain;display:block">
-        </div>
-        <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:24px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">31</span>
-          <span style="font-size:11.5px;color:#6B7268">districts</span>
-        </div>
-        <div style="margin-top:10px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Shipping point FOB</div>
-        <p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Origin prices from {{ coverDistricts }} districts, set beside the terminal row they feed so the spread reads at a glance.</p>
-      </div>
-      <div style="border-top:1px solid #E4E6DF;padding-top:14px">
-        <div style="height:150px;border-radius:8px;border:1px solid rgba(23,26,22,0.12);box-shadow:0 2px 8px rgba(23,26,22,0.06);background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center">
-          <img src="/assets/shot-movement-bars.png" alt="Movement band: load count and origin bars with load counts" style="height:100%;width:auto;max-width:100%;object-fit:contain;display:block">
-        </div>
-        <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:24px;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">9,400</span>
-          <span style="font-size:11.5px;color:#6B7268">loads tracked this week</span>
-        </div>
-        <div style="margin-top:10px;font-size:15px;font-weight:600;letter-spacing:-0.018em">Movement data</div>
-        <p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Truck arrivals by origin and commodity, so a price move reads against the supply behind it.</p>
-      </div>
-    </div>
-
-  </section>
-
-  <section style="background:#fff;padding:38px 14px 0">
-    <div style="display:flex;align-items:baseline;gap:12px">
-      <h2 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2">Categories</h2>
-      <a href="/browse" style="margin-left:auto;font-size:12.5px;font-weight:500;white-space:nowrap">Browse all</a>
-    </div>
-    <div style="margin-top:16px">
-      <template data-for="categories" data-as="c">
-        <a href="/browse" style="display:block;padding:16px 0;border-top:1px solid #EDEEE9;color:#171A16" class="h3">
-          <span style="display:flex;align-items:baseline;gap:10px">
-            <span style="min-width:0;flex:1;font-size:17px;font-weight:600;letter-spacing:-0.022em">{{ c.name }}</span>
-            <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268">{{ c.count }}</span>
-          </span>
-          <span style="margin-top:5px;display:block;font-size:12.5px;line-height:1.5;color:#8A8F86;letter-spacing:-0.005em;text-wrap:pretty">{{ c.items }}</span>
-        </a>
       </template>
+      <div style="border-top:1px solid #EDEEE9"></div>
+    </div>
+
+  </section>
+
+  <section style="background:#EEF1E9;padding:34px 14px 34px">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#7A8476">02 / Commodity categories</div>
+    <h2 style="margin:12px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2">Start with what you buy.</h2>
+    <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#5A6156;letter-spacing:-0.005em">Four USDA report groups.<br>Every specification, clearly organized.</p>
+    <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.6c-3.1 0-5.2 2.3-5.2 5.4 0 3.5 2.5 6.5 5.2 6.5s5.2-3 5.2-6.5c0-3.1-2.1-5.4-5.2-5.4Z"></path><path d="M12 8.6V7"></path><path d="M12.6 7.6c1.2-1.5 3-1.9 4.2-1.8-.2 1.4-1.5 2.6-3 2.8-.7.1-1.1 0-1.2-.2-.1-.3 0-.6 0-.8Z"></path></svg>
+        <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Fruit</span>
+        <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catFruit }} commodities reporting</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+      </a>
+      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.8 12.4 6.5 19.7a1 1 0 0 1-1.6-1L10.5 9.3c.9-1.4 3-1.6 4-.6s.7 2.9-.7 3.7Z"></path><path d="M12.9 8.4V4.8"></path><path d="M13.4 7.6c1.3-1.5 2.9-1.7 3.6-1.5"></path><path d="M12.4 7.6C11.2 6.1 9.7 5.9 9 6.1"></path><path d="M11.4 13.6l1.6.7"></path><path d="M9.2 15.8l1.6.7"></path></svg>
+        <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Vegetables</span>
+        <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catVegetables }} commodities reporting</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+      </a>
+      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+        <svg width="59" height="44" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="14.6" r="5.4"></circle><path d="M9 9.2V4.6"></path><path d="M9 6.6C7.6 5 6.2 4.8 5.5 5"></path><path d="M9 6.6C10.4 5 11.8 4.8 12.5 5"></path><ellipse cx="23.6" cy="16.2" rx="4.6" ry="3.8"></ellipse><circle cx="22.3" cy="15.2" r=".5"></circle><circle cx="25" cy="16.8" r=".5"></circle><circle cx="23" cy="17.8" r=".5"></circle></svg>
+        <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Onions &amp; potatoes</span>
+        <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catOnions }} commodities reporting</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+      </a>
+      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+        <svg width="59" height="44" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6c3 2.1 3.8 6.7 1.9 10.8-.5 1.1-1.2 2.5-1.9 3.6-.7-1.1-1.4-2.5-1.9-3.6C6.2 12.3 7 7.7 10 5.6Z"></path><path d="M10 7.8v10.2"></path><path d="M22.4 6.4c2.9 2.1 3.7 6.7 1.8 10.8-.5 1.1-1.2 2.5-1.8 3.6-.7-1.1-1.4-2.5-1.8-3.6-1.9-4.1-1.1-8.7 1.8-10.8Z"></path><path d="M22.4 8.6v10"></path></svg>
+        <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Nuts</span>
+        <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catNuts }} commodities reporting</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+      </a>
     </div>
   </section>
 
-  <section style="background:#fff;padding:38px 14px 0">
-    <div style="display:flex;align-items:baseline;gap:12px">
-      <h2 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2">Terminal markets</h2>
-      <span style="margin-left:auto;font-size:12px;color:#8A8F86;white-space:nowrap">Twelve cities today</span>
-    </div>
-    <div style="margin-top:16px">
+  <section style="background:#FFFFFF;padding:38px 14px 34px">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">03 / Terminal markets</div>
+    <h2 style="margin:12px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2;text-wrap:balance">A national view.<br>Your local market.</h2>
+    <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Choose a city to see its current published report.</p>
+    <div style="margin-top:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px">
       <template data-for="terminals" data-as="t">
-        <a href="/browse" style="display:flex;align-items:baseline;gap:12px;padding:13px 0;border-top:1px solid #EDEEE9;color:#171A16" class="h3">
-          <span style="min-width:0;flex:1;font-size:14.5px;font-weight:500;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
-          <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#6B7268;font-variant-numeric:tabular-nums">{{ t.count }}</span>
+        <a href="/browse" style="min-width:0;display:flex;align-items:center;gap:8px;padding:13px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h5">
+          <span style="min-width:0;flex:1;font-size:13.5px;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
+          <span style="flex:none;font-size:10.5px;color:#8A8F86;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.lines }}</span>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#9AA096" stroke-width="2.2" stroke-linecap="round" style="flex:none"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
         </a>
       </template>
     </div>
   </section>
 
-  <section style="background:#fff;padding:40px 14px 44px">
-    <h2 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2;text-wrap:balance">Where the numbers come from</h2>
-    <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">USDA AMS Market News publishes each terminal and shipping point report as free text. AgraX parses every line into a priced row, keeps the source wording, and marks how each price was derived.</p>
-    <div style="margin-top:20px">
-      <div style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid #EDEEE9">
-        <span style="height:22px;padding:0 10px;border-radius:11px;background:#EAF3EA;color:#1F5F32;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;align-self:flex-start">mostly</span>
-        <span style="font-size:13px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">Transaction-weighted price. The gold standard, and what most of the market traded at.</span>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid #EDEEE9">
-        <span style="height:22px;padding:0 10px;border-radius:11px;background:#FAF1E2;color:#7A5A1E;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;align-self:flex-start">mid-range</span>
-        <span style="font-size:13px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">Calculated midpoint of a reported low-to-high range.</span>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid #EDEEE9;border-bottom:1px solid #EDEEE9">
-        <span style="height:22px;padding:0 10px;border-radius:11px;background:#F0F1EE;color:#5A6158;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;align-self:flex-start">reported</span>
-        <span style="font-size:13px;line-height:1.55;color:#4A5148;letter-spacing:-0.005em;text-wrap:pretty">A single clean print, where the reported low and high are identical.</span>
-      </div>
+
+  <section style="background:#EEF1E9;padding:34px 14px 34px">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#5E7A55">The AgraX morning read</div>
+    <h2 style="margin:14px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2;text-wrap:balance">Get produce market updates.</h2>
+    <p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#5A6156;letter-spacing:-0.005em;text-wrap:pretty">Receive a summary of USDA produce prices and market activity by email.</p>
+    <label style="display:block;margin-top:22px;font-size:12.5px;color:#3F463C;letter-spacing:-0.005em">Your work email</label>
+    <div style="margin-top:9px;display:flex;align-items:stretch">
+      <input type="email" placeholder="you@company.com" style="min-width:0;flex:1;height:46px;background:#fff;border:1px solid #DDE2D6;border-right:0;padding:0 14px;font-size:14.5px;letter-spacing:-0.005em;outline:none;color:#171A16">
+      <button type="button" style="flex:none;height:46px;padding:0 16px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:8px;cursor:pointer" class="h2">Sign me up
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
+      </button>
     </div>
-    <a href="/about" style="display:inline-block;margin-top:20px;font-size:13px;font-weight:500">About the data</a>
+    <p style="margin:11px 0 0;font-size:12px;color:#7A8476;letter-spacing:-0.005em">Signup preview · Email subscriptions are not connected yet.</p>
+    <div style="margin-top:22px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9AA096">Grounded in USDA market data</div>
   </section>
 
   <footer style="margin-top:auto;background:#F4F4F0;border-top:1px solid #EDEEE9;padding:14px;display:flex;flex-direction:column;gap:10px">
@@ -384,6 +383,7 @@ body { margin:0; background:#F5F5F2; font-family:'Geist', -apple-system, BlinkMa
   </footer>
 </div>
 </template>
+
 
 
 </template>

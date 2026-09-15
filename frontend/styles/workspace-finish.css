@@ -1,0 +1,28 @@
+/* Aesthetic tokens for the current exported templates. */
+:root {
+ --workspace-bg:#f6f7f6; --workspace-ink:#292e2a;
+ --workspace-green:#25964c; --workspace-green-hover:#217c41;
+ --workspace-border:#e7eae6; --workspace-rule:#f0f2ee;
+ --workspace-inset:#fafbf9; --workspace-selected:#f0f8f0;
+ --workspace-muted:#858c84; --workspace-secondary:#687066;
+ --workspace-white:#fff; --workspace-header-rule:#e9ece7;
+ --workspace-radius:6px; --workspace-weight:500;
+ --workspace-shadow:0 4px 20px #263c2505;
+}
+body { background:var(--workspace-bg); color:var(--workspace-ink); }
+#page-root header { background:var(--workspace-white)!important; border-bottom:1px solid var(--workspace-header-rule); box-shadow:var(--workspace-shadow); }
+#page-root header img { filter:brightness(0); opacity:.86; }
+#page-root header [style*="color:#9A9F98"] { color:var(--workspace-secondary)!important; }
+#page-root header [style*="background:#1D211D"] { background:var(--workspace-selected)!important; color:var(--workspace-ink)!important; border-radius:var(--workspace-radius)!important; }
+#page-root header .h11:hover { color:var(--workspace-ink)!important; background:var(--workspace-inset)!important; }
+#page-root header input { color:var(--workspace-ink)!important; }
+#page-root header [style*="background:var(--workspace-green)"] { border-radius:var(--workspace-radius)!important; }
+#page-root h1,#page-root h2,#page-root h3 { font-weight:var(--workspace-weight)!important; }
+#page-root [data-shot] { box-shadow:var(--workspace-shadow); }
+#page-root table { border-collapse:collapse; }
+#page-root thead { background:var(--workspace-inset)!important; }
+#page-root th { font-weight:var(--workspace-weight)!important; }
+#page-root td,#page-root th { border-right-color:transparent!important; border-bottom-color:var(--workspace-rule)!important; }
+#page-root input:focus-visible,#page-root button:focus-visible,#page-root a:focus-visible { outline:2px solid var(--workspace-green); outline-offset:2px; }
+#page-root .dc-narrow [style*="background:#0A0B0A"] { background:var(--workspace-white)!important; border-bottom:1px solid var(--workspace-header-rule); }
+#page-root .dc-narrow img[src*="logo-white"] { filter:brightness(0); opacity:.86; }
