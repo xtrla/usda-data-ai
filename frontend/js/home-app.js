@@ -64,6 +64,7 @@
       terminals: [],
       // "What AgraX covers" had three more hardcoded figures. Same sources
       // as the hero stats so they cannot drift apart.
+      coverCommodities: DASH,
       coverTerminals: DASH,
       coverDistricts: DASH,
       coverLoads: DASH
@@ -108,6 +109,7 @@
     });
 
     SCOPE.stats[0].value = fmt(Object.keys(commodities).length);
+    SCOPE.coverCommodities = fmt(Object.keys(commodities).length);
     SCOPE.stats[1].value = fmt(rows.length);
     SCOPE.stats[1].note = 'across ' + SCOPE.terminals.length + ' terminals';
     SCOPE.coverTerminals = String(SCOPE.terminals.length);
@@ -152,11 +154,21 @@
     }).catch(function () {});
 
     api.movementLatest().then(function (mv) {
+      /* Loads, however the report expresses them.
+       *
+       * Only package_count was read, but the national movement report
+       * (WA_FV170) reports in units_10k and leaves package_count null — so
+       * the figure came back zero and rendered as a dash even though the
+       * movement table had thousands of rows. One 10k unit is 10,000 lbs;
+       * a truckload is about 40,000, hence the divisor. */
       var total = 0;
       (mv && mv.rows ? mv.rows : []).forEach(function (r) {
         var c = D.num(r.package_count);
-        if (c != null) total += c;
+        if (c != null && c > 0) { total += c; return; }
+        var u = D.num(r.units_10k);
+        if (u != null && u > 0) total += (u * 10000) / 40000;
       });
+      total = Math.round(total);
       if (total > 0) { SCOPE.stats[3].value = fmt(total); SCOPE.coverLoads = fmt(total); paint(); }
     }).catch(function () {});
   }
