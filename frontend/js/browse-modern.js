@@ -58,16 +58,13 @@
     $('#browse-count').textContent = rows.length.toLocaleString() + ' price lines';
     $('#browse-note-copy').textContent = all.length ? 'Showing current printed lines; older prices are not blended into today’s report.' : 'Loading the latest USDA report.';
     renderFilters(all);
-    var html = rows.slice(0, 80).map(function (row) {
-      var price = D.priceOf(row), matched = fob.exact(row), spread = matched && price.price != null ? price.price - matched.price : null;
-      var detail = [row.variety, row.origin, row.package, row.size, row.quality_note].filter(Boolean).join(' · ') || 'USDA market line';
-      return '<tr><td><span class="ag-product">' + esc(row.commodity || 'Unspecified') + '</span><span class="ag-product-detail">' + esc(detail) + '</span></td><td class="ag-mono">' + money(price.price) + '</td><td class="ag-mono">' + (matched ? money(matched.price) : '—') + '</td><td class="ag-mono ag-up">' + (spread == null ? '—' : (spread >= 0 ? '+' : '−') + '$' + Math.abs(spread).toFixed(2)) + '</td><td><span class="ag-basis ' + (price.src === 'mid-range' ? 'ag-basis--range' : '') + '"><i></i>' + sourceLabel(price.src) + '</span></td><td><button type="button" class="ag-inspect" data-row="' + esc(D.rowKey(row)) + '">Inspect</button></td></tr>';
-    }).join('');
-    $('#browse-table-body').innerHTML = html || '<tr><td colspan="6"><div class="ag-empty">No prices match these filters.</div></td></tr>';
-    $('#browse-table-foot').textContent = rows.length > 80 ? 'Showing the first 80 matching price lines. Refine your filters to narrow the report.' : 'Every line preserves its report date, origin, pack, grade and published price method.';
+    $('#browse-table-container').innerHTML = window.agraxTable.table(rows, fob, 'Terminal report prices');
+    $('#browse-table-foot').textContent = 'Showing all ' + rows.length.toLocaleString() + ' matching price lines. Missing source fields are shown as a dash.';
   }
 
   function boot() {
+    state.query = new URLSearchParams(window.location.search).get('q') || '';
+    $('#browse-query').value = state.query;
     function clearFilters() { state.categories = {}; state.origins = {}; state.bases = {}; state.query = ''; $('#browse-query').value = ''; render(); }
     $('#browse-query').addEventListener('input', function (event) { state.query = event.target.value; render(); });
     $('#browse-clear').addEventListener('click', clearFilters);
@@ -83,7 +80,7 @@
       select.value = state.market;
       select.addEventListener('change', function () { state.market = select.value; state.categories = {}; state.origins = {}; state.bases = {}; render(); });
       render();
-    }).catch(function () { $('#browse-table-body').innerHTML = '<tr><td colspan="6"><div class="ag-empty">We could not load USDA prices right now.</div></td></tr>'; });
+    }).catch(function () { $('#browse-table-container').innerHTML = '<div class="ag-empty">We could not load USDA prices right now.</div>'; });
   }
   document.addEventListener('DOMContentLoaded', boot);
 })();

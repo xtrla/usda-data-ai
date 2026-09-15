@@ -1,23 +1,1008 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Browse current USDA terminal and shipping-point produce prices with AgraX.">
-  <title>Browse market prices — AgraX</title>
-  <link rel="stylesheet" href="/styles/market.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse prices — AgraX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing:border-box; }
+  body { margin:0; background:#F5F5F2; font-family:'Geist',system-ui,sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
+  a { color:#186B39; text-decoration:none; }
+  a:hover { color:#14562F; }
+  input { font-family:inherit; color:#171A16; }
+  input::placeholder { color:#8A8F86; }
+
+/* hover rules lifted from style-hover */
+.h0:hover{background:#14562F !important}
+.h1:hover{background:#14562F;color:#fff !important}
+.h2:hover{background:#E3EFE6 !important}
+.h3:hover{background:#E8EAE4 !important}
+.h4:hover{background:#F4F4F0 !important}
+.h5:hover{background:#FAFBF9 !important}
+.h6:hover{background:#fff !important}
+.h7:hover{border-color:#186B39 !important}
+.h8:hover{border-color:#186B39;color:#186B39 !important}
+.h9:hover{color:#186B39 !important}
+.h10:hover{color:#6B4F17 !important}
+.h11:hover{color:#fff !important}
+
+/* Desktop and mobile are two separate layouts in the design export, not one
+   fluid grid. Both are rendered; this picks which is painted. 900px is the
+   breakpoint the design was authored against. */
+.dc-narrow { display: none; }
+@media (max-width: 899px) {
+  .dc-wide   { display: none; }
+  .dc-narrow { display: block; }
+}
+
+/* iOS Safari zooms the page when a focused input has a font smaller than
+   16px. The design's inputs are 13-15px, which is right for desktop, so the
+   size is bumped only on touch layouts rather than changing the design.
+   Using maximum-scale in the viewport tag would also stop the zoom, but it
+   disables pinch-zoom for everyone, which is an accessibility regression. */
+@media (max-width: 899px) {
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* Search suggestions. Positioned against the input's own wrapper so the
+   dropdown tracks the field on both layouts without duplicating markup. */
+.agx-sug {
+  position: absolute; z-index: 200; left: 0; right: 0; top: calc(100% + 6px);
+  background: #fff; border: 1px solid #E4E6DF; border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(23,26,22,0.13); overflow: hidden; display: none;
+}
+.agx-sug[data-open] { display: block; }
+.agx-sug__item {
+  display: flex; align-items: baseline; gap: 10px; width: 100%;
+  padding: 10px 14px; border: 0; background: none; cursor: pointer;
+  text-align: left; font-family: inherit; border-bottom: 1px solid #F1F2ED;
+}
+.agx-sug__item:last-child { border-bottom: 0; }
+.agx-sug__item:hover, .agx-sug__item[data-active] { background: #F4F6F1; }
+.agx-sug__label { font-size: 13px; font-weight: 500; color: #171A16; }
+.agx-sug__sub { font-size: 11.5px; color: #8A8F86; margin-left: auto; white-space: nowrap; }
+@media (max-width: 899px) { .agx-sug__item { padding: 13px 14px; } }
+
+/* Mobile data density.
+ *
+ * The mobile layout stacks each price into a labelled block, which is
+ * readable but shows only two or three prices per screen — a buyer comparing
+ * eight packs ends up scrolling past most of them. These rules tighten the
+ * rhythm and let the price tables use the full width of the device rather
+ * than sitting inside the page gutter.
+ *
+ * The commodity column is pinned so the variety stays visible while the
+ * numeric columns scroll sideways. Without it, scrolling right to reach
+ * Spread leaves you looking at figures with nothing identifying them.
+ */
+@media (max-width: 899px) {
+  /* Full-bleed tables: escape the page padding, keep everything else inset. */
+  .dc-narrow [data-table-scroll] {
+    margin-left: -14px;
+    margin-right: -14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .dc-narrow [data-table-scroll]::-webkit-scrollbar { display: none; }
+
+  /* Tighter rows. The design's phone spacing is generous for reading one
+     price; these tables are for comparing many. */
+  .dc-narrow [data-price-row] { padding-top: 9px !important; padding-bottom: 9px !important; }
+  .dc-narrow [data-com-row]   { padding-top: 11px !important; padding-bottom: 11px !important; }
+
+  /* Pinned first column. */
+  .dc-narrow [data-sticky-col] {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: inherit;
+    padding-left: 14px;
+    box-shadow: 1px 0 0 #EDEEE9;
+  }
+}
+</style>
 </head>
 <body>
-  <header class="ag-site-header"><div class="ag-wrap ag-nav"><a class="ag-brand" href="/" aria-label="AgraX home">Agra<b>X</b></a><nav class="ag-nav-links" aria-label="Primary navigation"><a href="/">Today’s brief</a><a href="/browse" aria-current="page">Browse markets</a><a href="/about">About the data</a></nav><span class="ag-nav-status">USDA reports <b>current</b></span><span class="ag-avatar" aria-label="Account">ME</span></div></header>
-  <main class="ag-browse"><div class="ag-wrap">
-    <div class="ag-crumb">Markets / Terminal prices</div>
-    <div class="ag-page-title"><div><h1>Browse market prices</h1><p>Comparable terminal and origin prices, with the source details kept intact.</p></div><button class="ag-date-control" id="browse-report-date" type="button">Latest report ▾</button></div>
-    <section class="ag-toolbar" aria-label="Browse controls"><label class="ag-search"><span>⌕</span><input id="browse-query" placeholder="Search commodity, variety, or origin" aria-label="Search market prices"></label><select id="browse-market" class="ag-filter" aria-label="Choose terminal market"></select><button class="ag-filter" type="button" id="browse-clear">Clear filters</button><span class="ag-count" id="browse-count">Loading prices…</span></section>
-    <div class="ag-browse-layout">
-      <aside class="ag-filters"><div class="ag-filter-title"><b>Refine results</b><button id="browse-clear-side" type="button">Clear all</button></div><section class="ag-filter-group"><div class="ag-filter-group-title">Commodity type</div><div id="browse-categories"></div></section><section class="ag-filter-group"><div class="ag-filter-group-title">Origin</div><div id="browse-origins"></div></section><section class="ag-filter-group"><div class="ag-filter-group-title">Price basis</div><div id="browse-bases"></div></section></aside>
-      <section class="ag-results"><div class="ag-results-note"><i></i><b>Market note:</b><span id="browse-note-copy">Loading the latest USDA report.</span></div><div class="ag-results-head"><h2 id="browse-market-name">Terminal market</h2><span id="browse-market-meta">Loading report</span><button class="ag-sort" type="button">Current report</button></div><div class="ag-table-wrap"><table class="ag-price-table"><thead><tr><th>Commodity</th><th>Terminal</th><th>Origin FOB</th><th>Spread</th><th>Price basis</th><th></th></tr></thead><tbody id="browse-table-body"><tr><td colspan="6"><div class="ag-loading">Loading current price lines…</div></td></tr></tbody></table></div><div class="ag-table-foot" id="browse-table-foot">Every line preserves its source detail.</div></section>
+
+<!-- Markup exported from Claude Design, unmodified apart from link targets. -->
+<template id="page-template">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing:border-box; }
+  body { margin:0; background:#F5F5F2; font-family:'Geist',system-ui,sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
+  a { color:#186B39; text-decoration:none; }
+  a:hover { color:#14562F; }
+  input { font-family:inherit; color:#171A16; }
+  input::placeholder { color:#8A8F86; }
+</style>
+
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <template data-if="wide">
+  <header style="background:#0A0B0A;padding:0 20px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:24px;width:64px;display:block"></a>
+    <nav style="display:flex;align-items:center;gap:2px;flex:none">
+      <a href="/" style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h11">Home</a>
+      <span data-on-click="onBackToTable" style="height:30px;padding:0 12px;border-radius:15px;background:#1D211D;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Browse</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Movers</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Watchlist</span>
+      <span style="height:30px;padding:0 12px;border-radius:15px;color:#9A9F98;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h11">Reports</span>
+    </nav>
+    <span style="position:relative;display:flex;align-items:center;flex:1 1 260px;min-width:200px;max-width:440px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#1D211D;border:0;border-radius:16px;padding:0 14px 0 34px;font-size:13px;color:#fff;outline:none">
+    </span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#9A9F98;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#3D9E5F"></span>{{ stamp }}</span>
+      <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
     </div>
-  </div></main>
-  <script src="/js/config.js"></script><script src="/js/util.js"></script><script src="/js/api.js"></script><script src="/js/agrax-data.js"></script><script src="/js/browse-modern.js"></script>
+    </div>
+  </header>
+
+  <div style="flex:1;width:100%;max-width:1480px;margin:0 auto;display:flex;flex-direction:column;padding:14px 20px 28px;box-sizing:border-box">
+
+    <main data-shot="wide" style="min-width:0;display:flex;flex-direction:column;gap:12px">
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span data-on-click="onToggleOverview" style="height:28px;padding:0 10px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h7">
+            <template data-if="overviewOpen"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
+            <template data-if="overviewClosed"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></template>
+            {{ overviewToggleTxt }}
+          </span>
+          <template data-if="overviewClosed">
+            <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">{{ overview.title }}</span>
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ overview.collapsedMeta }}</span>
+            </span>
+          </template>
+        </div>
+
+        <template data-if="overviewOpen">
+        <div style="display:flex;gap:12px;align-items:stretch;flex-wrap:nowrap;height:184px">
+        <div data-shot="terminals" style="flex:0 0 216px;min-height:0;background:#fff;border-radius:10px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="flex:none;min-height:34px;padding:7px 12px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid #E4E6DF">
+            <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal markets</span>
+          </div>
+          <div style="flex:1;height:0;min-height:0;overflow-y:auto;scrollbar-width:thin">
+            <template data-for="terminals" data-as="t">
+              <span data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
+                <template data-if="t.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
+                <template data-if="t.up"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#186B39;flex:none"></span></template>
+                <template data-if="t.down"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#8A4B2A;flex:none"></span></template>
+                <template data-if="t.flat"><span style="position:relative;width:5px;height:5px;border-radius:50%;border:1px solid #6B7268;flex:none"></span></template>
+                <span style="position:relative;min-width:0;flex:1;font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
+                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268;font-variant-numeric:tabular-nums">{{ t.skuCount }}</span>
+                <span style="position:relative;font-size:10.5px;color:#4A5148;white-space:nowrap;width:44px;text-align:right">{{ t.toneTxt }}</span>
+              </span>
+            </template>
+          </div>
+        </div>
+
+        <div data-shot="overview" style="flex:1 1 0;min-width:0;min-height:0;background:#fff;border-radius:10px;padding:14px 20px 12px;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:24px">
+            <div style="min-width:0">
+              <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.032em;line-height:1.02">{{ overview.title }}</h1>
+              <div style="margin-top:4px;font-size:12px;color:#6B7268;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ overview.subtitle }}</div>
+            </div>
+            <div style="flex:none;text-align:right">
+              <div style="font-size:13px;color:#6B7268;letter-spacing:-0.005em;white-space:nowrap">{{ overview.dateTxt }}</div>
+              <div style="margin-top:6px;display:flex;align-items:baseline;gap:7px;justify-content:flex-end">
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums">{{ overview.tempNow }}</span>
+                <span style="font-size:12px;color:#8A8F86;white-space:nowrap">{{ overview.precip }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex:none;display:flex;align-items:flex-end;gap:30px;margin-top:12px;padding-top:11px;border-top:1px solid #E8EAE4">
+            <div style="min-width:0">
+              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.skusTxt }}</div>
+              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Prices reporting</div>
+            </div>
+            <div style="min-width:0">
+              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.commoditiesTxt }}</div>
+              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Commodities</div>
+            </div>
+            <div style="min-width:0">
+              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.districtsTxt }}</div>
+              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Shipping points</div>
+            </div>
+            <div style="min-width:0">
+              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.tempRange }}</div>
+              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Temperature 7am</div>
+            </div>
+          </div>
+
+          <div style="flex:none;height:30px;display:flex;align-items:center;gap:9px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:11px">
+            <span style="flex:none;font-size:12px;color:#8A8F86;letter-spacing:-0.005em;white-space:nowrap">Today's reports</span>
+            <template data-for="reports" data-as="r">
+              <span style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
+                <span style="font-size:11.5px;font-weight:600;letter-spacing:-0.01em">{{ r.name }}</span>
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#186B39">{{ r.code }}</span>
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ r.skusTxt }}</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"></path><polyline points="7 11 12 16 17 11"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg>
+              </span>
+            </template>
+          </div>
+        </div>
+        </div>
+        </template>
+      </div>
+
+      <div style="background:#fff;border:1px solid #EDEEE9;border-radius:10px;overflow:hidden;display:flex;align-items:stretch;flex-wrap:wrap">
+
+        <aside style="width:228px;flex:none;border-right:1px solid #EDEEE9;padding:16px 14px 20px;display:flex;flex-direction:column;gap:22px">
+          <template data-for="filterGroups" data-as="g">
+          <div>
+            <div style="display:flex;align-items:baseline;gap:8px;padding:0 8px 7px">
+              <span style="font-size:12px;font-weight:600;letter-spacing:-0.01em;color:#171A16">{{ g.title }}</span>
+              <template data-if="g.dirty"><span data-on-click="g.onClear" style="margin-left:auto;font-size:12px;color:#186B39;cursor:pointer">Clear</span></template>
+            </div>
+            <template data-for="g.options" data-as="o">
+              <div data-on-click="o.onToggle" style="position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:7px;cursor:pointer" class="h4">
+                <template data-if="o.on"><span style="position:absolute;inset:0;border-radius:7px;background:#F0F6F1"></span></template>
+                <template data-if="o.dotMostly"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#186B39;flex:none"></span></template>
+                <template data-if="o.dotMid"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#C9922F;flex:none"></span></template>
+                <template data-if="o.dotReported"><span style="position:relative;width:6px;height:6px;border-radius:50%;border:1px solid #8A8F86;flex:none"></span></template>
+                <span style="position:relative;min-width:0;font-size:13px;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ o.name }}</span>
+                <span style="position:relative;margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#8A8F86;font-variant-numeric:tabular-nums">{{ o.count }}</span>
+                <template data-if="o.on"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="position:relative;flex:none"><polyline points="5 13 10 18 19 7"></polyline></svg></template>
+              </div>
+            </template>
+          </div>
+          </template>
+          <template data-if="detailMode">
+          <div style="background:#fff;border:1px solid #EDEEE9;border-radius:10px;overflow:hidden">
+            <div style="padding:11px 12px 10px;border-bottom:1px solid #EDEEE9">
+              <div style="font-size:12px;font-weight:600;letter-spacing:-0.01em;color:#171A16">In this filter</div>
+              <div style="font-size:11px;color:#6B7268;margin-top:5px">{{ siblingMeta }}</div>
+            </div>
+            <div style="max-height:340px;overflow-y:auto;scrollbar-width:thin">
+              <template data-for="siblings" data-as="c">
+                <span data-on-click="c.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;min-height:38px;padding:6px 11px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
+                  <template data-if="c.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
+                  <template data-if="c.up"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#186B39;flex:none"></span></template>
+                  <template data-if="c.down"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#8A4B2A;flex:none"></span></template>
+                  <template data-if="c.flat"><span style="position:relative;width:5px;height:5px;border-radius:50%;border:1px solid #6B7268;flex:none"></span></template>
+                  <span style="position:relative;min-width:0;flex:1;font-size:12px;font-weight:500;letter-spacing:-0.01em;line-height:1.25">{{ c.name }}</span>
+                  <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ c.skusTxt }}</span>
+                </span>
+              </template>
+            </div>
+            <div style="padding:9px 11px 11px;border-top:1px solid #EDEEE9;background:#FAFBF9">
+              <span data-on-click="onBackToTable" style="font-size:11.5px;font-weight:500;color:#186B39;cursor:pointer">Back to all commodities</span>
+            </div>
+          </div>
+          </template>
+        </aside>
+
+        <template data-if="browseMode">
+        <div style="flex:1;min-width:280px;display:flex;flex-direction:column">
+        <div style="min-height:44px;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E4E6DF">
+          <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Commodities</span>
+          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ rowCountTxt }}</span>
+          <span style="font-size:11px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ filterSummary }}</span>
+          <template data-if="olderCount">
+            <span data-on-click="onToggleOlder" style="flex:none;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;border:1px solid #E4E6DF;background:#fff;cursor:pointer;font-size:11px;color:#6B7268;white-space:nowrap" class="h3">{{ olderTxt }}<span style="font-weight:500;color:#186B39">{{ olderToggleTxt }}</span></span>
+          </template>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1 1 100%">
+            <span style="position:relative;display:flex;align-items:center;flex:none;width:300px;margin-right:auto">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:11px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+              <input data-value="tableQuery" data-on-change="onTableQuery" placeholder="Filter this table" style="width:100%;height:34px;background:#F4F4F0;border:0;border-radius:17px;padding:0 14px 0 34px;font-size:13px;outline:none">
+            </span>
+
+            <span style="display:flex;align-items:center;background:#F4F4F0;border-radius:16px;padding:2px;gap:2px">
+              <template data-for="sortOptions" data-as="o">
+                <span data-on-click="o.onSelect" style="position:relative;height:28px;padding:0 10px;border-radius:14px;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap" class="h9">
+                  <template data-if="o.active"><span style="position:absolute;inset:0;border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.10)"></span></template>
+                  <span style="position:relative">{{ o.label }}</span>
+                </span>
+              </template>
+            </span>
+            <span data-on-click="onShare" style="height:32px;padding:0 12px;border-radius:16px;background:#F4F4F0;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h3">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><polyline points="7 9 12 4 17 9"></polyline><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"></path></svg>
+              {{ shareTxt }}
+            </span>
+          </span>
+        </div>
+
+        <div data-shot="table" style="padding:0 16px 16px">
+          <div style="display:grid;grid-template-columns:24px minmax(0,1.2fr) 66px minmax(0,1fr) 92px;gap:12px;padding:12px 0 10px;border-bottom:1px solid #EDEEE9">
+            <span></span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Commodity</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Prices</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Origins</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Tone</span>
+          </div>
+
+          <template data-for="rows" data-as="c">
+          <template data-if="c.sponsorSlot">
+            <div style="position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:44px;padding:8px 16px 8px 11px;border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F">
+              <span style="flex:none;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
+              <span style="min-width:0;font-size:12.5px;color:#171A16">Valle Verde Logistics — reefer capacity out of South Texas, brokered same day</span>
+              <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:#8A6520;cursor:pointer;white-space:nowrap" class="h10">Get a rate
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
+              </span>
+            </div>
+          </template>
+          <div style="border-bottom:1px solid #EDEEE9">
+            <div data-on-click="c.onToggle" style="position:relative;display:grid;grid-template-columns:24px minmax(0,1.2fr) 66px minmax(0,1fr) 92px;gap:12px;align-items:center;height:52px;cursor:pointer" class="h5">
+              <template data-if="c.expanded"><span style="position:absolute;inset:0;background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39"></span></template>
+              <span style="position:relative;display:flex;align-items:center;padding-left:8px">
+                <template data-if="c.expanded"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
+                <template data-if="c.collapsed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></template>
+              </span>
+              <span style="position:relative;font-size:14.5px;font-weight:600;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
+              <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;color:#171A16;text-align:right;font-variant-numeric:tabular-nums">{{ c.skusTxt }}</span>
+              <span style="position:relative;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
+              <span style="position:relative;display:flex;justify-content:flex-end">
+                <template data-if="c.up"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32;white-space:nowrap">↑ Higher</span></template>
+                <template data-if="c.down"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223;white-space:nowrap">↓ Lower</span></template>
+                <template data-if="c.flat"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158;white-space:nowrap">→ Steady</span></template>
+              </span>
+            </div>
+
+            <template data-if="c.expanded">
+            <div data-shot="prices" style="background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39;padding:0 0 12px 34px">
+              <div style="overflow-x:auto;scrollbar-width:thin">
+              <div style="min-width:700px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,0.62fr) minmax(0,0.92fr) 54px 74px 86px 86px 88px;gap:10px;padding:9px 16px 7px 0;border-bottom:1px solid #EDEEE9">
+                <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Variety</span>
+                <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Origin</span>
+                <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Pack</span>
+                <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Size</span>
+                <span data-on-click="sortBy.fob" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-align:right;justify-content:flex-end" class="h7">FOB<template data-if="sortMark.fob"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.fob }}</span></template></span>
+                <span data-on-click="sortBy.terminal" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-align:right;justify-content:flex-end" class="h7">Terminal<template data-if="sortMark.terminal"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.terminal }}</span></template></span>
+                <span data-on-click="sortBy.spread" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-align:right;justify-content:flex-end" class="h7">Spread<template data-if="sortMark.spread"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.spread }}</span></template></span>
+                <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Source</span>
+              </div>
+              <template data-for="c.skus" data-as="s">
+                <span data-on-click="s.onOpen" style="cursor:pointer;min-width:700px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,0.62fr) minmax(0,0.92fr) 54px 74px 86px 86px 88px;gap:10px;align-items:center;height:40px;padding-right:16px;border-bottom:1px solid #E9EDE7;color:#171A16" class="h5">
+                  <span style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.variety }}</span>
+                  <span style="font-size:12px;color:#4A5148;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.origin }}</span>
+                  <span style="font-size:12px;color:#4A5148;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.pack }}<template data-if="s.quality"><span style="color:#8A8F86"> · {{ s.quality }}</span></template></span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#4A5148;white-space:nowrap">{{ s.size }}</span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#8A4B2A;text-align:right;font-variant-numeric:tabular-nums">{{ s.fobTxt }}</span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">{{ s.termTxt }}</span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#4A5148;text-align:right;font-variant-numeric:tabular-nums">{{ s.spreadTxt }}</span>
+                  <span style="display:flex;justify-content:flex-end;align-items:center;gap:5px">
+                    <template data-if="s.mostly"><span style="width:5px;height:5px;border-radius:50%;background:#186B39"></span></template>
+                    <template data-if="s.midRange"><span style="width:5px;height:5px;border-radius:50%;background:#C9922F"></span></template>
+                    <template data-if="s.reported"><span style="width:5px;height:5px;border-radius:50%;border:1px solid #6B7268"></span></template>
+                    <span style="font-size:11.5px;letter-spacing:-0.005em;color:#6B7268">{{ s.src }}</span>
+                  </span>
+                </span>
+              </template>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-height:42px;padding-right:16px">
+                <span data-on-click="c.onDetails" style="cursor:pointer;height:30px;padding:0 12px;border-radius:7px;background:#186B39;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:7px;white-space:nowrap" class="h1">View details
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
+                </span>
+                <span style="font-size:12px;color:#6B7268">{{ c.moreTxt }}</span>
+              </div>
+            </div>
+            </template>
+          </div>
+          </template>
+
+          <template data-if="empty">
+            <div style="padding:26px 0;font-size:12.5px;color:#6B7268">No commodities match these filters.</div>
+          </template>
+        </div>
+
+        <div style="margin-top:auto;min-height:48px;padding:9px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid #EDEEE9;background:#FAFBF9">
+          <span style="font-size:11.5px;color:#6B7268">Commodity rows show coverage and tone. Prices sit on the rows inside.</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ pageTxt }}</span>
+            <template data-if="hasPrev">
+              <span data-on-click="onPrev" style="height:30px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap" class="h8">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
+                Previous
+              </span>
+            </template>
+            <template data-if="hasNext">
+              <span data-on-click="onNext" style="height:30px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap" class="h8">
+                Next page
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
+              </span>
+            </template>
+          </span>
+        </div>
+        </div>
+        </template>
+
+        <template data-if="detailMode">
+        <div style="flex:1;min-width:280px;min-height:0;display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;background:#FAFBF9">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span data-on-click="onBackToTable" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;cursor:pointer" class="h8">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="6" y2="12"></line><polyline points="11 7 6 12 11 17"></polyline></svg>
+          {{ backTxt }}
+        </span>
+        <span style="font-size:11.5px;color:#6B7268">{{ detailCrumb }}</span>
+      </div>
+
+      <div style="background:#fff;border:1px solid #EDEEE9;border-radius:10px;padding:16px 18px 15px">
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+          <div style="min-width:0">
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+              <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ commodity.category }}</span>
+              <template data-if="commodity.up"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:500;background:#EAF3EA;color:#1F5F32;border:1px solid #CFE3D2;white-space:nowrap;flex:none">↑ Higher</span></template>
+              <template data-if="commodity.down"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:500;background:#F7EFE8;color:#7A4223;border:1px solid #E5D3C4;white-space:nowrap;flex:none">↓ Lower</span></template>
+              <template data-if="commodity.flat"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:500;background:#F0F1EE;color:#5A6158;border:1px solid #DFE1DA;white-space:nowrap;flex:none">→ Steady</span></template>
+            </div>
+            <h1 style="margin:8px 0 0;font-size:34px;font-weight:600;letter-spacing:-0.035em;line-height:1.02">{{ commodity.name }}</h1>
+            <div style="margin-top:8px;font-size:12.5px;color:#4A5148">{{ commodity.subtitle }}</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap">
+            <span style="height:34px;padding:0 18px;border-radius:17px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer" class="h0">Watch</span>
+            <span style="height:34px;padding:0 18px;border-radius:17px;background:#F0F6F1;color:#186B39;font-size:13px;font-weight:500;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer" class="h2">Set alert</span>
+            <span style="height:34px;padding:0 18px;border-radius:17px;background:#F4F4F0;color:#171A16;font-size:13px;font-weight:500;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer" class="h3">Export</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.8fr) minmax(0,0.7fr) minmax(0,1.3fr) minmax(0,1fr);gap:24px;margin-top:20px;padding-top:16px;border-top:1px solid #EDEEE9">
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal</div>
+            <div style="font-size:13px;font-weight:500;margin-top:6px">{{ terminal }}</div>
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Report date</div>
+            <div style="font-size:13px;font-weight:500;margin-top:6px;white-space:nowrap">{{ overview.dateTxt }}</div>
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;white-space:nowrap">Prices</div>
+            <div style="font-size:13px;font-weight:500;margin-top:6px">{{ commodity.reportingTxt }}</div>
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Origins</div>
+            <div style="font-size:13px;font-weight:500;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ commodity.origins }}</div>
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;white-space:nowrap">Spread · prices</div>
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500;margin-top:6px;font-variant-numeric:tabular-nums">{{ commodity.skuSpreadTxt }}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid #EDEEE9">
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Movement into the country</span>
+            <span style="font-size:11px;color:#6B7268">{{ movement.dateTxt }}</span>
+          </div>
+
+          <template data-if="movement.has">
+          <div style="margin-top:12px;display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:16px 28px;align-items:start">
+            <div style="min-width:0">
+              <div style="display:flex;align-items:baseline;gap:7px;flex-wrap:wrap">
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:26px;font-weight:500;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">{{ movement.totalTxt }}</span>
+                <span style="font-size:11px;color:#8A8F86">loads</span>
+              </div>
+              <div style="margin-top:7px;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+                <template data-if="movement.up"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#1F5F32">{{ movement.changeTxt }}</span></template>
+                <template data-if="movement.down"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#8A4B2A">{{ movement.changeTxt }}</span></template>
+                <template data-if="movement.flat"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268">{{ movement.changeTxt }}</span></template>
+                <span style="font-size:11px;color:#6B7268">{{ movement.prevTxt }}</span>
+              </div>
+            </div>
+
+            <div style="min-width:0;display:flex;flex-direction:column;gap:7px">
+              <template data-for="movement.rows" data-as="r">
+                <div style="display:grid;grid-template-columns:minmax(0,104px) minmax(0,1fr) 58px;gap:12px;max-width:560px;align-items:center">
+                  <span style="min-width:0;font-size:12px;color:{{ r.nameColor }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.origin }}</span>
+                  <span style="min-width:0;height:6px;border-radius:3px;background:#F0F1EE;display:block;position:relative">
+                    <span style="position:absolute;top:0;left:0;height:6px;border-radius:3px;background:{{ r.barColor }};width:{{ r.pctTxt }}"></span>
+                  </span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#4A5148;text-align:right;font-variant-numeric:tabular-nums">{{ r.loadsTxt }}</span>
+                </div>
+              </template>
+              <div style="display:flex;align-items:center;gap:7px;margin-top:1px">
+                <span style="width:14px;height:4px;border-radius:2px;background:#186B39;flex:none"></span>
+                <span style="font-size:10.5px;color:#8A8F86">{{ movement.legendTxt }}</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:10.5px;line-height:1.5;color:#6B7268;text-wrap:pretty">{{ movement.footnote }}</div>
+          </template>
+
+          <template data-if="movement.none">
+          <div style="margin-top:10px;font-size:12px;color:#6B7268">{{ movement.emptyTxt }}</div>
+          <div style="margin-top:6px;font-size:10.5px;line-height:1.5;color:#6B7268;text-wrap:pretty">National truck and rail arrivals as reported by USDA. Not specific to any one pack or terminal.</div>
+          </template>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #EDEEE9;border-radius:10px;overflow:hidden">
+        <div style="min-height:44px;padding:8px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E4E6DF">
+          <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Varieties &amp; Prices</span>
+          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ commodity.skuCountTxt }}</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:6px">
+            
+            <span style="height:28px;padding:0 9px;border-radius:7px;border:1px solid #E4E6DF;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer" class="h7">Terminal price
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+          </span>
+        </div>
+
+        <div style="padding:0 18px;overflow-x:auto;scrollbar-width:thin">
+          <div style="display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,0.62fr) minmax(0,1.15fr) 52px minmax(0,0.66fr) 56px 66px 54px 58px;gap:6px;padding:10px 0 8px;border-bottom:1px solid #E4E6DF">
+            <span data-on-click="sortBy.variety" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px" class="h7">Variety<template data-if="sortMark.variety"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.variety }}</span></template></span>
+            <span data-on-click="sortBy.origin" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px" class="h7">Origin<template data-if="sortMark.origin"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.origin }}</span></template></span>
+            <span data-on-click="sortBy.pack" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px" class="h7">Pack<template data-if="sortMark.pack"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.pack }}</span></template></span>
+            <span data-on-click="sortBy.size" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px" class="h7">Size<template data-if="sortMark.size"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.size }}</span></template></span>
+            <span data-on-click="sortBy.quality" style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;cursor:pointer;display:inline-flex;align-items:center;gap:4px" class="h7">Quality<template data-if="sortMark.quality"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#186B39">{{ sortMark.quality }}</span></template></span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">FOB</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Terminal</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Spread</span>
+            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Source</span>
+          </div>
+
+          <template data-for="skuRows" data-as="s">
+            <div style="border-bottom:1px solid #EDEEE9">
+              <div data-on-click="s.onSelect" style="position:relative;display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,0.62fr) minmax(0,1.15fr) 52px minmax(0,0.66fr) 56px 66px 54px 58px;gap:6px;align-items:center;height:48px;cursor:pointer" class="h5">
+                <template data-if="s.expanded"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
+                <span style="position:relative;display:flex;align-items:center;gap:8px;min-width:0;padding-left:9px">
+                  <template data-if="s.expanded"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
+                  <template data-if="s.collapsed"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polyline points="9 6 15 12 9 18"></polyline></svg></template>
+                  <span style="min-width:0;font-size:13px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.variety }}</span>
+                </span>
+                <span style="position:relative;font-size:12px;color:#4A5148;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.origin }}</span>
+                <span style="position:relative;min-width:0;font-size:12px;color:#4A5148;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.pack }}</span>
+                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268;white-space:nowrap">{{ s.size }}</span>
+                <span style="position:relative;min-width:0;font-size:11.5px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.qualityTxt }}</span>
+                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;color:#8A4B2A;text-align:right;font-variant-numeric:tabular-nums">{{ s.fobTxt }}</span>
+                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:15px;font-weight:500;letter-spacing:-0.02em;text-align:right;font-variant-numeric:tabular-nums">{{ s.termTxt }}</span>
+                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#4A5148;text-align:right;font-variant-numeric:tabular-nums">{{ s.spreadTxt }}</span>
+                <span style="position:relative;display:flex;justify-content:flex-end;align-items:center;gap:5px">
+                  <template data-if="s.mostly"><span style="width:5px;height:5px;border-radius:50%;background:#186B39"></span></template>
+                  <template data-if="s.midRange"><span style="width:5px;height:5px;border-radius:50%;background:#C9922F"></span></template>
+                  <template data-if="s.reported"><span style="width:5px;height:5px;border-radius:50%;border:1px solid #6B7268"></span></template>
+                  <span style="font-size:11.5px;letter-spacing:-0.005em;color:#6B7268;white-space:nowrap">{{ s.src }}</span>
+                </span>
+              </div>
+
+              <template data-if="s.expanded">
+              <div data-shot="detail" style="background:#FAFBF9;border-top:1px solid #E1E6E1;padding:16px 0 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start">
+                <div data-shot="fobspread" style="min-width:0">
+                  <div style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Price detail</div>
+                  <div style="margin-top:8px">
+                    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid #E9EDE7">
+                      <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;padding-top:2px">Origin</span>
+                      <span style="font-size:12.5px">{{ s.originLong }}</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid #E9EDE7">
+                      <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;padding-top:2px">Pack</span>
+                      <span style="font-size:12.5px">{{ s.pack }}</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid #E9EDE7">
+                      <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;padding-top:2px">Grade · size</span>
+                      <span style="font-size:12.5px">{{ s.gradeSize }}</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:8px 0">
+                      <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Price basis</span>
+                      <span style="font-size:12.5px">{{ s.basis }}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:1px;margin-top:6px;background:#DCDFD6;border:1px solid #EDEEE9">
+                    <div style="flex:1;background:#fff;padding:10px 12px 11px">
+                      <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">FOB origin</div>
+                      <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:21px;font-weight:500;letter-spacing:-0.035em;line-height:1;margin-top:8px;color:#8A4B2A;font-variant-numeric:tabular-nums">{{ s.fobTxt }}</div>
+                    </div>
+                    <div style="flex:1;background:#fff;padding:10px 12px 11px">
+                      <div style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal {{ terminalShort }}</div>
+                      <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:21px;font-weight:500;letter-spacing:-0.035em;line-height:1;margin-top:8px;font-variant-numeric:tabular-nums">{{ s.termTxt }}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">
+                    <span style="font-size:11.5px;color:#5A6158;flex:1">Origin to terminal</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500">{{ s.markupTxt }}</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#8A6A22">{{ s.markupPctTxt }}</span>
+                  </div>
+                </div>
+
+                <div data-shot="chart" style="min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:8px">
+                    <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Price history</span>
+                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ s.printsTxt }}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:14px;margin-top:9px">
+                    <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#4A5148"><span style="width:14px;height:2px;background:#186B39"></span>Terminal · {{ terminalShort }}</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#4A5148"><span style="width:14px;height:2px;background:#8A4B2A"></span>FOB</span>
+                  </div>
+                  <svg viewBox="0 0 340 118" style="width:100%;height:auto;display:block;margin-top:9px">
+                    <line x1="10" y1="14" x2="330" y2="14" stroke="#EDEEE9" stroke-width="1"></line>
+                    <line x1="10" y1="58" x2="330" y2="58" stroke="#EDEEE9" stroke-width="1"></line>
+                    <line x1="10" y1="102" x2="330" y2="102" stroke="#EDEEE9" stroke-width="1"></line>
+                    <text x="10" y="9" font-family="'Geist Mono',ui-monospace,monospace" font-size="9" fill="#6B7268">{{ s.chartHighTxt }}</text>
+                    <text x="10" y="115" font-family="'Geist Mono',ui-monospace,monospace" font-size="9" fill="#6B7268">{{ s.chartLowTxt }}</text>
+                    <polyline points="{{ s.termPts }}" fill="none" stroke="#186B39" stroke-width="1.85" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                    <polyline points="{{ s.fobPts }}" fill="none" stroke="#8A4B2A" stroke-width="1.85" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                  </svg>
+                  <div style="display:flex;justify-content:space-between">
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">{{ s.chartLowTxt }}</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268">{{ s.chartHighTxt }}</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:minmax(36px,0.8fr) minmax(0,1fr) minmax(0,1fr);gap:6px;margin-top:12px;padding-bottom:7px;border-bottom:1px solid #E4E6DF">
+                    <span style="font-size:8.5px;font-weight:500;letter-spacing:-0.005em;color:#6B7268">Date</span>
+                    <span style="font-size:8.5px;font-weight:500;letter-spacing:-0.005em;color:#6B7268;text-align:right">FOB</span>
+                    <span style="font-size:8.5px;font-weight:500;letter-spacing:-0.005em;color:#6B7268;text-align:right">Term</span>
+                  </div>
+                  <template data-for="s.history" data-as="p">
+                    <div style="display:grid;grid-template-columns:minmax(36px,0.8fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;height:34px;border-bottom:1px solid #E9EDE7">
+                      <span style="font-size:11.5px;color:#4A5148;white-space:nowrap">{{ p.date }}</span>
+                      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#8A4B2A;text-align:right;font-variant-numeric:tabular-nums">{{ p.fob }}</span>
+                      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;text-align:right;font-variant-numeric:tabular-nums">{{ p.term }}</span>
+                    </div>
+                  </template>
+                  <div style="height:34px;display:flex;align-items:center;cursor:pointer"><span style="font-size:12px;font-weight:500;color:#186B39">{{ s.earlierTxt }}</span></div>
+                </div>
+
+                <div style="min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid #E4E6DF">
+                    <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Across terminals</span>
+                    <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ s.terminalsTxt }}</span>
+                  </div>
+                  <template data-for="s.terminals" data-as="m">
+                    <div data-on-click="m.onSelect" style="position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) 74px;gap:10px;align-items:center;height:34px;border-bottom:1px solid #E9EDE7;cursor:pointer" class="h6">
+                      <template data-if="m.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 2px 0 0 #186B39"></span></template>
+                      <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#6B7268;padding-left:6px">{{ m.rank }}</span>
+                      <span style="position:relative;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</span>
+                      <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums">{{ m.priceTxt }}</span>
+                    </div>
+                  </template>
+                  <div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">
+                    <span style="font-size:11.5px;color:#5A6158;flex:1">Spread across markets</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;font-weight:500">{{ s.marketSpreadTxt }}</span>
+                  </div>
+                  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:14px">
+                    <span style="height:34px;padding:0 18px;border-radius:17px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer" class="h0">Watch this price</span>
+                    <span style="height:32px;padding:0 13px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;color:#171A16;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer" class="h7">Export</span>
+                  </div>
+                </div>
+              </div>
+              </template>
+            </div>
+          </template>
+        </div>
+
+        <div style="min-height:48px;padding:9px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid #EDEEE9;background:#FAFBF9">
+          <span style="font-size:11.5px;color:#6B7268">One row per published price. Pick a row for FOB, history and terminal comparison.</span>
+          <span style="margin-left:auto;height:30px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h7">{{ commodity.moreTxt }}</span>
+        </div>
+      </div>
+        </div>
+        </template>
+      </div>
+    </main>
+  </div>
+
+  <footer style="border-top:1px solid #EDEEE9;background:#fff;padding:16px 20px;display:flex;justify-content:center">
+    <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <img src="/assets/agrax-logo-black.png" alt="AgraX" style="height:13px;width:auto;display:block;opacity:0.55">
+    <span style="font-size:11.5px;color:#6B7268">USDA AMS Market News · terminal and shipping point reports · updated 05:26 ET</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+      <a href="/" style="font-size:11.5px;color:#4A5148">Home</a>
+      <a href="/about" style="font-size:11.5px;color:#4A5148">About the data</a>
+    </div>
+    </div>
+  </footer>
+  </template>
+
+  <template data-if="narrow">
+  <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
+
+    <div style="flex:none;background:#0A0B0A;padding:11px 14px;display:flex;align-items:center;gap:12px">
+      <a href="/" style="flex:none;display:inline-flex;align-items:center"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="height:25px;width:68px;display:block"></a>
+      <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+        <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#fff;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
+      </div>
+    </div>
+
+    <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px">
+      <template data-for="terminals" data-as="t">
+        <span data-on-click="t.onSelect" style="flex:none;height:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ t.chipBg }};color:{{ t.chipFg }};border:1px solid {{ t.chipBd }}">
+          <span style="width:5px;height:5px;border-radius:50%;background:{{ t.chipDot }}"></span>{{ t.name }}
+          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;opacity:0.7">{{ t.skuCount }}</span>
+        </span>
+      </template>
+    </div>
+
+    <div data-on-click="onToggleOverview" style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;padding:10px 14px;cursor:pointer">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="flex:none;font-size:12.5px;font-weight:600;letter-spacing:-0.01em">{{ overview.title }}</span>
+        <span style="flex:1;min-width:0;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mSummaryTxt }}</span>
+        <template data-if="overviewOpen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
+        <template data-if="overviewClosed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></template>
+      </div>
+      <template data-if="overviewOpen">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#DCDFD6;margin-top:10px;border-radius:7px;overflow:hidden">
+          <template data-for="mStats" data-as="s">
+            <span style="background:#FBFBF8;padding:8px 10px 9px;display:block">
+              <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ s.label }}</span>
+              <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:14px;font-weight:500;letter-spacing:-0.02em;margin-top:4px;font-variant-numeric:tabular-nums">{{ s.value }}</span>
+            </span>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <template data-if="browseMode">
+    <div style="flex:1;min-height:0;background:#fff">
+      <div style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+            <input data-value="tableQuery" data-on-change="onTableQuery" placeholder="Filter this table" style="width:100%;height:34px;box-sizing:border-box;background:#F4F4F0;border:0;border-radius:7px;padding:0 12px 0 33px;font-size:13px;color:#171A16;outline:none">
+          </span>
+          <span data-on-click="onOpenSheet" style="flex:none;height:34px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;cursor:pointer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="6" y1="12" x2="18" y2="12"></line><line x1="10" y1="17" x2="14" y2="17"></line></svg>
+            Filters
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="flex:1;min-width:0;font-size:11px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ filterSummary }}</span>
+          <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ rowCountTxt }}</span>
+        </div>
+      </div>
+
+      <template data-for="rows" data-as="c">
+        <template data-if="c.sponsorSlot">
+          <div style="border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F;padding:10px 14px 11px 16px">
+            <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
+            <span style="display:block;font-size:12.5px;margin-top:5px">Valle Verde Logistics — reefer capacity out of South Texas, brokered same day</span>
+            <span style="margin-top:9px;height:34px;border-radius:7px;border:1px solid #E0CFA5;background:#fff;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:500;color:#8A6520;cursor:pointer">Get a rate
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
+            </span>
+          </div>
+        </template>
+
+        <div style="border-bottom:1px solid #EDEEE9">
+          <div data-on-click="c.onToggle" style="position:relative;padding:11px 14px 12px;cursor:pointer">
+            <template data-if="c.expanded"><span style="position:absolute;inset:0;background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39"></span></template>
+            <div style="position:relative;display:flex;align-items:center;gap:8px">
+              <span style="min-width:0;flex:1;font-size:14px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
+              <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32">↑ Higher</span></template>
+              <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223">↓ Lower</span></template>
+              <template data-if="c.flat"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158">→ Steady</span></template>
+            </div>
+            <div style="position:relative;margin-top:4px;display:flex;align-items:center;gap:7px">
+              <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#4A5148">{{ c.skusTxt }} prices</span>
+              <span style="flex:none;width:3px;height:3px;border-radius:5px;background:#C9CCC3"></span>
+              <span style="min-width:0;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
+            </div>
+          </div>
+
+          <template data-if="c.expanded">
+            <div style="background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39;padding:0 0 12px 3px">
+              <!-- A real table rather than a stack of labelled blocks.
+                   Repeating "FOB / Terminal / Spread" on every price cost
+                   three lines per row and fit barely two prices on a phone
+                   screen; the labels belong in a header shown once. The
+                   variety column is pinned so it stays visible while the
+                   numbers scroll. -->
+              <div data-table-scroll>
+                <div style="min-width:430px">
+                  <div style="display:grid;grid-template-columns:minmax(132px,1.3fr) 62px 62px 58px 62px;gap:8px;padding:7px 14px 6px 0;border-bottom:1px solid #E4E6DF">
+                    <span data-sticky-col style="background:#F7F9F6;font-size:10.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Variety · pack</span>
+                    <span style="font-size:10.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">FOB</span>
+                    <span style="font-size:10.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Terminal</span>
+                    <span style="font-size:10.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Spread</span>
+                    <span style="font-size:10.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Source</span>
+                  </div>
+                  <template data-for="c.skus" data-as="s">
+                    <span data-on-click="s.onOpen" data-price-row style="display:grid;grid-template-columns:minmax(132px,1.3fr) 62px 62px 58px 62px;gap:8px;align-items:baseline;padding:9px 14px 9px 0;border-bottom:1px solid #EAEDE6;background:#F7F9F6">
+                      <span data-sticky-col style="background:#F7F9F6;min-width:0">
+                        <span style="display:block;font-size:12px;font-weight:500;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.variety }}</span>
+                        <span style="display:block;font-size:10.5px;color:#8A8F86;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.origin }} · {{ s.pack }} {{ s.size }}<template data-if="s.quality"> · {{ s.quality }}</template></span>
+                      </span>
+                      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#8A4B2A;text-align:right;font-variant-numeric:tabular-nums">{{ s.fobTxt }}</span>
+                      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums">{{ s.termTxt }}</span>
+                      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#4A5148;text-align:right;font-variant-numeric:tabular-nums">{{ s.spreadTxt }}</span>
+                      <span style="display:inline-flex;align-items:center;gap:4px;min-width:0">
+                        <template data-if="s.mostly"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#186B39"></span></template>
+                        <template data-if="s.midRange"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#C9922F"></span></template>
+                        <template data-if="s.reported"><span style="flex:none;width:5px;height:5px;border-radius:50%;border:1px solid #6B7268"></span></template>
+                        <span style="font-size:10.5px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.src }}</span>
+                      </span>
+                    </span>
+                  </template>
+                </div>
+              </div>
+              <span data-on-click="c.onDetails" style="margin-top:11px;height:38px;border-radius:7px;background:#186B39;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;font-weight:500;cursor:pointer">View all {{ c.skusTxt }} prices
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
+              </span>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <div style="padding:12px 14px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+        <span style="font-size:11px;color:#6B7268">Prices sit on the rows inside.</span>
+        <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ pageTxt }}</span>
+        <template data-if="hasPrev">
+          <span data-on-click="onPrev" style="height:32px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;font-size:11.5px;font-weight:500;cursor:pointer">Previous</span>
+        </template>
+        <template data-if="hasNext">
+          <span data-on-click="onNext" style="height:32px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;font-size:11.5px;font-weight:500;cursor:pointer">Next</span>
+        </template>
+      </div>
+    </div>
+    </template>
+
+    <template data-if="detailMode">
+    <div style="flex:1;min-height:0;background:#fff">
+      <div style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:9px 14px;display:flex;align-items:center;gap:9px">
+        <span data-on-click="onBackToTable" style="flex:none;width:32px;height:32px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;justify-content:center;cursor:pointer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#171A16" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="6" y2="12"></line><polyline points="11 7 6 12 11 17"></polyline></svg>
+        </span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-size:13.5px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ commodity.name }}</span>
+          <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ mDetailSubTxt }}</span>
+        </span>
+      </div>
+
+      <div style="padding:12px 14px 14px;border-bottom:1px solid #EDEEE9;background:#FAFBF9">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Movement into the country</span>
+          <span style="font-size:11px;color:#6B7268">{{ movement.dateTxt }}</span>
+        </div>
+
+        <template data-if="movement.has">
+        <div style="margin-top:9px;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap">
+          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:22px;font-weight:500;letter-spacing:-0.035em;line-height:1;font-variant-numeric:tabular-nums">{{ movement.totalTxt }}</span>
+          <span style="font-size:11px;color:#8A8F86">loads</span>
+          <template data-if="movement.up"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#1F5F32">{{ movement.changeTxt }}</span></template>
+          <template data-if="movement.down"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#8A4B2A">{{ movement.changeTxt }}</span></template>
+          <template data-if="movement.flat"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268">{{ movement.changeTxt }}</span></template>
+          <span style="font-size:11px;color:#6B7268">{{ movement.prevTxt }}</span>
+        </div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+          <template data-for="movement.rows" data-as="r">
+            <div style="display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr) 48px;gap:10px;max-width:380px;align-items:center">
+              <span style="min-width:0;font-size:11.5px;color:{{ r.nameColor }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.origin }}</span>
+              <span style="min-width:0;height:5px;border-radius:3px;background:#EDEEE9;display:block;position:relative">
+                <span style="position:absolute;top:0;left:0;height:5px;border-radius:3px;background:{{ r.barColor }};width:{{ r.pctTxt }}"></span>
+              </span>
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#4A5148;text-align:right;font-variant-numeric:tabular-nums">{{ r.loadsTxt }}</span>
+            </div>
+          </template>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:9px">
+          <span style="width:14px;height:4px;border-radius:2px;background:#186B39;flex:none"></span>
+          <span style="font-size:10.5px;color:#6B7268">{{ movement.legendTxt }}</span>
+        </div>
+        <div style="margin-top:9px;font-size:10.5px;line-height:1.5;color:#6B7268;text-wrap:pretty">{{ movement.footnote }}</div>
+        </template>
+
+        <template data-if="movement.none">
+        <div style="margin-top:8px;font-size:12px;color:#4A5148">{{ movement.emptyTxt }}</div>
+        <div style="margin-top:5px;font-size:10.5px;line-height:1.5;color:#6B7268;text-wrap:pretty">National truck and rail arrivals as reported by USDA. Not specific to any one pack or terminal.</div>
+        </template>
+      </div>
+
+      <template data-for="skuRows" data-as="s">
+        <div style="border-bottom:1px solid #EDEEE9">
+          <div data-on-click="s.onSelect" style="position:relative;padding:11px 14px 12px;cursor:pointer">
+            <template data-if="s.expanded"><span style="position:absolute;inset:0;background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39"></span></template>
+            <div style="position:relative;display:flex;align-items:baseline;gap:7px">
+              <span style="min-width:0;flex:1;font-size:13px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.variety }}</span>
+              <span style="flex:none;display:inline-flex;align-items:center;gap:5px">
+                <template data-if="s.mostly"><span style="width:5px;height:5px;border-radius:50%;background:#186B39"></span></template>
+                <template data-if="s.midRange"><span style="width:5px;height:5px;border-radius:50%;background:#C9922F"></span></template>
+                <template data-if="s.reported"><span style="width:5px;height:5px;border-radius:50%;border:1px solid #6B7268"></span></template>
+                <span style="font-size:11.5px;letter-spacing:-0.005em;color:#6B7268">{{ s.src }}</span>
+              </span>
+            </div>
+            <div style="position:relative;font-size:11px;color:#6B7268;margin-top:3px">{{ s.origin }} · {{ s.packSize }}</div>
+            <div style="position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+              <span style="display:block">
+                <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">FOB</span>
+                <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#8A4B2A;margin-top:2px;font-variant-numeric:tabular-nums">{{ s.fobTxt }}</span>
+              </span>
+              <span style="display:block">
+                <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal</span>
+                <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums">{{ s.termTxt }}</span>
+              </span>
+              <span style="display:block">
+                <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Spread</span>
+                <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#4A5148;margin-top:2px;font-variant-numeric:tabular-nums">{{ s.spreadTxt }}</span>
+              </span>
+            </div>
+          </div>
+
+          <template data-if="s.expanded">
+            <div style="background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39;padding:2px 14px 14px 16px">
+              <div style="font-size:11px;color:#6B7268">{{ s.basis }} · {{ s.gradeSize }}</div>
+              <div style="margin-top:10px;display:flex;align-items:baseline;gap:8px">
+                <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Price history</span>
+                <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ s.chartLowTxt }} – {{ s.chartHighTxt }}</span>
+              </div>
+              <svg viewBox="0 0 340 112" width="100%" height="108" preserveAspectRatio="none" style="display:block;margin-top:6px">
+                <line x1="10" y1="102" x2="330" y2="102" stroke="#DCDFD6" stroke-width="1"></line>
+                <line x1="10" y1="58" x2="330" y2="58" stroke="#EDEEE9" stroke-width="1"></line>
+                <polyline points="{{ s.fobPts }}" fill="none" stroke="#8A4B2A" stroke-width="1.6"></polyline>
+                <polyline points="{{ s.termPts }}" fill="none" stroke="#186B39" stroke-width="2"></polyline>
+              </svg>
+              <div style="display:flex;gap:14px;margin-top:8px">
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#4A5148"><span style="width:14px;height:2px;background:#186B39"></span>Terminal</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#4A5148"><span style="width:14px;height:2px;background:#8A4B2A"></span>FOB</span>
+              </div>
+              <div style="margin-top:14px;display:flex;align-items:baseline;gap:8px;padding-bottom:7px;border-bottom:1px solid #E4E6DF">
+                <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Across terminals</span>
+                <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">spread {{ s.marketSpreadTxt }}</span>
+              </div>
+              <template data-for="s.terminals" data-as="m">
+                <div data-on-click="m.onSelect" style="position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) 74px;gap:10px;align-items:center;height:38px;border-bottom:1px solid #E4E9E1;cursor:pointer">
+                  <template data-if="m.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 2px 0 0 #186B39"></span></template>
+                  <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#8A8F86">{{ m.rank }}</span>
+                  <span style="position:relative;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</span>
+                  <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;text-align:right;font-variant-numeric:tabular-nums">{{ m.priceTxt }}</span>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <div style="padding:13px 14px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:11px;color:#6B7268">{{ commodity.moreTxt }}</span>
+      </div>
+    </div>
+    </template>
+
+    <div style="flex:none;position:sticky;bottom:0;z-index:3;background:#fff;border-top:1px solid #EDEEE9;padding:7px 6px 10px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
+      <template data-for="mTabs" data-as="t">
+        <span data-on-click="t.onSelect" style="min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:{{ t.color }}">
+          <span style="display:inline-flex">{{ t.icon }}</span>
+          <span style="font-size:10px;font-weight:500;letter-spacing:0.02em">{{ t.label }}</span>
+        </span>
+      </template>
+    </div>
+
+    <template data-if="mSheetOpen">
+      <span data-on-click="onCloseSheet" style="position:fixed;inset:0;background:rgba(23,26,22,0.42);z-index:5"></span>
+      <div style="position:fixed;left:0;right:0;bottom:0;z-index:6;background:#fff;border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(23,26,22,0.18);padding:12px 14px 22px;max-height:78vh;overflow-y:auto;scrollbar-width:thin">
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #EDEEE9">
+          <span style="font-size:13px;font-weight:600;letter-spacing:-0.01em">Filters</span>
+          <span data-on-click="onClearAll" style="margin-left:auto;font-size:11.5px;color:#6B7268;cursor:pointer">Clear all</span>
+          <span data-on-click="onCloseSheet" style="width:30px;height:30px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#171A16" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+          </span>
+        </div>
+        <template data-for="filterGroups" data-as="g">
+          <div style="padding:12px 0 4px">
+            <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ g.title }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px">
+              <template data-for="g.options" data-as="o">
+                <span data-on-click="o.onToggle" style="height:34px;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}">{{ o.name }}
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;opacity:0.7">{{ o.count }}</span>
+                </span>
+              </template>
+            </div>
+          </div>
+        </template>
+        <span data-on-click="onCloseSheet" style="margin-top:14px;height:46px;border-radius:7px;background:#186B39;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">{{ mSheetApplyTxt }}</span>
+      </div>
+    </template>
+  </div>
+  </template>
+</div>
+
+</template>
+
+<div id="page-root"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/dc-runtime.js"></script>
+<script src="/js/agrax-data.js"></script>
+<script src="/js/agrax-search.js"></script>
+<script src="/js/browse-app.js"></script>
 </body>
 </html>
