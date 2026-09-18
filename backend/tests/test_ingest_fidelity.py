@@ -24,6 +24,11 @@ with patch.dict(sys.modules, {
 META = ingest._slug(2315, 'NX_FV020', 'New York', 'terminal')
 
 class FidelityTests(unittest.TestCase):
+    def test_shipping_point_cannot_be_mislabeled_terminal(self):
+        with self.assertRaises(ValueError):
+            ingest.build_row(dict(report_title='Raleigh Shipping Point Vegetables Prices (RA_FV120)'), META)
+        self.assertFalse(any(m['market_type']=='terminal' and m['slug_id'] in (2404,2405,2406) for m in ingest.REPORT_SLUGS))
+
     def row(self, **fields):
         raw = dict(commodity='BASIL', report_date='09/17/2026',
                    low_price='24.00', high_price='30.00', origin='NEW JERSEY')

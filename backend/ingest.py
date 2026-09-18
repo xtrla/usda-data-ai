@@ -140,11 +140,8 @@ REPORT_SLUGS = [
     _slug(3915, "AS_FV030", "Asheville",    "terminal"),
     # No FV040 for Asheville
 
-    # Raleigh NC terminal — confirmed slug 2405 (veg); adjacent slugs estimated
-    _slug(2405, "RA_FV020", "Raleigh",      "terminal"),
-    _slug(2404, "RA_FV010", "Raleigh",      "terminal"),
-    _slug(2406, "RA_FV030", "Raleigh",      "terminal"),
-    # No FV040 for Raleigh
+    # Raleigh slugs 2404-2406 are RA_FV110/120/130 SHIPPING POINT
+    # publications, not terminal reports. Do not label them as terminal data.
 
     # ── Shipping Points (FOB origin prices) ──────────────────────────────────
     _slug(2390, "FR_FV110", "Fresno",          "shipping_point"),  # Fruits
@@ -674,6 +671,8 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
       low_price, high_price, mostly_low, mostly_high,
       movement, trading_desc, market_note
     """
+    if report_meta['market_type'] == 'terminal' and 'shipping point' in str(raw.get('report_title') or '').lower():
+        raise ValueError('Shipping-point publication cannot be imported as a terminal report')
     commodity = (raw.get("commodity") or "").strip()
     if not commodity:
         return None
