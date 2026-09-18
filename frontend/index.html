@@ -101,6 +101,26 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
   input, select, textarea { font-size: 16px !important; }
 }
 
+/* Homepage navigation. */
+.home-header { background:#fff; border-bottom:1px solid #E3E7DF; padding:0 20px; }
+.home-header__inner { max-width:1440px; min-height:76px; margin:0 auto; display:flex; align-items:center; gap:48px; }
+.home-header__brand { flex:none; display:inline-flex; align-items:center; min-height:44px; }
+.home-header__logo { width:88px; height:32px; display:block; background:#072B18; mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; -webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; }
+.home-header__nav { display:flex; align-items:center; gap:28px; }
+.home-header__nav a { display:inline-flex; align-items:center; min-height:44px; color:#4A5147; font-size:14px; font-weight:500; white-space:nowrap; }
+.home-header__nav a:hover { color:#186B39; }
+.home-header__cta { margin-left:auto; min-height:42px; padding:0 18px; display:inline-flex; align-items:center; justify-content:center; gap:12px; border:1px solid #1F5236; border-radius:6px; background:#1F5236; color:#fff; font:500 13px 'Geist',sans-serif; white-space:nowrap; cursor:pointer; }
+.home-header__cta:hover { background:#16412A; }
+.home-header a:focus-visible, .home-header button:focus-visible { outline:2px solid #186B39; outline-offset:4px; }
+@media (max-width:899px) {
+  .home-header { padding:0 14px; }
+  .home-header__inner { min-height:0; padding-top:12px; gap:8px 16px; flex-wrap:wrap; }
+  .home-header__logo { width:78px; height:29px; }
+  .home-header__cta { min-height:40px; padding:0 12px; font-size:12px; gap:8px; }
+  .home-header__nav { order:3; width:100%; justify-content:space-between; gap:12px; border-top:1px solid #F0F1EC; }
+  .home-header__nav a { font-size:12px; }
+}
+
 /* Search suggestions. */
 .agx-sug { position:absolute; z-index:200; left:0; right:0; top:calc(100% + 6px);
   background:#fff; border:1px solid #E4E6DF; border-radius:10px;
@@ -138,20 +158,14 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 <template data-if="wide">
 <div style="min-height:100vh;display:flex;flex-direction:column;background:#FAFAF9">
 
-  <header style="background:#fff;border-bottom:1px solid #EDEEE9;padding:0 20px;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
-    <nav style="display:flex;align-items:center;gap:2px;flex:none">
-
-      <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
-
-
-
-    </nav>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-
-
-    </div>
+  <header class="home-header">
+    <div class="home-header__inner">
+      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo" aria-hidden="true"></span></a>
+      <nav class="home-header__nav" aria-label="Main navigation">
+        <a href="/browse">Browse prices</a>
+        <a href="#markets-wide">Markets</a>
+      </nav>
+      <div class="account-actions" data-account-actions></div>
     </div>
   </header>
 
@@ -255,7 +269,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     </div>
   </section>
 
-  <section style="background:#FFFFFF;padding:84px 20px 84px;display:flex;justify-content:center">
+  <section id="markets-wide" style="background:#FFFFFF;padding:84px 20px 84px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.6fr);gap:56px;align-items:start">
       <div style="min-width:0">
         <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">03 / Terminal markets</div>
@@ -307,6 +321,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <div style="margin-left:auto;display:flex;align-items:center;gap:18px">
       <a href="/browse" style="font-size:12.5px;color:#4A5148">Browse</a>
       <a href="/about" style="font-size:12.5px;color:#4A5148">About the data</a>
+      <a href="/privacy" style="font-size:12.5px;color:#4A5148">Privacy</a>
     </div>
   </footer>
 </div>
@@ -315,14 +330,16 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 <template data-if="narrow">
 <div style="min-height:100vh;display:flex;flex-direction:column;background:#FAFAF9">
 
-  <div style="flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:11px 14px;display:flex;align-items:center;gap:12px">
-    <a href="/" style="flex:none;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:68px;height:25px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
-    <a href="/browse" style="flex:none;font-size:13px;color:#186B39;text-decoration:none">Browse</a>
-    <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-value="query" data-on-input="onQuery" data-search-input placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
+  <header class="home-header">
+    <div class="home-header__inner">
+      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo" aria-hidden="true"></span></a>
+      <nav class="home-header__nav" aria-label="Main navigation">
+        <a href="/browse">Browse prices</a>
+        <a href="#markets-narrow">Markets</a>
+      </nav>
+      <div class="account-actions" data-account-actions></div>
     </div>
-  </div>
+  </header>
 
   <section style="position:relative;flex:none;background:#171A16;border-bottom:1px solid #EDEEE9;padding:40px 14px 34px;overflow:hidden">
     <img src="/assets/farm-hero.webp" alt="Rows of young trees in an orchard at first light" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
@@ -331,6 +348,9 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
       <div style="font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.82)">Grounded in the market.</div>
       <h1 style="margin:12px 0 0;font-size:34px;font-weight:400;letter-spacing:-0.03em;line-height:1.05;color:#fff;text-wrap:balance">From the field.<br>To your next decision.</h1>
       <p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.92);letter-spacing:-0.005em;text-wrap:pretty">The produce market moves every morning. See the prices, the origins, and the details that matter.</p>
+      <div style="position:relative;margin-top:20px">
+        <input aria-label="Commodity, variety or origin" data-value="query" data-on-input="onQuery" data-search-input placeholder="Commodity, variety or origin" style="box-sizing:border-box;width:100%;height:46px;background:#fff;border:1px solid #DDE2D6;border-radius:23px;padding:0 18px;font:inherit;color:#171A16">
+      </div>
       <a href="/browse" data-on-click="onSearch" style="margin-top:14px;height:42px;border-radius:21px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:7px" class="h1">Search prices
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
       </a>
@@ -410,7 +430,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     </div>
   </section>
 
-  <section style="background:#FFFFFF;padding:38px 14px 34px">
+  <section id="markets-narrow" style="background:#FFFFFF;padding:38px 14px 34px">
     <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8F86">03 / Terminal markets</div>
     <h2 style="margin:12px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2;text-wrap:balance">A national view.<br>Your local market.</h2>
     <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Choose a city to see its current published report.</p>
@@ -447,6 +467,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <div style="display:flex;align-items:center;gap:18px">
       <a href="/browse" style="font-size:12.5px;color:#4A5148">Browse</a>
       <a href="/about" style="font-size:12.5px;color:#4A5148">About the data</a>
+      <a href="/privacy" style="font-size:12.5px;color:#4A5148">Privacy</a>
     </div>
   </footer>
 </div>
@@ -466,5 +487,9 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 <script src="/js/agrax-search.js"></script>
 <script src="/js/home-app.js"></script>
 <link rel="stylesheet" href="/styles/newsletter.css"><script src="/js/report-choices.js"></script><script src="/js/newsletter.js"></script>
+<link rel="stylesheet" href="/styles/account.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="/js/account-client.js"></script>
+<script defer src="/js/account-ui.js"></script>
 </body>
 </html>

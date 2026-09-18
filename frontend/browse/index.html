@@ -182,10 +182,7 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px;pointer-events:none"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
       <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#F4F4F0;border:1px solid #EDEEE9;border-radius:16px;padding:0 14px 0 32px;font-size:13px;color:#171A16;outline:none">
     </div>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-
-
-    </div>
+    <div class="account-actions" data-account-actions></div>
     </div>
   </header>
 
@@ -382,7 +379,7 @@
                 <template data-if="c.expanded"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
                 <template data-if="c.collapsed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></template>
               </span>
-              <span style="position:relative;font-size:14.5px;font-weight:600;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
+              <span style="position:relative;font-size:14.5px;font-weight:600;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}<span data-watch-commodity="{{ c.name }}"></span></span>
               <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;color:#171A16;text-align:right;font-variant-numeric:tabular-nums">{{ c.skusTxt }}</span>
               <span style="position:relative;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
               <span style="position:relative;display:flex;justify-content:flex-end">
@@ -479,7 +476,7 @@
               <template data-if="commodity.down"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:500;background:#F7EFE8;color:#7A4223;border:1px solid #E5D3C4;white-space:nowrap;flex:none">↓ Lower</span></template>
               <template data-if="commodity.flat"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:500;background:#F0F1EE;color:#5A6158;border:1px solid #DFE1DA;white-space:nowrap;flex:none">→ Steady</span></template>
             </div>
-            <h1 style="margin:8px 0 0;font-size:34px;font-weight:600;letter-spacing:-0.035em;line-height:1.02">{{ commodity.name }}</h1>
+            <h1 style="margin:8px 0 0;font-size:34px;font-weight:600;letter-spacing:-0.035em;line-height:1.02">{{ commodity.name }}<span data-watch-commodity="{{ commodity.name }}"></span></h1>
             <div style="margin-top:8px;font-size:12.5px;color:#4A5148">{{ commodity.subtitle }}</div>
           </div>
           <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap">
@@ -729,6 +726,7 @@
     <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
       <a href="/" style="font-size:11.5px;color:#4A5148">Home</a>
       <a href="/about" style="font-size:11.5px;color:#4A5148">About the data</a>
+      <a href="/privacy" style="font-size:12.5px;color:#4A5148">Privacy</a>
     </div>
     </div>
   </footer>
@@ -745,6 +743,8 @@
       <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
     </div>
   </div>
+
+    <div class="account-actions account-browse-mobile" data-account-actions></div>
 
     <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
       <template data-for="terminals" data-as="t">
@@ -809,7 +809,7 @@
           <div data-on-click="c.onToggle" style="position:relative;padding:11px 14px 12px;cursor:pointer">
             <template data-if="c.expanded"><span style="position:absolute;inset:0;background:#F7F9F6;box-shadow:inset 3px 0 0 #186B39"></span></template>
             <div style="position:relative;display:flex;align-items:center;gap:8px">
-              <span style="min-width:0;flex:1;font-size:14px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span>
+              <span style="min-width:0;flex:1;font-size:14px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}<span data-watch-commodity="{{ c.name }}"></span></span>
               <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32">↑ Higher</span></template>
               <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223">↓ Lower</span></template>
               <template data-if="c.flat"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158">→ Steady</span></template>
@@ -885,7 +885,7 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#171A16" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="6" y2="12"></line><polyline points="11 7 6 12 11 17"></polyline></svg>
         </span>
         <span style="min-width:0;flex:1">
-          <span style="display:block;font-size:13.5px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ commodity.name }}</span>
+          <span style="display:block;font-size:13.5px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ commodity.name }}<span data-watch-commodity="{{ commodity.name }}"></span></span>
           <span style="display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ mDetailSubTxt }}</span>
         </span>
       </div>
@@ -1048,5 +1048,9 @@
 <script src="/js/agrax-data.js"></script>
 <script src="/js/agrax-search.js"></script>
 <script src="/js/browse-app.js"></script>
+<link rel="stylesheet" href="/styles/account.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="/js/account-client.js"></script>
+<script defer src="/js/account-ui.js"></script>
 </body>
 </html>

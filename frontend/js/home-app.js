@@ -95,6 +95,7 @@
     requestAnimationFrame(function () {
       pending = false;
       window.DC.mount(HOST, TPL, SCOPE);
+      if (window.agraxAccountUI) window.agraxAccountUI.mount();
       // Inputs are replaced on every render, so rebind the suggestions.
       if (window.agraxSearch) window.agraxSearch.rebind();
     });

@@ -770,6 +770,7 @@
       syncLocation();
       captureStrips();
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
+      if (window.agraxAccountUI) window.agraxAccountUI.mount();
       restoreStrips();
       restoreRail();
       applyScroll();
@@ -816,13 +817,18 @@
       var markets = {};
       S.rows.forEach(function (r) { if (r.market) markets[r.market] = 1; });
       S.markets = Object.keys(markets).sort();
-      if (!S.market) S.market = (wanted && markets[wanted]) ? wanted : (markets['New York'] ? 'New York' : S.markets[0]);
+      if (!S.market) S.market = window.agraxAccount
+        ? window.agraxAccount.initialMarket(S.markets, wanted)
+        : (wanted && markets[wanted]) ? wanted : (markets['New York'] ? 'New York' : S.markets[0]);
     }
 
     // Paint the shell immediately so the page is never blank.
     rerender();
 
-    api.reportCurrent('terminal').then(function (rows) {
+    api.reportCurrent('terminal').then(async function (rows) {
+      if (window.agraxAccount) {
+        await window.agraxAccount.ready;
+      }
       S.rows = rows || [];
       setMarkets();
       if (window.agraxSearch) {

@@ -12,6 +12,10 @@
       "destination": "/about/index.html"
     },
     {
+      "source": "/privacy",
+      "destination": "/privacy/index.html"
+    },
+    {
       "source": "/app",
       "destination": "/app/index.html"
     },
