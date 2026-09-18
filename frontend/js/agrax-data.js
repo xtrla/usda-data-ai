@@ -27,6 +27,22 @@
 
   function money(n) { return n == null ? DASH : '$' + n.toFixed(2); }
 
+  function sourceRange(lo, hi) {
+    lo = num(lo); hi = num(hi);
+    if (lo != null && hi != null) return lo === hi ? money(lo) : money(lo) + '–' + money(hi);
+    return lo != null ? money(lo) : hi != null ? money(hi) + ' (high only)' : DASH;
+  }
+  function quoteText(r) {
+    var quote = (r.price_qualifier ? r.price_qualifier + ' ' : '') + sourceRange(r.price_low, r.price_high);
+    if (num(r.price_mostly_low) != null || num(r.price_mostly_high) != null)
+      quote += ' · mostly ' + sourceRange(r.price_mostly_low, r.price_mostly_high);
+    return quote;
+  }
+  function sourceDetails(r) {
+    return [r.grade, r.appearance, r.quality, r.condition, r.quality_note, r.notes]
+      .filter(function(v,i,a){return v && a.findIndex(x=>String(x).toLowerCase()===String(v).toLowerCase())===i;}).join('; ');
+  }
+
   /* Which published figure a price came from.
    *
    * USDA prints a "mostly" range (what most of the market traded at), a
@@ -169,7 +185,7 @@
         return {
           key: rowKey(r),
           raw: r,
-          variety: r.variety || DASH,
+          variety: [r.variety, r.properties].filter(Boolean).join(' · ') || DASH,
           origin: r.origin || DASH,
           // USDA publishes the origin as a state or country and nothing
           // finer, so this is the same string rather than a growing district.
@@ -177,19 +193,19 @@
           pack: r.package || DASH,
           size: r.size || '',
           packSize: [r.package, r.size].filter(Boolean).join('  ') || DASH,
-          gradeSize: [r.grade || 'No grade marks', r.size].filter(Boolean).join(' ' + MID + ' '),
-          quality: r.quality_note || '',
+          gradeSize: [r.grade, r.size].filter(Boolean).join(' ' + MID + ' ') || DASH,
+          quality: sourceDetails(r),
           // Shown in its own column. USDA prints the same pack at a base
           // price and again at "fine appearance" or "fair quality", and those
           // are different prices for different goods — an empty cell says the
           // print carried no qualifier, which is itself information.
-          qualityTxt: r.quality_note || DASH,
-          basis: p.basis,
+          qualityTxt: sourceDetails(r) || DASH,
+          basis: 'Reported quote for the package shown; see row notes for per-unit exceptions.',
           src: p.src,
           mostly: p.src === 'mostly',
           midRange: p.src === 'mid-range',
           reported: p.src === 'reported',
-          termTxt: money(p.price),
+          termTxt: quoteText(r),
           termValue: p.price,
           fobTxt: f ? money(f.price) : DASH,
           fobValue: f ? f.price : null,
@@ -199,14 +215,14 @@
           markupPctTxt: (spread == null || !f || !f.price) ? DASH
             : (spread >= 0 ? '+' : '\u2212') + Math.abs(spread / f.price * 100).toFixed(1) + '%',
           reportDate: r.report_date,
-          meta: [r.variety, r.origin, r.package, r.size, r.quality_note]
+          meta: [r.variety, r.properties, r.origin, r.package, r.size, sourceDetails(r)]
                   .filter(Boolean).join(' ' + MID + ' '),
           // The inline table row prints one combined column under the header
           // "Variety · origin · pack · size", so it needs a single string.
           // Falls back to the pack when USDA states no variety — Asheville
           // prints Mexican 48s with no variety at all, and an empty cell
           // would read as missing data rather than as a real published line.
-          label: ([r.variety, r.origin, r.package, r.size, r.quality_note]
+          label: ([r.variety, r.properties, r.origin, r.package, r.size, sourceDetails(r)]
                    .filter(Boolean).join(' ' + MID + ' ')) || DASH
         };
       });
@@ -313,12 +329,14 @@
     /* Same published line across terminals, cheapest first. */
     acrossTerminals: function (allRows, row, currentMarket) {
       var want = [norm(row.variety), norm(row.origin), norm(row.grade),
-                  norm(row.package), norm(row.size), norm(row.quality_note)].join('~');
+                  norm(row.package), norm(row.size), norm(row.quality_note),
+                  norm(row.properties),norm(row.appearance),norm(row.condition),norm(row.notes)].join('~');
       var byMarket = {};
       allRows.forEach(function (r) {
         if (r.commodity !== row.commodity) return;
         var k = [norm(r.variety), norm(r.origin), norm(r.grade),
-                 norm(r.package), norm(r.size), norm(r.quality_note)].join('~');
+                 norm(r.package), norm(r.size), norm(r.quality_note),
+                 norm(r.properties),norm(r.appearance),norm(r.condition),norm(r.notes)].join('~');
         if (k !== want) return;
         var p = priceOf(r);
         if (p.price == null) return;

@@ -123,6 +123,9 @@
       rows = rows.filter(function (r) {
         return norm(r.commodity).indexOf(q) > -1 ||
                norm(r.variety).indexOf(q) > -1 ||
+               norm(r.properties).indexOf(q) > -1 ||
+               norm(r.notes).indexOf(q) > -1 ||
+               norm(r.package).indexOf(q) > -1 ||
                norm(r.origin).indexOf(q) > -1;
       });
     }
@@ -455,6 +458,9 @@
         variety: s.raw.variety, origin: s.raw.origin,
         size: s.raw.size, package: s.raw.package,
         grade: s.raw.grade, quality: s.raw.quality_note || '',
+        properties: s.raw.properties || '', appearance: s.raw.appearance || '',
+        condition: s.raw.condition || '', notes: s.raw.notes || '',
+        price_qualifier: s.raw.price_qualifier || '',
         days: 365
       }).then(function (hist) {
         S.historyCache[s.key] = D.history(hist, []);

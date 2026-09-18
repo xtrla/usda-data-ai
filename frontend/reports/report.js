@@ -7,8 +7,8 @@ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;',
 function clean(v){return v==null||/^(n\/?a|none|null|—)?$/i.test(String(v).trim())?'':String(v).trim();}
 function text(v){return clean(v)?esc(clean(v)):'—';}
 function money(v){return v==null||String(v).trim()===''||!Number.isFinite(Number(v))?null:'$'+Number(v).toFixed(2);}
-function range(a,b){const l=money(a),h=money(b);return l&&h?(l===h?l:l+'–'+h):l?l+' (low only)':h?h+' (high only)':'—';}
-function unique(values){return [...new Set(values.map(clean).filter(Boolean))].join('; ');}
+function range(a,b){const l=money(a),h=money(b);return l&&h?(l===h?l:l+'–'+h):l?l:h?h+' (high only)':'—';}
+function unique(values){return values.map(clean).filter((v,i,a)=>v&&a.findIndex(x=>x.toLowerCase()===v.toLowerCase())===i).join('; ');}
 function href(key,date){return '/reports/?'+new URLSearchParams({market,category:key,...(date?{date}: {})});}
 async function boot(){
  if(!market||!Object.hasOwn(categories,category)){status.textContent='Choose a market and report category from Browse.';return;}
@@ -30,7 +30,7 @@ async function boot(){
    const commentary=unique(items.flatMap(r=>[r.movement,r.supply_note,r.trading_activity]));
    return '<section class="commodity"><header class="commodity-head"><h2>'+esc(name)+'</h2>'+(commentary?'<p class="tone">'+esc(commentary)+'</p>':'')+'</header><div class="table-wrap" tabindex="0" role="region" aria-label="'+esc(name)+' prices; scroll for all columns"><table><caption hidden>'+esc(name)+' — '+esc(market)+' — '+esc(date)+'</caption><thead><tr>'+['Type / variety','Origin','Package','Size','Grade / quality','Reported price','Condition / notes'].map(n=>'<th scope="col">'+n+'</th>').join('')+'</tr></thead><tbody>'+items.map(r=>{
    const mostly=range(r.price_mostly_low,r.price_mostly_high);
-   return '<tr><td>'+text(unique([r.variety,r.organic===true?'Organic':null]))+'</td><td>'+text(r.origin)+'</td><td>'+text(r.package)+'</td><td>'+text(r.size)+'</td><td>'+text(unique([r.grade,r.quality]))+'</td><td class="price">'+range(r.price_low,r.price_high)+(mostly==='—'?'':'<span class="mostly">Mostly '+mostly+'</span>')+'</td><td>'+text(unique([r.quality_note,r.appearance,r.condition,r.notes,r.price_notes]))+'</td></tr>';
+   return '<tr><td>'+text(unique([r.variety,r.properties,r.organic===true?'Organic':null]))+'</td><td>'+text(r.origin)+'</td><td>'+text(r.package)+'</td><td>'+text(r.size)+'</td><td>'+text(unique([r.grade,r.quality]))+'</td><td class="price">'+(r.price_qualifier?esc(r.price_qualifier)+' ':'')+range(r.price_low,r.price_high)+(mostly==='—'?'':'<span class="mostly">Mostly '+mostly+'</span>')+'</td><td>'+text(unique([r.quality_note,r.appearance,r.condition,r.notes,r.price_notes]))+'</td></tr>';
   }).join('')+'</tbody></table></div></section>';
  }).join('');
  status.hidden=true;report.hidden=false;print.disabled=false;

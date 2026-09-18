@@ -34,6 +34,7 @@ LIST_COLUMNS = ",".join([
     "variety", "origin", "grade", "package", "size", "quality_note",
     "price_low", "price_high", "price_mostly_low", "price_mostly_high",
     "movement", "report_date", "source_report", "organic",
+    "properties", "appearance", "quality", "condition", "notes", "price_qualifier",
 ])
 
 
@@ -309,6 +310,17 @@ def _latest_uncached(market_type: str, cutoff: str):
 
         rows = fetch_all(q)
 
+        if market_type != "shipping_point":
+            # A terminal report is a dated publication. Combining the latest
+            # occurrence of each product revives quotes omitted from today's
+            # report and can mix old normalized rows with repaired rows.
+            dates = {}
+            for r in rows:
+                group = (r.get('market'), r.get('source_report'), r.get('commodity_type'))
+                dates[group] = max(dates.get(group, ''), str(r.get('report_date') or ''))
+            return [r for r in rows if str(r.get('report_date') or '') == dates[
+                (r.get('market'), r.get('source_report'), r.get('commodity_type'))]]
+
         # Newest first, then keep the first occurrence of each SKU key.
         rows.sort(key=lambda r: str(r.get("report_date") or ""), reverse=True)
         latest, seen = [], set()
@@ -322,6 +334,8 @@ def _latest_uncached(market_type: str, cutoff: str):
                 # and they are not the same product to a buyer. Leaving this
                 # out of the key silently kept one of the three at random.
                 r.get("quality_note"),
+                r.get("properties"), r.get("appearance"), r.get("quality"),
+                r.get("condition"), r.get("notes"), r.get("price_qualifier"),
             )
             if key in seen:
                 continue
@@ -552,6 +566,11 @@ def get_history(
     package: str = None,
     grade: str = None,
     quality: str = None,
+    properties: str = None,
+    appearance: str = None,
+    condition: str = None,
+    notes: str = None,
+    price_qualifier: str = None,
     days: int = 90,
 ):
     """Return time-series rows for the given SKU filters, most recent first.
@@ -577,6 +596,10 @@ def get_history(
         # which is a real and distinct record — not "don't filter".
         if quality is not None:
             q = q.eq("quality_note", quality) if quality else q.is_("quality_note", "null")
+        for field,value in [('properties',properties),('appearance',appearance),
+                            ('condition',condition),('notes',notes),('price_qualifier',price_qualifier)]:
+            if value is not None:
+                q = q.eq(field,value) if value else q.is_(field,'null')
 
         result_rows = fetch_all(q.order("report_date", desc=True))
         return result_rows

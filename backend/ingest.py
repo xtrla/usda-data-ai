@@ -653,6 +653,17 @@ def normalize_origin(raw: str) -> str | None:
 
 # ── Row builder ──────────────────────────────────────────────────────────────
 
+SOURCE_DETAILS = ('variety', 'origin', 'district', 'package', 'item_size',
+                  'grade', 'appearance', 'quality', 'condition', 'organic',
+                  'properties', 'environment', 'repack', 'storage', 'crop',
+                  'transportation_mode', 'unit_sales', 'special_notes',
+                  'reporter_comment', 'commodity_comments')
+
+def source_text(value):
+    text = str(value).strip() if value is not None else ''
+    return '' if text.lower() in ('n/a', 'na', 'none', 'null') else text
+
+
 def build_row(raw: dict, report_meta: dict) -> dict | None:
     """
     Transform one MARS API result row into our Supabase schema.
@@ -691,15 +702,29 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         price_high = price_high_from_range
 
     mostly_low, mostly_high = parse_mostly_range(str(mostly_low_raw) if mostly_low_raw else "")
-    if not mostly_low and mostly_high_raw:
+    if mostly_high_raw is not None and str(mostly_high_raw).strip():
         try:
-            mostly_low = float(mostly_low_raw)
             mostly_high = float(mostly_high_raw)
         except (ValueError, TypeError):
             pass
 
-    if price_low is None:
-        return None  # skip rows with no price
+    price_qualifier = None
+    if price_low is None and report_meta['market_type'] == 'terminal':
+        # Some USDA records carry the entire quote in reporter_comment.
+        # Only a complete, explicit qualified quote is promoted to numeric
+        # columns. Keep the original text even when it is not safely parseable.
+        comment = source_text(raw.get('reporter_comment'))
+        quoted = re.fullmatch(
+            r'(one\s+lot|a\s+lot|few|some)\s+(\d+\.\d{2})(?:\s*[-–]\s*(\d+\.\d{2}))?',
+            comment, re.IGNORECASE)
+        if quoted:
+            price_qualifier = ' '.join(quoted[1].split())
+            price_low = float(quoted[2])
+            price_high = float(quoted[3]) if quoted[3] else None
+        elif not comment:
+            return None
+    elif price_low is None:
+        return None
 
     # ── Field names vary between terminal and shipping point reports ────────
     # Terminal:      appearance, quality, condition, package, variety, item_size
@@ -708,7 +733,7 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     quality_field    = str(raw.get("quality") or "").strip().lower()
     condition_field  = str(raw.get("condition") or raw.get("cond") or "").strip().lower()
     size_field       = str(raw.get("item_size") or "").strip()
-    grade_field      = str(raw.get("grade") or "").strip()
+    grade_field      = source_text(raw.get("grade"))
     supply_note      = str(raw.get("market_tone_comments") or raw.get("offerings_comments") or raw.get("supply_tone_comments") or "").strip()
 
     # Package field — terminal uses 'package', shipping point uses 'pkg'
@@ -743,7 +768,9 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
                               ) or ""),
         "package":            normalize_package(package_raw)[:100] if package_raw else None,
         "size":               normalize_size(size_field),
-        "grade":              extract_grade(grade_text) or grade_field.title() or None,
+        # Preserve composite source grades (e.g. 85% U.S. ONE OR BETTER).
+        # A recognized substring is not equivalent to the published grade.
+        "grade":              grade_field or extract_grade(grade_text) or None,
         # size_field is passed because USDA frequently embeds the qualifier
         # there rather than in a field of its own: New York's avocado line
         # prints "40s fair quality 36.00-38.00 fine appearance 40.00", and the
@@ -793,6 +820,30 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
         str(row.get("organic") or "false"),
     ])
     row["row_hash"] = hashlib.md5(hash_str.encode()).hexdigest()
+    if report_meta['market_type'] == 'terminal':
+        # Preserve USDA's full descriptors rather than reconstructing them
+        # from a lossy normalized product identity.
+        details = {key: source_text(raw.get(key)) for key in SOURCE_DETAILS}
+        row.update({
+            'source_record': dict(raw),
+            'properties': details['properties'] or None,
+            'appearance': details['appearance'] or None,
+            'quality': details['quality'] or None,
+            'condition': details['condition'] or None,
+            'price_qualifier': price_qualifier,
+            'notes': '; '.join(dict.fromkeys(v for k,v in details.items() if v and k in (
+                'environment','repack','storage','crop','transportation_mode',
+                'unit_sales','special_notes','reporter_comment','commodity_comments'))) or None,
+            'package': details['package'] or None,
+            'size': details['item_size'] or None,
+            'variety': details['variety'] or None,
+            'grade': details['grade'] or None,
+            'origin': ' / '.join(dict.fromkeys(v for v in (
+                details['origin'], details['district']) if v)) or None,
+        })
+        identity = [report_date, report_meta['code'], report_meta['market'],
+                    commodity, details]
+        row['row_hash'] = hashlib.md5(json.dumps(identity, sort_keys=True).encode()).hexdigest()
     return row
 
 
@@ -967,10 +1018,12 @@ def upsert_rows(rows: list[dict]) -> int:
     if not rows:
         return 0
 
-    # Deduplicate by row_hash within this batch — last write wins
-    # (duplicate hashes in same batch cause ON CONFLICT DO UPDATE errors)
+    # Exact repeats are safe to collapse. Conflicting quotes must never
+    # silently overwrite each other; reject before writing any batch.
     seen: dict = {}
     for r in rows:
+        if r["row_hash"] in seen and seen[r["row_hash"]] != r:
+            raise ValueError("Conflicting source quotes share a row identity; ingestion blocked")
         seen[r["row_hash"]] = r
     deduped = list(seen.values())
     if len(deduped) < len(rows):
@@ -1237,13 +1290,6 @@ def _run_for_date(target_date: str) -> int:
         actual_report_date_str = actual_report_date.isoformat()
         log.info("  Got %d raw rows, report_date=%s (fallback=%s)", len(raw_rows), actual_report_date_str, used_fallback)
 
-        # Always purge old rows for this slug once we know the current date —
-        # even if build fails, stale data must not remain
-        try:
-            purge_old_rows(slug_id, actual_report_date_str)
-        except Exception as e:
-            log.error("  Purge failed for %s: %s — continuing to build/upsert anyway", code, e)
-
         built = []
         for raw in raw_rows:
             try:
@@ -1256,6 +1302,10 @@ def _run_for_date(target_date: str) -> int:
 
         log.info("  Built %d valid rows", len(built))
 
+        if report_meta['market_type'] == 'terminal' and len(built) != len(raw_rows):
+            log.error('Incomplete terminal transformation for %s; keeping existing report', code)
+            continue
+
         if built:
             # A Supabase timeout or bad row here used to escape the loop and
             # kill every remaining market in REPORT_SLUGS — that's how the
@@ -1263,6 +1313,8 @@ def _run_for_date(target_date: str) -> int:
             # Catch here so one bad slug can't blank out the rest of the day.
             try:
                 upserted = upsert_rows(built)
+                if upserted != len({r['row_hash'] for r in built}):
+                    raise ValueError('Incomplete write; refusing to prune existing report rows')
                 grand_total += upserted
                 log.info("  Upserted %d rows for %s", upserted, code)
                 # Remove anything left over under a hash we no longer emit.
@@ -1271,6 +1323,7 @@ def _run_for_date(target_date: str) -> int:
                     actual_report_date_str,
                     {r["row_hash"] for r in built if r.get("row_hash")},
                 )
+                purge_old_rows(slug_id, actual_report_date_str)
             except Exception as e:
                 log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
                 # continue explicitly — the for loop's next iteration continues
