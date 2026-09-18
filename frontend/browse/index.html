@@ -3,7 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Browse prices — AgraX</title>
+<title>Browse USDA produce prices — AgraX</title>
+<meta name="description" content="Browse free USDA specialty crop market data, including terminal market prices, shipping point FOB prices, movement data, pack, size, origin, grade and report dates.">
+<link rel="canonical" href="https://www.agra-x.com/browse">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AgraX">
+<meta property="og:title" content="Browse USDA produce prices — AgraX">
+<meta property="og:description" content="Search USDA terminal market prices, shipping point FOB prices and movement data for specialty crops.">
+<meta property="og:url" content="https://www.agra-x.com/browse">
+<meta property="og:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Browse USDA produce prices — AgraX">
+<meta name="twitter:description" content="Search USDA terminal market prices, shipping point FOB prices and movement data for specialty crops.">
+<meta name="twitter:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://www.agra-x.com/browse#dataset",
+  "name": "AgraX USDA produce price browser",
+  "description": "Searchable USDA AMS specialty crop market data including terminal market prices, shipping point FOB prices, movement data, pack, size, origin, grade and report dates.",
+  "url": "https://www.agra-x.com/browse",
+  "isAccessibleForFree": true,
+  "creator": {
+    "@type": "Organization",
+    "name": "AgraX",
+    "url": "https://www.agra-x.com/"
+  },
+  "keywords": [
+    "USDA produce prices",
+    "wholesale produce prices",
+    "terminal market prices",
+    "shipping point FOB",
+    "specialty crop data"
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
@@ -130,11 +169,10 @@
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
     <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <nav style="display:flex;align-items:center;gap:2px;flex:none">
-      <span style="height:30px;padding:0 12px;border-radius:15px;background:#EFF1EB;color:#072B18;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Home</span>
       <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Movers</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Watchlist</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Reports</span>
+
+
+
     </nav>
     <!-- Browse needs search in the header. On the home page search lives in
          the hero, so the shared header has none; here there is no hero and
@@ -145,8 +183,8 @@
       <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#F4F4F0;border:1px solid #EDEEE9;border-radius:16px;padding:0 14px 0 32px;font-size:13px;color:#171A16;outline:none">
     </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#6B7268;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#186B39"></span>{{ stamp }}</span>
-      <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
+
+
     </div>
     </div>
   </header>
@@ -228,12 +266,12 @@
           <div style="flex:none;height:30px;display:flex;align-items:center;gap:9px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:11px">
             <span style="flex:none;font-size:12px;color:#8A8F86;letter-spacing:-0.005em;white-space:nowrap">Today's reports</span>
             <template data-for="reports" data-as="r">
-              <span style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
+              <a href="{{ r.href }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
                 <span style="font-size:11.5px;font-weight:600;letter-spacing:-0.01em">{{ r.name }}</span>
                 <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#186B39">{{ r.code }}</span>
                 <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ r.skusTxt }}</span>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"></path><polyline points="7 11 12 16 17 11"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg>
-              </span>
+              </a>
             </template>
           </div>
         </div>
@@ -525,7 +563,7 @@
           <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Varieties &amp; Prices</span>
           <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ commodity.skuCountTxt }}</span>
           <span style="margin-left:auto;display:flex;align-items:center;gap:6px">
-            
+
             <span style="height:28px;padding:0 9px;border-radius:7px;border:1px solid #E4E6DF;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer" class="h7">Terminal price
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </span>
@@ -686,8 +724,8 @@
 
   <footer style="border-top:1px solid #EDEEE9;background:#fff;padding:16px 20px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <img src="/assets/agrax-logo-black.png" alt="AgraX" style="height:13px;width:auto;display:block;opacity:0.55">
-    <span style="font-size:11.5px;color:#6B7268">USDA AMS Market News · terminal and shipping point reports · updated 05:26 ET</span>
+    <a href="/" aria-label="AgraX home" style="flex:none;align-self:flex-start;display:inline-flex;align-items:center"><span aria-hidden="true" style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <span style="font-size:11.5px;color:#6B7268">AgraX · Independent market intelligence. Not affiliated with USDA.</span>
     <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
       <a href="/" style="font-size:11.5px;color:#4A5148">Home</a>
       <a href="/about" style="font-size:11.5px;color:#4A5148">About the data</a>
@@ -701,6 +739,7 @@
 
     <div style="flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:11px 14px;display:flex;align-items:center;gap:12px">
     <a href="/" style="flex:none;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:68px;height:25px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <a href="/browse" style="flex:none;font-size:13px;color:#186B39;text-decoration:none">Browse</a>
     <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
       <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
@@ -735,6 +774,7 @@
       </template>
     </div>
 
+<div class="mobile-reports" style="display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:white"><template data-for="reports" data-as="r"><a href="{{ r.href }}" style="white-space:nowrap;border:1px solid #E4E6DF;border-radius:16px;padding:7px 12px;font-size:12px">{{ r.name }} report ↗</a></template></div>
     <template data-if="browseMode">
     <div style="flex:1;min-height:0;background:#fff">
       <div style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">

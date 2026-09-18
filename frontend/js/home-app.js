@@ -49,8 +49,14 @@
       wide: true, narrow: true,
       query: '',
       onQuery: function (e) { scope.query = e.target.value; },
+      onSearch: function (e) {
+        e.preventDefault();
+        window.location.href = '/browse?q=' + encodeURIComponent(scope.query.trim());
+      },
       stamp: '',
-      popular: POPULAR.map(function (n) { return { name: n }; }),
+      popular: POPULAR.map(function (n) {
+        return { name: n, href: '/browse?q=' + encodeURIComponent(n === 'Bell peppers' ? 'bell' : n) };
+      }),
 
       stats: [
         { value: DASH, label: 'Commodities',        note: 'reporting today' },
@@ -66,13 +72,13 @@
       stations: [
         { n: '01', stage: 'At origin', title: 'Shipping point prices',
           body: 'See prices at origin and compare matched specifications against terminal market prices.',
-          metric: DASH + ' districts reporting', cta: 'Explore price details' },
+          metric: DASH + ' districts reporting', cta: 'Explore price details', href: '/browse' },
         { n: '02', stage: 'At the terminal', title: 'Terminal markets',
           body: 'Wholesale produce prices across major US cities, with variety, pack, size and grade as reported.',
-          metric: DASH + ' city terminals', cta: 'Find your market' },
+          metric: DASH + ' city terminals', cta: 'Find your market', href: '/browse' },
         { n: '03', stage: 'Behind the number', title: 'The detail behind the number',
           body: 'Original report dates, origins and price methods stay attached to every market line.',
-          metric: 'USDA AMS, daily', cta: 'Understand the source' }
+          metric: 'USDA AMS, daily', cta: 'Understand the source', href: '/about' }
       ],
 
       terminals: [],
@@ -117,7 +123,7 @@
         return marketRank(a) - marketRank(b) || byMarket[b] - byMarket[a] || a.localeCompare(b);
       })
       .map(function (m) {
-        return { name: m, lines: fmt(byMarket[m]) };
+        return { name: m, lines: fmt(byMarket[m]), href: '/browse?market=' + encodeURIComponent(m) };
       });
 
     CATEGORIES.forEach(function (c) {
@@ -141,6 +147,12 @@
     if (!tpl || !HOST) return;
     TPL = tpl.innerHTML;
     SCOPE = emptyScope();
+    HOST.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.defaultPrevented && e.target.matches('[data-search-input]')) {
+        SCOPE.query = e.target.value;
+        SCOPE.onSearch(e);
+      }
+    });
 
     paint();   // shell first; nothing below blocks it
 

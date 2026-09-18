@@ -53,6 +53,19 @@
 
   var PAGE_ROOT, TEMPLATE;
 
+  function syncLocation() {
+    if (!S.market) return;
+    var params = new URLSearchParams();
+    params.set('market', S.market);
+    if (S.detail) params.set('c', S.detail);
+    if (S.tableQuery) params.set('q', S.tableQuery);
+    ['category', 'origin', 'source'].forEach(function (group) {
+      activeKeys(group).forEach(function (value) { params.append(group, value); });
+    });
+    if (S.showOlder) params.set('older', '1');
+    window.history.replaceState(null, '', window.location.pathname + '?' + params.toString() + window.location.hash);
+  }
+
   function norm(v) { return String(v == null ? '' : v).trim().toLowerCase(); }
 
   function marketRows() {
@@ -261,9 +274,12 @@
     var rows = marketRows();
     var code = marketCode(S.market);
     return REPORT_GROUPS.map(function (g) {
-      var n = rows.filter(function (r) { return r.commodity_type === g.key; }).length;
+      var group = rows.filter(function (r) { return r.commodity_type === g.key; });
+      var date = group.map(function (r) { return r.report_date; }).filter(Boolean).sort().pop();
+      var n = group.filter(function (r) { return r.report_date === date; }).length;
       return {
         name: g.name,
+        href: '/reports/?market=' + encodeURIComponent(S.market) + '&category=' + g.key + '&date=' + encodeURIComponent(date || ''),
         code: code ? code + g.suffix : DASH,
         skusTxt: n ? n + ' prices' : DASH
       };
@@ -745,6 +761,7 @@
     pending = true;
     requestAnimationFrame(function () {
       pending = false;
+      syncLocation();
       captureStrips();
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
       restoreStrips();
@@ -766,16 +783,34 @@
     PAGE_ROOT = document.getElementById('page-root');
     if (!tpl || !PAGE_ROOT) return;
     TEMPLATE = tpl.innerHTML;
+    PAGE_ROOT.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.defaultPrevented && e.target.matches('[data-search-input]')) {
+        e.preventDefault();
+        S.tableQuery = e.target.value.trim();
+        S.detail = null;
+        S.page = 0;
+        rerender();
+      }
+    });
 
     var params = new URLSearchParams(window.location.search);
     var wanted = params.get('market');
     if (params.get('c')) S.detail = params.get('c');
+    S.tableQuery = params.get('q') || '';
+    S.showOlder = params.get('older') === '1';
+    ['category', 'origin', 'source'].forEach(function (group) {
+      params.getAll(group).forEach(function (value) {
+        if (group !== 'category' || REPORT_GROUPS.some(function (g) { return g.key === value; })) {
+          S.filters[group][value] = true;
+        }
+      });
+    });
 
     function setMarkets() {
       var markets = {};
       S.rows.forEach(function (r) { if (r.market) markets[r.market] = 1; });
       S.markets = Object.keys(markets).sort();
-      if (!S.market) S.market = (wanted && markets[wanted]) ? wanted : S.markets[0];
+      if (!S.market) S.market = (wanted && markets[wanted]) ? wanted : (markets['New York'] ? 'New York' : S.markets[0]);
     }
 
     // Paint the shell immediately so the page is never blank.
@@ -789,6 +824,9 @@
           // Every suggestion resolves to a real commodity page. Switch market
           // too when the match lives in a different one.
           if (hit.market && hit.market !== S.market) S.market = hit.market;
+          S.filters = { category: {}, origin: {}, source: {} };
+          S.tableQuery = '';
+          S.page = 0;
           S.detail = hit.commodity;
           scrollToTop();
           rerender();

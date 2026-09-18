@@ -89,6 +89,8 @@ if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY environment variables")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+from newsletter import create_router as create_newsletter_router
+app.include_router(create_newsletter_router(supabase))
 MOVEMENT_TABLE = "produce_movement"
 
 # ─────────────────────────────────────────────────────────────
@@ -931,16 +933,20 @@ async def subscription_status(user_id: str):
 async def subscribe(request: Request):
     """Capture an email for the weekday morning brief.
 
-    Deliberately does not require an account. Always reports success to
-    the caller so the endpoint can't be used to probe which addresses
-    are already on the list.
+    Does not require an account. Storage failures return a generic error.
     """
     try:
         body = await request.json()
     except Exception:
         raise HTTPException(status_code=400, detail="Expected a JSON body")
 
-    email = (body.get("email") or "").strip().lower()
+    if not isinstance(body, dict) or not isinstance(body.get("email"), str):
+        raise HTTPException(status_code=400, detail="A valid email is required")
+    if body.get("source") is not None and not isinstance(body["source"], str):
+        raise HTTPException(status_code=400, detail="Invalid signup source")
+    if body.get("market") is not None and not isinstance(body["market"], str):
+        raise HTTPException(status_code=400, detail="Invalid market")
+    email = body["email"].strip().lower()
     if not email or "@" not in email or "." not in email.split("@")[-1] or len(email) > 254:
         raise HTTPException(status_code=400, detail="A valid email is required")
 
@@ -950,15 +956,26 @@ async def subscribe(request: Request):
         "market": (body.get("market") or None),
     }
 
+    has_preferences = "markets" in body or "categories" in body
+    if has_preferences:
+        markets = body.get("markets")
+        categories = body.get("categories")
+        allowed_categories = {"fruits", "vegetables", "onions_potatoes", "nuts"}
+        if (not isinstance(markets, list) or not 1 <= len(markets) <= 50
+                or any(not isinstance(m, str) or not m.strip() or len(m) > 100 for m in markets)
+                or not isinstance(categories, list) or not 1 <= len(categories) <= 4
+                or any(not isinstance(c, str) or c not in allowed_categories for c in categories)):
+            raise HTTPException(status_code=400, detail="Choose valid markets and report categories")
+        row["markets"] = list(dict.fromkeys(m.strip() for m in markets))
+        row["categories"] = list(dict.fromkeys(categories))
+        row["market"] = row["markets"][0]
+
     try:
         supabase.table("subscribers").upsert(row, on_conflict="email").execute()
-    except Exception as e:
-        print(f"[subscribe] failed for {email}: {e}")
-        # Don't leak storage failures to the form; the address is far more
-        # likely to be lost to a transient Supabase blip than to be a dupe.
-        return {"ok": True}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Signup is temporarily unavailable")
 
-    return {"ok": True}
+    return {"ok": True, "preferences_saved": has_preferences}
 
 
 @app.get("/market-summary")

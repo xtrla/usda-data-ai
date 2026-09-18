@@ -5,6 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AgraX — every USDA produce price, down to the pack and size</title>
 <meta name="description" content="USDA terminal market prices, shipping point FOB and movement data, published every weekday morning. Every price as reported.">
+<link rel="canonical" href="https://www.agra-x.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AgraX">
+<meta property="og:title" content="AgraX — USDA produce market data">
+<meta property="og:description" content="Free USDA terminal market prices, shipping point FOB and movement data for specialty crops. Updated every weekday morning.">
+<meta property="og:url" content="https://www.agra-x.com/">
+<meta property="og:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AgraX — USDA produce market data">
+<meta name="twitter:description" content="Free USDA terminal market prices, shipping point FOB and movement data for specialty crops.">
+<meta name="twitter:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.agra-x.com/#organization",
+      "name": "AgraX",
+      "url": "https://www.agra-x.com/",
+      "logo": "https://www.agra-x.com/assets/agrax-logo-black.png",
+      "sameAs": []
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.agra-x.com/#website",
+      "url": "https://www.agra-x.com/",
+      "name": "AgraX",
+      "publisher": {
+        "@id": "https://www.agra-x.com/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.agra-x.com/browse?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://www.agra-x.com/#dataset",
+      "name": "USDA specialty crop market data",
+      "description": "USDA AMS terminal market prices, shipping point FOB prices, and movement data for specialty crops, organized for buyers, growers, shippers, and analysts.",
+      "url": "https://www.agra-x.com/browse",
+      "isAccessibleForFree": true,
+      "creator": {
+        "@id": "https://www.agra-x.com/#organization"
+      },
+      "spatialCoverage": {
+        "@type": "Country",
+        "name": "United States"
+      },
+      "temporalCoverage": "2024/..",
+      "keywords": [
+        "USDA market data",
+        "produce prices",
+        "terminal market prices",
+        "shipping point prices",
+        "specialty crops"
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
@@ -75,15 +142,15 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
     <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <nav style="display:flex;align-items:center;gap:2px;flex:none">
-      <span style="height:30px;padding:0 12px;border-radius:15px;background:#EFF1EB;color:#072B18;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer">Home</span>
+
       <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Movers</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Watchlist</span>
-      <span style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h4">Reports</span>
+
+
+
     </nav>
     <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#6B7268;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:#186B39"></span>{{ stamp }}</span>
-      <span style="height:30px;padding:0 14px;border-radius:15px;background:#186B39;color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer" class="h0">Sign in</span>
+
+
     </div>
     </div>
   </header>
@@ -97,13 +164,13 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
       <p style="margin:24px 0 0;max-width:560px;font-size:17px;line-height:1.5;color:rgba(255,255,255,0.92);letter-spacing:-0.005em;text-wrap:pretty">The produce market moves every morning.<br>See the prices, the origins, and the details that matter.</p>
       <div style="margin-top:30px;position:relative;display:flex;align-items:center;max-width:600px">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:18px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-        <input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety or origin" style="width:100%;height:52px;background:#fff;border:0;border-radius:26px;padding:0 114px 0 44px;font-size:15.5px;letter-spacing:-0.005em;outline:none;color:#171A16">
-        <a href="/browse" style="position:absolute;right:5px;height:42px;padding:0 20px;border-radius:21px;background:#186B39;color:#fff;font-size:14.5px;font-weight:500;display:inline-flex;align-items:center" class="h1">Search</a>
+        <input data-value="query" data-on-input="onQuery" data-search-input placeholder="Commodity, variety or origin" style="width:100%;height:52px;background:#fff;border:0;border-radius:26px;padding:0 114px 0 44px;font-size:15.5px;letter-spacing:-0.005em;outline:none;color:#171A16">
+        <a href="/browse" data-on-click="onSearch" style="position:absolute;right:5px;height:42px;padding:0 20px;border-radius:21px;background:#186B39;color:#fff;font-size:14.5px;font-weight:500;display:inline-flex;align-items:center" class="h1">Search</a>
       </div>
       <div style="margin-top:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:12.5px;color:rgba(255,255,255,0.82)">Popular</span>
         <template data-for="popular" data-as="p">
-          <a href="/browse" style="height:30px;padding:0 13px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
+          <a href="{{ p.href }}" style="height:30px;padding:0 13px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
         </template>
       </div>
     </div>
@@ -138,7 +205,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
               <div style="margin-top:20px;font-size:19px;font-weight:600;letter-spacing:-0.025em">{{ s.title }}</div>
               <p style="margin:8px 0 0;font-size:13.5px;line-height:1.6;color:#4A5147;letter-spacing:-0.005em;text-wrap:pretty">{{ s.body }}</p>
               <div style="margin-top:16px;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:#6B7268;font-variant-numeric:tabular-nums">{{ s.metric }}</div>
-              <a href="/browse" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500">{{ s.cta }}
+              <a href="{{ s.href }}" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500">{{ s.cta }}
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
               </a>
             </div>
@@ -160,25 +227,25 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
       </div>
 
       <div style="margin-top:32px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
-        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+        <a href="/browse?category=fruits" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
           <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.6c-3.1 0-5.2 2.3-5.2 5.4 0 3.5 2.5 6.5 5.2 6.5s5.2-3 5.2-6.5c0-3.1-2.1-5.4-5.2-5.4Z"></path><path d="M12 8.6V7"></path><path d="M12.6 7.6c1.2-1.5 3-1.9 4.2-1.8-.2 1.4-1.5 2.6-3 2.8-.7.1-1.1 0-1.2-.2-.1-.3 0-.6 0-.8Z"></path></svg>
           <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Fruit</span>
           <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catFruit }} commodities reporting</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
         </a>
-        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+        <a href="/browse?category=vegetables" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
           <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M13.8 12.4 6.5 19.7a1 1 0 0 1-1.6-1L10.5 9.3c.9-1.4 3-1.6 4-.6s.7 2.9-.7 3.7Z"></path><path d="M12.9 8.4V4.8"></path><path d="M13.4 7.6c1.3-1.5 2.9-1.7 3.6-1.5"></path><path d="M12.4 7.6C11.2 6.1 9.7 5.9 9 6.1"></path><path d="M11.4 13.6l1.6.7"></path><path d="M9.2 15.8l1.6.7"></path></svg>
           <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Vegetables</span>
           <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catVegetables }} commodities reporting</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
         </a>
-        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+        <a href="/browse?category=onions_potatoes" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
           <svg width="70" height="52" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="14.6" r="5.4"></circle><path d="M9 9.2V4.6"></path><path d="M9 6.6C7.6 5 6.2 4.8 5.5 5"></path><path d="M9 6.6C10.4 5 11.8 4.8 12.5 5"></path><ellipse cx="23.6" cy="16.2" rx="4.6" ry="3.8"></ellipse><circle cx="22.3" cy="15.2" r=".5"></circle><circle cx="25" cy="16.8" r=".5"></circle><circle cx="23" cy="17.8" r=".5"></circle></svg>
           <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Onions &amp; potatoes</span>
           <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catOnions }} commodities reporting</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:22px;align-self:flex-end;margin-bottom:0"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
         </a>
-        <a href="/browse" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
+        <a href="/browse?category=nuts" style="min-width:0;min-height:196px;background:#FBFBF8;border:1px solid #E1E5DB;padding:24px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h6">
           <svg width="70" height="52" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6c3 2.1 3.8 6.7 1.9 10.8-.5 1.1-1.2 2.5-1.9 3.6-.7-1.1-1.4-2.5-1.9-3.6C6.2 12.3 7 7.7 10 5.6Z"></path><path d="M10 7.8v10.2"></path><path d="M22.4 6.4c2.9 2.1 3.7 6.7 1.8 10.8-.5 1.1-1.2 2.5-1.8 3.6-.7-1.1-1.4-2.5-1.8-3.6-1.9-4.1-1.1-8.7 1.8-10.8Z"></path><path d="M22.4 8.6v10"></path></svg>
           <span style="margin-top:auto;align-self:stretch;font-size:18px;font-weight:600;letter-spacing:-0.025em">Nuts</span>
           <span style="margin-top:7px;align-self:stretch;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">{{ catNuts }} commodities reporting</span>
@@ -202,7 +269,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
       </div>
       <div style="min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px">
         <template data-for="terminals" data-as="t">
-          <a href="/browse" style="min-width:0;display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h7">
+          <a href="{{ t.href }}" style="min-width:0;display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h7">
             <span style="min-width:0;flex:1;font-size:15px;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
             <span style="flex:none;font-size:11.5px;color:#8A8F86;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.lines }}</span>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9AA096" stroke-width="2.2" stroke-linecap="round" style="flex:none"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
@@ -224,19 +291,19 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
         <label style="display:block;font-size:13px;color:#3F463C;letter-spacing:-0.005em">Your work email</label>
         <div style="margin-top:10px;display:flex;align-items:stretch">
           <input type="email" placeholder="you@company.com" style="min-width:0;flex:1;height:48px;background:#fff;border:1px solid #DDE2D6;border-right:0;padding:0 16px;font-size:15px;letter-spacing:-0.005em;outline:none;color:#171A16">
-          <button type="button" style="flex:none;height:48px;padding:0 20px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:10px;cursor:pointer" class="h2">Sign me up
+          <button type="button" data-newsletter-open style="flex:none;height:48px;padding:0 20px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:10px;cursor:pointer" class="h2">Sign me up
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
           </button>
         </div>
-        <p style="margin:12px 0 0;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">Signup preview · Email subscriptions are not connected yet.</p>
+        <p style="margin:12px 0 0;font-size:12.5px;color:#7A8476;letter-spacing:-0.005em">Choose the markets and reports you want to receive.</p>
         <div style="margin-top:28px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#9AA096">Grounded in USDA market data</div>
       </div>
     </div>
   </section>
 
   <footer style="margin-top:auto;background:#FAFAF9;border-top:1px solid #EDEEE9;padding:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <img src="/assets/agrax-logo-black.png" alt="AgraX" style="height:14px;width:auto;display:block;opacity:0.55">
-    <span style="font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em">USDA AMS Market News · terminal and shipping point reports · updated 05:26 ET</span>
+    <a href="/" aria-label="AgraX home" style="flex:none;align-self:flex-start;display:inline-flex;align-items:center"><span aria-hidden="true" style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <span style="font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em">AgraX · Independent market intelligence. Not affiliated with USDA.</span>
     <div style="margin-left:auto;display:flex;align-items:center;gap:18px">
       <a href="/browse" style="font-size:12.5px;color:#4A5148">Browse</a>
       <a href="/about" style="font-size:12.5px;color:#4A5148">About the data</a>
@@ -250,9 +317,10 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 
   <div style="flex:none;background:#fff;border-bottom:1px solid #EDEEE9;padding:11px 14px;display:flex;align-items:center;gap:12px">
     <a href="/" style="flex:none;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:68px;height:25px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <a href="/browse" style="flex:none;font-size:13px;color:#186B39;text-decoration:none">Browse</a>
     <div style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:12px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-value="query" data-on-change="onQuery" placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
+      <input data-value="query" data-on-input="onQuery" data-search-input placeholder="Search commodities or prices" style="width:100%;height:38px;background:#F4F4F0;border:0;border-radius:6px;padding:0 14px 0 36px;font-size:15px;outline:none">
     </div>
   </div>
 
@@ -263,13 +331,13 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
       <div style="font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.82)">Grounded in the market.</div>
       <h1 style="margin:12px 0 0;font-size:34px;font-weight:400;letter-spacing:-0.03em;line-height:1.05;color:#fff;text-wrap:balance">From the field.<br>To your next decision.</h1>
       <p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.92);letter-spacing:-0.005em;text-wrap:pretty">The produce market moves every morning. See the prices, the origins, and the details that matter.</p>
-      <a href="/browse" style="margin-top:14px;height:42px;border-radius:21px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:7px" class="h1">Search prices
+      <a href="/browse" data-on-click="onSearch" style="margin-top:14px;height:42px;border-radius:21px;background:#186B39;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:7px" class="h1">Search prices
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
       </a>
       <div style="margin-top:12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:-14px;margin-right:-14px;padding:0 14px">
         <span style="flex:none;font-size:11.5px;color:rgba(255,255,255,0.82);display:inline-flex;align-items:center">Popular</span>
         <template data-for="popular" data-as="p">
-          <a href="/browse" style="flex:none;height:30px;padding:0 12px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
+          <a href="{{ p.href }}" style="flex:none;height:30px;padding:0 12px;border-radius:15px;background:rgba(255,255,255,0.16);color:#fff;font-size:12.5px;display:inline-flex;align-items:center;white-space:nowrap" class="h3">{{ p.name }}</a>
         </template>
       </div>
       <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#DCDFD6;border-radius:8px;overflow:hidden">
@@ -299,7 +367,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
           <p style="margin:7px 0 0;font-size:13px;line-height:1.55;color:#4A5147;letter-spacing:-0.005em;text-wrap:pretty">{{ s.body }}</p>
           <div style="margin-top:12px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
             <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268;font-variant-numeric:tabular-nums">{{ s.metric }}</span>
-            <a href="/browse" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500">{{ s.cta }}
+            <a href="{{ s.href }}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500">{{ s.cta }}
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
             </a>
           </div>
@@ -315,25 +383,25 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <h2 style="margin:12px 0 0;font-size:22px;font-weight:600;letter-spacing:-0.028em;line-height:1.2">Start with what you buy.</h2>
     <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#5A6156;letter-spacing:-0.005em">Four USDA report groups.<br>Every specification, clearly organized.</p>
     <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+      <a href="/browse?category=fruits" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.6c-3.1 0-5.2 2.3-5.2 5.4 0 3.5 2.5 6.5 5.2 6.5s5.2-3 5.2-6.5c0-3.1-2.1-5.4-5.2-5.4Z"></path><path d="M12 8.6V7"></path><path d="M12.6 7.6c1.2-1.5 3-1.9 4.2-1.8-.2 1.4-1.5 2.6-3 2.8-.7.1-1.1 0-1.2-.2-.1-.3 0-.6 0-.8Z"></path></svg>
         <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Fruit</span>
         <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catFruit }} commodities reporting</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
       </a>
-      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+      <a href="/browse?category=vegetables" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.8 12.4 6.5 19.7a1 1 0 0 1-1.6-1L10.5 9.3c.9-1.4 3-1.6 4-.6s.7 2.9-.7 3.7Z"></path><path d="M12.9 8.4V4.8"></path><path d="M13.4 7.6c1.3-1.5 2.9-1.7 3.6-1.5"></path><path d="M12.4 7.6C11.2 6.1 9.7 5.9 9 6.1"></path><path d="M11.4 13.6l1.6.7"></path><path d="M9.2 15.8l1.6.7"></path></svg>
         <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Vegetables</span>
         <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catVegetables }} commodities reporting</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
       </a>
-      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+      <a href="/browse?category=onions_potatoes" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
         <svg width="59" height="44" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="14.6" r="5.4"></circle><path d="M9 9.2V4.6"></path><path d="M9 6.6C7.6 5 6.2 4.8 5.5 5"></path><path d="M9 6.6C10.4 5 11.8 4.8 12.5 5"></path><ellipse cx="23.6" cy="16.2" rx="4.6" ry="3.8"></ellipse><circle cx="22.3" cy="15.2" r=".5"></circle><circle cx="25" cy="16.8" r=".5"></circle><circle cx="23" cy="17.8" r=".5"></circle></svg>
         <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Onions &amp; potatoes</span>
         <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catOnions }} commodities reporting</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A8476" stroke-width="2" stroke-linecap="round" style="margin-top:16px;align-self:flex-end"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
       </a>
-      <a href="/browse" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
+      <a href="/browse?category=nuts" style="min-width:0;min-height:168px;background:#FBFBF8;border:1px solid #E1E5DB;padding:16px;display:flex;flex-direction:column;align-items:center;color:#171A16" class="h5">
         <svg width="59" height="44" viewBox="0 0 32 24" fill="none" stroke="#5E7A55" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6c3 2.1 3.8 6.7 1.9 10.8-.5 1.1-1.2 2.5-1.9 3.6-.7-1.1-1.4-2.5-1.9-3.6C6.2 12.3 7 7.7 10 5.6Z"></path><path d="M10 7.8v10.2"></path><path d="M22.4 6.4c2.9 2.1 3.7 6.7 1.8 10.8-.5 1.1-1.2 2.5-1.8 3.6-.7-1.1-1.4-2.5-1.8-3.6-1.9-4.1-1.1-8.7 1.8-10.8Z"></path><path d="M22.4 8.6v10"></path></svg>
         <span style="margin-top:auto;align-self:stretch;font-size:16px;font-weight:600;letter-spacing:-0.025em">Nuts</span>
         <span style="margin-top:5px;align-self:stretch;font-size:11.5px;color:#7A8476;letter-spacing:-0.005em">{{ catNuts }} commodities reporting</span>
@@ -348,7 +416,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#6B7268;letter-spacing:-0.005em;text-wrap:pretty">Choose a city to see its current published report.</p>
     <div style="margin-top:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px">
       <template data-for="terminals" data-as="t">
-        <a href="/browse" style="min-width:0;display:flex;align-items:center;gap:8px;padding:13px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h5">
+        <a href="{{ t.href }}" style="min-width:0;display:flex;align-items:center;gap:8px;padding:13px 0;border-bottom:1px solid #EDEEE9;color:#171A16" class="h5">
           <span style="min-width:0;flex:1;font-size:13.5px;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
           <span style="flex:none;font-size:10.5px;color:#8A8F86;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.lines }}</span>
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#9AA096" stroke-width="2.2" stroke-linecap="round" style="flex:none"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
@@ -365,17 +433,17 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
     <label style="display:block;margin-top:22px;font-size:12.5px;color:#3F463C;letter-spacing:-0.005em">Your work email</label>
     <div style="margin-top:9px;display:flex;align-items:stretch">
       <input type="email" placeholder="you@company.com" style="min-width:0;flex:1;height:46px;background:#fff;border:1px solid #DDE2D6;border-right:0;padding:0 14px;font-size:14.5px;letter-spacing:-0.005em;outline:none;color:#171A16">
-      <button type="button" style="flex:none;height:46px;padding:0 16px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:8px;cursor:pointer" class="h2">Sign me up
+      <button type="button" data-newsletter-open style="flex:none;height:46px;padding:0 16px;background:#1F5236;color:#fff;border:0;font-family:inherit;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:8px;cursor:pointer" class="h2">Sign me up
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="10 6 18 6 18 14"></polyline></svg>
       </button>
     </div>
-    <p style="margin:11px 0 0;font-size:12px;color:#7A8476;letter-spacing:-0.005em">Signup preview · Email subscriptions are not connected yet.</p>
+    <p style="margin:11px 0 0;font-size:12px;color:#7A8476;letter-spacing:-0.005em">Choose the markets and reports you want to receive.</p>
     <div style="margin-top:22px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#9AA096">Grounded in USDA market data</div>
   </section>
 
   <footer style="margin-top:auto;background:#F4F4F0;border-top:1px solid #EDEEE9;padding:14px;display:flex;flex-direction:column;gap:10px">
-    <img src="/assets/agrax-logo-black.png" alt="AgraX" style="height:13px;width:auto;align-self:flex-start;display:block;opacity:0.55">
-    <span style="font-size:11.5px;line-height:1.5;color:#8A8F86;letter-spacing:-0.005em">USDA AMS Market News · terminal and shipping point reports · updated 05:26 ET</span>
+    <a href="/" aria-label="AgraX home" style="flex:none;align-self:flex-start;display:inline-flex;align-items:center"><span aria-hidden="true" style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <span style="font-size:11.5px;line-height:1.5;color:#8A8F86;letter-spacing:-0.005em">AgraX · Independent market intelligence. Not affiliated with USDA.</span>
     <div style="display:flex;align-items:center;gap:18px">
       <a href="/browse" style="font-size:12.5px;color:#4A5148">Browse</a>
       <a href="/about" style="font-size:12.5px;color:#4A5148">About the data</a>
@@ -397,5 +465,6 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 <script src="/js/agrax-data.js"></script>
 <script src="/js/agrax-search.js"></script>
 <script src="/js/home-app.js"></script>
+<link rel="stylesheet" href="/styles/newsletter.css"><script src="/js/report-choices.js"></script><script src="/js/newsletter.js"></script>
 </body>
 </html>

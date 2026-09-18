@@ -1,0 +1,7 @@
+(function(){
+'use strict';
+const categories={fruits:'Fruit',vegetables:'Vegetables',onions_potatoes:'Onions & potatoes',nuts:'Nuts'};
+const markets=['New York','Los Angeles','Chicago','Philadelphia','Miami','Boston','Atlanta','Baltimore','Detroit','Columbia','Asheville','Raleigh'];
+window.reportChoices={render(host,selected=[]){host.textContent='';markets.forEach(market=>{const field=document.createElement('fieldset'),legend=document.createElement('legend'),choices=document.createElement('div');legend.textContent=market;choices.className='newsletter-choices';field.append(legend,choices);Object.entries(categories).forEach(([category,name])=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.dataset.market=market;input.value=category;input.checked=selected.some(p=>p.market===market&&p.category===category);label.append(input,' '+name);choices.append(label);});host.append(field);});},read(host){return Array.from(host.querySelectorAll('input:checked')).map(i=>({market:i.dataset.market,category:i.value}));}};
+window.newsletterPost=async function(path,data){const response=await fetch(window.agraxAPI.base+'/newsletter/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw Error(typeof result.detail==='string'?result.detail:'Please try again later.');return result;};
+})();

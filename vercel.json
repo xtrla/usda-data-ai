@@ -22,6 +22,14 @@
     {
       "source": "/watchlist",
       "destination": "/browse/index.html"
+    },
+    {
+      "source": "/reports",
+      "destination": "/reports/index.html"
+    },
+    {
+      "source": "/newsletter",
+      "destination": "/newsletter/index.html"
     }
   ],
   "headers": [
