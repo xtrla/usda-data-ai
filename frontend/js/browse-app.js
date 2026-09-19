@@ -119,7 +119,7 @@
       rows = rows.filter(function (r) { return cats.indexOf(r.commodity_type) > -1; });
     }
     if (origins.length) {
-      rows = rows.filter(function (r) { return origins.indexOf(r.origin) > -1; });
+      rows = rows.filter(function (r) { return origins.indexOf(window.agraxCountryOf(r.origin)) > -1; });
     }
     if (sources.length) {
       rows = rows.filter(function (r) { return sources.indexOf(D.priceOf(r).src) > -1; });
@@ -154,7 +154,7 @@
   /* ── SCOPE ── */
 
   function buildFilterGroups() {
-    var rows = marketRows();
+    var rows = currentRows();
     function counts(fn) {
       var m = {};
       rows.forEach(function (r) { var k = fn(r); if (k) m[k] = (m[k] || 0) + 1; });
@@ -164,7 +164,7 @@
     var catNames = { fruits: 'Fruits', vegetables: 'Vegetables',
                      onions_potatoes: 'Onions & Potatoes', nuts: 'Nuts' };
     var catCounts = counts(function (r) { return r.commodity_type; });
-    var originCounts = counts(function (r) { return r.origin; });
+    var originCounts = counts(function (r) { return window.agraxCountryOf(r.origin); });
     var srcCounts = counts(function (r) { return D.priceOf(r).src; });
 
     function opt(group, key, label, count, extra) {
@@ -192,12 +192,11 @@
     });
 
     groups.push({
-      title: 'Shipping point',
+      title: 'Country of origin',
       dirty: activeKeys('origin').length > 0,
       onClear: function () { S.filters.origin = {}; S.page = 0; rerender(); },
       options: Object.keys(originCounts)
-        .sort(function (a, b) { return originCounts[b] - originCounts[a]; })
-        .slice(0, 8)
+        .sort(function (a, b) { return a === 'Not specified' ? 1 : b === 'Not specified' ? -1 : a.localeCompare(b); })
         .map(function (k) { return opt('origin', k, k, originCounts[k]); })
     });
 
@@ -341,6 +340,7 @@
         // A tone word, never a single blended price. One number for a whole
         // market would be an average across 180 commodities.
         toneTxt: chip.label,
+        selectionTxt: m === S.market ? 'Selected' : chip.label,
         up: chip.up, down: chip.down, flat: chip.flat,
         chipDot: chip.chipFg, color: chip.chipFg,
         active: m === S.market,
@@ -541,7 +541,7 @@
       filterGroups: buildFilterGroups(),
       filterSummary: (function () {
         var all = activeKeys('category').concat(activeKeys('origin')).concat(activeKeys('source'));
-        return all.length ? all.join(' ' + MID + ' ') : 'All categories and shipping points';
+        return all.length ? all.join(' ' + MID + ' ') : 'All categories and countries';
       })(),
       onClearAll: function () {
         S.filters = { category: {}, origin: {}, source: {} };
@@ -694,46 +694,40 @@
    * selection looked like it had landed on whichever market happened to be
    * first. Restore the position, then make sure the active pill is visible.
    */
+  // Use coordinates relative to the scroll container. offsetTop/Left may
+  // be relative to the page and can scroll the selected row under the header.
   function restoreStrips() {
     document.querySelectorAll('[data-market-strip]').forEach(function (strip) {
+      if (!strip.clientWidth) return;
       if (stripScrollLeft != null) strip.scrollLeft = stripScrollLeft;
-
       var pill = strip.querySelector('[data-active-pill="true"]');
       if (!pill) return;
-      var left = pill.offsetLeft;
-      var right = left + pill.offsetWidth;
-      var viewL = strip.scrollLeft;
-      var viewR = viewL + strip.clientWidth;
-      // Only move if the selection is actually off-screen; nudging a pill
-      // that is already visible reads as the page twitching.
-      if (left < viewL) {
-        strip.scrollLeft = Math.max(0, left - 14);
-      } else if (right > viewR) {
-        strip.scrollLeft = right - strip.clientWidth + 14;
+      var bounds = strip.getBoundingClientRect(), item = pill.getBoundingClientRect();
+      if (stripMarket !== S.market || item.left < bounds.left || item.right > bounds.right) {
+        strip.scrollLeft += item.left - bounds.left - (strip.clientWidth - item.width) / 2;
       }
+      stripMarket = S.market;
     });
   }
+  var stripScrollLeft = null, stripMarket = null;
 
-  var stripScrollLeft = null;
-
-  /* Same problem on the desktop rail, which scrolls vertically: picking a
-   * market low in the list snapped the rail back to the top. */
   function restoreRail() {
     var rail = document.querySelector('[data-market-rail]');
-    if (!rail) return;
+    if (!rail || !rail.clientHeight) return;
     if (railScrollTop != null) rail.scrollTop = railScrollTop;
-
     var row = rail.querySelector('[data-active-pill="true"]');
     if (!row) return;
-    var top = row.offsetTop, bottom = top + row.offsetHeight;
-    if (top < rail.scrollTop) {
-      rail.scrollTop = Math.max(0, top - 8);
-    } else if (bottom > rail.scrollTop + rail.clientHeight) {
-      rail.scrollTop = bottom - rail.clientHeight + 8;
+    var bounds = rail.getBoundingClientRect(), item = row.getBoundingClientRect();
+    if (railMarket !== S.market || item.top < bounds.top || item.bottom > bounds.bottom) {
+      rail.scrollTop += item.top - bounds.top - (rail.clientHeight - item.height) / 2;
     }
+    railMarket = S.market;
   }
+  var railScrollTop = null, railMarket = null;
 
-  var railScrollTop = null;
+  window.addEventListener('resize', function () {
+    requestAnimationFrame(function () { restoreStrips(); restoreRail(); });
+  });
 
   function captureStrips() {
     var strip = document.querySelector('[data-market-strip]');
@@ -806,7 +800,7 @@
     ['category', 'origin', 'source'].forEach(function (group) {
       params.getAll(group).forEach(function (value) {
         if (group !== 'category' || REPORT_GROUPS.some(function (g) { return g.key === value; })) {
-          S.filters[group][value] = true;
+          S.filters[group][group === 'origin' ? window.agraxCountryOf(value) : value] = true;
         }
       });
     });

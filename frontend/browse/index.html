@@ -173,6 +173,10 @@
 .mobile-report-link small{display:block;font-size:10px;color:#6B7665;margin-top:4px}
 .mobile-report-link svg{flex:none;color:#70836A}
 .mobile-overview :focus-visible{outline:2px solid #186B39;outline-offset:-3px}
+
+[data-market-city][aria-pressed=true]{background:#e6f0e3!important;color:#174f2c!important;box-shadow:inset 3px 0 #186b39}
+[data-market-city][aria-pressed=true]>span:last-child{color:#186b39!important;font-weight:600}
+[data-market-city]:focus-visible,[data-market-pill]:focus-visible{outline:2px solid #186b39;outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -243,15 +247,15 @@
           </div>
           <div style="flex:1;height:0;min-height:0;overflow-y:auto;scrollbar-width:thin" data-market-rail>
             <template data-for="terminals" data-as="t">
-              <span data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
+              <button type="button" aria-pressed="{{ t.active }}" data-market-city data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:#fff;color:inherit;font:inherit;height:36px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
                 <template data-if="t.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
                 <template data-if="t.up"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#186B39;flex:none"></span></template>
                 <template data-if="t.down"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#8A4B2A;flex:none"></span></template>
                 <template data-if="t.flat"><span style="position:relative;width:5px;height:5px;border-radius:50%;border:1px solid #6B7268;flex:none"></span></template>
                 <span style="position:relative;min-width:0;flex:1;font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
                 <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268;font-variant-numeric:tabular-nums">{{ t.skuCount }}</span>
-                <span style="position:relative;font-size:10.5px;color:#4A5148;white-space:nowrap;width:44px;text-align:right">{{ t.toneTxt }}</span>
-              </span>
+                <span style="position:relative;font-size:10.5px;color:#4A5148;white-space:nowrap;width:44px;text-align:right">{{ t.selectionTxt }}</span>
+              </button>
             </template>
           </div>
         </div>
@@ -315,6 +319,7 @@
               <span style="font-size:12px;font-weight:600;letter-spacing:-0.01em;color:#171A16">{{ g.title }}</span>
               <template data-if="g.dirty"><span data-on-click="g.onClear" style="margin-left:auto;font-size:12px;color:#186B39;cursor:pointer">Clear</span></template>
             </div>
+            <div style="max-height:256px;overflow-y:auto;overscroll-behavior:contain">
             <template data-for="g.options" data-as="o">
               <div data-on-click="o.onToggle" style="position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:7px;cursor:pointer" class="h4">
                 <template data-if="o.on"><span style="position:absolute;inset:0;border-radius:7px;background:#F0F6F1"></span></template>
@@ -326,6 +331,7 @@
                 <template data-if="o.on"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="position:relative;flex:none"><polyline points="5 13 10 18 19 7"></polyline></svg></template>
               </div>
             </template>
+            </div>
           </div>
           </template>
 
@@ -461,10 +467,10 @@
 
     <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
       <template data-for="terminals" data-as="t">
-        <span data-market-pill data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="flex:none;height:32px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:#fff;color:#4A5148;border:1px solid #E0E4DC">
-          <span style="width:5px;height:5px;border-radius:50%;background:{{ t.chipDot }}"></span>{{ t.name }}
+        <button type="button" aria-pressed="{{ t.active }}" data-market-pill data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="font-family:inherit;flex:none;height:36px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:#fff;color:#4A5148;border:1px solid #E0E4DC">
+          <span style="width:5px;height:5px;border-radius:50%;background:{{ t.chipDot }}"></span>{{ t.name }}<template data-if="t.active"><span aria-hidden="true">✓</span></template>
           <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;opacity:0.7">{{ t.skuCount }}</span>
-        </span>
+        </button>
       </template>
     </div>
 
@@ -612,7 +618,8 @@
 <script src="/js/commodity-quotes.js?v=2"></script>
 <script src="/js/commodity-dialog.js?v=2"></script>
 <link rel="stylesheet" href="/styles/commodity-dialog.css?v=2">
-<script src="/js/browse-app.js?v=commodity-dialog-2"></script>
+<script src="/js/origin-country.js"></script>
+<script src="/js/browse-app.js?v=country-origin-1"></script>
 <link rel="stylesheet" href="/styles/account.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
