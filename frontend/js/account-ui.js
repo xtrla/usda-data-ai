@@ -189,21 +189,44 @@
       if (host.dataset.accountState === key) return;
       host.dataset.accountState = key;
       host.replaceChildren();
-      const toggle = button('',()=>{
-        if(menu.matches(':popover-open')) menu.hidePopover(); else menu.showPopover();
-      },'account-avatar');
+      const mobileHeader = host.closest('.home-header, .browse-mobile-header');
+      if (mobileHeader) host.classList.add('mobile-navigation');
+      const toggle = button('',()=>{},'account-avatar');
       toggle.setAttribute('aria-label','Account menu');
       toggle.setAttribute('aria-expanded','false');
       toggle.innerHTML='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2Z"/></svg>';
+      if (mobileHeader) {
+        toggle.firstChild.classList.add('desktop-account-icon');
+        toggle.insertAdjacentHTML('beforeend','<svg class="mobile-menu-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>');
+        const updateLabel = () => toggle.setAttribute('aria-label', matchMedia('(max-width:899px)').matches ? 'Open navigation menu' : 'Account menu');
+        updateLabel();
+        window.addEventListener('resize', updateLabel);
+      }
       const menu=element('div','',{class:'account-menu',popover:'auto'});
       const id='account-menu-'+(++menuSequence);menu.id=id;toggle.setAttribute('aria-controls',id);
+      toggle.setAttribute('popovertarget',id);
+      toggle.setAttribute('popovertargetaction','toggle');
+      if (mobileHeader) {
+        menu.classList.add('mobile-navigation-panel');
+        const navigation = element('nav','',{class:'mobile-menu-links','aria-label':'Main navigation'});
+        navigation.append(element('a','Browse markets',{href:'/browse',class:'account-menu-item'}));
+        const marketLink = mobileHeader.querySelector('.home-header__nav a[href^="#"]');
+        if (marketLink) navigation.append(element('a','Markets',{href:marketLink.getAttribute('href'),class:'account-menu-item'}));
+        navigation.append(actionLink('My watchlist','watchlist'),actionLink('Preferred market','settings'));
+        function actionLink(label,next) { return button(label,()=>{menu.hidePopover();open(next);opener=toggle;},'account-menu-item'); }
+        navigation.addEventListener('click',event=>{if(event.target.closest('a'))menu.hidePopover();});
+        menu.append(navigation);
+      }
       menu.addEventListener('toggle',()=>{
         const expanded=menu.matches(':popover-open');toggle.setAttribute('aria-expanded',String(expanded));
         if(expanded){const rect=toggle.getBoundingClientRect();menu.style.top=(rect.bottom+8)+'px';menu.style.left=Math.max(12,Math.min(rect.right-240,innerWidth-252))+'px';}
       });
-      const action=(label,next)=>button(label,()=>{menu.hidePopover();open(next);},'account-menu-item');
+      const action=(label,next)=>button(label,()=>{menu.hidePopover();open(next);opener=toggle;},'account-menu-item');
       if(account.user()) {
-        menu.append(action('Account settings','settings'),action('My watchlist','watchlist'));
+        const settingsAction = action('Account settings','settings');
+        const watchAction = action('My watchlist','watchlist');
+        if (mobileHeader) { settingsAction.classList.add('desktop-menu-action'); watchAction.classList.add('desktop-menu-action'); }
+        menu.append(settingsAction,watchAction);
         menu.append(button('Sign out',async()=>{try{await account.signOut();menu.hidePopover();}catch(error){menu.hidePopover();open('settings');status(error.message,true);}},'account-menu-item'));
         host.append(button('My watchlist',()=>open('watchlist')),toggle,menu);
       } else {

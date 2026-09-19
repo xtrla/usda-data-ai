@@ -147,7 +147,7 @@
 .browse-mobile-header{background:#fff;padding:12px 14px;border-bottom:1px solid #E7EAE3}
 .browse-mobile-header__top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .browse-mobile-logo{flex:none;display:block}
-.browse-mobile-logo span{display:block;width:68px;height:25px;background:#072B18;mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat;-webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat}
+.browse-mobile-logo span{display:block;background:#072B18;mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat;-webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat}
 .browse-mobile-header .account-actions{flex-wrap:nowrap;gap:4px}
 .browse-mobile-header .account-actions button{min-height:40px;padding:0 10px;font-size:12px;white-space:nowrap}
 .browse-mobile-search{position:relative;display:flex;align-items:center;color:#788173}
@@ -201,7 +201,7 @@
   <template data-if="wide">
   <header style="background:#fff;border-bottom:1px solid #EDEEE9;padding:0 20px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
+    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span class="site-header-logo" style="display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <nav style="display:flex;align-items:center;gap:2px;flex:none">
       <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
 
@@ -456,7 +456,7 @@
 
     <header class="browse-mobile-header">
       <div class="browse-mobile-header__top">
-        <a href="/" aria-label="AgraX home" class="browse-mobile-logo"><span aria-hidden="true"></span></a>
+        <a href="/" aria-label="AgraX home" class="browse-mobile-logo"><span class="site-header-logo" aria-hidden="true"></span></a>
         <div class="account-actions" data-account-actions></div>
       </div>
       <div class="browse-mobile-search">

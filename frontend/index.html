@@ -105,7 +105,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 .home-header { background:#fff; border-bottom:1px solid #E3E7DF; padding:0 20px; }
 .home-header__inner { max-width:1440px; min-height:76px; margin:0 auto; display:flex; align-items:center; gap:48px; }
 .home-header__brand { flex:none; display:inline-flex; align-items:center; min-height:44px; }
-.home-header__logo { width:88px; height:32px; display:block; background:#072B18; mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; -webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; }
+.home-header__logo { display:block; background:#072B18; mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; -webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat; }
 .home-header__nav { display:flex; align-items:center; gap:28px; }
 .home-header__nav a { display:inline-flex; align-items:center; min-height:44px; color:#4A5147; font-size:14px; font-weight:500; white-space:nowrap; }
 .home-header__nav a:hover { color:#186B39; }
@@ -115,7 +115,6 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 @media (max-width:899px) {
   .home-header { padding:0 14px; }
   .home-header__inner { min-height:0; padding-top:12px; gap:8px 16px; flex-wrap:wrap; }
-  .home-header__logo { width:78px; height:29px; }
   .home-header__cta { min-height:40px; padding:0 12px; font-size:12px; gap:8px; }
   .home-header__nav { order:3; width:100%; justify-content:space-between; gap:12px; border-top:1px solid #F0F1EC; }
   .home-header__nav a { font-size:12px; }
@@ -160,7 +159,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 
   <header class="home-header">
     <div class="home-header__inner">
-      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo" aria-hidden="true"></span></a>
+      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo site-header-logo" aria-hidden="true"></span></a>
       <nav class="home-header__nav" aria-label="Main navigation">
         <a href="/browse">Browse prices</a>
         <a href="#markets-wide">Markets</a>
@@ -332,7 +331,7 @@ body { margin:0; background:#FAFAF9; font-family:'Geist', -apple-system, BlinkMa
 
   <header class="home-header">
     <div class="home-header__inner">
-      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo" aria-hidden="true"></span></a>
+      <a href="/" class="home-header__brand" aria-label="AgraX home"><span class="home-header__logo site-header-logo" aria-hidden="true"></span></a>
       <nav class="home-header__nav" aria-label="Main navigation">
         <a href="/browse">Browse prices</a>
         <a href="#markets-narrow">Markets</a>
