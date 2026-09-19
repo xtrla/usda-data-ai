@@ -57,7 +57,13 @@
     if (!S.market) return;
     var params = new URLSearchParams();
     params.set('market', S.market);
-    if (S.detail) params.set('c', S.detail);
+    if (S.detail) {
+      params.set('c', S.detail);
+      var existing = new URLSearchParams(window.location.search);
+      ['quote_variety','quote_origin'].forEach(function (key) {
+        if (existing.has(key)) params.set(key, existing.get(key));
+      });
+    }
     if (S.tableQuery) params.set('q', S.tableQuery);
     ['category', 'origin', 'source'].forEach(function (group) {
       activeKeys(group).forEach(function (value) { params.append(group, value); });
@@ -359,27 +365,16 @@
     return {
       total: list.length,
       rows: page.map(function (c) {
-        var isOpen = !!S.expanded[c.name];
-        var skus = D.skuRows(c.rows, fob).map(function (s) {
-          s.onSelect = function () {
-            S.openPrice[c.name] = (S.openPrice[c.name] === s.key) ? null : s.key;
-            rerender();
-          };
-          s.expanded = S.openPrice[c.name] === s.key;
-          s.collapsed = !s.expanded;
-          if (s.expanded) attachDetail(s, c);
-          return s;
-        });
         return Object.assign({}, c, {
-          expanded: isOpen,
-          collapsed: !isOpen,
+          expanded: false,
+          collapsed: true,
           active: S.detail === c.name,
-          skus: isOpen ? skus.slice(0, 8) : [],
+          skus: [],
           moreTxt: c.skuCount > 8 ? (c.skuCount - 8) + ' more prices in the full report' : '',
           skusTxt: String(c.skuCount),
-          onToggle: function () { S.expanded[c.name] = !S.expanded[c.name]; rerender(); },
-          onSelect: function () { S.detail = c.name; scrollToTop(); rerender(); },
-          onDetails: function () { S.detail = c.name; scrollToTop(); rerender(); }
+          onToggle: function () { S.detail = c.name; rerender(); },
+          onSelect: function () { S.detail = c.name; rerender(); },
+          onDetails: function () { S.detail = c.name; rerender(); }
         });
       })
     };
@@ -511,7 +506,7 @@
 
   function buildScope() {
     var table = buildCommodityRows();
-    var detail = buildDetail();
+    var detail = null;
     var pageCount = Math.max(1, Math.ceil(table.total / S.pageSize));
 
     var sorters = buildSortHandlers();
@@ -553,8 +548,8 @@
         S.page = 0; rerender();
       },
 
-      browseMode: !S.detail,
-      detailMode: !!S.detail,
+      browseMode: true,
+      detailMode: false,
       commodity: detail,
       movement: detail ? (S.movementCache[S.detail] || { has: false, none: true,
                           emptyTxt: 'Loading movement\u2026', rows: [] }) : { has: false, none: true, rows: [] },
@@ -608,7 +603,7 @@
           return {
             name: c.name, skusTxt: c.skusTxt, active: c.name === S.detail,
             up: c.up, down: c.down, flat: c.flat,
-            onSelect: function () { S.detail = c.name; scrollToTop(); rerender(); }
+            onSelect: function () { S.detail = c.name; rerender(); }
           };
         });
       })(),
@@ -661,7 +656,7 @@
       mTabs: []
     };
 
-    if (S.detail && !S.movementCache[S.detail]) loadMovement(S.detail, detail);
+
     return scope;
   }
 
@@ -771,6 +766,9 @@
       captureStrips();
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
       if (window.agraxAccountUI) window.agraxAccountUI.mount();
+      window.agraxCommodityDialog.render(S.detail, currentRows(), S.market, function () {
+        S.detail = null; syncLocation();
+      });
       restoreStrips();
       restoreRail();
       applyScroll();

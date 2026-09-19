@@ -1,0 +1,58 @@
+.commodity-open{font:inherit;font-weight:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;padding:8px 0;text-align:left;cursor:pointer}
+.commodity-open:focus-visible{outline:2px solid #186b39;outline-offset:3px;border-radius:3px}
+body.commodity-dialog-open{overflow:hidden}
+.commodity-dialog{padding:0;border:1px solid #dbe3d8;border-radius:16px;width:1240px;max-width:calc(100vw - 40px);max-height:calc(100dvh - 48px);color:#17251c;background:#fff;box-shadow:0 24px 100px #12261938;overflow:auto}
+.commodity-dialog::backdrop{background:#10231870;backdrop-filter:blur(3px)}
+.commodity-dialog__header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border-bottom:1px solid #e3e9df;background:#fff;position:sticky;top:0;z-index:2}
+.commodity-dialog__eyebrow{margin:0 0 5px;font-size:12px;color:#677461}
+.commodity-dialog h1{font-size:28px;letter-spacing:-.03em;margin:0;font-weight:600}
+.commodity-dialog__close{font:28px/1 system-ui;color:#536258;background:#f2f5ef;border:0;border-radius:50%;width:40px;height:40px;flex:none;cursor:pointer}
+.commodity-dialog__body{padding:20px 26px 26px}
+.commodity-dialog__overview{display:flex;align-items:center;gap:22px;flex-wrap:wrap;font-size:12px;color:#677461}
+.commodity-dialog__overview strong{font-size:18px;color:#213720;font-weight:500;margin-right:3px}
+.commodity-dialog__overview a{margin-left:auto;font-size:12px;color:#186b39}
+.commodity-dialog__note{font-size:12px;color:#677461;line-height:1.6;margin:16px 0}
+.commodity-dialog__filters{display:flex;align-items:end;gap:12px;margin:18px 0}
+.commodity-dialog__filters label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:#677461;min-width:0}
+.commodity-dialog select{font:13px 'Geist',system-ui;max-width:260px;width:100%;height:40px;border:1px solid #dbe3d8;border-radius:7px;background:white;color:#233721;padding:0 30px 0 10px}
+.commodity-dialog__count{font-size:11px;color:#677461;margin-left:auto;white-space:nowrap;padding-bottom:12px}
+.commodity-dialog .table-wrap{overflow:auto;border:1px solid #e1e7dd;border-radius:8px}
+.commodity-dialog table{width:100%;min-width:940px;table-layout:fixed;border-collapse:collapse;font-size:12px;line-height:1.5}
+.commodity-dialog th{text-align:left;padding:12px 10px;color:#62705d;font-size:10.5px;font-weight:500;background:#fafbf8;border-bottom:1px solid #d9e2d4}
+.commodity-dialog td{padding:13px 10px;vertical-align:top;border-bottom:1px solid #e4e9e1;overflow-wrap:anywhere}
+.commodity-dialog tr:last-child td{border-bottom:0}
+.commodity-dialog .commodity-head{background:#eef3ed;padding:14px 12px}
+.commodity-dialog .commodity-head h2{margin:0;color:#253922;font-size:16px}
+.commodity-dialog .tone{font-size:11px;margin:5px 0 0;color:#5f7058}
+.commodity-dialog .price{font-weight:600;font-variant-numeric:tabular-nums}
+.commodity-dialog .mostly{display:block;font-size:11px;font-weight:400;color:#536258;margin-top:4px}
+.commodity-dialog :focus-visible{outline:2px solid #186b39;outline-offset:2px}
+.commodity-empty{padding:20px;background:#f5f7f2}
+@media(max-width:699px){.commodity-dialog{max-width:100vw;width:100vw;max-height:100dvh;height:100dvh;margin:0;border:0;border-radius:0}.commodity-dialog__header{padding:16px}.commodity-dialog h1{font-size:25px}.commodity-dialog__body{padding:16px}.commodity-dialog__overview{gap:10px 16px}.commodity-dialog__overview a{margin-left:0;width:100%}.commodity-dialog__filters{flex-wrap:wrap}.commodity-dialog__filters label{flex:1}.commodity-dialog select{font-size:16px;max-width:100%}.commodity-dialog__count{width:100%;padding:0}.commodity-dialog .table-wrap{margin:0 -16px;border-radius:0;border-left:0;border-right:0}}
+.commodity-dialog__actions{display:flex;gap:8px;margin:12px 0}
+.commodity-dialog__actions button{font:500 12px 'Geist',system-ui;min-height:40px;padding:0 14px;border:1px solid #cfdac9;border-radius:7px;background:#fff;color:#245434;cursor:pointer}
+.commodity-dialog__actions button:last-child{background:#245434;color:white;border-color:#245434}
+.commodity-dialog__actions button:disabled{opacity:.5;cursor:default}
+.commodity-share-status{font-size:12px;color:#536258;margin:0;overflow-wrap:anywhere}
+.commodity-share-status:empty{display:none}
+.commodity-share-status input{width:100%;padding:10px;font:inherit}
+@media screen and (max-width:699px){
+.commodity-dialog .table-wrap{overflow:visible;margin:0;border:0}
+.commodity-dialog table,.commodity-dialog tbody{display:block;min-width:0;width:100%}
+.commodity-dialog colgroup,.commodity-dialog .column-headings{display:none}
+.commodity-dialog thead,.commodity-dialog thead tr,.commodity-dialog .commodity-head{display:block;border:0;border-radius:8px}
+.commodity-dialog thead{margin-bottom:12px}
+.commodity-dialog tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(125px,.85fr);grid-template-areas:'variety price' 'size price' 'origin origin' 'package package' 'grade grade' 'notes notes';gap:6px 12px;border:1px solid #dfe6d9;border-radius:10px;padding:14px;margin-bottom:10px;background:#fff}
+.commodity-dialog td{display:block;padding:0;border:0;overflow-wrap:anywhere;font-size:12px}
+.commodity-dialog td::before{content:attr(data-label);display:inline;color:#73806b;font-size:10px;margin-right:8px;font-weight:400}
+.commodity-dialog td:nth-child(1){grid-area:variety;font-weight:600;font-size:13px}
+.commodity-dialog td:nth-child(1)::before{display:none}
+.commodity-dialog td:nth-child(2){grid-area:origin;border-top:1px solid #edf0e9;padding-top:10px;margin-top:5px}
+.commodity-dialog td:nth-child(3){grid-area:package}
+.commodity-dialog td:nth-child(4){grid-area:size}
+.commodity-dialog td:nth-child(5){grid-area:grade}
+.commodity-dialog td:nth-child(6){grid-area:price;text-align:right;font-size:16px;color:#204c2f;font-weight:600;line-height:1.4}
+.commodity-dialog td:nth-child(6)::before{display:block;margin:0 0 4px}
+.commodity-dialog td:nth-child(7){grid-area:notes}
+.commodity-dialog .mostly{font-size:11px}
+}

@@ -174,11 +174,11 @@
           try { await account.toggle(name); }
           catch (error) { open('watchlist'); status('Could not save this commodity. Please try again.',true); }
         },'watch-button');
+        control.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91L12 3Z"/></svg>';
         // Stop the containing commodity row's expand action.
         host.addEventListener('click', event => event.stopPropagation());
         host.append(control);
       }
-      control.textContent = account.has(name) ? '★' : '☆';
       control.setAttribute('aria-label',(account.has(name) ? 'Remove ' : 'Save ') + name + (account.has(name) ? ' from watchlist' : ' to watchlist'));
       control.setAttribute('aria-pressed',String(account.has(name)));
       control.disabled = account.pending(name);

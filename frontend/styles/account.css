@@ -22,9 +22,12 @@
 .account-watch-list li{display:flex;align-items:center;gap:12px;border-bottom:1px solid #E3E7DF;padding:12px 0}
 .account-watch-list a{flex:1;color:#1F5236}
 .account-watch-list button{border:0;background:none;color:#626C5D;min-height:40px}
-.watch-button{border:1px solid #DCE2D6;border-radius:6px;background:#fff;color:#1F5236;min-height:34px;min-width:34px;padding:5px 9px;flex:none}
-.watch-button[aria-pressed=true]{background:#EAF1E5;border-color:#B3C7A8}
-[data-watch-commodity]{display:inline-flex;vertical-align:middle;margin-left:8px;position:relative}
+.watch-button{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:#858D83;min-height:34px;min-width:34px;padding:9px;flex:none;transition:color .15s,background-color .15s}
+.watch-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.watch-button[aria-pressed=true]{color:#416849}
+.watch-button[aria-pressed=true] svg{fill:currentColor}
+@media(hover:hover){.watch-button:hover{background:#EAF0E6;color:#1F5236}}
+[data-watch-commodity]{display:inline-flex;vertical-align:middle;margin-left:3px;position:relative}
 .account-actions :focus-visible,.account-dialog :focus-visible,.watch-button:focus-visible{outline:2px solid #186B39;outline-offset:3px}
 .account-browse-mobile{padding:4px 14px;background:white;border-bottom:1px solid #EDEEE9;justify-content:flex-end}
 @media(max-width:899px){.home-header__inner{gap:8px}.account-actions{gap:4px}.account-actions button{padding:0 10px;font-size:12px}.account-actions a{font-size:12px}.account-dialog{padding:24px}.account-dialog input,.account-dialog select{font-size:16px}}

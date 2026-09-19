@@ -3,3 +3,25 @@
 /* Keep the commodity identity inside the repeating table header when printing. */
 th.commodity-head{color:#17251c;font-weight:400;border-bottom:0}th.commodity-head h2{font-weight:700}.commodity-head .tone{font-weight:400}
 @media print{.table-wrap{overflow:visible!important;border:0}table{break-inside:auto}thead{display:table-header-group;break-inside:avoid;break-after:avoid;page-break-inside:avoid;page-break-after:avoid}tbody{break-inside:auto}tr{break-inside:avoid;page-break-inside:avoid}.commodity-head{break-after:avoid}.mostly{break-before:avoid}}
+
+/* Keep prices visible on phones; printed reports retain their full table. */
+@media screen and (max-width:699px){
+.table-wrap{overflow:visible;margin:0;border:0}
+table,tbody{display:block;min-width:0;width:100%}
+colgroup,.column-headings{display:none}
+thead,thead tr,.commodity-head{display:block;border:0;border-radius:8px}
+thead{margin-bottom:12px}
+tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(125px,.85fr);grid-template-areas:'variety price' 'size price' 'origin origin' 'package package' 'grade grade' 'notes notes';gap:6px 12px;border:1px solid #dfe6d9;border-radius:10px;padding:14px;margin-bottom:10px;background:#fff}
+td{display:block;padding:0;border:0;overflow-wrap:anywhere;font-size:12px}
+td::before{content:attr(data-label);display:inline;color:#73806b;font-size:10px;margin-right:8px;font-weight:400}
+td:nth-child(1){grid-area:variety;font-weight:600;font-size:13px}
+td:nth-child(1)::before{display:none}
+td:nth-child(2){grid-area:origin;border-top:1px solid #edf0e9;padding-top:10px;margin-top:5px}
+td:nth-child(3){grid-area:package}
+td:nth-child(4){grid-area:size}
+td:nth-child(5){grid-area:grade}
+td:nth-child(6){grid-area:price;text-align:right;font-size:16px;color:#204c2f;font-weight:600;line-height:1.4}
+td:nth-child(6)::before{display:block;margin:0 0 4px}
+td:nth-child(7){grid-area:notes}
+.mostly{font-size:11px}
+}
