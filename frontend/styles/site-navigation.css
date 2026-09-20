@@ -1,0 +1,64 @@
+.agrax-header{position:relative;z-index:30;display:block!important;height:60px;min-height:60px;box-sizing:border-box;padding:0 20px!important;margin:0;border:0;border-bottom:1px solid #e3e7df;background:#fff;color:#173d27;font:14px/1.4 'Geist',system-ui,sans-serif;flex:none}
+.agrax-header *{box-sizing:border-box}
+.agrax-header-inner{position:relative;display:flex;align-items:center;gap:32px;height:59px;max-width:1440px;margin:auto}
+.agrax-header .agrax-brand{display:flex;align-items:center;flex:none;width:80px;height:44px}
+.agrax-brand span{display:block;width:80px;height:30px;background:#173d27;mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat;-webkit-mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat}
+.agrax-header .agrax-browse-link{margin-left:auto;color:#354331;text-decoration:none;font-size:14px}
+.agrax-header .agrax-menu-toggle{display:flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;min-height:44px;padding:0;margin:0;border:0;border-radius:6px;background:transparent;color:#173d27;cursor:pointer}
+.agrax-header .agrax-menu-toggle:hover,.agrax-header .agrax-menu-toggle[aria-expanded=true]{background:#eef3eb}
+.agrax-header .agrax-navigation{position:absolute;top:59px;right:0;display:flex;flex-direction:column;gap:2px;width:300px;max-width:calc(100vw - 28px);max-height:calc(100dvh - 80px);overflow:auto;margin:0;padding:14px;border:1px solid #e3e7df;border-radius:0 0 12px 12px;background:white;box-shadow:0 16px 40px #173d271a}
+.agrax-header .agrax-navigation[hidden]{display:none}
+.agrax-navigation>a{display:block;padding:12px;color:#354331;text-decoration:none;border-radius:6px;font:14px/1.4 'Geist',system-ui,sans-serif}
+.agrax-navigation>a:hover{background:#f1f5ed}
+.agrax-navigation form{display:flex;border:1px solid #dce2d6;border-radius:6px;margin-bottom:8px}
+.agrax-navigation input{width:100%;min-width:0;border:0;background:transparent;padding:12px;font:16px system-ui;color:#173d27}
+.agrax-navigation form button{border:0;background:transparent;color:#173d27;min-width:44px;margin:0;cursor:pointer}
+.agrax-navigation .account-actions{margin:8px 0 0;padding:12px 0 0;border-top:1px solid #e3e7df;justify-content:space-between;gap:8px}
+.agrax-header :focus-visible{outline:2px solid #186b39;outline-offset:3px}
+@media(max-width:599px){.agrax-header{padding:0 14px!important}.agrax-header-inner{gap:16px}}
+@media print{.agrax-header{display:none!important}}
+
+@media(min-width:900px){
+  .agrax-header .agrax-menu-toggle,.agrax-header .agrax-browse-link{display:none}
+  .agrax-header .agrax-navigation{position:static;display:flex;flex:1;flex-direction:row;align-items:center;gap:16px;width:auto;max-width:none;max-height:none;overflow:visible;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent}
+  .agrax-navigation>a{flex:none;padding:10px 0;white-space:nowrap}
+  .agrax-navigation>a[href="/"],.agrax-navigation>a[href="/privacy"]{display:none}
+  .agrax-navigation form{order:1;flex:1;max-width:320px;margin:0 0 0 auto}
+  .agrax-navigation input{font-size:14px;padding:9px 12px}
+  .agrax-navigation .account-actions{order:2;flex:none;flex-wrap:nowrap;margin:0 0 0 8px;padding:0;border:0}
+}
+@media(max-width:899px){
+  .agrax-header .agrax-brand{width:68px}
+  .agrax-brand span{width:68px;height:25px}
+}
+
+.agrax-header .agrax-search-toggle{display:none;align-items:center;justify-content:center;width:44px;height:44px;flex:none;margin:0 0 0 auto;padding:0;border:0;border-radius:6px;background:transparent;color:#173d27;cursor:pointer}
+.agrax-header .agrax-search-toggle:hover,.agrax-header .agrax-search-toggle[aria-expanded=true]{background:#eef3eb}
+@media(max-width:899px){
+  .agrax-header .agrax-search-toggle{display:flex}
+  .agrax-header-inner{gap:8px}
+  #agrax-header-search{display:none;position:absolute;top:59px;left:0;right:0;align-items:center;margin:0;padding:8px;background:#fff;border:1px solid #dce2d6;border-radius:0 0 10px 10px;box-shadow:0 12px 24px #173d271a}
+  #agrax-header-search.is-open{display:flex}
+  #agrax-header-search input{flex:1;min-width:0;width:100%;padding:12px;border:0;background:#f4f6f1;border-radius:6px;color:#173d27;font:16px system-ui}
+  #agrax-header-search button{flex:none;width:44px;height:44px;margin:0;padding:0;border:0;background:transparent;color:#173d27;font-size:22px;cursor:pointer}
+}
+
+.agrax-navigation form{background:#f5f6f3;border-color:transparent;border-radius:8px}
+.agrax-navigation form:focus-within{background:#fff;border-color:#a8b9a2}
+.agrax-navigation form button{display:flex;align-items:center;justify-content:center;order:-1;padding:0;color:#7b8476}
+.agrax-navigation form input{padding-left:0}
+.agrax-navigation>a[aria-current="page"]{color:#173d27;font-weight:600}
+@media(min-width:900px){
+  .agrax-header .agrax-navigation{gap:24px}
+  .agrax-navigation>a{font-size:13px;color:#66715f}
+  .agrax-header .account-actions .account-primary{min-height:36px;font-size:12px;padding:0 14px}
+  .agrax-header .account-actions .account-avatar{background:transparent;width:36px;height:36px;min-height:36px}
+  .agrax-header .account-actions .account-avatar:hover{background:#eef3eb}
+}
+@media(max-width:899px){
+  .agrax-header{height:52px;min-height:52px;padding:0 12px!important}
+  .agrax-header-inner{height:51px}
+  .agrax-header .agrax-navigation,#agrax-header-search{top:51px}
+  .agrax-header .agrax-navigation{max-height:calc(100dvh - 64px)}
+  #agrax-header-search button{display:flex;align-items:center;justify-content:center}
+}

@@ -147,7 +147,7 @@
 .browse-mobile-header{background:#fff;padding:12px 14px;border-bottom:1px solid #E7EAE3}
 .browse-mobile-header__top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .browse-mobile-logo{flex:none;display:block}
-.browse-mobile-logo span{display:block;background:#072B18;mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat;-webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat}
+.browse-mobile-logo span{display:block;width:68px;height:25px;background:#072B18;mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat;-webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat}
 .browse-mobile-header .account-actions{flex-wrap:nowrap;gap:4px}
 .browse-mobile-header .account-actions button{min-height:40px;padding:0 10px;font-size:12px;white-space:nowrap}
 .browse-mobile-search{position:relative;display:flex;align-items:center;color:#788173}
@@ -178,8 +178,10 @@
 [data-market-city][aria-pressed=true]>span:last-child{color:#186b39!important;font-weight:600}
 [data-market-city]:focus-visible,[data-market-pill]:focus-visible{outline:2px solid #186b39;outline-offset:-3px}
 </style>
+<link rel="stylesheet" href="/styles/site-navigation.css">
 </head>
 <body>
+<script src="/js/site-navigation.js"></script>
 
 <!-- Markup exported from Claude Design, unmodified apart from link targets. -->
 <template id="page-template">
@@ -199,26 +201,7 @@
 <div style="min-height:100vh;display:flex;flex-direction:column">
 
   <template data-if="wide">
-  <header style="background:#fff;border-bottom:1px solid #EDEEE9;padding:0 20px;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" style="flex:none;min-height:52px;display:inline-flex;align-items:center" aria-label="AgraX"><span class="site-header-logo" style="display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
-    <nav style="display:flex;align-items:center;gap:2px;flex:none">
-      <a href="/browse" style="height:30px;padding:0 12px;border-radius:15px;color:#6B7268;font-size:13px;font-weight:500;display:inline-flex;align-items:center" class="h4">Browse</a>
 
-
-
-    </nav>
-    <!-- Browse needs search in the header. On the home page search lives in
-         the hero, so the shared header has none; here there is no hero and
-         search is the fastest route to a commodity. Styled to match the rest
-         of the header rather than reintroducing the old dark bar. -->
-    <div style="flex:1;min-width:150px;max-width:340px;position:relative;display:flex;align-items:center">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px;pointer-events:none"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <input data-search-input data-value="query" data-on-change="onQuery" placeholder="Commodity, variety, origin" style="width:100%;height:32px;background:#F4F4F0;border:1px solid #EDEEE9;border-radius:16px;padding:0 14px 0 32px;font-size:13px;color:#171A16;outline:none">
-    </div>
-    <div class="account-actions" data-account-actions></div>
-    </div>
-  </header>
 
   <div style="flex:1;width:100%;max-width:1480px;margin:0 auto;display:flex;flex-direction:column;padding:14px 20px 28px;box-sizing:border-box">
 
@@ -454,16 +437,7 @@
   <template data-if="narrow">
   <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
 
-    <header class="browse-mobile-header">
-      <div class="browse-mobile-header__top">
-        <a href="/" aria-label="AgraX home" class="browse-mobile-logo"><span class="site-header-logo" aria-hidden="true"></span></a>
-        <div class="account-actions" data-account-actions></div>
-      </div>
-      <div class="browse-mobile-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4.5 4.5"/></svg>
-        <input data-search-input data-value="query" data-on-change="onQuery" aria-label="Search commodities or prices" placeholder="Search commodities or prices">
-      </div>
-    </header>
+
 
     <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
       <template data-for="terminals" data-as="t">

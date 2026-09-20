@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About — AgraX</title>
+<title>About the data — AgraX</title>
 <meta name="description" content="Learn how AgraX organizes USDA Agricultural Marketing Service specialty crop reports into free market data for produce buyers, growers, shippers and analysts.">
 <link rel="canonical" href="https://www.agra-x.com/about">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AgraX">
-<meta property="og:title" content="About AgraX">
-<meta property="og:description" content="AgraX organizes USDA AMS specialty crop reports into free produce market data, updated every weekday morning.">
+<meta property="og:title" content="About the data">
+<meta property="og:description" content="Sources, price definitions, report dates, and coverage behind AgraX produce market data.">
 <meta property="og:url" content="https://www.agra-x.com/about">
 <meta property="og:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="About AgraX">
+<meta name="twitter:title" content="About the data">
 <meta name="twitter:description" content="Free produce market data built from USDA AMS specialty crop reports.">
 <meta name="twitter:image" content="https://www.agra-x.com/assets/agrax-logo-black.png">
 <script type="application/ld+json">
@@ -22,7 +22,7 @@
   "@type": "AboutPage",
   "@id": "https://www.agra-x.com/about#about",
   "url": "https://www.agra-x.com/about",
-  "name": "About AgraX",
+  "name": "About the data",
   "description": "AgraX organizes USDA Agricultural Marketing Service specialty crop reports into free market data for produce buyers, growers, shippers and analysts.",
   "isPartOf": {
     "@type": "WebSite",
@@ -45,74 +45,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/tokens.css">
 <link rel="stylesheet" href="/styles/components.css">
-<script src="/js/header.js"></script>
+<link rel="stylesheet" href="/styles/data-guide.css">
+<link rel="stylesheet" href="/styles/site-navigation.css">
 </head>
 <body>
-<div style="min-height:100vh;display:flex;flex-direction:column;background:var(--page)">
-<header class="site-header">
-  <div class="site-header__inner">
-    <a href="/" class="site-header__logo" aria-label="AgraX home">
-      <img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" width="646" height="241">
-    </a>
-    <nav class="site-header__nav" aria-label="Main">
-      <a href="/browse">Browse</a>
-
-
-    </nav>
-
-
+<script src="/js/site-navigation.js"></script>
+<main class="data-guide">
+  <section class="data-intro">
+    <span class="data-eyebrow">About the data</span>
+    <h1>Understand the price.<br>Know the source.</h1>
+    <p>AgraX organizes USDA produce market reports into searchable prices. Here’s where the numbers come from, what each quote means, and what to check before comparing.</p>
+    <a class="data-cta" href="/browse">Explore market prices <span aria-hidden="true">↗</span></a>
+  </section>
+  <div class="data-layout">
+    <nav class="data-contents" aria-label="On this page"><span class="data-eyebrow">In this guide</span><a href="#sources">01 · Sources</a><a href="#quotes">02 · Reading a quote</a><a href="#timing">03 · Dates &amp; freshness</a><a href="#coverage">04 · Coverage &amp; limits</a><a href="#corrections">05 · Report an issue</a></nav>
+    <div class="data-sections">
+      <section id="sources"><span class="data-eyebrow">01 / Sources</span><h2>Reported by USDA. Organized by AgraX.</h2><p>Our source is the USDA Agricultural Marketing Service (AMS), Specialty Crops Market News. AgraX structures the reported information so you can browse by market, commodity, variety, and origin.</p>
+        <div class="data-source-grid"><article><h3>Terminal market prices</h3><p>Wholesale prices reported at selected city terminal markets. Compare quotes within the same market and specification.</p><a href="https://www.ams.usda.gov/market-news/fruit-and-vegetable-terminal-markets-standard-reports" target="_blank" rel="noopener">USDA terminal reports ↗</a></article><article><h3>Shipping point prices</h3><p>Prices reported at producing areas and import entry points. These describe a different stage of trade from terminal prices.</p><a href="https://www.ams.usda.gov/market-news/fruit-and-vegetable-shipping-point-market-price-reports" target="_blank" rel="noopener">USDA shipping point reports ↗</a></article></div>
+        <p class="data-note">AgraX is independent and is not affiliated with or endorsed by USDA. <a href="https://www.ams.usda.gov/market-news/fruits-vegetables" target="_blank" rel="noopener">Learn about USDA Specialty Crops Market News ↗</a></p>
+      </section>
+      <section id="quotes"><span class="data-eyebrow">02 / Reading a quote</span><h2>A price belongs to a specific product.</h2><p>Match the variety, origin, package, size, grade, and condition before comparing prices. A carton price is not a per-pound price unless the report says so.</p>
+        <div class="data-example"><div class="data-example-top"><span>Illustrative quote · not current market data</span><strong>Avocados <span>Hass</span></strong></div><dl><div><dt>Origin</dt><dd>Mexico</dd></div><div><dt>Package</dt><dd>Cartons, 2 layer</dd></div><div><dt>Size</dt><dd>48s</dd></div><div><dt>Reported range</dt><dd>$32.00–$36.00</dd></div></dl><p>The range applies to this specification. Changing the size, package, or origin changes the comparison.</p></div>
+        <dl class="data-definitions"><div><dt>Reported price</dt><dd>The price or low–high range supplied in the source report. Quote tables preserve the range and any available qualifiers.</dd></div><div><dt>Mostly</dt><dd>An additional price or range identified as “mostly” in the report. When supplied, it appears alongside the full reported range.</dd></div><div><dt>Mid-range</dt><dd>Where AgraX uses a single representative value, a midpoint may be calculated from a reported range. For example, $32–$36 has a $34 midpoint. It is not a transaction-weighted average.</dd></div><div><dt>Higher, lower, steady</dt><dd>Market commentary from the report. These labels are not a calculated percentage change for every quote.</dd></div><div><dt>A dash (—)</dt><dd>A value is unavailable or no matching quote was found. It does not mean zero.</dd></div></dl>
+      </section>
+      <section id="timing"><span class="data-eyebrow">03 / Dates &amp; freshness</span><h2>Read the report date first.</h2><p>Prices are dated observations, not live bids. Different markets and report groups can publish at different times. The date shown with the market or quote tells you which reporting period you are viewing.</p><div class="data-callout"><h3>“Latest” does not always mean today.</h3><p>Browse starts with the latest available report for each market. Where older quotes are available, they are shown through the older-reports option. A quote that did not appear in a newer report should not be treated as a newly reported price.</p></div><p>Publication gaps, holidays, and delays in processing can affect freshness. Check the date and the original USDA report when timing matters.</p></section>
+      <section id="coverage"><span class="data-eyebrow">04 / Coverage &amp; limits</span><h2>Use the details behind the number.</h2><ul class="data-limits"><li><strong>Coverage varies.</strong> Market and commodity counts reflect available reports. Missing products or markets do not imply no trade occurred.</li><li><strong>Origins retain their detail.</strong> Country filters group states and districts under a country. Individual quotes keep their reported origin.</li><li><strong>Different market stages are not interchangeable.</strong> A terminal–shipping point difference is not a profit margin; freight, handling, timing, and specifications can affect comparisons.</li><li><strong>Reports are a reference.</strong> A published price is not an offer or a guarantee of the price available for your order.</li></ul></section>
+      <section id="corrections" class="data-corrections"><span class="data-eyebrow">05 / Corrections</span><h2>Something doesn’t look right?</h2><p>Send the market, commodity, report date, and the quote or page link. Include the original report reference if you have it so we can check the source.</p><button class="data-issue-open" type="button" aria-expanded="false" aria-controls="data-issue-form">Report a data issue <span aria-hidden="true">↗</span></button>
+<form id="data-issue-form" hidden>
+  <div class="issue-fields"><label>Market <span>(optional)</span><input name="market" maxlength="100" placeholder="e.g. New York"></label><label>Commodity <span>(optional)</span><input name="commodity" maxlength="100" placeholder="e.g. Avocados"></label><label>Report date <span>(optional)</span><input name="report_date" type="date"></label><label>Email <span>(optional, for a reply)</span><input name="email" type="email" maxlength="254" autocomplete="email"></label></div>
+  <label>Page link or report reference <span>(optional)</span><input name="reference" maxlength="1000" placeholder="Paste the affected page link or USDA report code"></label>
+  <label>What looks wrong?<textarea name="description" required minlength="10" maxlength="4000" rows="5" placeholder="Tell us what you see and what you expected. Include the variety, size, or package if relevant."></textarea></label>
+  <div class="issue-trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+  <p class="issue-privacy">Your report goes to the AgraX team. An email address is only needed if you would like a reply. <a href="/privacy">Privacy policy</a></p>
+  <div class="issue-actions"><button type="submit">Send report</button><button type="button" id="issue-cancel">Cancel</button></div>
+</form><p id="issue-status" role="status" aria-live="polite"></p></section>
+    </div>
   </div>
-</header>
-<main class="about-grid" style="flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:44px;max-width:1100px;margin:0 auto;padding:40px 20px 60px">
-  <div>
-    <div style="font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-heading)">About AgraX</div>
-    <h1 style="margin:12px 0 0;font-size:36px;font-weight:500;letter-spacing:-0.04em;line-height:1.1">Wholesale produce prices, published as they were reported.</h1>
-    <div style="margin-top:28px;display:flex;flex-direction:column;gap:20px;font-size:14px;line-height:1.75;color:var(--text-secondary)">
-      <p>AgraX was built by two people who spent years buying and moving produce, and spent every morning of those years digging the same numbers out of USDA PDFs. The reports are public and thorough, and almost unusable at the speed a buying desk actually works. So we started parsing them into something we would have wanted on the desk: every commodity, every variety, every origin, in one place, before the first call of the day.</p>
-      <p>The data comes from the USDA Agricultural Marketing Service — Specialty Crops Terminal Market and Shipping Point reports, covering 12 terminal markets and the shipping-point districts that feed them. We parse each weekday morning and publish what the report says. We do not blend, smooth, or average prices across varieties, origins, or packs, because a price only means something attached to the item it was paid for. Where a figure is a midpoint of a reported range rather than a transaction-weighted price, we label it as such on the row.</p>
-      <p>AgraX is an independent company. We are not affiliated with, endorsed by, or acting on behalf of the United States Department of Agriculture. The price data is free and stays free; we make money on Pro subscriptions and sponsorships from companies serving the produce trade. If a number looks wrong to you, tell us — corrections come first.</p>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:28px">
-      <a href="/browse" style="height:38px;padding:0 16px;border-radius:7px;background:var(--ink);color:#fff;font-size:13px;font-weight:500;display:inline-flex;align-items:center">Browse prices</a>
-      <button style="height:38px;padding:0 16px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:500;cursor:pointer">Contact us</button>
-    </div>
-  </div>
-  <aside>
-    <div class="card" style="padding:20px">
-      <div style="font-size:9.5px;font-weight:500;letter-spacing:0.11em;text-transform:uppercase;color:var(--text-heading);padding-bottom:12px;border-bottom:1px solid var(--border)">At a glance</div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Founded</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">2024</span></div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Terminal markets</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">12</span></div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Shipping points</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">9</span></div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface-row)"><span style="font-size:12.5px;color:var(--text-secondary)">Commodities daily</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">148</span></div>
-      <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="font-size:12.5px;color:var(--text-secondary)">Published by</span><span style="font-family:var(--mono);font-size:12.5px;font-weight:500">6:00 AM ET</span></div>
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11.5px;line-height:1.6;color:var(--text-dim)">Source: USDA AMS Specialty Crops. Independent of the USDA.</div>
-    </div>
-  </aside>
 </main>
-<footer style="background:var(--dark);color:#fff;padding:28px 20px 22px;margin-top:auto">
-  <div style="display:flex;align-items:flex-start;gap:56px;flex-wrap:wrap">
-    <div style="flex:1;min-width:280px;max-width:520px">
-      <a href="/" aria-label="AgraX home" style="display:inline-flex"><img src="/assets/agrax-logo-white-cropped.png" alt="AgraX" style="width:66px;height:auto;display:block"></a>
-      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.75;color:#737373">AgraX · Independent market intelligence. Not affiliated with USDA.</p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
-      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Product</span>
-      <a href="/browse" style="font-size:12px;color:#A3A3A3">Browse prices</a>
-      </div>
-    <div style="display:flex;flex-direction:column;gap:9px;flex:none">
-      <span style="font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#525252">Company</span>
-      <a href="/about" style="font-size:12px;color:#fff">About</a>
-      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Contact</span>
-      <span style="font-size:12px;color:#A3A3A3;cursor:pointer">Advertise</span>
-      <a href="/privacy" style="font-size:12px;color:#4A5148">Privacy</a>
-      <span style="font-size:12px;color:#A3A3A3">Terms</span>
-    </div>
-  </div>
-  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1F1F1F;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#525252">
-    <span>© 2026 AgraX. Wholesale produce pricing.</span>
-    <span>Source: USDA AMS · Terminal + Shipping Point</span>
-  </div>
-</footer>
-</div>
-</body>
-</html>
+<footer class="data-footer"><span>AgraX · Independent market data from USDA reports.</span><div><a href="/browse">Browse prices</a><a href="/privacy">Privacy</a></div></footer>
+<link rel="stylesheet" href="/styles/account.css"><script src="/js/config.js"></script><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script defer src="/js/account-client.js"></script><script defer src="/js/account-ui.js"></script>
+<script src="/js/data-issue-form.js"></script></body></html>

@@ -92,6 +92,8 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 from newsletter import create_router as create_newsletter_router
 app.include_router(create_newsletter_router(supabase))
+from data_issues import create_router as create_data_issues_router
+app.include_router(create_data_issues_router())
 MOVEMENT_TABLE = "produce_movement"
 
 # ─────────────────────────────────────────────────────────────
