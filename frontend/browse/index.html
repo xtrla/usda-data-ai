@@ -298,8 +298,7 @@
             <template data-for="reports" data-as="r">
               <a href="{{ r.href }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
                 <span style="font-size:11.5px;font-weight:600;letter-spacing:-0.01em">{{ r.name }}</span>
-                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#186B39">{{ r.code }}</span>
-                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ r.skusTxt }}</span>
+                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ r.dateTxt }}</span>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"></path><polyline points="7 11 12 16 17 11"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg>
               </a>
             </template>
@@ -484,8 +483,8 @@
             <p>{{ overview.districtsTxt }} shipping points · Open a report to print or save a PDF.</p>
             <div class="mobile-report-grid">
               <template data-for="reports" data-as="r">
-                <a href="{{ r.href }}" class="mobile-report-link" aria-label="{{ r.name }} report, {{ r.skusTxt }}">
-                  <span><strong>{{ r.name }}</strong><small>{{ r.skusTxt }}</small></span>
+                <a href="{{ r.href }}" class="mobile-report-link" aria-label="{{ r.name }} report, {{ r.dateTxt }}">
+                  <span><strong>{{ r.name }}</strong><small>{{ r.dateTxt }}</small></span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5"/></svg>
                 </a>
               </template>

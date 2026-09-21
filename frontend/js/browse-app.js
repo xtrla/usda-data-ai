@@ -310,18 +310,15 @@
 
   function buildReports() {
     var rows = marketRows();
-    var code = marketCode(S.market);
     return REPORT_GROUPS.map(function (g) {
       var group = rows.filter(function (r) { return r.commodity_type === g.key; });
       var date = group.map(function (r) { return r.report_date; }).filter(Boolean).sort().pop();
-      var n = group.filter(function (r) { return r.report_date === date; }).length;
       return {
         name: g.name,
         href: '/reports/?market=' + encodeURIComponent(S.market) + '&category=' + g.key + '&date=' + encodeURIComponent(date || ''),
-        code: code ? code + g.suffix : DASH,
-        skusTxt: n ? n + ' prices' : DASH
+        dateTxt: date ? U.fmtDate(date) : DASH
       };
-    }).filter(function (r) { return r.skusTxt !== DASH; });
+    }).filter(function (r) { return r.dateTxt !== DASH; });
   }
 
   /* Market order.
