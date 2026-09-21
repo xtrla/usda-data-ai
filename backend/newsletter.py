@@ -1,12 +1,15 @@
 """Confirmed report subscriptions. Secrets stay on the server; GET never confirms."""
 import hashlib
-import html
 import os
 import re
 import secrets
 from datetime import datetime, timezone
 import requests
 from fastapi import APIRouter, HTTPException, Request
+try:
+    from email_templates import confirmation_email
+except ModuleNotFoundError:
+    from backend.email_templates import confirmation_email
 
 CATEGORIES = {'fruits', 'vegetables', 'onions_potatoes', 'nuts'}
 MARKETS = {'New York', 'Los Angeles', 'Chicago', 'Philadelphia', 'Miami', 'Boston',
@@ -69,13 +72,13 @@ def create_router(db):
         if not accepted:
             raise HTTPException(429, 'Please wait before requesting another confirmation')
         link = site+'/newsletter/#confirm='+token
-        summary = ''.join('<li>'+html.escape(p['market']+' — '+p['category'].replace('_',' '))+'</li>' for p in selected)
+        message = confirmation_email(selected, link)
         try:
             response = requests.post('https://api.resend.com/emails',headers={'Authorization':'Bearer '+key,'Idempotency-Key':'confirm/'+token_hash},json={
                 'from':os.getenv('NEWSLETTER_FROM','AgraX Reports <reports@agra-x.com>'),
                 'to':[email], 'subject':'Confirm your AgraX report preferences',
-                'html':'<h1>AgraX</h1><h2>Confirm your report preferences</h2><ul>'+summary+'</ul><p><a href="'+html.escape(link)+'">Confirm my choices</a></p><p>This link expires in 24 hours. Morning report delivery is not active yet. If you did not request this, ignore this email; your preferences will not change.</p>',
-                'text':'Confirm your AgraX choices: '+link+'\nMorning delivery is not active yet. Link expires in 24 hours. Ignore if not requested.'},timeout=20)
+                'reply_to':'hello@agra-x.com',
+                **message},timeout=20)
             response.raise_for_status()
         except requests.RequestException:
             raise HTTPException(503, 'Could not send confirmation. Please try again later.')
