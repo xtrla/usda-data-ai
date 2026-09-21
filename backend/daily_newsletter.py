@@ -4,6 +4,8 @@ Unknown outcomes stay in the ledger for manual reconciliation, never blind retry
 Accepted means Resend accepted the message, not proof of inbox delivery.
 """
 import hashlib
+import base64
+import json
 import os
 import secrets
 from datetime import datetime
@@ -32,6 +34,20 @@ def eligible(subscriber, report, today):
             and report.get('report_date') == today
             and {'market': report['market'], 'category': report['category']}
             in (subscriber.get('report_preferences') or []))
+
+
+def check_backend_key(key):
+    # Diagnostic only; Supabase still authenticates the actual request.
+    # Never print the credential or JWT claims into workflow logs.
+    if key.startswith('sb_secret_'):
+        return
+    try:
+        payload = key.split('.')[1]
+        role = json.loads(base64.urlsafe_b64decode(payload + '=' * (-len(payload) % 4)))['role']
+    except (IndexError, KeyError, ValueError, TypeError):
+        raise ValueError('SUPABASE_SERVICE_KEY must be the backend service_role key, not the public anon key') from None
+    if role != 'service_role':
+        raise ValueError('GitHub SUPABASE_SERVICE_KEY is not a service_role key. Replace it with the backend key.')
 
 
 def run(db, *, send=False, key=None, post=None, today=None, test_only=False):
@@ -98,6 +114,7 @@ if __name__ == '__main__':
     from supabase import create_client
     test_only = os.getenv('NEWSLETTER_TEST_ONLY') == '1'
     enabled = os.getenv('NEWSLETTER_DELIVERY_ENABLED') == '1' or test_only
+    check_backend_key(os.environ['SUPABASE_SERVICE_KEY'])
     db = create_client(os.environ['SUPABASE_URL'], os.environ['SUPABASE_SERVICE_KEY'])
     result = run(db, send=enabled, key=os.getenv('RESEND_API_KEY'), test_only=test_only)
     print(('SEND' if enabled else 'DRY RUN'), result)

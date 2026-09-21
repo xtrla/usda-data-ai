@@ -1,7 +1,9 @@
 import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock
-from backend.daily_newsletter import run, eligible
+from backend.daily_newsletter import run, eligible, check_backend_key
+import base64
+import json
 
 TODAY = '2026-09-21'
 REPORT = dict(market='New York', category='vegetables', report_date=TODAY, ready=True, row_count=385)
@@ -32,6 +34,13 @@ class DB:
         return SimpleNamespace(execute=lambda:SimpleNamespace(data=result))
 
 class DailyTests(unittest.TestCase):
+    def test_public_key_is_rejected_without_leaking_it(self):
+        key='header.'+base64.urlsafe_b64encode(json.dumps({'role':'anon'}).encode()).decode()+'.secret'
+        with self.assertRaises(ValueError) as error: check_backend_key(key)
+        self.assertNotIn(key,str(error.exception))
+    def test_service_role_key_passes_precheck(self):
+        key='header.'+base64.urlsafe_b64encode(json.dumps({'role':'service_role'}).encode()).decode()+'.secret'
+        check_backend_key(key)
     def test_test_mode_cannot_send_to_other_recipient(self):
         db=DB(); post=Mock()
         run(db,send=True,key='test',post=post,today=TODAY,test_only=True)
