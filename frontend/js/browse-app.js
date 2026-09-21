@@ -848,7 +848,8 @@
     // Loading is distinct from a genuinely empty report.
     rerender();
 
-    var pricesReady = api.reportCurrent('terminal');
+    var firstMarket = wanted || (window.agraxAccount && window.agraxAccount.preferredMarket()) || 'New York';
+    var pricesReady = api.reportCurrent('terminal', 90, firstMarket);
     pricesReady.then(function (rows) {
       S.loading = false;
       S.rows = rows || [];
@@ -873,6 +874,21 @@
       S.loading = false;
       S.loadError = true;
       rerender();
+      // Other markets are needed for cross-market search and comparison,
+      // but must not hold up the selected market's first paint.
+      requestAnimationFrame(function () {
+        api.reportCurrent('terminal').then(function (allRows) {
+          S.rows = allRows || S.rows;
+          setMarkets();
+          if (window.agraxSearch) window.agraxSearch.attach(S.rows, function (hit) {
+            if (hit.market) S.market = hit.market;
+            S.filters = { category: {}, origin: {}, source: {} };
+            S.tableQuery = ''; S.page = 0; S.detail = hit.commodity;
+            scrollToTop(); rerender();
+          });
+          rerender();
+        }).catch(function () { /* Keep the successfully loaded market. */ });
+      });
     });
 
     // Secondary data starts after terminal prices arrive.

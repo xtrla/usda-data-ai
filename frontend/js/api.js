@@ -44,8 +44,8 @@ const api = {
   // GET /reports/current?market_type=&lookback_days=
   // Each market's most recent real report, with lines that haven't printed
   // since tagged is_current:false rather than blended in.
-  reportCurrent: (marketType = 'terminal', lookbackDays = 90) =>
-    _fetch(`/reports/current?market_type=${marketType}&lookback_days=${lookbackDays}`),
+  reportCurrent: (marketType = 'terminal', lookbackDays = 90, market = '') =>
+    _fetch(`/reports/current?market_type=${marketType}&lookback_days=${lookbackDays}${market ? '&market=' + encodeURIComponent(market) : ''}`),
 
   // GET /reports/latest — latest known row per SKU per market, regardless
   // of report date. A market that hasn't printed today still returns its

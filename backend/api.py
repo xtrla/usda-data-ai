@@ -245,7 +245,7 @@ def get_terminal_report(date: str = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/reports/current")
-def get_current_report(market_type: str = "terminal", lookback_days: int = 90):
+def get_current_report(market_type: str = "terminal", lookback_days: int = 90, market: str = ""):
     """Each market's most recent REAL report, with older lines tagged.
 
     /reports/latest returns the newest row per published line, which builds a
@@ -266,14 +266,14 @@ def get_current_report(market_type: str = "terminal", lookback_days: int = 90):
     """
     try:
         cutoff = (date.today() - timedelta(days=max(1, min(lookback_days, 120)))).isoformat()
-        return cached(("current", market_type, cutoff),
-                      lambda: _current_uncached(market_type, cutoff))
+        return cached(("current", market_type, cutoff, market),
+                      lambda: _current_uncached(market_type, cutoff, market))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def _current_uncached(market_type: str, cutoff: str):
-    rows = _latest_uncached(market_type, cutoff)
+def _current_uncached(market_type: str, cutoff: str, market: str = ""):
+    rows = _latest_uncached(market_type, cutoff, market)
 
     # Each market's own latest report date.
     market_dates = {}
@@ -312,9 +312,11 @@ def get_latest_report(market_type: str = "terminal", lookback_days: int = 90):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def _latest_uncached(market_type: str, cutoff: str):
+def _latest_uncached(market_type: str, cutoff: str, market: str = ""):
     try:
         q = supabase.table(TABLE).select(LIST_COLUMNS).gte("report_date", cutoff)
+        if market:
+            q = q.eq("market", market)
         if market_type == "shipping_point":
             q = q.eq("market_type", "shipping_point").neq("market", "National Trends")
         else:
