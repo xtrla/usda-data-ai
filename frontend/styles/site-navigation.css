@@ -1,8 +1,8 @@
 .agrax-header{position:relative;z-index:30;display:block!important;height:60px;min-height:60px;box-sizing:border-box;padding:0 20px!important;margin:0;border:0;border-bottom:1px solid #e3e7df;background:#fff;color:#173d27;font:14px/1.4 'Geist',system-ui,sans-serif;flex:none}
 .agrax-header *{box-sizing:border-box}
 .agrax-header-inner{position:relative;display:flex;align-items:center;gap:32px;height:59px;max-width:1440px;margin:auto}
-.agrax-header .agrax-brand{display:flex;align-items:center;flex:none;width:80px;height:44px}
-.agrax-brand span{display:block;width:80px;height:30px;background:#173d27;mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat;-webkit-mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat}
+.agrax-header .agrax-brand{display:flex;align-items:center;flex:none;width:66px;height:44px}
+.agrax-brand span{display:block;width:66px;height:24px;background:#173d27;mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat;-webkit-mask:url('/assets/agrax-logo-white-cropped.png') center/contain no-repeat}
 .agrax-header .agrax-browse-link{margin-left:auto;color:#354331;text-decoration:none;font-size:14px}
 .agrax-header .agrax-menu-toggle{display:flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;min-height:44px;padding:0;margin:0;border:0;border-radius:6px;background:transparent;color:#173d27;cursor:pointer}
 .agrax-header .agrax-menu-toggle:hover,.agrax-header .agrax-menu-toggle[aria-expanded=true]{background:#eef3eb}
