@@ -69,3 +69,48 @@ body.commodity-dialog-open{overflow:hidden}
 .quote-history-demo-banner{background:#fbefd6;border:1px solid #e4d2a8;border-radius:6px;padding:10px 12px;color:#805c20;font-size:11px;margin-bottom:18px;letter-spacing:.035em}
 .quote-history-combo{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(240px,1fr);gap:24px;align-items:start}.quote-history-combo>div{min-width:0}.quote-history-list{background:#fff;border:1px solid #dce5d4;border-radius:8px;padding:16px}.quote-history-list h4{margin:0 0 12px;font-size:13px}.quote-history-list-labels{display:flex;justify-content:space-between;font-size:10px;color:#7a866f;padding-bottom:8px;border-bottom:1px solid #e3e9df}.quote-history-list .quote-history-values{max-height:260px}.quote-history-list .quote-history-values li{padding:10px 0;font-variant-numeric:tabular-nums}.quote-history-list .quote-history-values span{text-align:right}
 @media(max-width:899px){.quote-history-combo{grid-template-columns:1fr;gap:12px}.quote-history-list .quote-history-values{max-height:240px}}
+
+/* Compact detail controls: price data has visual priority. */
+.commodity-dialog__header{align-items:flex-start;padding:18px 24px;gap:12px}
+.commodity-dialog__identity{min-width:0;flex:1}
+.commodity-dialog h1{display:flex;align-items:center;gap:8px;font-size:26px;line-height:1.2}
+.commodity-dialog h1:focus{outline:0}
+.commodity-dialog__eyebrow{margin:7px 0 0;font-size:12px;line-height:1.5}
+.commodity-dialog__tools{display:flex;align-items:center;gap:4px;flex:none}
+.commodity-dialog__close{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border-radius:8px}
+.commodity-dialog__close:hover{background:#f1f5ef;color:#1f5236}
+.commodity-dialog__body{padding:14px 24px 24px}
+.commodity-dialog__overview{display:block;font-size:12px;line-height:1.5;margin:0;color:#61705e}
+.commodity-dialog__overview span{margin:0 6px;color:#abb5a5}
+.commodity-dialog__filters{margin:14px 0 8px;gap:8px;align-items:center}
+.commodity-dialog__filters label{flex:0 1 220px}
+.commodity-dialog select{height:38px;background:#f8faf6;font-size:13px;border-radius:8px;padding-left:12px}
+.commodity-dialog select.is-selected{background:#eaf3e8;border-color:#8fb18d;color:#1f5236;font-weight:500}
+.commodity-dialog__sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.commodity-dialog__caption{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:4px;color:#73806b;font-size:11px;min-height:32px;margin-bottom:8px}
+.commodity-dialog__count{margin-left:auto;padding:0;font-size:11px;width:auto}
+.commodity-dialog__count:empty{display:none}
+.commodity-dialog__export{position:relative}
+.commodity-dialog__export summary{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #dce5d7;border-radius:8px;color:#1f623a;cursor:pointer;list-style:none;background:#fff}
+.commodity-dialog summary::-webkit-details-marker{display:none}
+.commodity-dialog__export[open]>summary,.commodity-dialog__export summary:hover{background:#edf4ea;border-color:#a4bea0}
+.commodity-dialog__export-options{position:absolute;right:0;top:46px;width:212px;padding:6px;border:1px solid #e0e7db;border-radius:10px;background:#fff;box-shadow:0 8px 28px #173d271c;z-index:3}
+.commodity-dialog__export-options button,.commodity-dialog__export-options a{display:flex;align-items:center;gap:10px;width:100%;padding:12px 10px;min-height:42px;border:0;border-radius:6px;background:transparent;color:#354733;text-decoration:none;font:13px/1.4 'Geist',system-ui,sans-serif;text-align:left;cursor:pointer}
+.commodity-dialog__export-options svg{flex:none;color:#287145}
+.commodity-dialog__export-options button:hover,.commodity-dialog__export-options a:hover{background:#f0f5ec}
+.commodity-dialog__export-options button:disabled{opacity:.45;cursor:default}
+.commodity-dialog__info summary{display:flex;align-items:center;justify-content:center;width:32px;height:32px;list-style:none;color:#497747;cursor:pointer;border-radius:50%}
+.commodity-dialog__info summary:hover,.commodity-dialog__info[open] summary{background:#edf4ea}
+.commodity-dialog__info p{position:absolute;top:34px;left:0;max-width:420px;width:100%;z-index:1;background:#f4f8f0;border:1px solid #dce7d5;border-radius:8px;padding:12px;margin:0;box-sizing:border-box;font-size:12px;line-height:1.6;color:#52664a;box-shadow:0 6px 18px #173d2712}
+.commodity-dialog .commodity-head{display:none}
+@media(max-width:699px){
+ .commodity-dialog__header{padding:16px 12px}
+ .commodity-dialog h1{font-size:24px;overflow-wrap:anywhere}
+ .commodity-dialog__body{padding:12px}
+ .commodity-dialog__filters{flex-wrap:nowrap;margin-top:12px}
+ .commodity-dialog__filters label{flex:1;min-width:0}
+ .commodity-dialog select{font-size:14px;height:40px;padding-right:22px;text-overflow:ellipsis}
+ .commodity-dialog table thead{display:none}
+ .commodity-dialog__count{flex-basis:100%;margin:0;padding-bottom:5px}
+ .commodity-dialog__export-options{right:-44px}
+}

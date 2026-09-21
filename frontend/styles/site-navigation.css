@@ -28,8 +28,8 @@
   .agrax-navigation .account-actions{order:2;flex:none;flex-wrap:nowrap;margin:0 0 0 8px;padding:0;border:0}
 }
 @media(max-width:899px){
-  .agrax-header .agrax-brand{width:68px}
-  .agrax-brand span{width:68px;height:25px}
+  .agrax-header .agrax-brand{width:76px}
+  .agrax-brand span{width:76px;height:28px}
 }
 
 .agrax-header .agrax-search-toggle{display:none;align-items:center;justify-content:center;width:44px;height:44px;flex:none;margin:0 0 0 auto;padding:0;border:0;border-radius:6px;background:transparent;color:#173d27;cursor:pointer}
@@ -56,15 +56,15 @@
   .agrax-header .account-actions .account-avatar:hover{background:#eef3eb}
 }
 @media(max-width:899px){
-  .agrax-header{height:52px;min-height:52px;padding:0 12px!important}
-  .agrax-header-inner{height:51px}
-  .agrax-header .agrax-navigation,#agrax-header-search{top:51px}
-  .agrax-header .agrax-navigation{max-height:calc(100dvh - 64px)}
+  .agrax-header{height:64px;min-height:64px;padding:0 16px!important}
+  .agrax-header-inner{height:63px;gap:12px}
+  .agrax-header .agrax-navigation,#agrax-header-search{top:63px}
+  .agrax-header .agrax-navigation{max-height:calc(100dvh - 80px)}
   #agrax-header-search button{display:flex;align-items:center;justify-content:center}
 }
 
 @media(max-width:899px){
-  .agrax-header.search-expanded .agrax-brand,.agrax-header.search-expanded .agrax-menu-toggle{display:none}
+  .agrax-header.search-expanded .agrax-brand,.agrax-header.search-expanded .agrax-menu-toggle,.agrax-header.search-expanded .agrax-mobile-account{display:none}
   .agrax-header.search-expanded #agrax-header-search{position:static;order:-1;flex:1;min-width:0;height:40px;padding:0;border:1px solid #dce2d6;border-radius:8px;background:#f4f6f1;box-shadow:none}
   .agrax-header.search-expanded #agrax-header-search input{height:38px;padding:8px 10px;background:transparent;outline-offset:0}
   .agrax-header.search-expanded #agrax-header-search button{order:-1;width:36px;height:38px;color:#6d7b65}
@@ -72,4 +72,15 @@
   .agrax-header.search-expanded .agrax-search-toggle svg{display:none}
   .agrax-header.search-expanded .agrax-search-toggle::before,.agrax-header.search-expanded .agrax-search-toggle::after{content:'';position:absolute;width:18px;height:1.7px;background:currentColor;transform:rotate(45deg)}
   .agrax-header.search-expanded .agrax-search-toggle::after{transform:rotate(-45deg)}
+}
+
+/* Mobile actions follow the same 64px row on every public page. */
+.agrax-header .agrax-mobile-account{display:none}
+@media(max-width:899px){
+  .agrax-header .agrax-mobile-account{display:flex;flex:none;flex-wrap:nowrap;gap:0;margin:0;padding:0;border:0}
+  .agrax-header .agrax-mobile-account .account-primary{height:36px;min-height:36px;margin:0;padding:0 12px;border:0;border-radius:999px;background:#1f5236;color:#fff;font:500 16px/1 'Geist',system-ui,sans-serif;white-space:nowrap}
+  .agrax-header .agrax-mobile-account .account-primary:hover{background:#16412a}
+  .agrax-header .agrax-search-toggle,.agrax-header .agrax-menu-toggle{width:36px;height:44px;min-height:44px;border-radius:999px}
+  .agrax-header .agrax-menu-toggle svg{width:22px;height:22px}
+  .agrax-header.search-expanded .agrax-mobile-account{display:none}
 }

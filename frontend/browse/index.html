@@ -177,11 +177,28 @@
 [data-market-city][aria-pressed=true]{background:#e6f0e3!important;color:#174f2c!important;box-shadow:inset 3px 0 #186b39}
 [data-market-city][aria-pressed=true]>span:last-child{color:#186b39!important;font-weight:600}
 [data-market-city]:focus-visible,[data-market-pill]:focus-visible{outline:2px solid #186b39;outline-offset:-3px}
+
+/* Compact market identity and reported tone summary. */
+[data-market-pill][data-active-pill=true]{background:#214f36!important;border-color:#214f36!important;color:#fff!important;box-shadow:0 2px 5px #173d2715}
+[data-market-pill][data-active-pill=true]>span:first-child{background:#bdd3b4!important}
+.mobile-overview{border-color:#dce4d5;box-shadow:0 2px 8px #203d2010}
+.mobile-overview__toggle{padding:16px 16px 10px}
+.mobile-overview__title{font-size:24px;line-height:1.2;color:#173d27;letter-spacing:-.035em}
+.mobile-overview__eyebrow{font-size:10px;color:#75816c;margin-bottom:7px}
+.mobile-overview__toggle[aria-expanded=false]{padding-bottom:16px}
+.mobile-market-counts{margin:0;padding:0 16px 16px;font-size:11px;line-height:1.6;color:#708065}
+.mobile-market-counts>span{margin:0 5px;color:#b1bbab}
+.mobile-market-tone{padding:14px 16px 15px;border-top:1px solid #edf0e8;background:#fbfcf9}
+.mobile-market-tone__heading{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:10px}.mobile-market-tone__heading strong{font-weight:500;color:#3f5336}.mobile-market-tone__heading>span{font-size:10px;color:#8a9582}
+.mobile-market-tone__bar{display:flex;gap:2px;height:5px;border-radius:4px;overflow:hidden;background:#edf0e8}.mobile-market-tone__bar>span{display:block;min-width:0}
+.mobile-market-tone__legend{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:10px}.mobile-market-tone__legend strong{font-weight:600;font-variant-numeric:tabular-nums}.tone-higher{color:#267f78}.tone-steady{color:#737d6d}.tone-lower{color:#a65c3d}.mobile-market-tone>p{margin:9px 0 0;font-size:10px;color:#85907c}.mobile-market-tone__source{display:block;font-size:9px;color:#8a9582;margin-top:7px}
+.mobile-overview__reports{padding:0 16px;background:white}.mobile-overview__reports summary{display:flex;justify-content:space-between;align-items:center;min-height:46px;cursor:pointer;font-size:11px;font-weight:500;color:#405538;list-style:none}.mobile-overview__reports summary::-webkit-details-marker{display:none}.mobile-overview__reports summary>span{font-size:10px;color:#87917d;font-weight:400}.mobile-overview__reports summary>span::after{content:' +';font-size:14px}.mobile-overview__reports[open] summary>span::after{content:' −'}.mobile-report-grid{padding-bottom:14px}.mobile-report-link{padding:8px 10px}
+@media(prefers-reduced-motion:no-preference){.mobile-overview__toggle>svg{transition:transform .18s ease}.mobile-overview__reports[open] .mobile-report-grid{animation:report-reveal .18s ease-out}@keyframes report-reveal{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}}
 </style>
-<link rel="stylesheet" href="/styles/site-navigation.css">
+<link rel="stylesheet" href="/styles/site-navigation.css?v=mobile-header-2">
 </head>
-<body>
-<script src="/js/site-navigation.js"></script>
+<body class="agrax-browse">
+<script src="/js/site-navigation.js?v=mobile-header-2"></script>
 
 <!-- Markup exported from Claude Design, unmodified apart from link targets. -->
 <template id="page-template">
@@ -278,7 +295,7 @@
           </div>
 
           <div style="flex:none;height:30px;display:flex;align-items:center;gap:9px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:11px">
-            <span style="flex:none;font-size:12px;color:#8A8F86;letter-spacing:-0.005em;white-space:nowrap">Today's reports</span>
+            <span style="flex:none;font-size:12px;color:#8A8F86;letter-spacing:-0.005em;white-space:nowrap">Reports & PDFs</span>
             <template data-for="reports" data-as="r">
               <a href="{{ r.href }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
                 <span style="font-size:11.5px;font-weight:600;letter-spacing:-0.01em">{{ r.name }}</span>
@@ -304,7 +321,7 @@
             </div>
             <div style="max-height:256px;overflow-y:auto;overscroll-behavior:contain">
             <template data-for="g.options" data-as="o">
-              <div data-on-click="o.onToggle" style="position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:7px;cursor:pointer" class="h4">
+              <div data-filter-kind="{{ o.filterKind }}" data-filter-key="{{ o.filterKey }}" data-filter-selected="{{ o.on }}" data-on-click="o.onToggle" style="position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:7px;cursor:pointer" class="h4">
                 <template data-if="o.on"><span style="position:absolute;inset:0;border-radius:7px;background:#F0F6F1"></span></template>
                 <template data-if="o.dotMostly"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#186B39;flex:none"></span></template>
                 <template data-if="o.dotMid"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#C9922F;flex:none"></span></template>
@@ -343,7 +360,7 @@
                 </span>
               </template>
             </span>
-            <span data-on-click="onShare" style="height:32px;padding:0 12px;border-radius:16px;background:#F4F4F0;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h3">
+            <span data-browse-share data-on-click="onShare" style="height:32px;padding:0 12px;border-radius:16px;background:#F4F4F0;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h3">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><polyline points="7 9 12 4 17 9"></polyline><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"></path></svg>
               {{ shareTxt }}
             </span>
@@ -380,8 +397,8 @@
               <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;color:#171A16;text-align:right;font-variant-numeric:tabular-nums">{{ c.skusTxt }}</span>
               <span style="position:relative;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
               <span style="position:relative;display:flex;justify-content:flex-end">
-                <template data-if="c.up"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32;white-space:nowrap">↑ Higher</span></template>
-                <template data-if="c.down"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223;white-space:nowrap">↓ Lower</span></template>
+                <template data-if="c.up"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#E6F3EF;color:#26736B;white-space:nowrap">↑ Higher</span></template>
+                <template data-if="c.down"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F8EEE7;color:#A25A3A;white-space:nowrap">↓ Lower</span></template>
                 <template data-if="c.flat"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158;white-space:nowrap">→ Steady</span></template>
               </span>
             </div>
@@ -450,19 +467,22 @@
 
     <section class="mobile-overview" aria-label="Market overview">
       <button class="mobile-overview__toggle" data-on-click="onToggleOverview" aria-expanded="{{ overviewOpen }}" aria-controls="mobile-overview-details">
-        <span><span class="mobile-overview__eyebrow">Market overview · {{ overview.dateTxt }}</span><span class="mobile-overview__title">{{ overview.title }}</span></span>
+        <span><span class="mobile-overview__eyebrow">Latest report · {{ overview.dateTxt }}</span><span class="mobile-overview__title">{{ overview.title }}</span></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <template data-if="overviewOpen">
         <div id="mobile-overview-details">
-          <div class="mobile-overview__stats">
-            <div><strong>{{ overview.skusTxt }}</strong><span>Prices</span></div>
-            <div><strong>{{ overview.commoditiesTxt }}</strong><span>Commodities</span></div>
-            <div><strong>{{ overview.districtsTxt }}</strong><span>Shipping points</span></div>
-          </div>
-          <div class="mobile-overview__reports">
-            <h2>Market reports</h2>
-            <p>Open a report to print or save a PDF.</p>
+          <p class="mobile-market-counts">{{ overview.commoditiesTxt }} commodities <span aria-hidden="true">·</span> {{ overview.skusTxt }} reported prices</p>
+          <details class="mobile-market-tone"><summary>Market commentary <span aria-hidden="true">+</span></summary>
+            <div class="mobile-market-tone__heading"><strong>Market tone</strong><span>By commodity</span></div>
+            <div class="mobile-market-tone__bar" role="img" aria-label="{{ marketTone.description }}"><template data-for="marketTone.segments" data-as="segment"><span style="width:{{ segment.width }};background:{{ segment.color }}"></span></template></div>
+            <div class="mobile-market-tone__legend"><span class="tone-higher">↑ <strong>{{ marketTone.higher }}</strong> Higher</span><span class="tone-steady">→ <strong>{{ marketTone.steady }}</strong> Steady</span><span class="tone-lower">↓ <strong>{{ marketTone.lower }}</strong> Lower</span></div>
+            <template data-if="marketTone.hasOther"><p>{{ marketTone.other }} mixed or not reported</p></template>
+            <span class="mobile-market-tone__source">From report commentary, not calculated price changes.</span>
+          </details>
+          <details class="mobile-overview__reports">
+            <summary>Reports &amp; PDFs <span>View downloads</span></summary>
+            <p>{{ overview.districtsTxt }} shipping points · Open a report to print or save a PDF.</p>
             <div class="mobile-report-grid">
               <template data-for="reports" data-as="r">
                 <a href="{{ r.href }}" class="mobile-report-link" aria-label="{{ r.name }} report, {{ r.skusTxt }}">
@@ -471,20 +491,20 @@
                 </a>
               </template>
             </div>
-          </div>
+          </details>
         </div>
       </template>
     </section>
 
     <template data-if="browseMode">
     <div style="flex:1;min-height:0;background:#fff">
-      <div style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
+      <div class="market-table-toolbar" style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
             <input data-value="tableQuery" data-on-change="onTableQuery" placeholder="Filter this table" style="width:100%;height:34px;box-sizing:border-box;background:#F4F4F0;border:0;border-radius:7px;padding:0 12px 0 33px;font-size:13px;color:#171A16;outline:none">
           </span>
-          <span data-on-click="onOpenSheet" style="flex:none;height:34px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;cursor:pointer">
+          <span class="browse-filter-trigger" data-on-click="onOpenSheet" style="flex:none;height:34px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;cursor:pointer">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="6" y1="12" x2="18" y2="12"></line><line x1="10" y1="17" x2="14" y2="17"></line></svg>
             Filters
           </span>
@@ -508,12 +528,12 @@
         </template>
 
         <div style="border-bottom:1px solid #EDEEE9">
-          <div data-on-click="c.onToggle" style="position:relative;padding:10px 14px;min-height:56px;box-sizing:border-box;display:flex;align-items:center;cursor:pointer">
+          <div class="market-commodity-row" data-on-click="c.onToggle" style="position:relative;padding:10px 14px;min-height:56px;box-sizing:border-box;display:flex;align-items:center;cursor:pointer">
 
             <div style="position:relative;display:flex;align-items:center;gap:8px;width:100%">
               <span style="min-width:0;flex:1;display:flex;align-items:center;gap:2px;font-size:14px;font-weight:600;letter-spacing:-0.01em"><button style="min-width:0;white-space:normal;text-align:left;line-height:1.35" class="commodity-open" data-on-click="c.onSelect" aria-haspopup="dialog">{{ c.name }}</button><span data-watch-commodity="{{ c.name }}"></span></span>
-              <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32">↑ Higher</span></template>
-              <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223">↓ Lower</span></template>
+              <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#E6F3EF;color:#26736B">↑ Higher</span></template>
+              <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F8EEE7;color:#A25A3A">↓ Lower</span></template>
               <template data-if="c.flat"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158">→ Steady</span></template>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#90998b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 5 7 7-7 7"/></svg>
             </div>
@@ -563,14 +583,14 @@
             <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ g.title }}</span>
             <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px">
               <template data-for="g.options" data-as="o">
-                <button type="button" aria-pressed="{{ o.on }}" data-on-click="o.onToggle" style="min-height:40px;font-family:inherit;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}"><template data-if="o.on"><span aria-hidden="true">✓</span></template>{{ o.name }}
+                <button type="button" aria-pressed="{{ o.on }}" data-filter-kind="{{ o.filterKind }}" data-filter-key="{{ o.filterKey }}" data-filter-selected="{{ o.on }}" data-on-click="o.onToggle" style="min-height:40px;font-family:inherit;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}"><template data-if="o.on"><span aria-hidden="true">✓</span></template>{{ o.name }}
                   <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;opacity:0.7">{{ o.count }}</span>
                 </button>
               </template>
             </div>
           </div>
         </template>
-        <span data-on-click="onCloseSheet" style="margin-top:14px;height:46px;border-radius:7px;background:#186B39;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">{{ mSheetApplyTxt }}</span>
+        <span class="browse-filter-apply" data-on-click="onCloseSheet" style="margin-top:14px;height:46px;border-radius:7px;background:#186B39;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">{{ mSheetApplyTxt }}</span>
       </div>
     </template>
   </div>
@@ -588,14 +608,15 @@
 <script src="/js/agrax-data.js"></script>
 <script src="/js/agrax-search.js"></script>
 <script src="/js/commodity-quotes.js?v=2"></script>
-<script src="/js/quote-history.js?v=demo-1"></script>
-<script src="/js/commodity-dialog.js?v=history-1"></script>
-<link rel="stylesheet" href="/styles/commodity-dialog.css?v=demo-1">
+<script src="/js/quote-history.js?v=archive-1"></script>
+<script src="/js/commodity-dialog.js?v=compact-2"></script>
+<link rel="stylesheet" href="/styles/commodity-dialog.css?v=compact-2">
 <script src="/js/origin-country.js"></script>
-<script src="/js/browse-app.js?v=filter-pills-1"></script>
+<script src="/js/browse-app.js?v=browse-character-2"></script>
 <link rel="stylesheet" href="/styles/account.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
-<script defer src="/js/account-ui.js"></script>
+<script defer src="/js/account-ui.js?v=mobile-header-2"></script>
+<link rel="stylesheet" href="/styles/product-system.css?v=browse-character-2">
 </body>
 </html>

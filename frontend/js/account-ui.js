@@ -189,6 +189,11 @@
       if (host.dataset.accountState === key) return;
       host.dataset.accountState = key;
       host.replaceChildren();
+      if (host.hasAttribute('data-header-account')) {
+        host.append(button(account.user() ? 'Account' : 'Log in',
+          () => open(account.user() ? 'settings' : 'login'), 'account-primary'));
+        return;
+      }
       const mobileHeader = host.closest('.home-header, .browse-mobile-header');
       if (mobileHeader) host.classList.add('mobile-navigation');
       const toggle = button('',()=>{},'account-avatar');

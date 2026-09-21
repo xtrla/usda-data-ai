@@ -1,0 +1,83 @@
+/* Shared visual rules for the home, market browser and quote details. */
+:root{
+ --agx-font:'Geist',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+ --agx-page:#f5f6f2;--agx-surface:#fff;--agx-tint:#edf3e9;
+ --agx-ink:#1c2921;--agx-muted:#697466;--agx-border:#dde4d8;
+ --agx-green:#1f5236;--agx-green-hover:#173f2a;
+ --agx-radius:8px;--agx-panel-radius:12px;
+ --agx-space-1:4px;--agx-space-2:8px;--agx-space-3:12px;--agx-space-4:16px;--agx-space-6:24px;--agx-space-8:32px;
+}
+body.agrax-home,body.agrax-browse{margin:0;background:var(--agx-page);color:var(--agx-ink);font-family:var(--agx-font);-webkit-font-smoothing:antialiased}
+.agrax-home *{box-sizing:border-box}
+.agrax-home :focus-visible{outline:2px solid var(--agx-green);outline-offset:3px}
+.agrax-home .home-search input:focus-visible{outline:none}
+.agrax-header{color:var(--agx-green);border-color:var(--agx-border)}
+.agrax-header .agrax-header-inner{max-width:1440px}
+.agrax-header .agrax-navigation form,.agrax-header.search-expanded #agrax-header-search{border-radius:var(--agx-radius);background:var(--agx-page)}
+.agrax-browse [data-shot=overview],.agrax-browse [data-shot=terminals]{border:1px solid var(--agx-border);border-radius:var(--agx-panel-radius)!important}
+.agrax-browse .mobile-overview{margin:12px 16px 16px;border:1px solid var(--agx-border);border-radius:var(--agx-panel-radius);box-shadow:none;background:var(--agx-surface)}
+.agrax-browse .mobile-overview__toggle{padding:14px 16px 8px;color:var(--agx-ink)}
+.agrax-browse .mobile-overview__title{font-size:22px;color:var(--agx-ink);letter-spacing:-.025em;line-height:1.25}
+.agrax-browse .mobile-overview__eyebrow{font-size:11px;margin-bottom:5px;color:var(--agx-muted)}
+.agrax-browse .mobile-market-counts{padding:0 16px 12px;font-size:12px;color:var(--agx-muted)}
+.agrax-browse .mobile-market-tone{padding:0 16px;background:var(--agx-surface);border-color:var(--agx-border)}
+.mobile-market-tone>summary{display:flex;align-items:center;gap:12px;justify-content:space-between;min-height:42px;list-style:none;font-size:12px;color:var(--agx-ink);cursor:pointer}
+.mobile-market-tone>summary::-webkit-details-marker{display:none}
+.mobile-market-tone>summary>span{color:var(--agx-muted);font-size:14px}
+.mobile-market-tone[open]>summary>span{transform:rotate(45deg)}
+.agrax-browse .mobile-market-tone__source{font-size:10px;line-height:1.5;margin-bottom:12px}
+.agrax-browse .mobile-market-tone__legend{font-size:11px}
+.agrax-browse .mobile-overview__reports{border-color:var(--agx-border)}
+.agrax-browse .mobile-overview__reports summary{min-height:42px;font-size:12px;color:var(--agx-ink)}
+.agrax-browse .mobile-overview__reports summary>span{font-size:11px}
+.agrax-browse [data-market-strip]{padding:10px 16px!important;background:var(--agx-page)!important;border-color:var(--agx-border)!important;gap:8px!important}
+.agrax-browse [data-market-pill]{border-radius:999px!important;height:36px!important;font-size:12px!important;border-color:var(--agx-border)!important}
+.agrax-browse [data-market-pill][data-active-pill=true]{background:var(--agx-green)!important;border-color:var(--agx-green)!important;box-shadow:none}
+.agrax-browse .market-table-toolbar{padding:12px 16px!important}
+.agrax-browse .market-table-toolbar input{border-radius:var(--agx-radius)!important;background:var(--agx-page)!important;font-size:16px!important}
+.agrax-browse .market-commodity-row{padding:12px 16px!important}
+.commodity-dialog{font-family:var(--agx-font);color:var(--agx-ink);border-color:var(--agx-border);border-radius:var(--agx-panel-radius)}
+.commodity-dialog__header,.commodity-dialog__export-options{background:var(--agx-surface);border-color:var(--agx-border)}
+.commodity-dialog h1{color:var(--agx-ink);letter-spacing:-.025em}
+.commodity-dialog select,.commodity-dialog__export summary{border-radius:var(--agx-radius);border-color:var(--agx-border);background:var(--agx-page)}
+.commodity-dialog select.is-selected{background:var(--agx-tint);color:var(--agx-green)}
+.commodity-dialog__eyebrow,.commodity-dialog__overview,.commodity-dialog__caption{color:var(--agx-muted)}
+.commodity-dialog__export-options svg,.commodity-dialog__info summary{color:var(--agx-green)}
+.commodity-dialog .quote-history-panel{background:var(--agx-page);border-color:var(--agx-border)}
+.commodity-dialog .quote-history-periods button[aria-pressed=true]{background:var(--agx-green);border-color:var(--agx-green)}
+@media(max-width:699px){
+ .commodity-dialog{border-radius:0}
+ .commodity-dialog__header{padding:16px}
+ .commodity-dialog__body{padding:12px 16px 16px}
+ .commodity-dialog tbody tr{border-radius:var(--agx-radius);border-color:var(--agx-border);padding:12px}
+}
+
+/* Browse uses the homepage palette, keeping the quotes on white. */
+.agrax-browse [data-shot=overview],.agrax-browse .mobile-overview{background:#eaf0df!important;border-color:#d8e1cd}
+.agrax-browse [data-shot=overview] h1,.agrax-browse .mobile-overview__title{color:#193e2a}
+.agrax-browse .mobile-overview__eyebrow{color:#526749;font-weight:500}
+.agrax-browse .mobile-overview__toggle{padding-top:18px}
+.agrax-browse .mobile-market-counts{color:#526749;padding-bottom:16px}
+.agrax-browse .mobile-market-tone,.agrax-browse .mobile-overview__reports{background:#f8faf4;border-color:#d8e1cd}
+.agrax-browse .mobile-market-tone>summary,.agrax-browse .mobile-overview__reports>summary{color:#36563d;font-weight:500}
+.agrax-browse .mobile-overview__reports>summary>span{color:#526749}
+.agrax-browse [data-shot=overview] a,.agrax-browse .mobile-report-link{background:#fff!important;border:1px solid #d8e1cd;border-radius:8px!important;color:#1f5236}
+.agrax-browse [data-shot=overview] a:hover,.agrax-browse .mobile-report-link:hover{background:#f1f6e7!important;border-color:#a0b484}
+.agrax-browse [data-shot=overview] a svg,.agrax-browse .mobile-report-link svg{stroke:#547b38}
+.agrax-browse input[placeholder="Filter this table"]{border:1px solid #dde4d8!important;border-radius:8px!important;background:#f5f6f2!important}
+.agrax-browse input[placeholder="Filter this table"]:focus{border-color:#547b38!important;box-shadow:0 0 0 2px #547b381a}
+.agrax-browse .browse-filter-trigger,.agrax-browse [data-browse-share]{border:1px solid #d8e1cd!important;border-radius:8px!important;background:#edf2e4!important;color:#1f5236!important}
+.agrax-browse .browse-filter-trigger svg{stroke:currentColor}
+.agrax-browse .browse-filter-trigger:hover,.agrax-browse [data-browse-share]:hover{background:#dfe9d1!important}
+.agrax-browse [data-filter-kind]{--filter-bg:#edf3e9;--filter-fg:#1f5236;--filter-border:#91ad7b}
+.agrax-browse [data-filter-kind=category][data-filter-key=fruits]{--filter-bg:#edf2e4;--filter-fg:#36563d;--filter-border:#9bb57a}
+.agrax-browse [data-filter-kind=category][data-filter-key=vegetables]{--filter-bg:#e8efeb;--filter-fg:#27583f;--filter-border:#8aaf9b}
+.agrax-browse [data-filter-kind=category][data-filter-key=onions_potatoes]{--filter-bg:#f4ecdd;--filter-fg:#78521c;--filter-border:#c5a770}
+.agrax-browse [data-filter-kind=category][data-filter-key=nuts]{--filter-bg:#eee9e3;--filter-fg:#76513c;--filter-border:#b79c89}
+.agrax-browse [data-filter-selected=true]{background:var(--filter-bg)!important;color:var(--filter-fg)!important;border-color:var(--filter-border)!important;box-shadow:inset 3px 0 var(--filter-border);font-weight:500}
+.agrax-browse [data-filter-selected=true]>span:first-child[style*="position:absolute"]{background:transparent!important}
+.agrax-browse [data-filter-selected=true] svg{stroke:var(--filter-fg)}
+.agrax-browse [data-filter-kind]:hover{background:var(--filter-bg)!important;color:var(--filter-fg)!important}
+.agrax-browse .browse-filter-apply{background:#1f5236!important;border-radius:8px!important}
+.agrax-browse .market-commodity-row:hover{background:#f8faf4}
+.agrax-browse :is(button,a,input,[tabindex]):focus-visible{outline:2px solid #547b38;outline-offset:2px}

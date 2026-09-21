@@ -170,6 +170,7 @@
     function opt(group, key, label, count, extra) {
       var o = {
         name: label, label: label, count: String(count),
+        filterKind: group, filterKey: key,
         on: !!S.filters[group][key], active: !!S.filters[group][key],
         chipBg: S.filters[group][key] ? '#1F5236' : '#F5F6F2',
         chipFg: S.filters[group][key] ? '#FFFFFF' : '#4A5742',
@@ -278,6 +279,32 @@
       collapsedMeta: [rows.length + ' prices', Object.keys(coms).length + ' commodities',
                       date ? U.fmtDate(date) : null,
                       older ? older + ' older prints' : null].filter(Boolean).join('  ' + MID + '  ')
+    };
+  }
+
+  function buildMarketTone() {
+    var groups = {};
+    currentRows().forEach(function (r) {
+      if (r.commodity) (groups[r.commodity] = groups[r.commodity] || []).push(r);
+    });
+    var count = { higher: 0, steady: 0, lower: 0, other: 0 };
+    Object.keys(groups).forEach(function (name) {
+      var text = groups[name].map(function (r) { return norm(r.movement || r.trend); }).join(' ');
+      var higher = /\bhigher\b|\bup\b/.test(text);
+      var lower = /\blower\b|\bdown\b/.test(text);
+      if (higher && lower) count.other++;
+      else if (higher) count.higher++;
+      else if (lower) count.lower++;
+      else if (/\bsteady\b|\bunchanged\b/.test(text)) count.steady++;
+      else count.other++;
+    });
+    var total = Object.keys(groups).length;
+    return { higher: count.higher, steady: count.steady, lower: count.lower,
+      other: count.other, hasOther: count.other > 0,
+      segments: [['higher', '#267f78'], ['steady', '#b9c1b2'], ['lower', '#b86c4c'], ['other', '#e5e9e0']].map(function (pair) {
+        return { color: pair[1], width: total ? (count[pair[0]] / total * 100) + '%' : '0%' };
+      }),
+      description: count.higher + ' higher, ' + count.steady + ' steady, ' + count.lower + ' lower, ' + count.other + ' mixed or not reported'
     };
   }
 
@@ -535,6 +562,7 @@
       terminals: buildTerminals(),
 
       overview: buildOverview(),
+      marketTone: buildMarketTone(),
       overviewOpen: S.overviewOpen,
       overviewClosed: !S.overviewOpen,
       overviewToggleTxt: S.overviewOpen ? 'Hide market overview' : 'Show market overview',
