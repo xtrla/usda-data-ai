@@ -1,0 +1,37 @@
+name: Daily report newsletters
+on:
+  workflow_run:
+    workflows: ['Daily Data Update']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Dry run, or authorized New York vegetables test to owner only'
+        type: choice
+        options: [dry_run, test]
+        default: dry_run
+concurrency:
+  group: daily-report-newsletters
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deliver:
+    if: github.event_name == 'workflow_dispatch' || (vars.NEWSLETTER_DELIVERY_ENABLED == '1' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r backend/requirements.txt
+      - name: Deliver newly imported reports
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_DELIVERY_ENABLED: ${{ github.event_name == 'workflow_run' && '1' || '0' }}
+          NEWSLETTER_TEST_ONLY: ${{ inputs.mode == 'test' && '1' || '0' }}
+        run: python backend/daily_newsletter.py

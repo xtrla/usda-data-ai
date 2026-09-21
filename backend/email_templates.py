@@ -35,8 +35,10 @@ def report_email(market, category, report_date, *, manage_url=None, test=False):
     text += 'Contact: hello@agra-x.com\nAgraX is independent and is not affiliated with USDA.'
     return {'subject':f'{market} · {label} · {display_date}' + (' [Preview]' if test else ''),'html':frame(content,f'{market} {label} — report dated {display_date}',footer),'text':text}
 
-def confirmation_email(selected, link):
+def confirmation_email(selected, link, *, delivery_enabled=False):
     items = ''.join(f'<li style="padding:6px 0">{escape(p["market"])} — {escape(LABELS[p["category"]])}</li>' for p in selected)
     content = '<h1 style="margin:0 0 16px;font-size:28px;color:#173d29">Confirm your report choices</h1><p style="font-size:15px;line-height:1.7;color:#47564b">You selected these market reports:</p><ul style="padding-left:20px;font-size:15px;line-height:1.6;color:#47564b">'+items+'</ul><p style="margin:24px 0"></p>'+button('Confirm my choices',link)
     footer = '<p style="margin:0">This link expires in 24 hours. Morning report delivery is not active yet. If you did not request this email, ignore it; your preferences will not change.</p>'
-    return {'html':frame(content,'Confirm the markets and reports you want to follow.',footer),'text':'Confirm your AgraX choices: '+link+'\nMorning delivery is not active yet. Link expires in 24 hours. Ignore if not requested.\nContact: hello@agra-x.com'}
+    status = 'New reports are emailed after publication and successful import.' if delivery_enabled else 'Morning delivery is not active yet.'
+    footer = footer.replace('Morning report delivery is not active yet.', status)
+    return {'html':frame(content,'Confirm the markets and reports you want to follow.',footer),'text':'Confirm your AgraX choices: '+link+'\n'+status+' Link expires in 24 hours. Ignore if not requested.\nContact: hello@agra-x.com'}

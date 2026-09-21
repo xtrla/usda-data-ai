@@ -51,6 +51,10 @@ def create_router(db):
     def account(token):
         rows = db.table('subscribers').select('id,report_preferences,unsubscribed').eq('manage_token_hash', digest(token)).gt('manage_expires_at', datetime.now(timezone.utc).isoformat()).execute().data
         if not rows:
+            deliveries = db.table('newsletter_deliveries').select('subscriber_id').eq('manage_token_hash', digest(token)).gt('manage_expires_at', datetime.now(timezone.utc).isoformat()).limit(1).execute().data
+            if deliveries:
+                rows = db.table('subscribers').select('id,report_preferences,unsubscribed').eq('id', deliveries[0]['subscriber_id']).execute().data
+        if not rows:
             raise HTTPException(410, 'This link has expired. Request a new confirmation from the homepage.')
         return rows[0]
 
@@ -72,7 +76,7 @@ def create_router(db):
         if not accepted:
             raise HTTPException(429, 'Please wait before requesting another confirmation')
         link = site+'/newsletter/#confirm='+token
-        message = confirmation_email(selected, link)
+        message = confirmation_email(selected, link, delivery_enabled=os.getenv('NEWSLETTER_DELIVERY_ENABLED') == '1')
         try:
             response = requests.post('https://api.resend.com/emails',headers={'Authorization':'Bearer '+key,'Idempotency-Key':'confirm/'+token_hash},json={
                 'from':os.getenv('NEWSLETTER_FROM','AgraX Reports <reports@agra-x.com>'),
@@ -96,7 +100,8 @@ def create_router(db):
     @router.post('/preferences/read')
     async def read_preferences(request: Request):
         row = account((await body(request)).get('token'))
-        return {'reports':row['report_preferences'],'unsubscribed':row['unsubscribed']}
+        return {'reports':row['report_preferences'],'unsubscribed':row['unsubscribed'],
+                'delivery_enabled':os.getenv('NEWSLETTER_DELIVERY_ENABLED') == '1'}
 
     @router.post('/preferences')
     async def save_preferences(request: Request):

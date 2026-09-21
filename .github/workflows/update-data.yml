@@ -27,6 +27,7 @@ jobs:
 
       - name: Run ingestion
         env:
+          NEWSLETTER_PREPARE_ENABLED: '1'
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           MARS_API_KEY: ${{ secrets.USDA_API_KEY }}
@@ -41,6 +42,7 @@ jobs:
       # FDA recalls. continue-on-error for the same reason as movement:
       # prices are the product and must not fail on a secondary source.
       - name: Run recall ingestion
+        id: recalls
         continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -50,6 +52,7 @@ jobs:
           python ingest_recalls.py
 
       - name: Run movement ingestion
+        id: movement
         continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -58,3 +61,9 @@ jobs:
         run: |
           cd backend
           python ingest_movement.py
+
+      - name: Surface secondary ingestion failures
+        if: always() && (steps.recalls.outcome == 'failure' || steps.movement.outcome == 'failure')
+        run: |
+          echo "Movement or recall ingestion failed. Price ingestion has its own result above."
+          exit 1

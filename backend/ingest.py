@@ -1292,6 +1292,14 @@ def _run_for_date(target_date: str) -> int:
             # database ended up with only Baltimore/Boston/Atlanta partial.
             # Catch here so one bad slug can't blank out the rest of the day.
             try:
+                newsletter_groups = []
+                if os.getenv('NEWSLETTER_PREPARE_ENABLED') == '1' and report_meta['market_type'] == 'terminal':
+                    newsletter_groups = sorted({(r['market'], r['commodity_type'], r['report_date']) for r in built})
+                    for market, category, report_day in newsletter_groups:
+                        supabase.table('newsletter_reports').upsert({
+                            'market': market, 'category': category, 'report_date': report_day,
+                            'ready': False, 'row_count': 0,
+                        }).execute()
                 upserted = upsert_rows(built)
                 if upserted != len({r['row_hash'] for r in built}):
                     raise ValueError('Incomplete write; refusing to prune existing report rows')
@@ -1304,6 +1312,12 @@ def _run_for_date(target_date: str) -> int:
                     {r["row_hash"] for r in built if r.get("row_hash")},
                 )
                 purge_old_rows(slug_id, actual_report_date_str)
+                for market, category, report_day in newsletter_groups:
+                    expected = len({r['row_hash'] for r in built if (r['market'], r['commodity_type'], r['report_date']) == (market, category, report_day)})
+                    stored = supabase.table(TABLE).select('row_hash', count='exact').eq('market_type', 'terminal').eq('market', market).eq('commodity_type', category).eq('report_date', report_day).limit(1).execute()
+                    if stored.count != expected:
+                        raise ValueError('Newsletter report row count does not match completed import')
+                    supabase.table('newsletter_reports').update({'ready': True, 'row_count': expected}).eq('market', market).eq('category', category).eq('report_date', report_day).execute()
             except Exception as e:
                 log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
                 failed_reports.append(code)
