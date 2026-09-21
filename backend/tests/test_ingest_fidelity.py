@@ -35,6 +35,11 @@ class FidelityTests(unittest.TestCase):
         raw.update(fields)
         return ingest.build_row(raw, META)
 
+    def test_bad_source_dates_never_become_today(self):
+        for value in (None, '', 'not a date', '02/30/2026'):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, 'report date'):
+                self.row(report_date=value)
+
     def test_all_audited_mostly_ranges(self):
         for low, high in [(26,28),(86,87),(102,103),(66,68),(97,98),(107,108),(53,54)]:
             with self.subTest(low=low):

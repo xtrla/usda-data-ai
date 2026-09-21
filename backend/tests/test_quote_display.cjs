@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
-const rows = JSON.parse(fs.readFileSync(path.join(root,'output/audit/corrected-ny-vegetables-2026-09-17.json')));
+const rows = JSON.parse(fs.readFileSync(process.env.QUOTE_FIXTURE_PATH || path.join(root,'output/audit/corrected-ny-vegetables-2026-09-17.json')));
 const context = {window:{agraxAPI:{},agraxUtil:{}}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'frontend/js/agrax-data.js'),'utf8'),context);
 const skus = context.window.agraxData.skuRows(rows);

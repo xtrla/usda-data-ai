@@ -69,9 +69,7 @@ const api = {
   reportTrends: (date) =>
     _fetch(`/reports/trends${date ? `?date=${encodeURIComponent(date)}` : ''}`),
 
-  // GET /history?commodity=&market=&variety=&origin=&size=&package=&grade=&quality=&days=
-  // Empty-string params are preserved: quality='' means the print with
-  // no quality note, which is a real record, not an absent filter.
+  // Exact archived specification resolved by source row hash.
   history: (params = {}) => {
     const q = Object.entries(params)
       .filter(([, v]) => v != null)

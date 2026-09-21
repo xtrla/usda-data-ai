@@ -478,17 +478,8 @@
     s.fobPts = '';
 
     if (!S.historyCache[s.key]) {
-      api.history({
-        commodity: s.raw.commodity, market: s.raw.market,
-        variety: s.raw.variety, origin: s.raw.origin,
-        size: s.raw.size, package: s.raw.package,
-        grade: s.raw.grade, quality: s.raw.quality_note || '',
-        properties: s.raw.properties || '', appearance: s.raw.appearance || '',
-        condition: s.raw.condition || '', notes: s.raw.notes || '',
-        price_qualifier: s.raw.price_qualifier || '',
-        days: 365
-      }).then(function (hist) {
-        S.historyCache[s.key] = D.history(hist, []);
+      api.history({quote_id: s.raw.row_hash, days: 365}).then(function (hist) {
+        S.historyCache[s.key] = D.history(hist.observations, []);
         rerender();
       }).catch(function () { S.historyCache[s.key] = []; });
     }

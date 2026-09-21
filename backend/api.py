@@ -559,54 +559,23 @@ def get_national_trends(date: str = None):
 # ─────────────────────────────────────────────────────────────
 
 @app.get("/history")
-def get_history(
-    commodity: str,
-    market: str = None,
-    variety: str = None,
-    origin: str = None,
-    size: str = None,
-    package: str = None,
-    grade: str = None,
-    quality: str = None,
-    properties: str = None,
-    appearance: str = None,
-    condition: str = None,
-    notes: str = None,
-    price_qualifier: str = None,
-    days: int = 90,
-):
-    """Return time-series rows for the given SKU filters, most recent first.
-
-    grade and quality are part of a SKU's identity, not decoration. Without
-    them a history for Mexican Hass 48s mixed the base print, the "Few"
-    print and the "fine appearance" print into one series, so the chart
-    jumped between three different products and every change figure was
-    meaningless. Callers that omit them still get the looser behaviour.
-    """
+def get_history(quote_id: str, days: int = 90):
+    """Exact archived series, resolved from a source quote ID, never broad filters."""
+    if not quote_id or len(quote_id) > 128 or not 1 <= days <= 366:
+        raise HTTPException(status_code=422, detail="Invalid quote ID or history period")
     try:
-        from datetime import date, timedelta
-        cutoff = (date.today() - timedelta(days=days)).isoformat()
-
-        q = supabase.table(TABLE).select("*").eq("commodity", commodity).gte("report_date", cutoff)
-        if market:  q = q.eq("market", market)
-        if variety: q = q.eq("variety", variety)
-        if origin:  q = q.eq("origin", origin)
-        if size:    q = q.eq("size", size)
-        if package: q = q.eq("package", package)
-        if grade:   q = q.eq("grade", grade)
-        # An explicit empty string means "the print with no quality note",
-        # which is a real and distinct record — not "don't filter".
-        if quality is not None:
-            q = q.eq("quality_note", quality) if quality else q.is_("quality_note", "null")
-        for field,value in [('properties',properties),('appearance',appearance),
-                            ('condition',condition),('notes',notes),('price_qualifier',price_qualifier)]:
-            if value is not None:
-                q = q.eq(field,value) if value else q.is_(field,'null')
-
-        result_rows = fetch_all(q.order("report_date", desc=True))
-        return result_rows
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        result = supabase.rpc("read_price_history", {
+            "p_row_hash": quote_id, "p_days": days,
+        }).execute().data
+        if not isinstance(result, dict) or not isinstance(result.get("observations"), list):
+            raise ValueError("Invalid history archive response")
+    except Exception:
+        log.exception("History archive query failed")
+        # Never fall back to the mutable current-price table or fabricated data.
+        raise HTTPException(status_code=503, detail="Price history is temporarily unavailable")
+    if not result.get("found"):
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return result
 
 # ─────────────────────────────────────────────────────────────
 # MOVEMENT (produce_movement — USDA WA_FV175 truck/air/boat data)

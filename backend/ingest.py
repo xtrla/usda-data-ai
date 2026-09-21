@@ -680,8 +680,8 @@ def build_row(raw: dict, report_meta: dict) -> dict | None:
     report_date_raw = raw.get("report_date") or raw.get("report_begin_date")
     try:
         report_date = datetime.strptime(report_date_raw, "%m/%d/%Y").date().isoformat()
-    except Exception:
-        report_date = date.today().isoformat()
+    except (ValueError, TypeError):
+        raise ValueError("Missing or invalid USDA report date; refusing to invent a price date")
 
     # Prices
     low_price_raw = raw.get("low_price") or raw.get("price") or raw.get("price_low")
@@ -1012,7 +1012,8 @@ def prune_stale_hashes(slug_id: int, report_date: str, keep_hashes: set) -> int:
 def upsert_rows(rows: list[dict]) -> int:
     """
     Upsert rows using row_hash as the conflict target.
-    On conflict (same hash = same row already exists) do nothing.
+    Merge corrections for the same source row. The database trigger archives
+    every changed revision atomically; identical repeats do not add history.
     """
     if not rows:
         return 0
@@ -1123,35 +1124,9 @@ def run(target_date: str = None):
     Ingest all configured report slugs for today (or target_date if given).
     target_date format: "MM/DD/YYYY"
 
-    Strategy:
-    0. Check for missing dates in the last 7 days and backfill them first
-    1. Try today's date first
-    2. If no data, fall back to lastReports=1 (most recent published)
-    3. After fetching, purge any older rows for that slug so stale data
-       from previous runs never pollutes the results
+    Forward collection only. Historical USDA backfill is a separate, explicit
+    future operation; scheduled runs do not crawl missing past dates.
     """
-    # ── Gap detection & backfill ──
-    if not target_date:
-        missing = find_missing_dates(7)
-        if missing:
-            log.info("=" * 60)
-            log.info("GAP DETECTION: found %d missing date(s) in the last 7 days", len(missing))
-            for d in sorted(missing):
-                log.info("  Missing: %s (%s)", d.isoformat(), d.strftime("%A"))
-            log.info("=" * 60)
-
-            # Backfill each missing date
-            for d in sorted(missing):
-                backfill_date = d.strftime("%m/%d/%Y")
-                log.info("BACKFILL: ingesting %s...", backfill_date)
-                try:
-                    _run_for_date(backfill_date)
-                    log.info("BACKFILL: %s complete", backfill_date)
-                except Exception as e:
-                    log.error("BACKFILL: %s failed: %s", backfill_date, e)
-        else:
-            log.info("Gap detection: no missing dates in the last 7 days")
-
     # ── Main ingestion for today (or specified date) ──
     if not target_date:
         target_date = date.today().strftime("%m/%d/%Y")
@@ -1166,6 +1141,7 @@ def _run_for_date(target_date: str) -> int:
     """
     log.info("Ingesting for %s", target_date)
     grand_total = 0
+    failed_reports = []
 
     # Age-based cleanup, bounded by RETAIN_DAYS rather than a separate figure.
     #
@@ -1255,6 +1231,7 @@ def _run_for_date(target_date: str) -> int:
             raw_rows = fetch_report(slug_id, target_date)
         except Exception as e:
             log.error("Failed to fetch %s: %s", code, e)
+            failed_reports.append(code)
             continue
 
         # If no data for today, fall back to most recently published report
@@ -1265,6 +1242,7 @@ def _run_for_date(target_date: str) -> int:
                 raw_rows = fetch_latest_report(slug_id)
             except Exception as e:
                 log.error("Failed to fetch latest %s: %s", code, e)
+                failed_reports.append(code)
                 continue
 
         if not raw_rows:
@@ -1275,8 +1253,10 @@ def _run_for_date(target_date: str) -> int:
         sample_date_raw = raw_rows[0].get("report_date") or raw_rows[0].get("report_begin_date") or ""
         try:
             actual_report_date = datetime.strptime(sample_date_raw, "%m/%d/%Y").date()
-        except Exception:
-            actual_report_date = date.today()
+        except (ValueError, TypeError):
+            log.error("Invalid source report date for %s; preserving existing report", code)
+            failed_reports.append(code)
+            continue
 
         # Skip stale fallback data — if best available is >14 days old, not worth showing
         if used_fallback:
@@ -1303,6 +1283,7 @@ def _run_for_date(target_date: str) -> int:
 
         if report_meta['market_type'] == 'terminal' and len(built) != len(raw_rows):
             log.error('Incomplete terminal transformation for %s; keeping existing report', code)
+            failed_reports.append(code)
             continue
 
         if built:
@@ -1325,6 +1306,7 @@ def _run_for_date(target_date: str) -> int:
                 purge_old_rows(slug_id, actual_report_date_str)
             except Exception as e:
                 log.error("  Upsert FAILED for %s (%d rows lost): %s", code, len(built), e)
+                failed_reports.append(code)
                 # continue explicitly — the for loop's next iteration continues
                 # even without this, but be loud about the recovery
                 continue
@@ -1359,6 +1341,8 @@ def _run_for_date(target_date: str) -> int:
         log.error("Failed to fetch FVWTRDS: %s", e)
 
     log.info("Ingestion complete. Total rows upserted: %d", grand_total)
+    if failed_reports:
+        raise RuntimeError("Incomplete price ingestion: " + ", ".join(sorted(set(failed_reports))))
     return grand_total
 
 
