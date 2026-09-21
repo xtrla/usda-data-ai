@@ -26,7 +26,7 @@
   }
   const panel = document.createElement('section');
   panel.className = 'analytics-choice'; panel.setAttribute('aria-label','Analytics preferences');
-  panel.innerHTML = '<p>Allow usage analytics to help improve AgraX? <a href="/privacy">Privacy</a></p><div><button type="button" data-accept>Allow analytics</button><button type="button" data-decline>Decline</button></div>';
+  panel.innerHTML = '<p>We use optional analytics cookies to understand how people use AgraX and improve the site. <a href="/privacy">Privacy policy</a></p><div><button type="button" data-accept>Accept</button><button type="button" data-decline>Decline</button></div>';
   function choose(value) {
     choice = value;
     try { localStorage.setItem(key,value); } catch (_) {}
