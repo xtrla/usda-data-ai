@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 
 CATEGORIES = {'fruits', 'vegetables', 'onions_potatoes', 'nuts'}
 MARKETS = {'New York', 'Los Angeles', 'Chicago', 'Philadelphia', 'Miami', 'Boston',
-           'Atlanta', 'Baltimore', 'Detroit', 'Columbia', 'Asheville', 'Raleigh'}
+           'Atlanta', 'Baltimore', 'Detroit', 'Columbia', 'Asheville'}
 
 def digest(token):
     if not isinstance(token, str) or not re.fullmatch(r'[A-Za-z0-9_-]{40,100}', token):
