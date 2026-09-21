@@ -49,6 +49,16 @@ def cached(key, producer, ttl=_CACHE_TTL):
 
 app = FastAPI(title="AGRA API", version="2.0.0")
 
+
+@app.middleware("http")
+async def cache_public_reports(request: Request, call_next):
+    response = await call_next(request)
+    # Cache only public price lists, never accounts or subscription responses.
+    # The browser can reuse a recent response on navigation for one minute.
+    if request.method == "GET" and request.url.path in ("/reports/current", "/reports/latest") and response.status_code == 200:
+        response.headers["Cache-Control"] = "public, max-age=60"
+    return response
+
 # Compress responses. A day of terminal prices is several megabytes of JSON
 # and JSON of this shape — the same field names repeated thousands of times —
 # compresses roughly eight to one. This is the single largest win available on

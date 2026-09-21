@@ -30,6 +30,8 @@
   ];
 
   var S = {
+    loading: true,
+    loadError: false,
     rows: [],            // all terminal prices, latest per line
     fobRows: [],         // shipping point prices
     market: null,
@@ -775,6 +777,16 @@
     pending = true;
     requestAnimationFrame(function () {
       pending = false;
+      if (S.loading || S.loadError) {
+        PAGE_ROOT.setAttribute('aria-busy', String(S.loading));
+        PAGE_ROOT.innerHTML = '<section role="status" style="max-width:1200px;margin:32px auto;padding:40px 24px;min-height:260px;background:#fff;border:1px solid #dce3d6;border-radius:12px">' +
+          '<h1 style="font-size:24px;margin:0 0 12px">Terminal market prices</h1>' +
+          (S.loadError ? '<p>Prices could not load. Please try again.</p><button type="button" id="retry-prices">Try again</button>' : '<p>Loading market prices…</p>') + '</section>';
+        var retry = document.getElementById('retry-prices');
+        if (retry) retry.onclick = function () { window.location.reload(); };
+        return;
+      }
+      PAGE_ROOT.setAttribute('aria-busy', 'false');
       syncLocation();
       captureStrips();
       window.DC.mount(PAGE_ROOT, TEMPLATE, buildScope());
@@ -833,13 +845,12 @@
         : (wanted && markets[wanted]) ? wanted : (markets['New York'] ? 'New York' : S.markets[0]);
     }
 
-    // Paint the shell immediately so the page is never blank.
+    // Loading is distinct from a genuinely empty report.
     rerender();
 
-    api.reportCurrent('terminal').then(async function (rows) {
-      if (window.agraxAccount) {
-        await window.agraxAccount.ready;
-      }
+    var pricesReady = api.reportCurrent('terminal');
+    pricesReady.then(function (rows) {
+      S.loading = false;
       S.rows = rows || [];
       setMarkets();
       if (window.agraxSearch) {
@@ -857,18 +868,15 @@
       }
       rerender();
     }).catch(function () {
-      api.dates().then(function (dates) {
-        if (!dates || !dates.length) return;
-        return api.reportTerminal(dates[0].date).then(function (rows) {
-          S.rows = rows || [];
-          setMarkets();
-          rerender();
-        });
-      }).catch(function () {});
+      // A global-date fallback can silently omit markets that last printed
+      // on another date. Offer a retry instead of showing incomplete data.
+      S.loading = false;
+      S.loadError = true;
+      rerender();
     });
 
-    // Fires in parallel; fills the FOB and Spread columns when it arrives.
-    api.reportLatest('shipping_point').then(function (rows) {
+    // Secondary data starts after terminal prices arrive.
+    pricesReady.then(function () { return api.reportLatest('shipping_point'); }).then(function (rows) {
       S.fobRows = rows || [];
       rerender();
     }).catch(function () { S.fobRows = []; });
