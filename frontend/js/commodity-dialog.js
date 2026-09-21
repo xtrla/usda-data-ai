@@ -17,6 +17,7 @@
     dialog.querySelector('[data-export=print]').disabled = !matches.length;
     dialog.querySelector('.commodity-dialog__count').textContent = matches.length + ' of ' + rows.length + ' prices';
     dialog.querySelector('.commodity-dialog__table').innerHTML = matches.length ? Q.table(selected, matches, market, '') : '<p class="commodity-empty">No prices match these filters.</p>';
+    if (matches.length) window.agraxQuoteHistory.attach(dialog.querySelector('.commodity-dialog__table'), matches, market);
   }
   async function share() {
     const url = new URL('/browse/',location.origin);

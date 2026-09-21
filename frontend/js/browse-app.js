@@ -171,6 +171,9 @@
       var o = {
         name: label, label: label, count: String(count),
         on: !!S.filters[group][key], active: !!S.filters[group][key],
+        chipBg: S.filters[group][key] ? '#1F5236' : '#F5F6F2',
+        chipFg: S.filters[group][key] ? '#FFFFFF' : '#4A5742',
+        chipBd: S.filters[group][key] ? '#1F5236' : '#DCE3D6',
         onToggle: function () {
           S.filters[group][key] = !S.filters[group][key];
           S.page = 0;

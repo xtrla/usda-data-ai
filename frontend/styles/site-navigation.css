@@ -62,3 +62,14 @@
   .agrax-header .agrax-navigation{max-height:calc(100dvh - 64px)}
   #agrax-header-search button{display:flex;align-items:center;justify-content:center}
 }
+
+@media(max-width:899px){
+  .agrax-header.search-expanded .agrax-brand,.agrax-header.search-expanded .agrax-menu-toggle{display:none}
+  .agrax-header.search-expanded #agrax-header-search{position:static;order:-1;flex:1;min-width:0;height:40px;padding:0;border:1px solid #dce2d6;border-radius:8px;background:#f4f6f1;box-shadow:none}
+  .agrax-header.search-expanded #agrax-header-search input{height:38px;padding:8px 10px;background:transparent;outline-offset:0}
+  .agrax-header.search-expanded #agrax-header-search button{order:-1;width:36px;height:38px;color:#6d7b65}
+  .agrax-header.search-expanded .agrax-search-toggle{margin:0;background:transparent;position:relative}
+  .agrax-header.search-expanded .agrax-search-toggle svg{display:none}
+  .agrax-header.search-expanded .agrax-search-toggle::before,.agrax-header.search-expanded .agrax-search-toggle::after{content:'';position:absolute;width:18px;height:1.7px;background:currentColor;transform:rotate(45deg)}
+  .agrax-header.search-expanded .agrax-search-toggle::after{transform:rotate(-45deg)}
+}

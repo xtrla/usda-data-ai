@@ -23,6 +23,7 @@
   }
   function closeSearch(focus) {
     search.classList.remove('is-open');
+    header.classList.remove('search-expanded');
     searchToggle.setAttribute('aria-expanded', 'false');
     searchToggle.setAttribute('aria-label', 'Open search');
     if (focus && mobile.matches) searchToggle.focus();
@@ -39,6 +40,7 @@
     close(false); closeSearch(false);
     if (opening) {
       search.classList.add('is-open');
+      header.classList.add('search-expanded');
       searchToggle.setAttribute('aria-expanded', 'true');
       searchToggle.setAttribute('aria-label', 'Close search');
       search.querySelector('input').focus();

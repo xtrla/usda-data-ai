@@ -495,6 +495,7 @@
         </div>
       </div>
 
+      <div style="display:flex;justify-content:space-between;padding:11px 34px 8px 14px;font-size:11px;color:#76816e"><span>Commodity</span><span>Market tone</span></div>
       <template data-for="rows" data-as="c">
         <template data-if="c.sponsorSlot">
           <div style="border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F;padding:10px 14px 11px 16px">
@@ -507,19 +508,16 @@
         </template>
 
         <div style="border-bottom:1px solid #EDEEE9">
-          <div data-on-click="c.onToggle" style="position:relative;padding:11px 14px 12px;cursor:pointer">
+          <div data-on-click="c.onToggle" style="position:relative;padding:10px 14px;min-height:56px;box-sizing:border-box;display:flex;align-items:center;cursor:pointer">
 
-            <div style="position:relative;display:flex;align-items:center;gap:8px">
-              <span style="min-width:0;flex:1;font-size:14px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><button class="commodity-open" data-on-click="c.onSelect" aria-haspopup="dialog">{{ c.name }}</button><span data-watch-commodity="{{ c.name }}"></span></span>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;width:100%">
+              <span style="min-width:0;flex:1;display:flex;align-items:center;gap:2px;font-size:14px;font-weight:600;letter-spacing:-0.01em"><button style="min-width:0;white-space:normal;text-align:left;line-height:1.35" class="commodity-open" data-on-click="c.onSelect" aria-haspopup="dialog">{{ c.name }}</button><span data-watch-commodity="{{ c.name }}"></span></span>
               <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#EAF3EA;color:#1F5F32">↑ Higher</span></template>
               <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F7EFE8;color:#7A4223">↓ Lower</span></template>
               <template data-if="c.flat"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158">→ Steady</span></template>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#90998b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 5 7 7-7 7"/></svg>
             </div>
-            <div style="position:relative;margin-top:4px;display:flex;align-items:center;gap:7px">
-              <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#4A5148">{{ c.skusTxt }} prices</span>
-              <span style="flex:none;width:3px;height:3px;border-radius:5px;background:#C9CCC3"></span>
-              <span style="min-width:0;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
-            </div>
+
           </div>
 
 
@@ -565,9 +563,9 @@
             <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ g.title }}</span>
             <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px">
               <template data-for="g.options" data-as="o">
-                <span data-on-click="o.onToggle" style="height:34px;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}">{{ o.name }}
+                <button type="button" aria-pressed="{{ o.on }}" data-on-click="o.onToggle" style="min-height:40px;font-family:inherit;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}"><template data-if="o.on"><span aria-hidden="true">✓</span></template>{{ o.name }}
                   <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;opacity:0.7">{{ o.count }}</span>
-                </span>
+                </button>
               </template>
             </div>
           </div>
@@ -590,10 +588,11 @@
 <script src="/js/agrax-data.js"></script>
 <script src="/js/agrax-search.js"></script>
 <script src="/js/commodity-quotes.js?v=2"></script>
-<script src="/js/commodity-dialog.js?v=2"></script>
-<link rel="stylesheet" href="/styles/commodity-dialog.css?v=2">
+<script src="/js/quote-history.js?v=demo-1"></script>
+<script src="/js/commodity-dialog.js?v=history-1"></script>
+<link rel="stylesheet" href="/styles/commodity-dialog.css?v=demo-1">
 <script src="/js/origin-country.js"></script>
-<script src="/js/browse-app.js?v=country-origin-1"></script>
+<script src="/js/browse-app.js?v=filter-pills-1"></script>
 <link rel="stylesheet" href="/styles/account.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
