@@ -14,7 +14,7 @@ No additional paid service is required: existing GitHub Actions, Supabase and Re
    newsletters with `mode=dry_run`, then `mode=test` to send only New York
    vegetables to the owner's confirmed starmantra12@gmail.com subscription.
 5. After the test passes, set Actions variable `NEWSLETTER_DELIVERY_ENABLED=1`.
-   Subsequent successful imports trigger delivery. Do this only when ready to send
+   Subsequent completed imports trigger delivery of individually ready reports. Do this only when ready to send
    to all confirmed subscribers. Set the same variable in Railway so signup
    confirmation and management pages accurately describe delivery availability.
 
@@ -39,8 +39,8 @@ No additional paid service is required: existing GitHub Actions, Supabase and Re
 - `python backend/daily_newsletter.py` without the enabling variable is a read-only
   candidate count; it does not claim deliveries or send emails.
 - GitHub marks sending errors as failed runs. Enable GitHub workflow failure
-  notifications for the repository owner. Existing scheduled ingest failures
-  prevent this dependent job from sending.
+  notifications for the repository owner. A failed report is not marked ready;
+  failures in shipping points or another market do not suppress ready reports.
 
 ## Before enabling
 

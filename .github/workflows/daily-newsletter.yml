@@ -17,7 +17,9 @@ permissions:
   contents: read
 jobs:
   deliver:
-    if: github.event_name == 'workflow_dispatch' || (vars.NEWSLETTER_DELIVERY_ENABLED == '1' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    # Each report has its own readiness check. A shipping-point or another
+    # market's failure must not suppress a completed terminal report.
+    if: github.event_name == 'workflow_dispatch' || (vars.NEWSLETTER_DELIVERY_ENABLED == '1' && contains(fromJSON('["success","failure"]'), github.event.workflow_run.conclusion) && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
