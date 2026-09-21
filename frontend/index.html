@@ -97,12 +97,6 @@
     <figure class="home-intro__image"><img src="/assets/farm-hero.webp" alt="Rows of produce growing in a sunlit field" width="884" height="663" fetchpriority="high"><figcaption>From the field.<br><strong>Into perspective.</strong></figcaption></figure>
   </section>
   <div class="home-source-strip"><span>Built around the reported price.</span><span>USDA AMS sources</span><span>Original report dates</span><span>Full quote details</span></div>
-  <section class="home-section home-section--markets" aria-labelledby="home-markets-title">
-    <div class="home-section__heading"><h2 id="home-markets-title">Choose a market</h2><span>Terminal prices</span></div>
-    <p class="home-status" role="status">{{ marketStatus }}</p>
-    <div class="home-markets"><template data-for="featuredMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div>
-    <template data-if="hasMoreMarkets"><details class="home-more"><summary>More markets <span aria-hidden="true">+</span></summary><div class="home-markets"><template data-for="moreMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div></details></template>
-  </section>
   <section class="home-section" aria-labelledby="home-categories-title">
     <div class="home-section__heading"><h2 id="home-categories-title">Browse by category</h2></div>
     <div class="home-categories">
@@ -111,6 +105,12 @@
 <a class="home-category" href="/browse?category=onions_potatoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8V3M8 5 5 3m3 2 3-2"/><circle cx="8" cy="14" r="6"/><ellipse cx="19" cy="16" rx="4" ry="5"/></svg><span><strong>Onions & potatoes</strong><small>{{ catOnions }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
 <a class="home-category" href="/browse?category=nuts"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3c-6 5-6 12 0 18C13 15 13 8 7 3Zm10 0c-6 5-6 12 0 18 6-6 6-13 0-18ZM7 6v12M17 6v12"/></svg><span><strong>Nuts</strong><small>{{ catNuts }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
     </div>
+  </section>
+  <section class="home-section home-section--markets" aria-labelledby="home-markets-title">
+    <div class="home-section__heading"><h2 id="home-markets-title">Choose a market</h2><span>Terminal prices</span></div>
+    <p class="home-status" role="status">{{ marketStatus }}</p>
+    <div class="home-markets"><template data-for="featuredMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div>
+    <template data-if="hasMoreMarkets"><details class="home-more"><summary>More markets <span aria-hidden="true">+</span></summary><div class="home-markets"><template data-for="moreMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div></details></template>
   </section>
   <section class="home-context" aria-labelledby="home-context-title">
     <h2 id="home-context-title">The details behind your next purchase.</h2>
