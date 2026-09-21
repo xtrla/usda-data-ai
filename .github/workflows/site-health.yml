@@ -1,0 +1,67 @@
+name: AgraX site health
+on:
+  schedule:
+    - cron: '23 */2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  issues: write
+concurrency:
+  group: agrax-site-health
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check public pages, API and terminal freshness
+        id: health
+        continue-on-error: true
+        env:
+          AGRAX_HEALTH_OUTPUT: health-result.json
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python backend/site_health.py
+      - name: Maintain one actionable alert
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const {owner, repo} = context.repo;
+            const title = 'AgraX health alert';
+            let findings;
+            try { findings = JSON.parse(fs.readFileSync('health-result.json', 'utf8')).failures; }
+            catch { findings = ['Health check could not finish; inspect this workflow run.']; }
+            const runs = await github.rest.actions.listWorkflowRuns({owner, repo,
+              workflow_id: 'daily-newsletter.yml', branch: 'main', status: 'completed', per_page: 30});
+            const latest = runs.data.workflow_runs.find(run => run.conclusion !== 'skipped');
+            if (latest && !['success','neutral'].includes(latest.conclusion)) {
+              findings.push(`Newsletter job needs attention: ${latest.html_url}`);
+            }
+            const issues = await github.paginate(github.rest.issues.listForRepo,
+              {owner, repo, state: 'open', creator: 'github-actions[bot]', per_page: 100});
+            const current = issues.find(issue => issue.title === title && !issue.pull_request);
+            const summary = findings.sort().map(item => '- ' + item).join('\n');
+            if (findings.length) {
+              const body = 'Automated checks found:\n\n' + summary +
+                '\n\nFreshness warnings require checking USDA publication dates; holidays can delay reports.' +
+                '\n\n[Health check runs](https://github.com/' + owner + '/' + repo + '/actions/workflows/site-health.yml)';
+              if (!current) await github.rest.issues.create({owner, repo, title, body});
+              else if (current.body !== body) await github.rest.issues.update({owner, repo, issue_number: current.number, body});
+              core.setFailed('An AgraX health alert is open.');
+            } else if (current) {
+              await github.rest.issues.createComment({owner, repo, issue_number: current.number,
+                body: 'The latest checks passed. Closing this alert.'});
+              await github.rest.issues.update({owner, repo, issue_number: current.number, state: 'closed'});
+            }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: health-result
+          path: health-result.json
+          retention-days: 7
