@@ -104,6 +104,8 @@ from newsletter import create_router as create_newsletter_router
 app.include_router(create_newsletter_router(supabase))
 from data_issues import create_router as create_data_issues_router
 app.include_router(create_data_issues_router())
+from welcome import create_router as create_welcome_router
+app.include_router(create_welcome_router(supabase))
 MOVEMENT_TABLE = "produce_movement"
 
 # ─────────────────────────────────────────────────────────────
