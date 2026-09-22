@@ -81,18 +81,14 @@
 <link rel="stylesheet" href="/styles/analytics.css"><script defer src="/js/analytics-config.js"></script><script defer src="/js/analytics.js"></script>
 </head>
 <body class="agrax-home">
-<script src="/js/site-navigation.js?v=mobile-header-2"></script>
+<script src="/js/site-navigation.js?v=header-search-3"></script>
 <template id="page-template">
 <main class="home-shell">
   <section class="home-intro" aria-labelledby="home-title">
     <div class="home-intro__content"><p class="agx-eyebrow"><span aria-hidden="true"></span> Produce markets, in focus</p>
     <h1 id="home-title">Know the market.<br>See the details.</h1>
     <p class="home-intro__description">Compare USDA wholesale produce prices across US markets, with variety, origin, and pack details in view.</p>
-    <form class="home-search" action="/browse" role="search">
-      <input name="q" aria-label="Commodity, variety or origin" data-value="query" data-on-input="onQuery" data-search-input placeholder="Commodity, variety or origin" type="search" autocomplete="off">
-      <button type="submit" aria-label="Search prices"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
-    </form>
-    <div class="home-popular"><span>Try</span><a href="/browse?q=Avocados">Avocados</a><a href="/browse?q=Tomatoes">Tomatoes</a><a href="/browse?q=Onions">Onions</a></div>
+    <a class="home-explore" href="/browse">Explore prices <span aria-hidden="true">→</span></a>
     </div>
     <figure class="home-intro__image"><img src="/assets/farm-hero.webp" alt="Rows of produce growing in a sunlit field" width="884" height="663" fetchpriority="high"><figcaption>From the field.<br><strong>Into perspective.</strong></figcaption></figure>
   </section>
@@ -138,5 +134,6 @@
 <script defer src="/js/account-client.js"></script>
 <script defer src="/js/account-ui.js?v=mobile-header-2"></script>
 <link rel="stylesheet" href="/styles/product-system.css?v=cohesion-1">
+<link rel="stylesheet" href="/styles/page-grid.css?v=mobile-hero-8">
 </body>
 </html>

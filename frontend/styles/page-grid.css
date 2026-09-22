@@ -1,0 +1,103 @@
+/* One outer grid for the brand, page navigation and content surfaces. */
+:root{--agx-layout-width:1440px;--agx-layout-gutter:32px;--agx-panel-inset:24px}
+@media(max-width:899px){:root{--agx-layout-gutter:16px;--agx-panel-inset:16px}}
+:is(.agrax-home,.agrax-browse) .agrax-header{padding-inline:0!important}
+:is(.agrax-home,.agrax-browse) .agrax-header .agrax-header-inner{width:100%;max-width:var(--agx-layout-width);padding-inline:var(--agx-layout-gutter)}
+.agrax-home .home-shell,.agrax-home .home-footer,.agrax-browse .browse-page-shell{box-sizing:border-box;width:100%;max-width:var(--agx-layout-width);margin-inline:auto;padding-inline:var(--agx-layout-gutter)!important}
+.agrax-home .home-shell,.agrax-browse .browse-page-shell{padding-top:24px}
+.agrax-home .home-intro__content{padding-inline:var(--agx-panel-inset)}
+.agrax-home .home-source-strip{padding-inline:0}
+.agrax-home :is(.home-category,.home-market){padding-inline:var(--agx-panel-inset)}
+.agrax-home .home-subscribe{padding-inline:var(--agx-panel-inset)}
+.agrax-browse .browse-page-footer{padding-inline:0!important}
+.agrax-browse .browse-page-footer>div{box-sizing:border-box;max-width:var(--agx-layout-width)!important;padding-inline:var(--agx-layout-gutter)}
+@media(min-width:900px){
+ .agrax-browse [data-shot=overview]{padding-inline:var(--agx-panel-inset)!important}
+}
+@media(max-width:899px){
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-navigation{right:var(--agx-layout-gutter)}
+ .agrax-home .home-shell{padding-top:16px}
+ .agrax-browse .mobile-overview{margin-inline:var(--agx-layout-gutter);margin-top:16px}
+ .agrax-browse [data-market-strip]{padding-inline:var(--agx-layout-gutter)!important}
+ .agrax-browse :is(.market-table-toolbar,.market-commodity-row,.browse-column-labels,.browse-pagination){padding-inline:var(--agx-layout-gutter)!important}
+ .agrax-browse :is(.mobile-overview__toggle,.mobile-market-counts,.mobile-market-tone,.mobile-overview__reports){padding-inline:var(--agx-panel-inset)}
+}
+/* Keep photography, categories and market cards on one neutral surface system. */
+.agrax-home .home-intro{background:var(--agx-surface);border:1px solid var(--agx-border);border-radius:var(--agx-panel-radius);gap:24px;padding:24px;grid-template-columns:1.1fr 1fr}
+.agrax-home .home-intro__content{padding:20px 0}
+.agrax-home .home-intro__image{margin:0;min-height:300px;border-radius:var(--agx-radius);mask-image:none;-webkit-mask-image:none}
+.agrax-home .home-intro__image:after{background:linear-gradient(0deg,rgba(17,39,25,.58),transparent 60%)}
+.agrax-home .home-intro__image figcaption{left:24px;right:24px;bottom:24px;text-align:left;font-size:20px}
+.agrax-home .home-intro__image figcaption strong{color:#fff}
+.agrax-home .home-category{background:var(--agx-surface);border:1px solid var(--agx-border);border-radius:var(--agx-radius);min-height:80px}
+.agrax-home .home-category>svg{color:var(--agx-green);width:26px;height:26px}
+.agrax-home .home-category strong{font-weight:500}
+.agrax-home .home-category:hover{background:var(--agx-tint);border-color:#aec3a5}
+@media(max-width:899px){
+ .agrax-home .home-intro{grid-template-columns:1fr;gap:20px;padding:var(--agx-panel-inset)}
+ .agrax-home .home-intro__content{padding:8px 0 0}
+ .agrax-home .home-intro__image{min-height:180px}
+ .agrax-home .home-intro__image figcaption{left:16px;bottom:16px;font-size:17px}
+ .agrax-home .home-category{padding:12px;gap:8px}
+ .agrax-home .home-category>svg{width:22px;height:22px}
+}
+
+/* A single persistent search field, with a direct hero entry point. */
+.agrax-home .home-explore{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:44px;padding:0 18px;border-radius:var(--agx-radius);background:var(--agx-green);color:#fff;text-decoration:none;font:500 14px var(--agx-font)}
+.agrax-home .home-explore:hover{background:var(--agx-green-hover)}
+:is(.agrax-home,.agrax-browse) .agrax-header .agrax-search-toggle{display:none}
+:is(.agrax-home,.agrax-browse) #agrax-header-search{display:flex;align-items:center;min-width:0;border:1px solid #e5e9e2;border-radius:8px;background:#f5f6f3}
+:is(.agrax-home,.agrax-browse) #agrax-header-search:focus-within{border-color:#91a38d;background:#fff}
+:is(.agrax-home,.agrax-browse) #agrax-header-search input{min-width:0;outline:none;background:transparent;color:#173d27}
+@media(min-width:900px){
+ :is(.agrax-home,.agrax-browse) .agrax-header-inner{gap:24px}
+ :is(.agrax-home,.agrax-browse) #agrax-header-search{order:-1;flex:1;max-width:440px;margin:0 auto 0 0}
+}
+@media(max-width:899px){
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-header-inner{gap:12px}
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-brand{order:0}
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-mobile-account{display:none}
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-menu-toggle{order:2;width:36px}
+ :is(.agrax-home,.agrax-browse) #agrax-header-search{position:static;order:1;flex:1;height:40px;margin:0;padding:0;box-shadow:none}
+ :is(.agrax-home,.agrax-browse) #agrax-header-search input{flex:1;width:100%;height:38px;padding:0 6px 0 0;font:16px var(--agx-font);border:0;border-radius:0}
+ :is(.agrax-home,.agrax-browse) #agrax-header-search button{order:-1;display:flex;align-items:center;justify-content:center;flex:none;width:36px;height:38px;color:#697466}
+}
+@media(max-width:359px){
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-header-inner{gap:8px}
+ :is(.agrax-home,.agrax-browse) .agrax-header .agrax-brand,:is(.agrax-home,.agrax-browse) .agrax-header .agrax-brand span{width:66px}
+}
+
+
+
+/* Mobile hero: the existing field photograph sits behind the introduction. */
+@media(max-width:899px){
+ .agrax-home .home-intro{position:relative;display:block;overflow:hidden;isolation:isolate;padding:28px 20px;border:0;background:#173e2b;min-height:0}
+ .agrax-home .home-intro__image{position:absolute;inset:0;z-index:0;min-height:0;margin:0;border-radius:inherit;pointer-events:none}
+ .agrax-home .home-intro__image img{object-position:58% 65%}
+ .agrax-home .home-intro__image:after{background:linear-gradient(90deg,rgba(9,30,19,.88),rgba(9,30,19,.62)),linear-gradient(0deg,rgba(9,30,19,.28),transparent)}
+ .agrax-home .home-intro__image figcaption{display:none}
+ .agrax-home .home-intro__content{position:relative;z-index:1;padding:0}
+ .agrax-home .home-intro .agx-eyebrow{color:#dcecc5}
+ .agrax-home .home-intro .agx-eyebrow>span{background:#cce798}
+ .agrax-home .home-intro h1{color:#fff}
+ .agrax-home .home-intro__description{color:#edf2e9;line-height:1.65;margin:18px 0 24px}
+ .agrax-home .home-explore{background:#d5e7a5;color:#173e2b}
+ .agrax-home .home-explore:hover{background:#e4f2bf}
+ .agrax-home .home-intro :focus-visible{outline-color:#fff}
+}
+
+
+/* Restored terminal pills and overview with a cool sage surface. */
+.agrax-browse [data-market-strip]{background:#edf2ef!important;border-color:#d8e2dc!important}
+.agrax-browse [data-market-pill]{background:#fff!important;color:#365548!important;border-color:#cddbd2!important}
+.agrax-browse [data-market-pill][data-active-pill=true]{background:#1f5236!important;color:#fff!important;border-color:#1f5236!important}
+.agrax-browse .mobile-overview,.agrax-browse [data-shot=overview]{background:#e1ebe5!important;border-color:#cadbd0!important}
+.agrax-browse .mobile-overview__title,.agrax-browse [data-shot=overview] h1{color:#193e2a}
+.agrax-browse .mobile-overview__eyebrow,.agrax-browse .mobile-market-counts{color:#496456}
+.agrax-browse .mobile-market-tone,.agrax-browse .mobile-overview__reports{background:#f5f8f6!important;border-color:#cadbd0!important}
+.agrax-browse .mobile-market-tone>summary,.agrax-browse .mobile-overview__reports>summary{color:#355644}
+
+/* Match commodity detail identity to the market overview. */
+.agrax-browse .commodity-dialog__header{background:#e1ebe5;border-bottom-color:#cadbd0}
+.agrax-browse .commodity-dialog__header h1{color:#193e2a}
+.agrax-browse .commodity-dialog__eyebrow{color:#496456}

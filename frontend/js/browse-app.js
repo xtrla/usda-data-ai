@@ -36,6 +36,8 @@
     fobRows: [],         // shipping point prices
     market: null,
     markets: [],
+    terminalsStatus: "Loading other terminals…",
+    terminalsError: false,
     filters: { category: {}, origin: {}, source: {} },
     tableQuery: '',
     sort: 'prices',
@@ -550,6 +552,10 @@
       terminal: S.market,
       terminalShort: S.market,
       terminals: buildTerminals(),
+      terminalsStatus: S.terminalsStatus,
+      terminalsError: S.terminalsError,
+      onRetryTerminals: function () { if (S.reloadMarkets) S.reloadMarkets(); },
+
 
       overview: buildOverview(),
       marketTone: buildMarketTone(),
@@ -874,22 +880,32 @@
       S.loading = false;
       S.loadError = true;
       rerender();
-      // Other markets are needed for cross-market search and comparison,
-      // but must not hold up the selected market's first paint.
-      requestAnimationFrame(function () {
-        api.reportCurrent('terminal').then(function (allRows) {
-          S.rows = allRows || S.rows;
-          setMarkets();
-          if (window.agraxSearch) window.agraxSearch.attach(S.rows, function (hit) {
-            if (hit.market) S.market = hit.market;
-            S.filters = { category: {}, origin: {}, source: {} };
-            S.tableQuery = ''; S.page = 0; S.detail = hit.commodity;
-            scrollToTop(); rerender();
-          });
-          rerender();
-        }).catch(function () { /* Keep the successfully loaded market. */ });
-      });
     });
+
+    // Load the other terminals after a successful first paint, not only on error.
+    S.reloadMarkets = function () {
+      S.terminalsStatus = 'Loading other terminals…'; S.terminalsError = false;
+      rerender();
+      return api.reportCurrent('terminal').then(function (allRows) {
+        if (!allRows || !allRows.length) throw new Error('Empty terminal directory');
+        S.rows = allRows;
+        setMarkets();
+        S.terminalsStatus = S.markets.length + ' terminals available';
+        S.terminalsError = false;
+        if (window.agraxSearch) window.agraxSearch.attach(S.rows, function (hit) {
+          if (hit.market) S.market = hit.market;
+          S.filters = { category: {}, origin: {}, source: {} };
+          S.tableQuery = ''; S.page = 0; S.detail = hit.commodity;
+          scrollToTop(); rerender();
+        });
+        rerender();
+      }).catch(function () {
+        S.terminalsStatus = 'Other terminals could not load.';
+        S.terminalsError = true;
+        rerender();
+      });
+    };
+    pricesReady.then(function () { return S.reloadMarkets(); }).catch(function () {});
 
     // Secondary data starts after terminal prices arrive.
     pricesReady.then(function () { return api.reportLatest('shipping_point'); }).then(function (rows) {

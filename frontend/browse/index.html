@@ -197,7 +197,7 @@
 <link rel="stylesheet" href="/styles/analytics.css"><script defer src="/js/analytics-config.js"></script><script defer src="/js/analytics.js"></script>
 </head>
 <body class="agrax-browse">
-<script src="/js/site-navigation.js?v=mobile-header-2"></script>
+<script src="/js/site-navigation.js?v=header-search-3"></script>
 
 <!-- Markup exported from Claude Design, unmodified apart from link targets. -->
 <template id="page-template">
@@ -219,7 +219,7 @@
   <template data-if="wide">
 
 
-  <div style="flex:1;width:100%;max-width:1480px;margin:0 auto;display:flex;flex-direction:column;padding:14px 20px 28px;box-sizing:border-box">
+  <div class="browse-page-shell" style="flex:1;width:100%;max-width:1480px;margin:0 auto;display:flex;flex-direction:column;padding:14px 20px 28px;box-sizing:border-box">
 
     <main data-shot="wide" style="min-width:0;display:flex;flex-direction:column;gap:12px">
 
@@ -436,7 +436,7 @@
     </main>
   </div>
 
-  <footer style="border-top:1px solid #EDEEE9;background:#fff;padding:16px 20px;display:flex;justify-content:center">
+  <footer class="browse-page-footer" style="border-top:1px solid #EDEEE9;background:#fff;padding:16px 20px;display:flex;justify-content:center">
     <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
     <a href="/" aria-label="AgraX home" style="flex:none;align-self:flex-start;display:inline-flex;align-items:center"><span aria-hidden="true" style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
     <span style="font-size:11.5px;color:#6B7268">AgraX · Independent market intelligence. Not affiliated with USDA.</span>
@@ -494,6 +494,8 @@
       </template>
     </section>
 
+
+
     <template data-if="browseMode">
     <div style="flex:1;min-height:0;background:#fff">
       <div class="market-table-toolbar" style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
@@ -513,7 +515,7 @@
         </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;padding:11px 34px 8px 14px;font-size:11px;color:#76816e"><span>Commodity</span><span>Market tone</span></div>
+      <div class="browse-column-labels" style="display:flex;justify-content:space-between;padding:11px 34px 8px 14px;font-size:11px;color:#76816e"><span>Commodity</span><span>Market tone</span></div>
       <template data-for="rows" data-as="c">
         <template data-if="c.sponsorSlot">
           <div style="border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F;padding:10px 14px 11px 16px">
@@ -542,7 +544,7 @@
         </div>
       </template>
 
-      <div style="padding:12px 14px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+      <div class="browse-pagination" style="padding:12px 14px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
         <span style="font-size:11px;color:#6B7268">Select a commodity for all reported prices.</span>
         <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ pageTxt }}</span>
         <template data-if="hasPrev">
@@ -610,11 +612,12 @@
 <script src="/js/commodity-dialog.js?v=compact-2"></script>
 <link rel="stylesheet" href="/styles/commodity-dialog.css?v=compact-2">
 <script src="/js/origin-country.js"></script>
-<script src="/js/browse-app.js?v=market-first-1"></script>
+<script src="/js/browse-app.js?v=terminal-loading-2"></script>
 <link rel="stylesheet" href="/styles/account.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
 <script defer src="/js/account-ui.js?v=mobile-header-2"></script>
 <link rel="stylesheet" href="/styles/product-system.css?v=browse-character-2">
+<link rel="stylesheet" href="/styles/page-grid.css?v=detail-sage-11">
 </body>
 </html>
