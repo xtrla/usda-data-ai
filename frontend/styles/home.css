@@ -36,6 +36,9 @@
 .home-context dl{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:20px 0 0}
 .home-context dt{font-weight:500;font-size:13px;color:var(--agx-green);line-height:1.4}
 .home-context dd{margin:6px 0 0;font-size:13px;color:var(--agx-muted);line-height:1.6;max-width:40ch}
+.home-benefits-intro{max-width:65ch;margin:12px 0 0;color:var(--agx-muted);font-size:14px;line-height:1.6}
+.home-context .home-benefits{gap:32px 28px;margin-top:28px}
+@media(max-width:699px){.home-context .home-benefits>div{display:block}.home-context .home-benefits dt{font-size:15px}.home-context .home-benefits dd{font-size:13px;margin-top:8px;max-width:none}.home-context .home-benefits{gap:24px}}
 .home-subscribe{border-top:1px solid var(--agx-border);padding:24px 0 0;display:flex;align-items:center;justify-content:space-between;gap:20px}
 .home-subscribe h2{font-size:15px}
 .home-subscribe p{font-size:13px;color:var(--agx-muted);line-height:1.5;margin:6px 0 0}

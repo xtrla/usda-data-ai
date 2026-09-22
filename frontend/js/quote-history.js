@@ -69,15 +69,16 @@ function attach(container,items,market){
   };
   container.querySelectorAll('tbody > tr').forEach((tr,index)=>{
     const quote=ordered[index];if(!quote)return;
-    const button=document.createElement('button');button.type='button';button.className='quote-history-toggle';button.textContent='Price history';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','quote-history-'+index);
+    const button=document.createElement('button');button.type='button';button.className='quote-expand';button.textContent='⌄';button.setAttribute('aria-label','Expand quote details');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','quote-history-'+index);
     tr.querySelector('.price').append(button);
-    const compare=document.createElement('button');compare.type='button';compare.className='quote-history-toggle';compare.textContent='Other markets';compare.setAttribute('aria-expanded','false');
-    tr.querySelector('.price').append(compare);
-    let comparisonRow=null;
-    compare.onclick=async()=>{
-      if(comparisonRow){comparisonRow.remove();comparisonRow=null;compare.setAttribute('aria-expanded','false');return;}
-      const detail=document.createElement('tr');comparisonRow=detail;detail.className='quote-history-row';
-      const td=document.createElement('td');td.colSpan=7;detail.append(td);tr.after(detail);compare.setAttribute('aria-expanded','true');
+    tr.classList.add('quote-expandable');
+    tr.addEventListener('click',event=>{
+      if(event.target.closest('button,a,input,select,summary'))return;
+      if(root.getSelection?.().toString())return;
+      button.click();
+    });
+    async function loadComparison(td){
+      const detail=td;
       td.innerHTML='<section class="quote-history-panel"><h3>Other markets</h3><p>Same variety, origin, package, size, grade and condition. Dates may differ; prices exclude freight.</p><div role="status">Looking for matching quotes…</div></section>';
       const status=td.querySelector('[role=status]');
       try{
@@ -89,7 +90,7 @@ function attach(container,items,market){
           return '<li><span><a href="'+Q.esc(href)+'">'+Q.esc(r.market)+'</a><br><time>'+Q.esc(r.report_date)+'</time></span><span>'+Q.esc(range(number(r.price_low),number(r.price_high)))+(number(r.price_mostly_low)!==null||number(r.price_mostly_high)!==null?'<small>Mostly '+Q.esc(range(number(r.price_mostly_low),number(r.price_mostly_high)))+'</small>':'')+'</span></li>';
         };
         status.innerHTML='<p>Selected quote: '+Q.esc(market)+' · '+Q.esc(quote.report_date||'')+' · '+Q.esc(range(number(quote.price_low),number(quote.price_high)))+'</p><ul class="quote-history-values">'+matches.sort((a,b)=>a.market.localeCompare(b.market)).map(show).join('')+'</ul>';
-      }catch(error){if(detail.isConnected){status.textContent='Could not load other markets. ';const retry=document.createElement('button');retry.textContent='Try again';retry.onclick=()=>{compare.click();compare.click();};status.append(retry);}}
+      }catch(error){if(detail.isConnected){status.textContent='Could not load other markets. ';const retry=document.createElement('button');retry.textContent='Try again';retry.onclick=()=>loadComparison(td);status.append(retry);}}
     };
     if(quote.row_hash && new URLSearchParams(location.search).get('quote_id')===quote.row_hash){
       tr.classList.add('quote-linked');
@@ -97,12 +98,28 @@ function attach(container,items,market){
     }
     button.addEventListener('click',()=>{
       const closing=active?.button===button;
-      if(active){active.row.remove();active.button.setAttribute('aria-expanded','false');active=null;}version++;
+      if(active){active.row.remove();active.button.setAttribute('aria-expanded','false');active.button.setAttribute('aria-label','Expand quote details');active=null;}version++;
       if(closing)return;
-      button.setAttribute('aria-expanded','true');
+      button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Collapse quote details');
       const row=document.createElement('tr');row.className='quote-history-row';row.id='quote-history-'+index;
       const cell=document.createElement('td');cell.colSpan=7;row.append(cell);tr.after(row);active={row,button};
       cell.innerHTML='<section class="quote-history-panel" aria-label="Price history"><div class="quote-history-heading"><div><h3>Price history</h3><p>'+Q.esc([market,quote.commodity,quote.variety,quote.origin,quote.package,quote.size,quote.grade,quote.quality,quote.quality_note,quote.properties,quote.organic===true?'Organic':''].filter(Boolean).join(' · '))+'</p></div><button type="button" class="quote-history-close" aria-label="Close price history">×</button></div><div class="quote-history-periods" aria-label="History period">'+[[30,'30 days'],[90,'90 days'],[365,'1 year']].map(([days,label])=>'<button type="button" data-days="'+days+'" aria-pressed="'+(days===30)+'">'+label+'</button>').join('')+'</div><div class="quote-history-content" role="status"></div></section>';
+      const historyPanel=cell.firstElementChild;
+      const marketsPanel=document.createElement('div');marketsPanel.hidden=true;cell.append(marketsPanel);
+      const tabs=document.createElement('div');tabs.className='quote-detail-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Quote details');
+      tabs.innerHTML='<button type="button" role="tab" aria-selected="true">Price history</button><button type="button" role="tab" aria-selected="false" tabindex="-1">Other markets</button>';
+      cell.prepend(tabs);
+      let marketsLoaded=false;
+      const panels=[historyPanel,marketsPanel],tabButtons=[...tabs.children];
+      tabButtons.forEach((tab,i)=>{
+        tab.id='quote-tab-'+index+'-'+i;panels[i].id='quote-panel-'+index+'-'+i;
+        tab.setAttribute('aria-controls',panels[i].id);panels[i].setAttribute('role','tabpanel');panels[i].setAttribute('aria-labelledby',tab.id);
+        tab.onclick=()=>{
+          tabButtons.forEach((other,j)=>{other.setAttribute('aria-selected',String(i===j));other.tabIndex=i===j?0:-1;panels[j].hidden=i!==j;});
+          if(i===1&&!marketsLoaded){marketsLoaded=true;loadComparison(marketsPanel);}
+        };
+        tab.onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?1:1-i;tabButtons[next].click();tabButtons[next].focus();}};
+      });
       cell.querySelector('.quote-history-close').onclick=()=>{button.click();button.focus();};
       const content=cell.querySelector('.quote-history-content');
       let demo=false,period=30,startDate='';

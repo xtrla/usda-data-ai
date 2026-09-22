@@ -76,6 +76,15 @@ body.commodity-dialog-open{overflow:hidden}
 .commodity-dialog h1{display:flex;align-items:center;gap:8px;font-size:26px;line-height:1.2}
 .agrax-browse .commodity-dialog h1[tabindex="-1"]:focus{outline:none}
 .commodity-dialog tr.quote-linked{background:#edf3e7}
+.quote-expandable{cursor:pointer}
+.quote-expandable:hover{background:#f4f7f0}
+.commodity-dialog .quote-expand{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#356b43;font-size:20px;cursor:pointer;vertical-align:middle}
+.quote-expand[aria-expanded=true]{transform:rotate(180deg)}
+.quote-detail-tabs{display:flex;gap:20px;padding:12px 22px 0;background:#f4f7f0}
+.quote-detail-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;padding:12px 0;color:#65765b;cursor:pointer;font:inherit;font-size:13px}
+.quote-detail-tabs button[aria-selected=true]{border-bottom-color:#245434;color:#245434;font-weight:600}
+.quote-history-row [role=tabpanel][hidden]{display:none!important}
+@media print{.quote-expand{display:none!important}}
 .commodity-dialog__eyebrow{margin:7px 0 0;font-size:12px;line-height:1.5}
 .commodity-dialog__tools{display:flex;align-items:center;gap:4px;flex:none}
 .commodity-dialog__close{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border-radius:8px}
