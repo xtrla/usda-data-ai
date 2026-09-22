@@ -72,7 +72,7 @@ def create_router():
             ('Page or report reference', 'reference'), ('Reply email', 'email'), ('Issue', 'description')])
         payload = {
             'from': os.getenv('DATA_ISSUES_FROM', os.getenv('NEWSLETTER_FROM', 'AgraX Reports <reports@agra-x.com>')),
-            'to': [os.getenv('DATA_ISSUES_TO', 'starmantra12@gmail.com')],
+            'to': [os.getenv('DATA_ISSUES_TO', 'hello@agra-x.com')],
             'subject': 'AgraX data correction', 'text': message,
         }
         if data['email']:
