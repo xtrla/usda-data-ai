@@ -74,7 +74,8 @@ body.commodity-dialog-open{overflow:hidden}
 .commodity-dialog__header{align-items:flex-start;padding:18px 24px;gap:12px}
 .commodity-dialog__identity{min-width:0;flex:1}
 .commodity-dialog h1{display:flex;align-items:center;gap:8px;font-size:26px;line-height:1.2}
-.commodity-dialog h1:focus{outline:0}
+.agrax-browse .commodity-dialog h1[tabindex="-1"]:focus{outline:none}
+.commodity-dialog tr.quote-linked{background:#edf3e7}
 .commodity-dialog__eyebrow{margin:7px 0 0;font-size:12px;line-height:1.5}
 .commodity-dialog__tools{display:flex;align-items:center;gap:4px;flex:none}
 .commodity-dialog__close{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border-radius:8px}

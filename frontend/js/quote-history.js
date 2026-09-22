@@ -4,6 +4,22 @@ const fields=['source_report','market_type','commodity_type','commodity','market
 const clean=v=>v==null?'':String(v).trim();
 const reportingDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 function sameQuote(a,b){return fields.every(k=>clean(a[k])===clean(b[k]));}
+// Report identifiers and market names differ across cities; specifications must not.
+const comparisonFields=fields.filter(k=>!['source_report','market'].includes(k)).concat(['unit','price_unit']);
+function marketMatches(rows,quote){
+  const normalized=v=>clean(v).replace(/\s+/g,' ').toLowerCase();
+  if(!normalized(quote.variety)||!normalized(quote.package)||!normalized(quote.origin))return [];
+  return rows.filter(r=>r.is_current!==false && normalized(r.market)!==normalized(quote.market) &&
+    clean(r.report_date) && comparisonFields.every(k=>normalized(r[k])===normalized(quote[k])));
+}
+let marketCache=null,marketCacheTime=0;
+async function currentMarkets(){
+  if(!marketCache||Date.now()-marketCacheTime>60000){
+    marketCacheTime=Date.now();
+    marketCache=root.agraxAPI.reportCurrent('terminal').then(rows=>{if(!Array.isArray(rows))throw Error('Invalid markets');return rows;}).catch(error=>{marketCache=null;throw error;});
+  }
+  return marketCache;
+}
 const number=v=>v==null||String(v).trim()===''||!Number.isFinite(+v)?null:+v;
 function observations(rows,quote,verifiedSeries=false){
   const seen=new Set();
@@ -55,6 +71,30 @@ function attach(container,items,market){
     const quote=ordered[index];if(!quote)return;
     const button=document.createElement('button');button.type='button';button.className='quote-history-toggle';button.textContent='Price history';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','quote-history-'+index);
     tr.querySelector('.price').append(button);
+    const compare=document.createElement('button');compare.type='button';compare.className='quote-history-toggle';compare.textContent='Other markets';compare.setAttribute('aria-expanded','false');
+    tr.querySelector('.price').append(compare);
+    let comparisonRow=null;
+    compare.onclick=async()=>{
+      if(comparisonRow){comparisonRow.remove();comparisonRow=null;compare.setAttribute('aria-expanded','false');return;}
+      const detail=document.createElement('tr');comparisonRow=detail;detail.className='quote-history-row';
+      const td=document.createElement('td');td.colSpan=7;detail.append(td);tr.after(detail);compare.setAttribute('aria-expanded','true');
+      td.innerHTML='<section class="quote-history-panel"><h3>Other markets</h3><p>Same variety, origin, package, size, grade and condition. Dates may differ; prices exclude freight.</p><div role="status">Looking for matching quotes…</div></section>';
+      const status=td.querySelector('[role=status]');
+      try{
+        const matches=marketMatches(await currentMarkets(),{...quote,market:quote.market||market});
+        if(!detail.isConnected)return;
+        if(!matches.length){status.textContent='No matching quotes in other markets’ latest reports. We only compare matching specifications; missing variety, origin or package information prevents a match.';return;}
+        const show=r=>{
+          const href='/browse/?'+new URLSearchParams({market:r.market,c:r.commodity,quote_variety:Q.unique([r.variety,r.properties,r.organic===true?'Organic':null]),quote_origin:r.origin,quote_id:r.row_hash||''});
+          return '<li><span><a href="'+Q.esc(href)+'">'+Q.esc(r.market)+'</a><br><time>'+Q.esc(r.report_date)+'</time></span><span>'+Q.esc(range(number(r.price_low),number(r.price_high)))+(number(r.price_mostly_low)!==null||number(r.price_mostly_high)!==null?'<small>Mostly '+Q.esc(range(number(r.price_mostly_low),number(r.price_mostly_high)))+'</small>':'')+'</span></li>';
+        };
+        status.innerHTML='<p>Selected quote: '+Q.esc(market)+' · '+Q.esc(quote.report_date||'')+' · '+Q.esc(range(number(quote.price_low),number(quote.price_high)))+'</p><ul class="quote-history-values">'+matches.sort((a,b)=>a.market.localeCompare(b.market)).map(show).join('')+'</ul>';
+      }catch(error){if(detail.isConnected){status.textContent='Could not load other markets. ';const retry=document.createElement('button');retry.textContent='Try again';retry.onclick=()=>{compare.click();compare.click();};status.append(retry);}}
+    };
+    if(quote.row_hash && new URLSearchParams(location.search).get('quote_id')===quote.row_hash){
+      tr.classList.add('quote-linked');
+      setTimeout(()=>{if(tr.isConnected)tr.scrollIntoView({block:'center'});},0);
+    }
     button.addEventListener('click',()=>{
       const closing=active?.button===button;
       if(active){active.row.remove();active.button.setAttribute('aria-expanded','false');active=null;}version++;
@@ -109,5 +149,5 @@ function attach(container,items,market){
     });
   });
 }
-root.agraxQuoteHistory={sameQuote,observations,reportingDay,attach};
+root.agraxQuoteHistory={sameQuote,marketMatches,observations,reportingDay,attach};
 })(typeof window!=='undefined'?window:globalThis);
