@@ -69,7 +69,7 @@ function attach(container,items,market){
   };
   container.querySelectorAll('tbody > tr').forEach((tr,index)=>{
     const quote=ordered[index];if(!quote)return;
-    const button=document.createElement('button');button.type='button';button.className='quote-expand';button.textContent='⌄';button.setAttribute('aria-label','Expand quote details');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','quote-history-'+index);
+    const button=document.createElement('button');button.type='button';button.className='quote-expand';button.textContent='Quote details';button.setAttribute('aria-label','Expand quote details');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','quote-history-'+index);
     tr.querySelector('.price').append(button);
     tr.classList.add('quote-expandable');
     tr.addEventListener('click',event=>{
@@ -85,11 +85,18 @@ function attach(container,items,market){
         const matches=marketMatches(await currentMarkets(),{...quote,market:quote.market||market});
         if(!detail.isConnected)return;
         if(!matches.length){status.textContent='No matching quotes in other markets’ latest reports. We only compare matching specifications; missing variety, origin or package information prevents a match.';return;}
-        const show=r=>{
+        const chartRows=[{...quote,market:quote.market||market},...matches.sort((a,b)=>a.market.localeCompare(b.market))];
+        const maximum=Math.max(1,...chartRows.flatMap(r=>[number(r.price_low),number(r.price_high)]).filter(v=>v!==null&&v>=0));
+        const show=(r,i)=>{
           const href='/browse/?'+new URLSearchParams({market:r.market,c:r.commodity,quote_variety:Q.unique([r.variety,r.properties,r.organic===true?'Organic':null]),quote_origin:r.origin,quote_id:r.row_hash||''});
-          return '<li><span><a href="'+Q.esc(href)+'">'+Q.esc(r.market)+'</a><br><time>'+Q.esc(r.report_date)+'</time></span><span>'+Q.esc(range(number(r.price_low),number(r.price_high)))+(number(r.price_mostly_low)!==null||number(r.price_mostly_high)!==null?'<small>Mostly '+Q.esc(range(number(r.price_mostly_low),number(r.price_mostly_high)))+'</small>':'')+'</span></li>';
+          const low=number(r.price_low),high=number(r.price_high);
+          const valid=low!==null&&high!==null&&low>=0&&high>=low;
+          const width=valid?100*high/maximum:0,solid=valid&&high>0?100*low/high:100;
+          const label=i===0?'<strong>'+Q.esc(r.market)+' <small>Selected</small></strong>':'<a href="'+Q.esc(href)+'">'+Q.esc(r.market)+'</a>';
+          return '<li class="market-bar-row'+(i===0?' is-selected':'')+'"><div class="market-bar-label">'+label+'<time>'+Q.esc(r.report_date||'')+'</time></div><div class="market-bar-track" aria-hidden="true">'+(valid?'<span class="market-bar-fill" style="width:'+width+'%"><span style="width:'+solid+'%"></span></span>':'')+'</div><div class="market-bar-price">'+Q.esc(range(low,high))+(number(r.price_mostly_low)!==null||number(r.price_mostly_high)!==null?'<small>Mostly '+Q.esc(range(number(r.price_mostly_low),number(r.price_mostly_high)))+'</small>':'')+'</div></li>';
         };
-        status.innerHTML='<p>Selected quote: '+Q.esc(market)+' · '+Q.esc(quote.report_date||'')+' · '+Q.esc(range(number(quote.price_low),number(quote.price_high)))+'</p><ul class="quote-history-values">'+matches.sort((a,b)=>a.market.localeCompare(b.market)).map(show).join('')+'</ul>';
+        status.innerHTML='<p class="quote-history-caption">USD per matching reported package. Bars start at $0: solid shows the low price; the lighter end extends to the high. Incomplete quotes show values only.</p><ul class="market-bars">'+chartRows.map(show).join('')+'</ul>';
+
       }catch(error){if(detail.isConnected){status.textContent='Could not load other markets. ';const retry=document.createElement('button');retry.textContent='Try again';retry.onclick=()=>loadComparison(td);status.append(retry);}}
     };
     if(quote.row_hash && new URLSearchParams(location.search).get('quote_id')===quote.row_hash){

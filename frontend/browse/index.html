@@ -374,7 +374,10 @@
             <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Tone</span>
           </div>
 
-          <template data-for="rows" data-as="c">
+          <nav class="browse-pagination browse-pagination--top" aria-label="Commodity pages">
+<span>{{ pageTxt }}</span><template data-if="hasPrev"><button type="button" data-on-click="onPrev">Previous</button></template><template data-if="hasNext"><button type="button" data-on-click="onNext">Next</button></template>
+</nav>
+<template data-for="rows" data-as="c">
           <template data-if="c.sponsorSlot">
             <div style="position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:44px;padding:8px 16px 8px 11px;border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F">
               <span style="flex:none;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
@@ -516,7 +519,10 @@
       </div>
 
       <div class="browse-column-labels" style="display:flex;justify-content:space-between;padding:11px 34px 8px 14px;font-size:11px;color:#76816e"><span>Commodity</span><span>Market tone</span></div>
-      <template data-for="rows" data-as="c">
+      <nav class="browse-pagination browse-pagination--top" aria-label="Commodity pages">
+<span>{{ pageTxt }}</span><template data-if="hasPrev"><button type="button" data-on-click="onPrev">Previous</button></template><template data-if="hasNext"><button type="button" data-on-click="onNext">Next</button></template>
+</nav>
+<template data-for="rows" data-as="c">
         <template data-if="c.sponsorSlot">
           <div style="border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F;padding:10px 14px 11px 16px">
             <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
