@@ -46,7 +46,7 @@
     detail: null,        // commodity name when in detail mode
     overviewOpen: true,
     page: 0,
-    pageSize: 10,
+    pageSize: window.matchMedia('(max-width: 767px)').matches ? 50 : 10,
     movementCache: {},
     showOlder: false,
     sheetOpen: false,
