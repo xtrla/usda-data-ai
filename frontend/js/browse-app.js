@@ -785,9 +785,8 @@
       pending = false;
       if (S.loading || S.loadError) {
         PAGE_ROOT.setAttribute('aria-busy', String(S.loading));
-        PAGE_ROOT.innerHTML = '<section role="status" style="max-width:1200px;margin:32px auto;padding:40px 24px;min-height:260px;background:#fff;border:1px solid #dce3d6;border-radius:12px">' +
-          '<h1 style="font-size:24px;margin:0 0 12px">Terminal market prices</h1>' +
-          (S.loadError ? '<p>Prices could not load. Please try again.</p><button type="button" id="retry-prices">Try again</button>' : '<p>Loading market prices…</p>') + '</section>';
+        PAGE_ROOT.innerHTML = '<div class="browse-load-state" role="status">' +
+          (S.loadError ? '<p>Prices could not load.</p><button type="button" id="retry-prices">Try again</button>' : '<span class="browse-spinner" aria-hidden="true"></span><span>Loading prices</span>') + '</div>';
         var retry = document.getElementById('retry-prices');
         if (retry) retry.onclick = function () { window.location.reload(); };
         return;
@@ -855,10 +854,20 @@
     rerender();
 
     var firstMarket = wanted || (window.agraxAccount && window.agraxAccount.preferredMarket()) || 'New York';
+    var savedMarketKey = 'agrax-market-v1:' + api.base + ':' + firstMarket;
+    var showingSaved = false;
+    try {
+      var savedMarket = JSON.parse(sessionStorage.getItem(savedMarketKey) || 'null');
+      if (savedMarket && Date.now() - savedMarket.time < 300000 && Array.isArray(savedMarket.rows) && savedMarket.rows.length) {
+        S.rows = savedMarket.rows; S.loading = false; showingSaved = true;
+        setMarkets(); rerender();
+      }
+    } catch (_) { /* Storage is optional. */ }
     var pricesReady = api.reportCurrent('terminal', 90, firstMarket);
     pricesReady.then(function (rows) {
       S.loading = false;
       S.rows = rows || [];
+      try { sessionStorage.setItem(savedMarketKey, JSON.stringify({time:Date.now(), rows:S.rows})); } catch (_) {}
       setMarkets();
       if (window.agraxSearch) {
         window.agraxSearch.attach(S.rows, function (hit) {
@@ -878,7 +887,8 @@
       // A global-date fallback can silently omit markets that last printed
       // on another date. Offer a retry instead of showing incomplete data.
       S.loading = false;
-      S.loadError = true;
+      S.loadError = !showingSaved;
+      if (showingSaved) S.terminalsStatus = 'Showing saved prices. Refresh to check for updates.';
       rerender();
     });
 

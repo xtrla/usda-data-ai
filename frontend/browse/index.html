@@ -605,7 +605,8 @@
 
 </template>
 
-<div id="page-root" aria-busy="true"><p role="status" style="padding:40px 24px">Loading market prices…</p></div>
+<link rel="stylesheet" href="/styles/browse-loading.css?v=1">
+<div id="page-root" aria-busy="true"><div class="browse-load-state" role="status"><span class="browse-spinner" aria-hidden="true"></span><span>Loading prices</span></div></div>
 
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>

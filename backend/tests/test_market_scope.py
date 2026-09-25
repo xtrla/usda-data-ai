@@ -14,6 +14,9 @@ class MarketScopeTests(unittest.TestCase):
             def __init__(self): self.market = None
             def select(self, fields): return self
             def gte(self, field, value): return self
+            def in_(self, field, values):
+                self.dates = values
+                return self
             def eq(self, field, value):
                 if field == 'market': self.market = value
                 return self
@@ -28,5 +31,6 @@ class MarketScopeTests(unittest.TestCase):
         full = ns['_current_uncached']('terminal', '2026-09-01')
         scoped = ns['_current_uncached']('terminal', '2026-09-01', 'New York')
         self.assertEqual(query.market, 'New York')
+        self.assertEqual(query.dates, ['2026-09-18'])
         self.assertEqual(scoped, [r for r in full if r['market'] == 'New York'])
         self.assertEqual(ns['_current_uncached']('terminal', '2026-09-01', 'Unknown'), [])

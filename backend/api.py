@@ -324,9 +324,20 @@ def _latest_uncached(market_type: str, cutoff: str, market: str = ""):
         else:
             q = q.eq("market_type", "terminal")
 
-        rows = fetch_all(q)
-
         if market_type != "shipping_point":
+            # Discover report dates using small metadata rows, then fetch only
+            # dates containing latest publications instead of 90 days of quotes.
+            metadata = supabase.table(TABLE).select("market,source_report,commodity_type,report_date").gte("report_date", cutoff).eq("market_type", "terminal")
+            if market:
+                metadata = metadata.eq("market", market)
+            report_rows = fetch_all(metadata)
+            dates = {}
+            for r in report_rows:
+                group = (r.get('market'), r.get('source_report'), r.get('commodity_type'))
+                dates[group] = max(dates.get(group, ''), str(r.get('report_date') or ''))
+            if not dates:
+                return []
+            rows = fetch_all(q.in_("report_date", sorted(set(dates.values()))))
             # A terminal report is a dated publication. Combining the latest
             # occurrence of each product revives quotes omitted from today's
             # report and can mix old normalized rows with repaired rows.
@@ -337,6 +348,7 @@ def _latest_uncached(market_type: str, cutoff: str, market: str = ""):
             return [r for r in rows if str(r.get('report_date') or '') == dates[
                 (r.get('market'), r.get('source_report'), r.get('commodity_type'))]]
 
+        rows = fetch_all(q)
         # Newest first, then keep the first occurrence of each SKU key.
         rows.sort(key=lambda r: str(r.get("report_date") or ""), reverse=True)
         latest, seen = [], set()
