@@ -64,7 +64,7 @@
     if (S.detail) {
       params.set('c', S.detail);
       var existing = new URLSearchParams(window.location.search);
-      ['quote_variety','quote_origin'].forEach(function (key) {
+      ['quote_variety','quote_origin','quote_package','quote_size'].forEach(function (key) {
         if (existing.has(key)) params.set(key, existing.get(key));
       });
     }
@@ -784,6 +784,9 @@
     requestAnimationFrame(function () {
       pending = false;
       if (S.loading || S.loadError) {
+        document.body.classList.remove('lookup-ready');
+        var workspace = document.querySelector('.lookup-workspace');
+        if (workspace) workspace.hidden = true;
         PAGE_ROOT.setAttribute('aria-busy', String(S.loading));
         PAGE_ROOT.innerHTML = '<div class="browse-load-state" role="status">' +
           (S.loadError ? '<p>Prices could not load.</p><button type="button" id="retry-prices">Try again</button>' : '<span class="browse-spinner" aria-hidden="true"></span><span>Loading prices</span>') + '</div>';
@@ -798,7 +801,7 @@
       if (window.agraxAccountUI) window.agraxAccountUI.mount();
       window.agraxCommodityDialog.render(S.detail, currentRows(), S.market, function () {
         S.detail = null; syncLocation();
-      });
+      }, function (name) { S.detail = name; syncLocation(); });
       restoreStrips();
       restoreRail();
       applyScroll();

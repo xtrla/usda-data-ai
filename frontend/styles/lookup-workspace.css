@@ -1,0 +1,48 @@
+.lookup-ready #page-root{display:none}
+.lookup-ready #agrax-header-search{display:none!important}
+.lookup-workspace{max-width:1440px;padding:24px 32px;margin:auto;font-family:var(--agx-font)}
+.lookup-context{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:20px}
+.lookup-eyebrow{display:block;font-size:10px;letter-spacing:.1em;color:#697466;margin-bottom:8px}
+.lookup-context label{display:flex;gap:12px;align-items:center;font-size:14px}
+.lookup-context select{font:600 18px var(--agx-font);border:1px solid #ccd9cd;background:white;border-radius:7px;padding:10px 30px 10px 12px;color:#193e2a;max-width:100%}
+.lookup-source{font-size:12px;color:#697466}
+.lookup-layout{display:grid;grid-template-columns:228px minmax(0,1fr);border:1px solid #dce4d9;background:white;border-radius:10px;overflow:hidden}
+.lookup-products{padding:18px 14px;border-right:1px solid #dce4d9;min-width:0}
+.lookup-products>label{display:block;font-size:14px;font-weight:600;margin-bottom:12px}
+.lookup-search{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cdd8c9;border-radius:7px;font:14px var(--agx-font)}
+.lookup-count{font-size:11px;color:#697466;margin:14px 0}
+.lookup-list{max-height:calc(100vh - 320px);overflow:auto;min-height:300px}
+.lookup-list button{width:100%;display:flex;flex-direction:column;gap:5px;text-align:left;padding:12px;border:0;border-bottom:1px solid #edf0ea;background:#fff;color:#203629;cursor:pointer;font:13px var(--agx-font);border-radius:5px}
+.lookup-list button span{font-size:11px;color:#697466}
+.lookup-list button[aria-pressed=true]{background:#e6efe2;box-shadow:inset 3px 0 #245434}
+.lookup-list button:hover{background:#f1f5ef}
+.lookup-detail{min-width:0}
+.lookup-ready .commodity-dialog{position:static;display:block;width:100%;max-width:none;max-height:none;height:auto;margin:0;box-sizing:border-box;border:0;border-radius:0;box-shadow:none;overflow:visible}
+.lookup-ready .commodity-dialog:not([open]){display:none}
+.lookup-ready .commodity-dialog__header{position:static;background:#edf3e9;padding:22px}
+.lookup-ready .commodity-dialog__body{padding:18px 22px}
+.lookup-ready .commodity-dialog__close{display:none}
+.lookup-ready .commodity-dialog table{min-width:720px;font-size:12px}
+.lookup-ready .commodity-dialog .table-wrap{overflow:auto}
+.lookup-ready .commodity-dialog__filters label{flex:1}
+.lookup-ready .commodity-dialog select{max-width:100%}
+.lookup-workspace footer{padding:20px 0;font-size:11px;color:#697466;line-height:1.6}
+.lookup-workspace footer a{color:#245434;margin-left:12px}
+@media(max-width:899px){
+.lookup-workspace{padding:16px}.lookup-context{align-items:flex-start;flex-direction:column;gap:10px}.lookup-source{font-size:11px}
+.lookup-layout{display:block}.lookup-products{border:0;padding:16px}.lookup-list{max-height:none;min-height:0}.lookup-list button{padding:16px 10px;flex-direction:row;justify-content:space-between;align-items:center}.lookup-search{font-size:16px}
+.lookup-detail{display:none}.lookup-detail-open .lookup-products{display:none}.lookup-detail-open .lookup-detail{display:block}
+.lookup-ready .commodity-dialog__header{padding:16px;flex-direction:column-reverse;gap:16px}.lookup-ready .commodity-dialog__tools{width:100%;justify-content:space-between;flex-direction:row-reverse}.lookup-ready .commodity-dialog__close{display:block;width:auto;height:40px;border-radius:6px;padding:0 12px;background:#fff;font:500 13px var(--agx-font);color:#245434}
+.lookup-ready .commodity-dialog__body{padding:16px}.lookup-ready .commodity-dialog table{min-width:0}.lookup-ready .commodity-dialog tbody tr{grid-template-columns:minmax(0,1fr) minmax(110px,.8fr)}
+}
+@media(min-width:900px){.lookup-products{position:sticky;top:12px;align-self:start}.lookup-ready .commodity-dialog .price{text-align:right}.lookup-ready .commodity-dialog .column-headings th:nth-child(6){text-align:right}}
+.lookup-ready .commodity-dialog__filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media(max-width:899px){.lookup-ready .commodity-dialog__filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lookup-intro{padding:4px 0 26px}.lookup-intro h1{font-size:30px;letter-spacing:-.035em;margin:0 0 8px;line-height:1.2;color:#203b2a}.lookup-intro p{margin:0;color:#65725f;font-size:14px}
+.lookup-welcome{padding:32px}.lookup-welcome h2{font-size:24px;letter-spacing:-.025em;margin:0 0 8px}.lookup-welcome p{color:#677461;font-size:14px;line-height:1.6;margin:0}
+.lookup-categories{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}.lookup-categories button{text-align:left;background:#fff;border:1px solid #d8e2d3;border-radius:8px;padding:22px 18px;color:#245434;cursor:pointer;font:inherit}.lookup-categories button:hover{background:#eff5eb;border-color:#a2b99a}.lookup-categories strong{display:block;font-size:15px}.lookup-categories span{display:block;margin-top:7px;font-size:12px;color:#65725f}.lookup-welcome .lookup-help{border-top:1px solid #e0e7dc;padding-top:18px;font-size:12px}
+.lookup-benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-top:1px solid #dce4d9;padding-top:24px;margin-top:28px}.lookup-benefits h3{font-size:15px;margin:0 0 8px}.lookup-benefits p{font-size:13px;color:#65725f;line-height:1.6;margin:0}
+.lookup-nav{display:flex;align-items:center;gap:24px}.lookup-nav a,.lookup-nav button{font:500 14px var(--agx-font);text-decoration:none;border:0;background:none;color:#54634e;padding:10px 0;cursor:pointer}.lookup-nav a[aria-current]{color:#245434;font-weight:600}.lookup-clear{border:0;background:transparent;color:#245434;text-decoration:underline;cursor:pointer;font:inherit}
+@media(max-width:899px){.lookup-intro{padding:4px 0 22px}.lookup-intro h1{font-size:27px}.lookup-intro p{line-height:1.6}.lookup-welcoming .lookup-detail{display:block}.lookup-welcoming .lookup-list{max-height:240px;overflow:auto}.lookup-welcome{padding:20px 16px;border-top:1px solid #e0e7dc}.lookup-welcome h2{font-size:22px}.lookup-categories{gap:8px}.lookup-categories button{padding:16px 12px}.lookup-benefits{grid-template-columns:1fr;gap:20px}.lookup-nav{flex-direction:column;align-items:stretch;gap:8px}.lookup-nav a,.lookup-nav button{text-align:left;padding:12px}}
+.lookup-workspace:not(.lookup-welcoming) .lookup-intro{display:none}
+@media(max-width:899px){.lookup-ready .agrax-header-inner{justify-content:space-between}.lookup-ready .agrax-menu-toggle{margin-left:auto}}

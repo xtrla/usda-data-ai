@@ -9,18 +9,20 @@
   function drawTable() {
     const variety = dialog.querySelector('[name=variety]').value;
     const origin = dialog.querySelector('[name=origin]').value;
-    const matches = rows.filter(r => (!variety || Q.unique([r.variety,r.properties,r.organic===true?'Organic':null]) === variety) && (!origin || Q.clean(r.origin) === origin));
+    const pack = dialog.querySelector('[name=package]').value;
+    const size = dialog.querySelector('[name=size]').value;
+    const matches = rows.filter(r => (!pack || Q.clean(r.package) === pack) && (!size || Q.clean(r.size) === size) && (!variety || Q.unique([r.variety,r.properties,r.organic===true?'Organic':null]) === variety) && (!origin || Q.clean(r.origin) === origin));
     visibleRows = matches;
     if(rows.length) {
       const url=new URL(location.href);
-      for(const [key,value] of [['quote_variety',variety],['quote_origin',origin]]) {
+      for(const [key,value] of [['quote_variety',variety],['quote_origin',origin],['quote_package',pack],['quote_size',size]]) {
         if(value)url.searchParams.set(key,value);else url.searchParams.delete(key);
       }
       history.replaceState(null,'',url);
     }
     dialog.querySelector('[data-export=print]').disabled = !matches.length;
     const count = dialog.querySelector('.commodity-dialog__count');
-    count.textContent = variety || origin ? matches.length + ' of ' + rows.length + ' prices' : '';
+    count.textContent = variety || origin || pack || size ? matches.length + ' of ' + rows.length + ' prices' : '';
     dialog.querySelectorAll('select').forEach(el=>el.classList.toggle('is-selected',!!el.value));
     dialog.querySelector('.commodity-dialog__table').innerHTML = matches.length ? Q.table(selected, matches, market, '') : '<p class="commodity-empty">No prices match these filters.</p>';
     if (matches.length) window.agraxQuoteHistory.attach(dialog.querySelector('.commodity-dialog__table'), matches, market);
@@ -29,7 +31,7 @@
     const url = new URL('/browse/',location.origin);
     url.searchParams.set('market',market);
     url.searchParams.set('c',selected);
-    for (const key of ['variety','origin']) {
+    for (const key of ['variety','origin','package','size']) {
       const value=dialog.querySelector('[name='+key+']').value;
       if(value)url.searchParams.set('quote_'+key,value);
     }
@@ -51,7 +53,7 @@
     frame.setAttribute('aria-hidden','true');frame.tabIndex=-1;
     frame.style.cssText='position:fixed;width:1px;height:1px;bottom:0;left:0;border:0;opacity:0;pointer-events:none';
     const dates=[...new Set(visibleRows.map(r=>r.report_date||r.market_date).filter(Boolean))].sort().join(' · ');
-    const filters=['variety','origin'].map(key=>dialog.querySelector('[name='+key+']').value).filter(Boolean).join(' · ');
+    const filters=['variety','origin','package','size'].map(key=>dialog.querySelector('[name='+key+']').value).filter(Boolean).join(' · ');
     frame.srcdoc='<!doctype html><html><head><meta charset="utf-8"><title>'+Q.esc(selected+' — '+market+' — '+dates)+'</title><link rel="stylesheet" href="'+location.origin+'/reports/report.css"></head><body><main><h1>AgraX · '+Q.esc(selected)+'</h1><p>'+Q.esc(market)+' terminal · '+Q.esc(dates)+'</p><p>'+visibleRows.length+' reported prices'+(filters?' · Filters: '+Q.esc(filters):'')+'</p><p class="intro">Prices in USD for the package shown. “Mostly” is included only when reported. A dash means the field was not supplied.</p>'+Q.table(selected,visibleRows,market,dates)+'<footer>AgraX · Source: USDA Agricultural Marketing Service, Market News.<br>Independent presentation of USDA data. AgraX is not affiliated with USDA.</footer></main></body></html>';
     frame.addEventListener('load',()=>{frame.contentWindow.focus();frame.contentWindow.print();},{once:true});
     document.body.append(frame);
@@ -96,11 +98,11 @@
       return Number.isNaN(+date) ? value : new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(date);
     };
     const dateLabel = dates.length===1 ? formatDate(dates[0]) : dates.length ? formatDate(dates[0])+' – '+formatDate(dates[dates.length-1]) : 'Loading report';
-    dialog.innerHTML='<header class="commodity-dialog__header"><div class="commodity-dialog__identity"><h1 tabindex="-1"><span id="commodity-dialog-title">'+Q.esc(name)+'</span><span data-watch-commodity="'+Q.esc(name)+'"></span></h1><p class="commodity-dialog__eyebrow">'+Q.esc(market)+' · '+Q.esc(dateLabel)+'</p></div><div class="commodity-dialog__tools"><details class="commodity-dialog__export"><summary aria-label="Share or export" title="Share or export">'+shareIcon+'</summary><div class="commodity-dialog__export-options"><button type="button" data-export="share">'+shareIcon+'Share link</button><button type="button" data-export="print">'+printIcon+'Print / Save PDF</button><a href="'+Q.esc(reportHref)+'">'+externalIcon+'Full market report</a></div></details><button type="button" class="commodity-dialog__close" aria-label="Close commodity details">'+icon('<path d="m6 6 12 12M18 6 6 18"/>')+'</button></div></header><div class="commodity-dialog__body"><p class="commodity-dialog__overview">'+rows.length+' prices <span aria-hidden="true">·</span> '+varieties.length+' '+(varieties.length===1?'variety':'varieties')+' <span aria-hidden="true">·</span> '+origins.length+' '+(origins.length===1?'origin':'origins')+'</p><p class="commodity-share-status" role="status"></p><div class="commodity-dialog__filters">'+select('variety','Varieties',varieties)+select('origin','Origins',origins)+'</div><div class="commodity-dialog__caption"><span>USD per reported package</span><details class="commodity-dialog__info"><summary aria-label="About these prices" title="About these prices">'+icon('<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.01"/>')+'</summary><p>Prices are in USD for the package shown. “Mostly” is included only when reported. Each quote preserves its variety, origin, package, size, grade, and notes. A dash means the field was not supplied.</p></details><span class="commodity-dialog__count" role="status"></span></div><p class="quote-row-hint">Select a row to view price history and compare other markets.</p><div class="commodity-dialog__table"></div></div>';
+    dialog.innerHTML='<header class="commodity-dialog__header"><div class="commodity-dialog__identity"><h1 tabindex="-1"><span id="commodity-dialog-title">'+Q.esc(name)+'</span><span data-watch-commodity="'+Q.esc(name)+'"></span></h1><p class="commodity-dialog__eyebrow">'+Q.esc(market)+' · '+Q.esc(dateLabel)+'</p></div><div class="commodity-dialog__tools"><details class="commodity-dialog__export"><summary aria-label="Share or export" title="Share or export">'+shareIcon+'</summary><div class="commodity-dialog__export-options"><button type="button" data-export="share">'+shareIcon+'Share link</button><button type="button" data-export="print">'+printIcon+'Print / Save PDF</button><a href="'+Q.esc(reportHref)+'">'+externalIcon+'Full market report</a></div></details><button type="button" class="commodity-dialog__close" aria-label="Back to commodities">'+'← Products'+'</button></div></header><div class="commodity-dialog__body"><p class="commodity-dialog__overview">'+rows.length+' prices <span aria-hidden="true">·</span> '+varieties.length+' '+(varieties.length===1?'variety':'varieties')+' <span aria-hidden="true">·</span> '+origins.length+' '+(origins.length===1?'origin':'origins')+'</p><p class="commodity-share-status" role="status"></p><div class="commodity-dialog__filters">'+select('variety','Varieties',varieties)+select('origin','Origins',origins)+select('package','Packages',rows.map(r=>Q.clean(r.package)))+select('size','Sizes',rows.map(r=>Q.clean(r.size)))+'</div><div class="commodity-dialog__caption"><span>USD per reported package</span><details class="commodity-dialog__info"><summary aria-label="About these prices" title="About these prices">'+icon('<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.01"/>')+'</summary><p>Prices are in USD for the package shown. “Mostly” is included only when reported. Each quote preserves its variety, origin, package, size, grade, and notes. A dash means the field was not supplied.</p></details><span class="commodity-dialog__count" role="status"></span></div><p class="quote-row-hint">Select a row to view price history and compare other markets.</p><div class="commodity-dialog__table"></div></div>';
     dialog.querySelector('.commodity-dialog__close').addEventListener('click',()=>dialog.close());
     dialog.querySelectorAll('select').forEach(el=>el.addEventListener('change',drawTable));
     const shared = new URLSearchParams(location.search);
-    for (const key of ['variety','origin']) {
+    for (const key of ['variety','origin','package','size']) {
       const control = dialog.querySelector('[name='+key+']');
       const value = shared.get('quote_'+key);
       if ([...control.options].some(o=>o.value===value)) control.value=value;
@@ -108,8 +110,8 @@
     dialog.querySelector('[data-export=share]').addEventListener('click',()=>{dialog.querySelector('.commodity-dialog__export').open=false;share();});
     dialog.querySelector('[data-export=print]').addEventListener('click',()=>{dialog.querySelector('.commodity-dialog__export').open=false;printQuotes();});
     drawTable();
-    if (!dialog.open) { dialog.showModal(); dialog.querySelector('h1').focus({preventScroll:true}); }
-    document.body.classList.add('commodity-dialog-open');
+    if (!dialog.open) { dialog.show(); dialog.querySelector('h1').focus({preventScroll:true}); }
+    document.body.classList.remove('commodity-dialog-open');
     if (window.agraxAccountUI) window.agraxAccountUI.mount();
   }
   window.agraxCommodityDialog={render};
