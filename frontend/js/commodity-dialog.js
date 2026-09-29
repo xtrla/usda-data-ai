@@ -110,8 +110,15 @@
     dialog.querySelector('[data-export=share]').addEventListener('click',()=>{dialog.querySelector('.commodity-dialog__export').open=false;share();});
     dialog.querySelector('[data-export=print]').addEventListener('click',()=>{dialog.querySelector('.commodity-dialog__export').open=false;printQuotes();});
     drawTable();
-    if (!dialog.open) { dialog.show(); dialog.querySelector('h1').focus({preventScroll:true}); }
-    document.body.classList.remove('commodity-dialog-open');
+    const inlineLayout=document.body.classList.contains('lookup-ready');
+    const closeButton=dialog.querySelector('.commodity-dialog__close');
+    closeButton.textContent=inlineLayout?'← Products':'×';
+    closeButton.setAttribute('aria-label',inlineLayout?'Back to commodities':'Close commodity details');
+    if (!dialog.open) {
+      if(inlineLayout) dialog.show(); else dialog.showModal();
+      dialog.querySelector('h1').focus({preventScroll:true});
+    }
+    document.body.classList.toggle('commodity-dialog-open',!inlineLayout);
     if (window.agraxAccountUI) window.agraxAccountUI.mount();
   }
   window.agraxCommodityDialog={render};

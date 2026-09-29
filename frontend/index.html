@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wholesale produce prices — AgraX</title>
-<meta name="description" content="Browse free USDA specialty crop market data, including terminal market prices, shipping point FOB prices, movement data, pack, size, origin, grade and report dates.">
+<title>AgraX | USDA Wholesale Produce Prices & Terminal Markets</title>
+<meta name="description" content="Compare USDA wholesale produce prices by terminal market, commodity, origin, package and size. View dated reports and available price history.">
 <link rel="canonical" href="https://www.agra-x.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AgraX">
-<meta property="og:title" content="Wholesale produce prices — AgraX">
-<meta property="og:description" content="Search USDA terminal market prices, shipping point FOB prices and movement data for specialty crops.">
+<meta property="og:title" content="AgraX — USDA produce market data">
+<meta property="og:description" content="Free USDA terminal market prices, shipping point FOB and movement data for specialty crops. View the latest available reports.">
 <meta property="og:url" content="https://www.agra-x.com/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Wholesale produce prices — AgraX">
-<meta name="twitter:description" content="Search USDA terminal market prices, shipping point FOB prices and movement data for specialty crops.">
+<meta name="twitter:title" content="AgraX — USDA produce market data">
+<meta name="twitter:description" content="Free USDA terminal market prices, shipping point FOB and movement data for specialty crops.">
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
@@ -21,612 +21,128 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Dataset",
-  "@id": "https://www.agra-x.com/#dataset",
-  "name": "AgraX USDA produce price browser",
-  "description": "Searchable USDA AMS specialty crop market data including terminal market prices, shipping point FOB prices, movement data, pack, size, origin, grade and report dates.",
-  "url": "https://www.agra-x.com/",
-  "isAccessibleForFree": true,
-  "creator": {
-    "@type": "Organization",
-    "name": "AgraX",
-    "url": "https://www.agra-x.com/"
-  },
-  "keywords": [
-    "USDA produce prices",
-    "wholesale produce prices",
-    "terminal market prices",
-    "shipping point FOB",
-    "specialty crop data"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.agra-x.com/#organization",
+      "name": "AgraX",
+      "url": "https://www.agra-x.com/",
+      "sameAs": []
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.agra-x.com/#website",
+      "url": "https://www.agra-x.com/",
+      "name": "AgraX",
+      "publisher": {
+        "@id": "https://www.agra-x.com/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.agra-x.com/browse?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://www.agra-x.com/#dataset",
+      "name": "USDA specialty crop market data",
+      "description": "USDA AMS terminal market prices, shipping point FOB prices, and movement data for specialty crops, organized for buyers, growers, shippers, and analysts.",
+      "url": "https://www.agra-x.com/browse",
+      "isAccessibleForFree": true,
+      "creator": {
+        "@id": "https://www.agra-x.com/#organization"
+      },
+      "spatialCoverage": {
+        "@type": "Country",
+        "name": "United States"
+      },
+      "keywords": [
+        "USDA market data",
+        "produce prices",
+        "terminal market prices",
+        "shipping point prices",
+        "specialty crops"
+      ]
+    }
   ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing:border-box; }
-  body { margin:0; background:#F5F5F2; font-family:'Geist',system-ui,sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
-  a { color:#186B39; text-decoration:none; }
-  a:hover { color:#14562F; }
-  input { font-family:inherit; color:#171A16; }
-  input::placeholder { color:#8A8F86; }
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 
-/* hover rules lifted from style-hover */
-.h0:hover{background:#14562F !important}
-.h1:hover{background:#14562F;color:#fff !important}
-.h2:hover{background:#E3EFE6 !important}
-.h3:hover{background:#E8EAE4 !important}
-.h4:hover{background:#F4F4F0 !important}
-.h5:hover{background:#FAFBF9 !important}
-.h6:hover{background:#fff !important}
-.h7:hover{border-color:#186B39 !important}
-.h8:hover{border-color:#186B39;color:#186B39 !important}
-.h9:hover{color:#186B39 !important}
-.h10:hover{color:#6B4F17 !important}
-.h11:hover{color:#fff !important}
-
-/* Desktop and mobile are two separate layouts in the design export, not one
-   fluid grid. Both are rendered; this picks which is painted. 900px is the
-   breakpoint the design was authored against. */
-.dc-narrow { display: none; }
-@media (max-width: 899px) {
-  .dc-wide   { display: none; }
-  .dc-narrow { display: block; }
-}
-
-/* iOS Safari zooms the page when a focused input has a font smaller than
-   16px. The design's inputs are 13-15px, which is right for desktop, so the
-   size is bumped only on touch layouts rather than changing the design.
-   Using maximum-scale in the viewport tag would also stop the zoom, but it
-   disables pinch-zoom for everyone, which is an accessibility regression. */
-@media (max-width: 899px) {
-  input, select, textarea { font-size: 16px !important; }
-}
-
-/* Search suggestions. Positioned against the input's own wrapper so the
-   dropdown tracks the field on both layouts without duplicating markup. */
-.agx-sug {
-  position: absolute; z-index: 200; left: 0; right: 0; top: calc(100% + 6px);
-  background: #fff; border: 1px solid #E4E6DF; border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(23,26,22,0.13); overflow: hidden; display: none;
-}
-.agx-sug[data-open] { display: block; }
-.agx-sug__item {
-  display: flex; align-items: baseline; gap: 10px; width: 100%;
-  padding: 10px 14px; border: 0; background: none; cursor: pointer;
-  text-align: left; font-family: inherit; border-bottom: 1px solid #F1F2ED;
-}
-.agx-sug__item:last-child { border-bottom: 0; }
-.agx-sug__item:hover, .agx-sug__item[data-active] { background: #F4F6F1; }
-.agx-sug__label { font-size: 13px; font-weight: 500; color: #171A16; }
-.agx-sug__sub { font-size: 11.5px; color: #8A8F86; margin-left: auto; white-space: nowrap; }
-@media (max-width: 899px) { .agx-sug__item { padding: 13px 14px; } }
-
-/* Mobile data density.
- *
- * The mobile layout stacks each price into a labelled block, which is
- * readable but shows only two or three prices per screen — a buyer comparing
- * eight packs ends up scrolling past most of them. These rules tighten the
- * rhythm and let the price tables use the full width of the device rather
- * than sitting inside the page gutter.
- *
- * The commodity column is pinned so the variety stays visible while the
- * numeric columns scroll sideways. Without it, scrolling right to reach
- * Spread leaves you looking at figures with nothing identifying them.
- */
-@media (max-width: 899px) {
-  /* Full-bleed tables: escape the page padding, keep everything else inset. */
-  .dc-narrow [data-table-scroll] {
-    margin-left: -14px;
-    margin-right: -14px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .dc-narrow [data-table-scroll]::-webkit-scrollbar { display: none; }
-
-  /* Tighter rows. The design's phone spacing is generous for reading one
-     price; these tables are for comparing many. */
-  .dc-narrow [data-price-row] { padding-top: 9px !important; padding-bottom: 9px !important; }
-  .dc-narrow [data-com-row]   { padding-top: 11px !important; padding-bottom: 11px !important; }
-
-  /* Pinned first column. */
-  .dc-narrow [data-sticky-col] {
-    position: sticky;
-    left: 0;
-    z-index: 2;
-    background: inherit;
-    padding-left: 14px;
-    box-shadow: 1px 0 0 #EDEEE9;
-  }
-}
-
-.browse-mobile-header{background:#fff;padding:12px 14px;border-bottom:1px solid #E7EAE3}
-.browse-mobile-header__top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.browse-mobile-logo{flex:none;display:block}
-.browse-mobile-logo span{display:block;width:68px;height:25px;background:#072B18;mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat;-webkit-mask:url(/assets/agrax-logo-white-cropped.png) center/contain no-repeat}
-.browse-mobile-header .account-actions{flex-wrap:nowrap;gap:4px}
-.browse-mobile-header .account-actions button{min-height:40px;padding:0 10px;font-size:12px;white-space:nowrap}
-.browse-mobile-search{position:relative;display:flex;align-items:center;color:#788173}
-.browse-mobile-search>svg{position:absolute;left:13px;pointer-events:none}
-.browse-mobile-search input{width:100%;min-width:0;height:44px;border:1px solid #E7EAE3;border-radius:9px;background:#F6F7F3;padding:0 12px 0 38px;font-size:16px}
-.browse-mobile-search input:focus-visible{outline:2px solid #186B39;outline-offset:2px}
-[data-market-pill][data-active-pill=true]{background:#E9F1E7!important;border-color:#B6CBB0!important;color:#224D30!important}
-.mobile-overview{margin:12px 14px 14px;border:1px solid #E1E6DC;border-radius:12px;background:#fff;overflow:hidden}
-.mobile-overview__toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:16px;border:0;background:transparent;color:#263723;font:inherit;cursor:pointer}
-.mobile-overview__eyebrow{display:block;color:#6B7665;font-size:11px;margin-bottom:5px}
-.mobile-overview__title{display:block;font-size:19px;font-weight:600;letter-spacing:-.025em}
-.mobile-overview__toggle[aria-expanded=true]>svg{transform:rotate(180deg)}
-.mobile-overview__stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0 16px 16px;gap:10px}
-.mobile-overview__stats>div+div{border-left:1px solid #E7EAE3;padding-left:12px}
-.mobile-overview__stats strong{display:block;font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
-.mobile-overview__stats span{display:block;font-size:10.5px;color:#6B7665;margin-top:4px}
-.mobile-overview__reports{border-top:1px solid #E7EAE3;padding:14px 16px 16px;background:#FAFBF8}
-.mobile-overview__reports h2{margin:0;font-size:12px;font-weight:600}
-.mobile-overview__reports p{margin:4px 0 12px;font-size:11px;color:#6B7665}
-.mobile-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.mobile-report-link{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px;border:1px solid #E0E6DA;border-radius:8px;background:#fff;min-width:0}
-.mobile-report-link strong{display:block;font-size:11.5px;font-weight:500}
-.mobile-report-link small{display:block;font-size:10px;color:#6B7665;margin-top:4px}
-.mobile-report-link svg{flex:none;color:#70836A}
-.mobile-overview :focus-visible{outline:2px solid #186B39;outline-offset:-3px}
-
-[data-market-city][aria-pressed=true]{background:#e6f0e3!important;color:#174f2c!important;box-shadow:inset 3px 0 #186b39}
-[data-market-city][aria-pressed=true]>span:last-child{color:#186b39!important;font-weight:600}
-[data-market-city]:focus-visible,[data-market-pill]:focus-visible{outline:2px solid #186b39;outline-offset:-3px}
-
-/* Compact market identity and reported tone summary. */
-[data-market-pill][data-active-pill=true]{background:#214f36!important;border-color:#214f36!important;color:#fff!important;box-shadow:0 2px 5px #173d2715}
-[data-market-pill][data-active-pill=true]>span:first-child{background:#bdd3b4!important}
-.mobile-overview{border-color:#dce4d5;box-shadow:0 2px 8px #203d2010}
-.mobile-overview__toggle{padding:16px 16px 10px}
-.mobile-overview__title{font-size:24px;line-height:1.2;color:#173d27;letter-spacing:-.035em}
-.mobile-overview__eyebrow{font-size:10px;color:#75816c;margin-bottom:7px}
-.mobile-overview__toggle[aria-expanded=false]{padding-bottom:16px}
-.mobile-market-counts{margin:0;padding:0 16px 16px;font-size:11px;line-height:1.6;color:#708065}
-.mobile-market-counts>span{margin:0 5px;color:#b1bbab}
-.mobile-market-tone{padding:14px 16px 15px;border-top:1px solid #edf0e8;background:#fbfcf9}
-.mobile-market-tone__heading{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:10px}.mobile-market-tone__heading strong{font-weight:500;color:#3f5336}.mobile-market-tone__heading>span{font-size:10px;color:#8a9582}
-.mobile-market-tone__bar{display:flex;gap:2px;height:5px;border-radius:4px;overflow:hidden;background:#edf0e8}.mobile-market-tone__bar>span{display:block;min-width:0}
-.mobile-market-tone__legend{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:10px}.mobile-market-tone__legend strong{font-weight:600;font-variant-numeric:tabular-nums}.tone-higher{color:#267f78}.tone-steady{color:#737d6d}.tone-lower{color:#a65c3d}.mobile-market-tone>p{margin:9px 0 0;font-size:10px;color:#85907c}.mobile-market-tone__source{display:block;font-size:9px;color:#8a9582;margin-top:7px}
-.mobile-overview__reports{padding:0 16px;background:white}.mobile-overview__reports summary{display:flex;justify-content:space-between;align-items:center;min-height:46px;cursor:pointer;font-size:11px;font-weight:500;color:#405538;list-style:none}.mobile-overview__reports summary::-webkit-details-marker{display:none}.mobile-overview__reports summary>span{font-size:10px;color:#87917d;font-weight:400}.mobile-overview__reports summary>span::after{content:' +';font-size:14px}.mobile-overview__reports[open] summary>span::after{content:' −'}.mobile-report-grid{padding-bottom:14px}.mobile-report-link{padding:8px 10px}
-@media(prefers-reduced-motion:no-preference){.mobile-overview__toggle>svg{transition:transform .18s ease}.mobile-overview__reports[open] .mobile-report-grid{animation:report-reveal .18s ease-out}@keyframes report-reveal{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}}
-</style>
 <link rel="stylesheet" href="/styles/site-navigation.css?v=mobile-header-2">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/home.css?v=sky-blend-6">
 <link rel="stylesheet" href="/styles/analytics.css"><script defer src="/js/analytics-config.js"></script><script defer src="/js/analytics.js"></script>
 </head>
-<body class="agrax-browse">
-<script src="/js/site-navigation.js?v=header-search-3"></script>
-
-<!-- Markup exported from Claude Design, unmodified apart from link targets. -->
+<body class="agrax-home">
+<script src="/js/site-navigation.js?v=refresh-20260929"></script>
 <template id="page-template">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing:border-box; }
-  body { margin:0; background:#F5F5F2; font-family:'Geist',system-ui,sans-serif; color:#171A16; -webkit-font-smoothing:antialiased; }
-  a { color:#186B39; text-decoration:none; }
-  a:hover { color:#14562F; }
-  input { font-family:inherit; color:#171A16; }
-  input::placeholder { color:#8A8F86; }
-</style>
-
-
-<div style="min-height:100vh;display:flex;flex-direction:column">
-
-  <template data-if="wide">
-
-
-  <div class="browse-page-shell" style="flex:1;width:100%;max-width:1480px;margin:0 auto;display:flex;flex-direction:column;padding:14px 20px 28px;box-sizing:border-box">
-
-    <main data-shot="wide" style="min-width:0;display:flex;flex-direction:column;gap:12px">
-
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span data-on-click="onToggleOverview" style="height:28px;padding:0 10px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h7">
-            <template data-if="overviewOpen"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg></template>
-            <template data-if="overviewClosed"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></template>
-            {{ overviewToggleTxt }}
-          </span>
-          <template data-if="overviewClosed">
-            <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <span style="font-size:13px;font-weight:600;letter-spacing:-0.015em">{{ overview.title }}</span>
-              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ overview.collapsedMeta }}</span>
-            </span>
-          </template>
-        </div>
-
-        <template data-if="overviewOpen">
-        <div style="display:flex;gap:12px;align-items:stretch;flex-wrap:nowrap;height:184px">
-        <div data-shot="terminals" style="flex:0 0 216px;min-height:0;background:#fff;border-radius:10px;overflow:hidden;display:flex;flex-direction:column">
-          <div style="flex:none;min-height:34px;padding:7px 12px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid #E4E6DF">
-            <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Terminal markets</span>
-          </div>
-          <div style="flex:1;height:0;min-height:0;overflow-y:auto;scrollbar-width:thin" data-market-rail>
-            <template data-for="terminals" data-as="t">
-              <button type="button" aria-pressed="{{ t.active }}" data-market-city data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="position:relative;display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:#fff;color:inherit;font:inherit;height:36px;padding:0 12px;border-bottom:1px solid #EDEEE9;cursor:pointer" class="h5">
-                <template data-if="t.active"><span style="position:absolute;inset:0;background:#F0F6F1;box-shadow:inset 3px 0 0 #186B39"></span></template>
-                <template data-if="t.up"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#186B39;flex:none"></span></template>
-                <template data-if="t.down"><span style="position:relative;width:5px;height:5px;border-radius:50%;background:#8A4B2A;flex:none"></span></template>
-                <template data-if="t.flat"><span style="position:relative;width:5px;height:5px;border-radius:50%;border:1px solid #6B7268;flex:none"></span></template>
-                <span style="position:relative;min-width:0;flex:1;font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span>
-                <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268;font-variant-numeric:tabular-nums">{{ t.skuCount }}</span>
-                <span style="position:relative;font-size:10.5px;color:#4A5148;white-space:nowrap;width:44px;text-align:right">{{ t.selectionTxt }}</span>
-              </button>
-            </template>
-          </div>
-        </div>
-
-        <div data-shot="overview" style="flex:1 1 0;min-width:0;min-height:0;background:#fff;border-radius:10px;padding:14px 20px 12px;display:flex;flex-direction:column;overflow:hidden">
-          <div style="flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:24px">
-            <div style="min-width:0">
-              <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.032em;line-height:1.02">{{ overview.title }}</h1>
-              <div style="margin-top:4px;font-size:12px;color:#6B7268;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ overview.subtitle }}</div>
-            </div>
-            <div style="flex:none;text-align:right">
-              <div style="font-size:13px;color:#6B7268;letter-spacing:-0.005em;white-space:nowrap">{{ overview.dateTxt }}</div>
-              <div style="margin-top:6px;display:flex;align-items:baseline;gap:7px;justify-content:flex-end">
-                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums">{{ overview.tempNow }}</span>
-                <span style="font-size:12px;color:#8A8F86;white-space:nowrap">{{ overview.precip }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="flex:none;display:flex;align-items:flex-end;gap:30px;margin-top:12px;padding-top:11px;border-top:1px solid #E8EAE4">
-            <div style="min-width:0">
-              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.skusTxt }}</div>
-              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Prices reporting</div>
-            </div>
-            <div style="min-width:0">
-              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.commoditiesTxt }}</div>
-              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Commodities</div>
-            </div>
-            <div style="min-width:0">
-              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.districtsTxt }}</div>
-              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Shipping points</div>
-            </div>
-            <div style="min-width:0">
-              <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:23px;font-weight:500;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums">{{ overview.tempRange }}</div>
-              <div style="margin-top:5px;font-size:11.5px;color:#6B7268;letter-spacing:-0.005em">Temperature 7am</div>
-            </div>
-          </div>
-
-          <div style="flex:none;height:30px;display:flex;align-items:center;gap:9px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:11px">
-            <span style="flex:none;font-size:12px;color:#8A8F86;letter-spacing:-0.005em;white-space:nowrap">Reports & PDFs</span>
-            <template data-for="reports" data-as="r">
-              <a href="{{ r.href }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px;border-radius:13px;background:#F4F4F0;cursor:pointer;white-space:nowrap" class="h3">
-                <span style="font-size:11.5px;font-weight:600;letter-spacing:-0.01em">{{ r.name }}</span>
-                <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#6B7268">{{ r.dateTxt }}</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"></path><polyline points="7 11 12 16 17 11"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg>
-              </a>
-            </template>
-          </div>
-        </div>
-        </div>
-        </template>
-      </div>
-
-      <div style="background:#fff;border:1px solid #EDEEE9;border-radius:10px;overflow:hidden;display:flex;align-items:stretch;flex-wrap:wrap">
-
-        <aside style="width:228px;flex:none;border-right:1px solid #EDEEE9;padding:16px 14px 20px;display:flex;flex-direction:column;gap:22px">
-          <template data-for="filterGroups" data-as="g">
-          <div>
-            <div style="display:flex;align-items:baseline;gap:8px;padding:0 8px 7px">
-              <span style="font-size:12px;font-weight:600;letter-spacing:-0.01em;color:#171A16">{{ g.title }}</span>
-              <template data-if="g.dirty"><span data-on-click="g.onClear" style="margin-left:auto;font-size:12px;color:#186B39;cursor:pointer">Clear</span></template>
-            </div>
-            <div style="max-height:256px;overflow-y:auto;overscroll-behavior:contain">
-            <template data-for="g.options" data-as="o">
-              <div data-filter-kind="{{ o.filterKind }}" data-filter-key="{{ o.filterKey }}" data-filter-selected="{{ o.on }}" data-on-click="o.onToggle" style="position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:7px;cursor:pointer" class="h4">
-                <template data-if="o.on"><span style="position:absolute;inset:0;border-radius:7px;background:#F0F6F1"></span></template>
-                <template data-if="o.dotMostly"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#186B39;flex:none"></span></template>
-                <template data-if="o.dotMid"><span style="position:relative;width:6px;height:6px;border-radius:50%;background:#C9922F;flex:none"></span></template>
-                <template data-if="o.dotReported"><span style="position:relative;width:6px;height:6px;border-radius:50%;border:1px solid #8A8F86;flex:none"></span></template>
-                <span style="position:relative;min-width:0;font-size:13px;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ o.name }}</span>
-                <span style="position:relative;margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#8A8F86;font-variant-numeric:tabular-nums">{{ o.count }}</span>
-                <template data-if="o.on"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#186B39" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="position:relative;flex:none"><polyline points="5 13 10 18 19 7"></polyline></svg></template>
-              </div>
-            </template>
-            </div>
-          </div>
-          </template>
-
-        </aside>
-
-        <template data-if="browseMode">
-        <div style="flex:1;min-width:280px;display:flex;flex-direction:column">
-        <div style="min-height:44px;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E4E6DF">
-          <span style="font-size:11.5px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Commodities</span>
-          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ rowCountTxt }}</span>
-          <span style="font-size:11px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ filterSummary }}</span>
-          <template data-if="olderCount">
-            <span data-on-click="onToggleOlder" style="flex:none;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;border:1px solid #E4E6DF;background:#fff;cursor:pointer;font-size:11px;color:#6B7268;white-space:nowrap" class="h3">{{ olderTxt }}<span style="font-weight:500;color:#186B39">{{ olderToggleTxt }}</span></span>
-          </template>
-          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1 1 100%">
-            <span style="position:relative;display:flex;align-items:center;flex:none;width:300px;margin-right:auto">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2" stroke-linecap="round" style="position:absolute;left:11px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-              <input data-value="tableQuery" data-on-change="onTableQuery" placeholder="Filter this table" style="width:100%;height:34px;background:#F4F4F0;border:0;border-radius:17px;padding:0 14px 0 34px;font-size:13px;outline:none">
-            </span>
-
-            <span style="display:flex;align-items:center;background:#F4F4F0;border-radius:16px;padding:2px;gap:2px">
-              <template data-for="sortOptions" data-as="o">
-                <span data-on-click="o.onSelect" style="position:relative;height:28px;padding:0 10px;border-radius:14px;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap" class="h9">
-                  <template data-if="o.active"><span style="position:absolute;inset:0;border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.10)"></span></template>
-                  <span style="position:relative">{{ o.label }}</span>
-                </span>
-              </template>
-            </span>
-            <span data-browse-share data-on-click="onShare" style="height:32px;padding:0 12px;border-radius:16px;background:#F4F4F0;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap" class="h3">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><polyline points="7 9 12 4 17 9"></polyline><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"></path></svg>
-              {{ shareTxt }}
-            </span>
-          </span>
-        </div>
-
-        <div data-shot="table" style="padding:0 16px 16px">
-          <div style="display:grid;grid-template-columns:24px minmax(0,1.2fr) 66px minmax(0,1fr) 92px;gap:12px;padding:12px 0 10px;border-bottom:1px solid #EDEEE9">
-            <span></span>
-            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Commodity</span>
-            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Prices</span>
-            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">Origins</span>
-            <span style="font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86;text-align:right">Tone</span>
-          </div>
-
-          <nav class="browse-pagination browse-pagination--top" aria-label="Commodity pages">
-<span>{{ pageTxt }}</span><template data-if="hasPrev"><button type="button" data-on-click="onPrev">Previous</button></template><template data-if="hasNext"><button type="button" data-on-click="onNext">Next</button></template>
-</nav>
-<template data-for="rows" data-as="c">
-          <template data-if="c.sponsorSlot">
-            <div style="position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:44px;padding:8px 16px 8px 11px;border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F">
-              <span style="flex:none;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
-              <span style="min-width:0;font-size:12.5px;color:#171A16">Valle Verde Logistics — reefer capacity out of South Texas, brokered same day</span>
-              <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:#8A6520;cursor:pointer;white-space:nowrap" class="h10">Get a rate
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
-              </span>
-            </div>
-          </template>
-          <div style="border-bottom:1px solid #EDEEE9">
-            <div data-on-click="c.onToggle" style="position:relative;display:grid;grid-template-columns:24px minmax(0,1.2fr) 66px minmax(0,1fr) 92px;gap:12px;align-items:center;height:52px;cursor:pointer" class="h5">
-
-              <span style="position:relative;display:flex;align-items:center;padding-left:8px">
-
-                <template data-if="c.collapsed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></template>
-              </span>
-              <span style="position:relative;font-size:14.5px;font-weight:600;letter-spacing:-0.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><button class="commodity-open" data-on-click="c.onSelect" aria-haspopup="dialog">{{ c.name }}</button><span data-watch-commodity="{{ c.name }}"></span></span>
-              <span style="position:relative;font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;color:#171A16;text-align:right;font-variant-numeric:tabular-nums">{{ c.skusTxt }}</span>
-              <span style="position:relative;font-size:12.5px;color:#8A8F86;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.origins }}</span>
-              <span style="position:relative;display:flex;justify-content:flex-end">
-                <template data-if="c.up"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#E6F3EF;color:#26736B;white-space:nowrap">↑ Higher</span></template>
-                <template data-if="c.down"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F8EEE7;color:#A25A3A;white-space:nowrap">↓ Lower</span></template>
-                <template data-if="c.flat"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158;white-space:nowrap">→ Steady</span></template>
-              </span>
-            </div>
-
-
-          </div>
-          </template>
-
-          <template data-if="empty">
-            <div style="padding:26px 0;font-size:12.5px;color:#6B7268">No commodities match these filters.</div>
-          </template>
-        </div>
-
-        <div style="margin-top:auto;min-height:48px;padding:9px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid #EDEEE9;background:#FAFBF9">
-          <span style="font-size:11.5px;color:#6B7268">Select a commodity to see its complete price report.</span>
-          <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
-            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#6B7268">{{ pageTxt }}</span>
-            <template data-if="hasPrev">
-              <span data-on-click="onPrev" style="height:30px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap" class="h8">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
-                Previous
-              </span>
-            </template>
-            <template data-if="hasNext">
-              <span data-on-click="onNext" style="height:30px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;background:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap" class="h8">
-                Next page
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
-              </span>
-            </template>
-          </span>
-        </div>
-        </div>
-        </template>
-
-
-      </div>
-    </main>
-  </div>
-
-  <footer class="browse-page-footer" style="border-top:1px solid #EDEEE9;background:#fff;padding:16px 20px;display:flex;justify-content:center">
-    <div style="width:100%;max-width:1440px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <a href="/" aria-label="AgraX home" style="flex:none;align-self:flex-start;display:inline-flex;align-items:center"><span aria-hidden="true" style="width:66px;height:24px;display:block;background:#072B18;-webkit-mask-image:url(/assets/agrax-logo-white-cropped.png);mask-image:url(/assets/agrax-logo-white-cropped.png);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center"></span></a>
-    <span style="font-size:11.5px;color:#6B7268">AgraX · Independent market intelligence. Not affiliated with USDA.</span>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
-      <a href="/" style="font-size:11.5px;color:#4A5148">Home</a>
-      <a href="/about" style="font-size:11.5px;color:#4A5148">About the data</a>
-      <a href="/privacy" style="font-size:12.5px;color:#4A5148">Privacy</a>
+<main class="home-shell">
+  <section class="home-intro" aria-labelledby="home-title">
+    <div class="home-intro__content"><p class="agx-eyebrow"><span aria-hidden="true"></span> Produce markets, in focus</p>
+    <h1 id="home-title">Know the market.<br>See the details.</h1>
+    <p class="home-intro__description">Spend less time searching USDA reports. Find wholesale produce prices, compare matching quotes across cities, and follow the products you buy—all free.</p>
+    <a class="home-explore" href="/browse">Explore prices <span aria-hidden="true">→</span></a>
     </div>
+    <figure class="home-intro__image"><img src="/assets/farm-hero.webp" alt="Rows of produce growing in a sunlit field" width="884" height="663" fetchpriority="high"><figcaption>From the field.<br><strong>Into perspective.</strong></figcaption></figure>
+  </section>
+  <div class="home-source-strip"><span>Built around the reported price.</span><span>USDA AMS sources</span><span>Original report dates</span><span>Full quote details</span></div>
+  <section class="home-section" aria-labelledby="home-categories-title">
+    <div class="home-section__heading"><h2 id="home-categories-title">Browse by category</h2></div>
+    <div class="home-categories">
+<a class="home-category" href="/browse?category=fruits"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8c-7-3-9 8-4 12 2 1 3-1 4-1s2 2 4 1c5-4 3-15-4-12Zm0 0V4m0 2c1-4 5-4 5-4-1 4-5 4-5 4Z"/></svg><span><strong>Fruit</strong><small>{{ catFruit }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
+<a class="home-category" href="/browse?category=vegetables"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 10-9 11 4-14c1-3 7-1 5 3ZM13 6V2m1 4 4-3m-5 5-3-2m0 8-3-1"/></svg><span><strong>Vegetables</strong><small>{{ catVegetables }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
+<a class="home-category" href="/browse?category=onions_potatoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8V3M8 5 5 3m3 2 3-2"/><circle cx="8" cy="14" r="6"/><ellipse cx="19" cy="16" rx="4" ry="5"/></svg><span><strong>Onions & potatoes</strong><small>{{ catOnions }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
+<a class="home-category" href="/browse?category=nuts"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3c-6 5-6 12 0 18C13 15 13 8 7 3Zm10 0c-6 5-6 12 0 18 6-6 6-13 0-18ZM7 6v12M17 6v12"/></svg><span><strong>Nuts</strong><small>{{ catNuts }} commodities</small></span><span class="agx-chevron" aria-hidden="true">›</span></a>
     </div>
-  </footer>
-  </template>
-
-  <template data-if="narrow">
-  <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;background:#F5F5F2">
-
-
-
-    <div style="flex:none;background:#F4F4F0;border-bottom:1px solid #EDEEE9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:9px 14px" data-market-strip>
-      <template data-for="terminals" data-as="t">
-        <button type="button" aria-pressed="{{ t.active }}" data-market-pill data-active-pill="{{ t.activeFlag }}" data-on-click="t.onSelect" style="font-family:inherit;flex:none;height:36px;padding:0 11px;border-radius:16px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:#fff;color:#4A5148;border:1px solid #E0E4DC">
-          <span style="width:5px;height:5px;border-radius:50%;background:{{ t.chipDot }}"></span>{{ t.name }}<template data-if="t.active"><span aria-hidden="true">✓</span></template>
-          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;opacity:0.7">{{ t.skuCount }}</span>
-        </button>
-      </template>
-    </div>
-
-    <section class="mobile-overview" aria-label="Market overview">
-      <button class="mobile-overview__toggle" data-on-click="onToggleOverview" aria-expanded="{{ overviewOpen }}" aria-controls="mobile-overview-details">
-        <span><span class="mobile-overview__eyebrow">Latest report · {{ overview.dateTxt }}</span><span class="mobile-overview__title">{{ overview.title }}</span></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <template data-if="overviewOpen">
-        <div id="mobile-overview-details">
-          <p class="mobile-market-counts">{{ overview.commoditiesTxt }} commodities <span aria-hidden="true">·</span> {{ overview.skusTxt }} reported prices</p>
-          <details class="mobile-market-tone"><summary>Market commentary <span aria-hidden="true">+</span></summary>
-            <div class="mobile-market-tone__heading"><strong>Market tone</strong><span>By commodity</span></div>
-            <div class="mobile-market-tone__bar" role="img" aria-label="{{ marketTone.description }}"><template data-for="marketTone.segments" data-as="segment"><span style="width:{{ segment.width }};background:{{ segment.color }}"></span></template></div>
-            <div class="mobile-market-tone__legend"><span class="tone-higher">↑ <strong>{{ marketTone.higher }}</strong> Higher</span><span class="tone-steady">→ <strong>{{ marketTone.steady }}</strong> Steady</span><span class="tone-lower">↓ <strong>{{ marketTone.lower }}</strong> Lower</span></div>
-            <template data-if="marketTone.hasOther"><p>{{ marketTone.other }} mixed or not reported</p></template>
-            <span class="mobile-market-tone__source">From report commentary, not calculated price changes.</span>
-          </details>
-          <details class="mobile-overview__reports">
-            <summary>Reports &amp; PDFs <span>View downloads</span></summary>
-            <p>{{ overview.districtsTxt }} shipping points · Open a report to print or save a PDF.</p>
-            <div class="mobile-report-grid">
-              <template data-for="reports" data-as="r">
-                <a href="{{ r.href }}" class="mobile-report-link" aria-label="{{ r.name }} report, {{ r.dateTxt }}">
-                  <span><strong>{{ r.name }}</strong><small>{{ r.dateTxt }}</small></span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5"/></svg>
-                </a>
-              </template>
-            </div>
-          </details>
-        </div>
-      </template>
-    </section>
-
-
-
-    <template data-if="browseMode">
-    <div style="flex:1;min-height:0;background:#fff">
-      <div class="market-table-toolbar" style="position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #EDEEE9;padding:7px 14px 8px;display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="flex:1;min-width:0;position:relative;display:flex;align-items:center">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8F86" stroke-width="2.2" stroke-linecap="round" style="position:absolute;left:11px"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-            <input data-value="tableQuery" data-on-change="onTableQuery" placeholder="Filter this table" style="width:100%;height:34px;box-sizing:border-box;background:#F4F4F0;border:0;border-radius:7px;padding:0 12px 0 33px;font-size:13px;color:#171A16;outline:none">
-          </span>
-          <span class="browse-filter-trigger" data-on-click="onOpenSheet" style="flex:none;height:34px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;cursor:pointer">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A5148" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="6" y1="12" x2="18" y2="12"></line><line x1="10" y1="17" x2="14" y2="17"></line></svg>
-            Filters
-          </span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="flex:1;min-width:0;font-size:11px;color:#6B7268;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ filterSummary }}</span>
-          <span style="flex:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ rowCountTxt }}</span>
-        </div>
-      </div>
-
-      <div class="browse-column-labels" style="display:flex;justify-content:space-between;padding:11px 34px 8px 14px;font-size:11px;color:#76816e"><span>Commodity</span><span>Market tone</span></div>
-      <nav class="browse-pagination browse-pagination--top" aria-label="Commodity pages">
-<span>{{ pageTxt }}</span><template data-if="hasPrev"><button type="button" data-on-click="onPrev">Previous</button></template><template data-if="hasNext"><button type="button" data-on-click="onNext">Next</button></template>
-</nav>
-<template data-for="rows" data-as="c">
-        <template data-if="c.sponsorSlot">
-          <div style="border-bottom:1px solid #EDEEE9;background:#FCFAF4;box-shadow:inset 3px 0 0 #C9922F;padding:10px 14px 11px 16px">
-            <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A6520">Sponsored</span>
-            <span style="display:block;font-size:12.5px;margin-top:5px">Valle Verde Logistics — reefer capacity out of South Texas, brokered same day</span>
-            <span style="margin-top:9px;height:34px;border-radius:7px;border:1px solid #E0CFA5;background:#fff;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:500;color:#8A6520;cursor:pointer">Get a rate
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"></line><polyline points="13 7 18 12 13 17"></polyline></svg>
-            </span>
-          </div>
-        </template>
-
-        <div style="border-bottom:1px solid #EDEEE9">
-          <div class="market-commodity-row" data-on-click="c.onToggle" style="position:relative;padding:10px 14px;min-height:56px;box-sizing:border-box;display:flex;align-items:center;cursor:pointer">
-
-            <div style="position:relative;display:flex;align-items:center;gap:8px;width:100%">
-              <span style="min-width:0;flex:1;display:flex;align-items:center;gap:2px;font-size:14px;font-weight:600;letter-spacing:-0.01em"><button style="min-width:0;white-space:normal;text-align:left;line-height:1.35" class="commodity-open" data-on-click="c.onSelect" aria-haspopup="dialog">{{ c.name }}</button><span data-watch-commodity="{{ c.name }}"></span></span>
-              <template data-if="c.up"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#E6F3EF;color:#26736B">↑ Higher</span></template>
-              <template data-if="c.down"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F8EEE7;color:#A25A3A">↓ Lower</span></template>
-              <template data-if="c.flat"><span style="flex:none;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;font-weight:500;background:#F0F1EE;color:#5A6158">→ Steady</span></template>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#90998b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 5 7 7-7 7"/></svg>
-            </div>
-
-          </div>
-
-
-        </div>
-      </template>
-
-      <div class="browse-pagination" style="padding:12px 14px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-        <span style="font-size:11px;color:#6B7268">Select a commodity for all reported prices.</span>
-        <span style="margin-left:auto;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#6B7268">{{ pageTxt }}</span>
-        <template data-if="hasPrev">
-          <span data-on-click="onPrev" style="height:32px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;font-size:11.5px;font-weight:500;cursor:pointer">Previous</span>
-        </template>
-        <template data-if="hasNext">
-          <span data-on-click="onNext" style="height:32px;padding:0 11px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;font-size:11.5px;font-weight:500;cursor:pointer">Next</span>
-        </template>
-      </div>
-    </div>
-    </template>
-
-
-
-    <div style="flex:none;position:sticky;bottom:0;z-index:3;background:#fff;border-top:1px solid #EDEEE9;padding:7px 6px 10px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
-      <template data-for="mTabs" data-as="t">
-        <span data-on-click="t.onSelect" style="min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:{{ t.color }}">
-          <span style="display:inline-flex">{{ t.icon }}</span>
-          <span style="font-size:10px;font-weight:500;letter-spacing:0.02em">{{ t.label }}</span>
-        </span>
-      </template>
-    </div>
-
-    <template data-if="mSheetOpen">
-      <span data-on-click="onCloseSheet" style="position:fixed;inset:0;background:rgba(23,26,22,0.42);z-index:5"></span>
-      <div style="position:fixed;left:0;right:0;bottom:0;z-index:6;background:#fff;border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(23,26,22,0.18);padding:12px 14px 22px;max-height:78vh;overflow-y:auto;scrollbar-width:thin">
-        <div style="display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #EDEEE9">
-          <span style="font-size:13px;font-weight:600;letter-spacing:-0.01em">Filters</span>
-          <span data-on-click="onClearAll" style="margin-left:auto;font-size:11.5px;color:#6B7268;cursor:pointer">Clear all</span>
-          <span data-on-click="onCloseSheet" style="width:30px;height:30px;border-radius:7px;border:1px solid #E4E6DF;display:inline-flex;align-items:center;justify-content:center;cursor:pointer">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#171A16" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
-          </span>
-        </div>
-        <template data-for="filterGroups" data-as="g">
-          <div style="padding:12px 0 4px">
-            <span style="display:block;font-size:11px;font-weight:500;letter-spacing:-0.005em;color:#8A8F86">{{ g.title }}</span>
-            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px">
-              <template data-for="g.options" data-as="o">
-                <button type="button" aria-pressed="{{ o.on }}" data-filter-kind="{{ o.filterKind }}" data-filter-key="{{ o.filterKey }}" data-filter-selected="{{ o.on }}" data-on-click="o.onToggle" style="min-height:40px;font-family:inherit;padding:0 12px;border-radius:17px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;cursor:pointer;background:{{ o.chipBg }};color:{{ o.chipFg }};border:1px solid {{ o.chipBd }}"><template data-if="o.on"><span aria-hidden="true">✓</span></template>{{ o.name }}
-                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;opacity:0.7">{{ o.count }}</span>
-                </button>
-              </template>
-            </div>
-          </div>
-        </template>
-        <span class="browse-filter-apply" data-on-click="onCloseSheet" style="margin-top:14px;height:46px;border-radius:7px;background:#186B39;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">{{ mSheetApplyTxt }}</span>
-      </div>
-    </template>
-  </div>
-  </template>
-</div>
-
+  </section>
+  <section class="home-section home-section--markets" aria-labelledby="home-markets-title">
+    <div class="home-section__heading"><h2 id="home-markets-title">Choose a market</h2><span>Terminal prices</span></div>
+    <p class="home-status" role="status">{{ marketStatus }}</p>
+    <div class="home-markets"><template data-for="featuredMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div>
+    <template data-if="hasMoreMarkets"><details class="home-more"><summary>More markets <span aria-hidden="true">+</span></summary><div class="home-markets"><template data-for="moreMarkets" data-as="t"><a class="home-market" href="{{ t.href }}"><span><strong>{{ t.name }}</strong><small>{{ t.date }} · {{ t.lines }} prices</small></span><span class="agx-chevron" aria-hidden="true">›</span></a></template></div></details></template>
+  </section>
+  <section class="home-context" aria-labelledby="home-context-title">
+    <h2 id="home-context-title">Less searching. More market insight.</h2>
+    <p class="home-benefits-intro">The USDA reports the prices. AgraX makes them easier to find, compare, and keep up with.</p>
+    <dl class="home-benefits">
+      <div><dt>Find the price that matters</dt><dd>Browse by market and commodity, then narrow down to the variety and origin you need. See the pack, size, grade, and notes behind each price.</dd></div>
+      <div><dt>View reports. Save a copy.</dt><dd>Open a market report by category and date. Print it or save it as a PDF to share with your team or keep for reference.</dd></div>
+      <div><dt>Compare across cities</dt><dd>See other markets reporting the same variety, origin, pack, size, and quality. Report dates stay visible, so you know what you’re comparing.</dd></div>
+      <div><dt>Follow price history</dt><dd>See how an exact quote has changed across recorded report dates, with reported price ranges and “mostly” prices when available.</dd></div>
+      <div><dt>Keep your products close</dt><dd>Save commodities to your watchlist with a free account, so the products you follow are easier to return to.</dd></div>
+      <div><dt>Get your reports by email</dt><dd>Choose your markets and categories. Receive new reports after publication and import, without checking the site each day.</dd></div>
+    </dl>
+  </section>
+  <section class="home-subscribe" aria-labelledby="newsletter-heading">
+    <div class="home-subscribe__copy"><p class="home-subscribe__eyebrow">THE AGRAX REPORT</p><h2 id="newsletter-heading">Your markets.<br>Your daily reports.</h2><p>Choose your cities and produce categories. Get new reports by email after publication and successful import.</p><button type="button" data-newsletter-open>Choose my reports <span aria-hidden="true">↗</span></button><small>Confirm your email to start. Unsubscribe anytime.</small></div>
+    <div class="home-subscribe__art" aria-hidden="true"><div class="home-report-preview"><div class="home-report-preview__top">AgraX <span>MARKET BRIEF</span></div><p>A closer look at<br>your market.</p><div><span>01</span> Your cities <b>↗</b></div><div><span>02</span> Your commodities <b>↗</b></div><div><span>03</span> The reported details <b>↗</b></div><small>CHOSEN BY YOU. GROUNDED IN THE REPORT.</small></div></div>
+  </section>
+</main>
+<footer class="home-footer"><span>AgraX · Independent presentation of USDA market data.</span><nav aria-label="Footer"><a href="/browse">Browse</a><a href="/about">About the data</a><a href="/privacy">Privacy</a></nav></footer>
 </template>
-
-<link rel="stylesheet" href="/styles/browse-loading.css?v=1">
-<div id="page-root" aria-busy="true"><div class="browse-load-state" role="status"><span class="browse-spinner" aria-hidden="true"></span><span>Loading prices</span></div></div>
+<div id="page-root"></div>
 
 <script src="/js/config.js"></script>
 <script src="/js/util.js"></script>
-<script src="/js/api.js?v=market-first-1"></script>
+<script src="/js/api.js"></script>
 <script src="/js/dc-runtime.js"></script>
 <script src="/js/agrax-data.js"></script>
 <script src="/js/agrax-search.js"></script>
-<script src="/js/commodity-quotes.js?v=2"></script>
-<script src="/js/quote-history.js?v=markets-20260922"></script>
-<script src="/js/commodity-dialog.js?v=compact-2"></script>
-<link rel="stylesheet" href="/styles/commodity-dialog.css?v=markets-20260922">
-<script src="/js/origin-country.js"></script>
-<script src="/js/lookup-workspace.js"></script>
-<script src="/js/browse-app.js?v=terminal-loading-2"></script>
+<script src="/js/home-app.js?v=cohesion-1"></script>
+<link rel="stylesheet" href="/styles/newsletter.css"><script src="/js/report-choices.js"></script><script src="/js/newsletter.js"></script>
 <link rel="stylesheet" href="/styles/account.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
 <script defer src="/js/account-ui.js?v=mobile-header-2"></script>
-<link rel="stylesheet" href="/styles/product-system.css?v=browse-character-2">
-<link rel="stylesheet" href="/styles/page-grid.css?v=detail-sage-11">
-<link rel="stylesheet" href="/styles/lookup-workspace.css">
+<link rel="stylesheet" href="/styles/product-system.css?v=cohesion-1">
+<link rel="stylesheet" href="/styles/page-grid.css?v=mobile-hero-8">
+<link rel="stylesheet" href="/styles/refresh.css?v=refresh-20260929">
 </body>
 </html>

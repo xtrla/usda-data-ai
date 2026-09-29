@@ -1,0 +1,24 @@
+
+:root{--refresh-green:#193f2c;--refresh-ink:#233b2b;--refresh-muted:#687463}
+body{background:#f5f6f1}
+.agrax-header{height:72px!important;padding-inline:32px!important}
+.agrax-header-inner{height:71px;max-width:1376px;gap:30px}
+.agrax-header .agrax-brand,.agrax-brand span{width:76px}
+.agrax-brand span{height:28px}
+.agrax-header #agrax-header-search,.agrax-header .agrax-search-toggle{display:none!important}
+.agrax-navigation>a{font-weight:500}
+.browse-intro{padding:8px 0 28px}
+.refresh-eyebrow{font-size:10px;letter-spacing:.14em;color:#687463;margin:0 0 12px}
+.browse-intro h1{font-size:32px;letter-spacing:-.035em;margin:0 0 10px;color:#193f2c}
+.browse-intro>p:last-child{font-size:14px;color:#687463;margin:0;line-height:1.6}
+.lookup-context{display:none}
+.lookup-workspace{max-width:1440px;padding:32px}
+.lookup-layout{border-radius:12px}
+.lookup-welcome{padding:28px}
+.lookup-dashboard h2{font-size:23px}
+.lookup-sidebar-nav h2{letter-spacing:.05em;text-transform:uppercase;font-size:10px}
+.lookup-sidebar-categories .lookup-category-strip button{border:0;background:transparent;border-radius:5px}
+.lookup-sidebar-categories .lookup-category-strip button[aria-pressed=true]{background:#e6efe2}
+.lookup-commodity-table td,.lookup-commodity-table th{padding-block:16px}
+.lookup-workspace footer{padding-top:28px}
+@media(max-width:899px){.agrax-header{padding-inline:16px!important}.agrax-navigation{top:71px!important}.lookup-workspace{padding:20px 16px}.browse-intro h1{font-size:27px}.lookup-welcome{padding:20px 16px}.lookup-sidebar-nav{height:160px}.lookup-sidebar-categories .lookup-category-strip{padding-bottom:8px}.lookup-summary-block{margin-top:18px}}
