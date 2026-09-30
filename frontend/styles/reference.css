@@ -124,3 +124,17 @@ body{background:#f8faf8;color:#101c25;font-family:var(--agx-font)}
 }
 
 .produce-thumb.produce-photo{border-radius:5px;background-color:white}.produce-thumb.produce-generic svg{width:65%;height:65%}
+
+
+/* Full-width hero image; copy stays aligned to the site content grid. */
+.agrax-home .home-intro{width:100vw;margin-left:calc(50% - 50vw);border-radius:0}
+.agrax-home .home-intro__content{box-sizing:content-box;width:min(55%,720px);padding-left:max(62px,calc((100vw - 1440px)/2 + 62px))}
+.agrax-home .home-intro__image img{object-position:center}
+@media(max-width:899px){
+ .agrax-home .home-intro__content{box-sizing:border-box;width:100%;padding-left:24px;padding-right:24px}
+ .agrax-home .home-intro__image img{object-position:65% bottom}
+}
+
+/* Full-width statistics band with constrained, aligned contents. */
+.agrax-home .reference-stats{box-sizing:border-box;width:100vw;max-width:none;margin-left:calc(50% - 50vw);margin-right:0;border-radius:0;padding-left:max(32px,calc((100vw - 1376px)/2));padding-right:max(32px,calc((100vw - 1376px)/2))}
+@media(max-width:899px){.agrax-home .reference-stats{padding-left:24px;padding-right:24px}}
