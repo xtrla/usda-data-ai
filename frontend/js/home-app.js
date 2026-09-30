@@ -27,6 +27,7 @@ function applyRows(rows){
   var date=dates.length?(dates.length===1?window.agraxUtil.fmtDate(dates[0]):'Mixed report dates'):'Date unavailable';
   return {name:name,date:date,lines:m.count.toLocaleString(),href:'/browse?market='+encodeURIComponent(name)};
  });
+ scope.marketTotal=terminals.length;scope.commodityTotal=new Set(rows.map(r=>r.commodity).filter(Boolean)).size;
  scope.featuredMarkets=terminals.slice(0,6);scope.moreMarkets=terminals.slice(6);scope.hasMoreMarkets=terminals.length>6;
  scope.marketStatus=terminals.length?'':'No market reports available right now.';
  [['fruits','catFruit'],['vegetables','catVegetables'],['onions_potatoes','catOnions'],['nuts','catNuts']].forEach(function(pair){scope[pair[1]]=Object.keys(categories[pair[0]]||{}).length.toLocaleString();});
@@ -34,7 +35,7 @@ function applyRows(rows){
 }
 function boot(){
  host=document.getElementById('page-root');template=document.getElementById('page-template').innerHTML;
- scope={query:'',marketStatus:'Loading available reports…',featuredMarkets:[],moreMarkets:[],hasMoreMarkets:false,catFruit:'—',catVegetables:'—',catOnions:'—',catNuts:'—'};
+ scope={marketTotal:'—',commodityTotal:'—',query:'',marketStatus:'Loading available reports…',featuredMarkets:[],moreMarkets:[],hasMoreMarkets:false,catFruit:'—',catVegetables:'—',catOnions:'—',catNuts:'—'};
  scope.onQuery=function(e){scope.query=e.target.value;};
  scope.onSearch=function(e){e.preventDefault();var input=host.querySelector('[data-search-input]');location.href='/browse?q='+encodeURIComponent(input.value.trim());};
  host.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.defaultPrevented&&e.target.matches('[data-search-input]'))scope.onSearch(e);});

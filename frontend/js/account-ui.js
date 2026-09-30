@@ -236,7 +236,7 @@
         host.append(button('My watchlist',()=>open('watchlist')),toggle,menu);
       } else {
         menu.append(action('Sign in','login'),action('Create an account','signup'));
-        host.append(toggle,menu,button('Create account',()=>open('signup'),'account-primary'));
+        host.append(button('Sign in',()=>open('login'),'reference-signin'),button('Create free account',()=>open('signup'),'account-primary'));
       }
       const links=element('div','',{class:'account-menu-links'});
       links.append(element('a','About the data',{href:'/about'}),element('a','Privacy policy',{href:'/privacy'}));menu.append(links);

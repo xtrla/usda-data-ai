@@ -34,6 +34,10 @@
     {
       "source": "/newsletter",
       "destination": "/newsletter/index.html"
+    },
+    {
+      "source": "/markets",
+      "destination": "/markets/index.html"
     }
   ],
   "headers": [

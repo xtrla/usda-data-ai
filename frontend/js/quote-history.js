@@ -37,6 +37,7 @@ function observations(rows,quote,verifiedSeries=false){
 }
 function attach(container,items,market){
   const Q=root.agraxQuotes, ordered=items.slice().sort(Q.compareQuotes);
+  const featured=!!container.closest('.reference-chart');
   let active=null,version=0;
   const cache=new Map();
   const money=v=>v===null?'—':'$'+v.toFixed(2);
@@ -47,24 +48,27 @@ function attach(container,items,market){
     const start=points[0].time,end=points[points.length-1].time;
     const x=t=>60+(end===start?250:500*(t-start)/(end-start)), y=v=>180-145*(v-lo)/(hi-lo);
     let svg='<svg viewBox="0 0 620 220" role="img" aria-label="Reported price ranges by date in US dollars. Exact values follow below.">';
+    if(featured)svg+='<defs><linearGradient id="price-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6f9879" stop-opacity=".42"/><stop offset="100%" stop-color="#6f9879" stop-opacity=".04"/></linearGradient></defs>';
     for(let i=0;i<4;i++){const val=lo+(hi-lo)*i/3;svg+='<line x1="60" x2="560" y1="'+y(val)+'" y2="'+y(val)+'" stroke="#e2e8dc"/><text x="50" y="'+(y(val)+4)+'" text-anchor="end">'+money(val)+'</text>';}
     // Midpoints are calculated display values, never stored/reported prices.
     // Incomplete quotes break the line; dates use their real temporal spacing.
     let segment=[];
     function drawSegment(){
       if(segment.length>1){
-        svg+='<polygon points="'+segment.map(p=>x(p.time)+','+y(p.high)).concat(segment.slice().reverse().map(p=>x(p.time)+','+y(p.low))).join(' ')+'" fill="#dae8d3" opacity=".7"/>';
-        svg+='<polyline points="'+segment.map(p=>x(p.time)+','+y((p.low+p.high)/2)).join(' ')+'" fill="none" stroke="#245434" stroke-width="2.5" stroke-linejoin="round"/>';
+        if(!featured)svg+='<polygon points="'+segment.map(p=>x(p.time)+','+y(p.high)).concat(segment.slice().reverse().map(p=>x(p.time)+','+y(p.low))).join(' ')+'" fill="#dae8d3" opacity=".7"/>';
+        if(featured)svg+='<polygon points="'+x(segment[0].time)+',180 '+segment.map(p=>x(p.time)+','+y((p.low+p.high)/2)).join(' ')+' '+x(segment[segment.length-1].time)+',180" fill="url(#price-area)"/>';
+        svg+='<polyline points="'+segment.map(p=>x(p.time)+','+y((p.low+p.high)/2)).join(' ')+'" fill="none" stroke="#245434" stroke-width="2" stroke-linejoin="round"/>';
       }
       segment=[];
     }
     for(const p of points){if(p.low!==null&&p.high!==null)segment.push(p);else drawSegment();}drawSegment();
     for(const p of points){const px=x(p.time),low=p.low??p.high,high=p.high??p.low;svg+='<g><title>'+Q.esc(p.day+': '+range(p.low,p.high)+'; mostly '+range(p.mostlyLow,p.mostlyHigh))+'</title>';
-      if(p.low!==null&&p.high!==null)svg+='<circle cx="'+px+'" cy="'+y((low+high)/2)+'" r="3.5" fill="#245434"/>';
+      if(p.low!==null&&p.high!==null)svg+='<circle cx="'+px+'" cy="'+y((low+high)/2)+'" r="'+(featured?1.6:3.5)+'" fill="#245434"/>';
       else if(low===high)svg+='<circle cx="'+px+'" cy="'+y(low)+'" r="4" fill="#779b68"/>';
       else svg+='<rect x="'+(px-4)+'" y="'+y(high)+'" width="8" height="'+Math.max(2,y(low)-y(high))+'" rx="3" fill="#779b68"/>';
-      if(!demo&&(p.mostlyLow!==null||p.mostlyHigh!==null))svg+='<line x1="'+px+'" x2="'+px+'" y1="'+y(p.mostlyLow??p.mostlyHigh)+'" y2="'+y(p.mostlyHigh??p.mostlyLow)+'" stroke="#173d27" stroke-width="4" stroke-linecap="round"/>';
+      if(!featured&&!demo&&(p.mostlyLow!==null||p.mostlyHigh!==null))svg+='<line x1="'+px+'" x2="'+px+'" y1="'+y(p.mostlyLow??p.mostlyHigh)+'" y2="'+y(p.mostlyHigh??p.mostlyLow)+'" stroke="#173d27" stroke-width="4" stroke-linecap="round"/>';
       svg+='</g>';}
+    if(featured){for(let i=0;i<5;i++){const t=start+(end-start)*i/4,px=x(t);svg+='<line x1="'+px+'" x2="'+px+'" y1="35" y2="180" stroke="#e9eeeb" stroke-opacity=".55"/><text x="'+px+'" y="208" text-anchor="middle">'+new Intl.DateTimeFormat('en-US',{month:'short',...((end-start)<45*86400000?{day:'numeric'}:{}),timeZone:'UTC'}).format(new Date(t))+'</text>';}return svg+'</svg>';}
     return svg+'<text x="60" y="208">'+points[0].day+'</text><text x="560" y="208" text-anchor="end">'+points[points.length-1].day+'</text></svg>';
   };
   container.querySelectorAll('tbody > tr').forEach((tr,index)=>{
@@ -110,7 +114,7 @@ function attach(container,items,market){
       button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Collapse quote details');
       const row=document.createElement('tr');row.className='quote-history-row';row.id='quote-history-'+index;
       const cell=document.createElement('td');cell.colSpan=7;row.append(cell);tr.after(row);active={row,button};
-      cell.innerHTML='<section class="quote-history-panel" aria-label="Price history"><div class="quote-history-heading"><div><h3>Price history</h3><p>'+Q.esc([market,quote.commodity,quote.variety,quote.origin,quote.package,quote.size,quote.grade,quote.quality,quote.quality_note,quote.properties,quote.organic===true?'Organic':''].filter(Boolean).join(' · '))+'</p></div><button type="button" class="quote-history-close" aria-label="Close price history">×</button></div><div class="quote-history-periods" aria-label="History period">'+[[30,'30 days'],[90,'90 days'],[365,'1 year']].map(([days,label])=>'<button type="button" data-days="'+days+'" aria-pressed="'+(days===30)+'">'+label+'</button>').join('')+'</div><div class="quote-history-content" role="status"></div></section>';
+      cell.innerHTML='<section class="quote-history-panel" aria-label="Price history"><div class="quote-history-heading"><div><h3>Price history</h3><p>'+Q.esc([market,quote.commodity,quote.variety,quote.origin,quote.package,quote.size,quote.grade,quote.quality,quote.quality_note,quote.properties,quote.organic===true?'Organic':''].filter(Boolean).join(' · '))+'</p></div><button type="button" class="quote-history-close" aria-label="Close price history">×</button></div><div class="quote-history-periods" aria-label="History period">'+(featured?[[90,'3M'],[180,'6M'],[365,'1Y'],[366,'All']]:[[30,'30 days'],[90,'90 days'],[365,'1 year']]).map(([days,label])=>'<button type="button" data-days="'+days+'" aria-pressed="'+(days===30)+'">'+label+'</button>').join('')+'</div><div class="quote-history-content" role="status"></div></section>';
       const historyPanel=cell.firstElementChild;
       const marketsPanel=document.createElement('div');marketsPanel.hidden=true;cell.append(marketsPanel);
       const tabs=document.createElement('div');tabs.className='quote-detail-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Quote details');
@@ -129,7 +133,7 @@ function attach(container,items,market){
       });
       cell.querySelector('.quote-history-close').onclick=()=>{button.click();button.focus();};
       const content=cell.querySelector('.quote-history-content');
-      let demo=false,period=30,startDate='';
+      let demo=false,period=featured?180:30,startDate='';
       if(['localhost','127.0.0.1'].includes(location.hostname)){
         const preview=document.createElement('button');preview.type='button';preview.className='quote-history-demo-toggle';preview.textContent='Preview with sample data';
         cell.querySelector('.quote-history-periods').after(preview);
@@ -151,7 +155,7 @@ function attach(container,items,market){
           let data=demo?samples(days):saved?.data;
           if(saved)startDate=saved.startDate;
           if(!data){
-            const response=await root.agraxAPI.history({quote_id:quote.row_hash,days:365});
+            const response=await root.agraxAPI.history({quote_id:quote.row_hash,days:366});
             if(!Array.isArray(response.observations)||!response.series_key)throw Error('Invalid history response');
             data=response.observations;startDate=response.start_date;cache.set(index,{data,startDate});
           }
@@ -161,6 +165,7 @@ function attach(container,items,market){
           const points=observations(data,quote,!demo).filter(p=>p.time>=+cutoff&&p.time<=Date.parse(marketDay+'T00:00:00Z'));
           if(!points.length){content.textContent='History is being collected from '+startDate+'. No archived prices for this exact specification in this period. New USDA report dates will appear as they are collected.';return;}
           const dates=new Set(points.map(p=>p.day));
+          if(featured&&!demo){content.innerHTML=(dates.size>1?chart(points):'<p class="quote-history-caption">First observation recorded. A trend will appear after another report date is collected.</p>')+'<p class="quote-history-caption">Calculated low–high midpoint · USD per package · '+dates.size+' report dates</p><details class="reference-history-observations"><summary>View reported prices & source details</summary><p class="quote-history-caption">Same specification. Archive starts '+Q.esc(startDate)+'. All shows available history within the last year. Lines connect reported dates; shading is visual only.</p><ul class="quote-history-values">'+points.slice().reverse().map(p=>'<li><time>'+p.day+'</time><span>'+Q.esc(range(p.low,p.high))+'</span></li>').join('')+'</ul></details>';return;}
           if(demo){
             content.innerHTML='<div class="quote-history-demo-banner">DESIGN PREVIEW · Sample prices, not USDA data</div><div class="quote-history-combo"><div><p class="quote-history-caption">Line: calculated midpoint · Shading: sample low–high range<br>USD per package · '+points.length+' sample dates</p>'+chart(points,true)+'</div><div class="quote-history-list"><h4>Price observations</h4><div class="quote-history-list-labels"><span>Date</span><span>Range / midpoint</span></div><ul class="quote-history-values">'+points.slice().reverse().map(p=>'<li><time>'+p.day+'</time><span>'+Q.esc(range(p.low,p.high))+'<small>Midpoint '+money((p.low+p.high)/2)+'</small></span></li>').join('')+'</ul></div></div>';
             return;
@@ -169,7 +174,7 @@ function attach(container,items,market){
 
         }catch(error){if(token!==version||!row.isConnected)return;content.textContent='Could not load price history. ';const retry=document.createElement('button');retry.type='button';retry.textContent='Try again';retry.onclick=()=>load(days);content.append(retry);}
       }
-      cell.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>load(+b.dataset.days));load(30);
+      cell.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>load(+b.dataset.days));load(featured?180:30);
     });
   });
 }

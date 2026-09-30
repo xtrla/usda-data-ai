@@ -2,6 +2,7 @@
 'use strict';
 const categories={fruits:'Fruit',vegetables:'Vegetables',onions_potatoes:'Onions & potatoes',nuts:'Nuts'};
 const params=new URLSearchParams(location.search), market=params.get('market'),category=params.get('category');
+if(!market||!category)return;
 const status=document.getElementById('status'),report=document.getElementById('report'),print=document.getElementById('print');
 const {esc,clean,unique}=window.agraxQuotes;
 function text(v){return clean(v)?esc(clean(v)):'—';}
