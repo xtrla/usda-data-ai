@@ -3,7 +3,7 @@
 const Q=window.agraxQuotes,renderQuote=window.agraxCommodityDialog.render;
 const groups=[['','All commodities','▣'],['fruits','Fruit','♧'],['vegetables','Vegetables','♧'],['onions_potatoes','Onions & potatoes','♧'],['nuts','Nuts','♧']];
 let shell,data=[],market='',selected='',category=new URLSearchParams(location.search).get('category')||'',search=new URLSearchParams(location.search).get('q')||'',origin='',organic=false,onSelect=()=>{},showingMarket=new URLSearchParams(location.search).get('view')==='market';
-function thumb(name){const n=name.toLowerCase();const keys=['avocado','tomato','onion','strawber','lettuce','pepper','broccoli','grape','carrot'];const i=keys.findIndex(k=>n.includes(k));return i<0?'<span class="produce-thumb produce-generic" aria-hidden="true">♧</span>':'<span class="produce-thumb" aria-hidden="true" style="background-position:'+((i%3)*50)+'% '+(Math.floor(i/3)*50)+'%"></span>';}
+function thumb(name){return window.agraxCommodityImages.html(name,data.find(r=>r.commodity===name)?.commodity_type);}
 function price(r){const low=r.price_low,high=r.price_high;return low==null&&high==null?'—':(low!=null?'$'+Number(low).toFixed(2):'—')+(high!=null&&high!==low?' – $'+Number(high).toFixed(2):'');}
 function reportLink(){return '/reports/?'+new URLSearchParams({market,category:category||'fruits'});}
 function sync(){const u=new URL(location.href);for(const[k,v]of [['category',category],['q',search]]){if(v)u.searchParams.set(k,v);else u.searchParams.delete(k);}history.replaceState(null,'',u);}

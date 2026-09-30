@@ -1,0 +1,14 @@
+/* Illustrative produce imagery; not a representation of a particular quoted lot. */
+(function(){
+ const sheets={core:{url:'/assets/produce-core-v1.webp',columns:6},specialty:{url:'/assets/produce-specialty-v1.webp',columns:6},original:{url:'/assets/produce-grid.png',columns:3}};
+ const entries=new Map();
+ function add(sheet,groups){groups.forEach((names,index)=>names.split('|').forEach(name=>entries.set(name.toLowerCase(),{sheet,index})));}
+ add('core',['Apples','Bananas','Oranges|Blood Orange|Sour Orange Citrus|Tangelos|Tangerines','Lemons|Meyer Lemon','Limes','Pears','Peaches','Plums','Mangoes','Pineapples','Watermelons','Cantaloupes','Blueberries','Raspberries','Blackberries','Cherries','Kiwifruit','Pomegranates','Potatoes','Sweet Potatoes','Garlic','Ginger Root','Radishes','Beets','Cabbage','Cauliflower','Eggplant','Cucumbers','Squash, Zucchini','Corn, Sweet','Asparagus','Celery','Mushrooms','Beans, Haricot Vert (French Type)|Beans, Round Green Type','Peas, Sugar Snap|Peas, Snow','Almonds']);
+ add('specialty',['Apple Pears','Artichokes','Arugula','Basil','Bean Sprouts','Bok Choy','Brussels Sprouts','Chinese Cabbage','Anise|Fennel','Cilantro','Coconuts','Daikon','Dill','Dry Eschallot|Shallots','Figs','Grapefruit','Greens, Kale','Honeydews','Leeks','Mint','Parsley','Spinach','Onions, Green','Rosemary','Papaya','Plantains','Pumpkins','Squash, Butternut','Peppers, Jalapeno','Okra','Dragon Fruit','Guava','Persimmons','Walnuts','Peanuts','Filberts|Hazelnuts']);
+ add('original',['Avocados','Tomatoes|Tomatoes, Cherry|Tomatoes, Grape Type|Tomatoes, Plum Type','Onions|Cipolinos','Strawberries','Lettuce, Iceberg|Lettuce, Boston|Lettuce, Green Leaf|Lettuce, Red Leaf|Lettuce, Romaine','Peppers (Bell Type)','Broccoli','Grapes','Carrots']);
+ const paths={fruits:'M12 8c-7-3-9 8-4 12 2 1 3-1 4-1s2 2 4 1c5-4 3-15-4-12Zm0 0V4m0 2c1-4 5-4 5-4-1 4-5 4-5 4Z',vegetables:'M5 20C1 8 11 3 21 3c0 10-5 20-16 17ZM5 20 16 9',onions_potatoes:'M12 3c0 5-7 6-7 12a7 6 0 0 0 14 0c0-6-7-7-7-12ZM12 8v13',nuts:'M12 3C2 6 2 18 12 21c10-3 10-15 0-18Zm0 3v12'};
+ function lookup(name){return entries.get(String(name||'').trim().toLowerCase());}
+ function html(name,category){const item=lookup(name);if(item){const s=sheets[item.sheet],step=100/(s.columns-1);return '<span class="produce-thumb produce-photo" aria-hidden="true" style="background-image:url('+s.url+');background-size:'+s.columns*100+'% '+s.columns*100+'%;background-position:'+(item.index%s.columns)*step+'% '+Math.floor(item.index/s.columns)*step+'%"></span>';}
+ return '<span class="produce-thumb produce-generic" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="'+(paths[category]||paths.vegetables)+'"/></svg></span>';}
+ window.agraxCommodityImages={html,lookup};
+})();

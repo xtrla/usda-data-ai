@@ -122,3 +122,5 @@ body{background:#f8faf8;color:#101c25;font-family:var(--agx-font)}
  .lookup-ready .reference-categories,.lookup-detail-open .reference-categories,.reference-market-view .reference-categories{position:static;overflow:visible}
  .reference-control-bar>.reference-extra{top:50px}
 }
+
+.produce-thumb.produce-photo{border-radius:5px;background-color:white}.produce-thumb.produce-generic svg{width:65%;height:65%}
