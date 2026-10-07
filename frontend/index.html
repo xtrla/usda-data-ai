@@ -68,52 +68,16 @@
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="/styles/site-navigation.css?v=mobile-header-2">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles/home.css?v=sky-blend-6">
-<link rel="stylesheet" href="/styles/analytics.css"><script defer src="/js/analytics-config.js"></script><script defer src="/js/analytics.js"></script>
-</head>
-<body class="agrax-home">
-<script src="/js/site-navigation.js?v=refresh-20260929"></script>
-<template id="page-template">
-<main class="home-shell">
-  <section class="home-intro" aria-labelledby="home-title">
-    <div class="home-intro__content"><p class="agx-eyebrow"><span aria-hidden="true"></span> PRODUCE MARKET DATA. SIMPLIFIED.</p>
-    <h1 id="home-title">Real prices.<br>Real insight.<br>For real work.</h1>
-    <p class="home-intro__description">Find wholesale produce prices from USDA terminal markets. Compare across cities, track reported history, and make faster, smarter decisions.</p>
-    <a class="home-explore" href="/browse">Explore market prices <span aria-hidden="true">→</span></a><a class="reference-how" href="/about/">▷ &nbsp; How it works</a>
-    </div>
-    <figure class="home-intro__image"><img src="/assets/produce-hero.png" alt="Fresh avocados in a produce carton at a wholesale market" width="884" height="663" fetchpriority="high"><figcaption>From data to<br><strong>opportunity.</strong></figcaption></figure>
-  </section>
-  <div class="reference-benefit-strip"><div><i>↓</i><span>USDA market data<small>Dates and sources in view.</small></span></div><div><i>⌘</i><span>Compare across cities<small>See more. Buy smarter.</small></span></div><div><i>↗</i><span>Track price history<small>Spot changes. Plan ahead.</small></span></div><div><i>✓</i><span>Free to use<small>Essential data for everyone.</small></span></div></div>
-  <section class="reference-stats"><div><strong>{{ marketTotal }}</strong><span>Terminal markets</span></div><div><strong>{{ commodityTotal }}</strong><span>Commodities</span></div><div><strong>Dated</strong><span>USDA market reports</span></div><div><strong>For the trade.</strong><span>Growers. Shippers. Wholesalers.</span></div></section>
-</main>
-<footer class="home-footer"><span>AgraX · Independent presentation of USDA market data.</span><nav aria-label="Footer"><a href="/browse/">Browse prices</a><a href="/markets/">Markets</a><a href="/reports/">Reports</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></nav></footer>
-</template>
-<div id="page-root"></div>
-
-<script src="/js/config.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/dc-runtime.js"></script>
-<script src="/js/agrax-data.js"></script>
-<script src="/js/agrax-search.js"></script>
-<script src="/js/home-app.js?v=cohesion-1"></script>
-<link rel="stylesheet" href="/styles/newsletter.css"><script src="/js/report-choices.js"></script><script src="/js/newsletter.js"></script>
-<link rel="stylesheet" href="/styles/account.css">
+<link rel="stylesheet" href="/dashboard/dashboard.css?v=live-2">
+<link rel="stylesheet" href="/styles/account.css"><link rel="stylesheet" href="/styles/analytics.css">
+<script defer src="/js/config.js"></script>
+<script defer src="/js/api.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="/js/account-client.js"></script>
 <script defer src="/js/account-ui.js?v=mobile-header-2"></script>
-<link rel="stylesheet" href="/styles/product-system.css?v=cohesion-1">
-<link rel="stylesheet" href="/styles/page-grid.css?v=mobile-hero-8">
-<link rel="stylesheet" href="/styles/refresh.css?v=refresh-20260929">
-<link rel="stylesheet" href="/styles/reference.css?v=avocado-final-3">
-</body>
-</html>
+<script defer src="/js/commodity-quotes.js"></script>
+<script defer src="/dashboard/data.js?v=live-2"></script>
+<script defer src="/dashboard/dashboard.js?v=live-2"></script>
+<script defer src="/js/analytics-config.js"></script>
+<script defer src="/js/analytics.js"></script>
+</head><body><a class="skip" href="#main">Skip to workspace</a><header class="dashboard-header"><a class="dashboard-brand" href="/" aria-label="AgraX home"><span class="dashboard-logo" aria-hidden="true"></span></a><form id="dashboard-search" role="search"><span aria-hidden="true">⌕</span><input name="q" type="search" aria-label="Search commodities, varieties, or markets" placeholder="Search commodities, varieties, or markets" required><button>Search</button></form><button id="saved-toggle">◇ Saved</button><div class="account-actions" data-account-actions data-header-account></div></header><main id="main" tabindex="-1"></main><noscript><h1>AgraX market prices</h1><p>Enable JavaScript to use the dashboard. <a href="/reports">Market reports</a> · <a href="/about">About AgraX</a></p></noscript><footer class="dashboard-footer"><span>AgraX · Independent presentation of USDA AMS data. Not affiliated with USDA.</span><nav><a href="/reports">Reports</a> · <a href="/about">About</a> · <a href="/newsletter">Report emails</a> · <a href="/privacy">Privacy</a></nav></footer></body></html>

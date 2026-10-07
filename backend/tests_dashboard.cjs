@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+require('../frontend/dashboard/data.js');
+const M=globalThis.agraxDashboardData;
+const q={market_type:'terminal',market:'New York',commodity:'Avocados',commodity_type:'fruits',source_report:'NY',variety:'Hass',origin:'Mexico',package:'cartons 2 layer',size:'48s',grade:'A',report_date:'2026-10-07',price_low:20,price_high:24};
+const same={...q,market:'Chicago',source_report:'CH'};
+assert.equal(M.matches([same],q).length,1);
+for(const change of [{size:'60s'},{grade:'B'},{origin:'Peru'},{organic:true},{condition:'fair'},{report_date:'2026-10-06'},{price_qualifier:'occasional'}])assert.equal(M.matches([{...same,...change}],q).length,0);
+assert.equal(M.midpoint({...q,price_low:null}),null);assert.equal(M.midpoint({...q,price_high:10}),null);
+assert.equal(M.latest([q,{...q,report_date:'2026-10-06'},{...q,source_report:'NY-NUTS',commodity_type:'nuts',report_date:'2026-10-03'}]).length,2);
+const series=M.series({found:true,series_key:'verified',observations:[{...q,report_date:'2026-10-06',history_revision:1,price_low:18},{...q,report_date:'2026-10-06',history_revision:2,price_low:19},q,{...q,report_date:'2026-10-08'},{...q,size:'60s'}]},q);
+assert.equal(series.length,2);assert.equal(series[0].price_low,19);assert.equal(series[1].report_date,'2026-10-07');
+const snap=require('../frontend/dashboard/current.json');assert.equal(Object.keys(snap.markets).length,11);assert(Object.values(snap.markets).every(m=>m.count>0&&!m.error));assert(snap.rows.every(r=>r.row_hash&&r.report_date&&r.market_type==='terminal'));assert.equal(new Set(snap.rows.map(r=>r.market)).size,11);
+console.log('PASS: exact comparisons, distinct report dates, null prices, corrected history and all 11 real markets ('+snap.rows.length+' quotes).');
