@@ -41,14 +41,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles/tokens.css">
-<link rel="stylesheet" href="/styles/components.css">
+
+
 <link rel="stylesheet" href="/styles/data-guide.css">
-<link rel="stylesheet" href="/styles/site-navigation.css?v=mobile-header-2">
+<link rel="stylesheet" href="/dashboard/dashboard.css?v=about-1"><link rel="stylesheet" href="/styles/about-dashboard.css?v=1">
 <link rel="stylesheet" href="/styles/analytics.css"><script defer src="/js/analytics-config.js"></script><script defer src="/js/analytics.js"></script>
 </head>
 <body>
-<script src="/js/site-navigation.js?v=mobile-header-2"></script>
+<header class="dashboard-header"><a class="dashboard-brand" href="/" aria-label="AgraX home"><span class="dashboard-logo" aria-hidden="true"></span></a><form id="dashboard-search" role="search" action="/" method="get"><span aria-hidden="true">⌕</span><input name="q" type="search" aria-label="Search commodities, varieties, or markets" placeholder="Search commodities, varieties, or markets" required><button>Search</button></form><a href="/?view=reports">Reports</a><div class="account-actions" data-account-actions data-header-account></div></header><div class="about-shell"><aside class="about-rail"><a href="/">← Market dashboard</a><a href="/?view=reports">Report library</a><a href="/about" aria-current="page">About the data</a><button type="button" data-newsletter-open>Subscribe to reports</button></aside>
 <main class="data-guide">
   <section class="data-intro">
     <span class="data-eyebrow">About the data</span>
@@ -67,7 +67,7 @@
         <div class="data-example"><div class="data-example-top"><span>Illustrative quote · not current market data</span><strong>Avocados <span>Hass</span></strong></div><dl><div><dt>Origin</dt><dd>Mexico</dd></div><div><dt>Package</dt><dd>Cartons, 2 layer</dd></div><div><dt>Size</dt><dd>48s</dd></div><div><dt>Reported range</dt><dd>$32.00–$36.00</dd></div></dl><p>The range applies to this specification. Changing the size, package, or origin changes the comparison.</p></div>
         <dl class="data-definitions"><div><dt>Reported price</dt><dd>The price or low–high range supplied in the source report. Quote tables preserve the range and any available qualifiers.</dd></div><div><dt>Mostly</dt><dd>An additional price or range identified as “mostly” in the report. When supplied, it appears alongside the full reported range.</dd></div><div><dt>Mid-range</dt><dd>Where AgraX uses a single representative value, a midpoint may be calculated from a reported range. For example, $32–$36 has a $34 midpoint. It is not a transaction-weighted average.</dd></div><div><dt>Higher, lower, steady</dt><dd>Market commentary from the report. These labels are not a calculated percentage change for every quote.</dd></div><div><dt>A dash (—)</dt><dd>A value is unavailable or no matching quote was found. It does not mean zero.</dd></div></dl>
       </section>
-      <section id="timing"><span class="data-eyebrow">03 / Dates &amp; freshness</span><h2>Read the report date first.</h2><p>Prices are dated observations, not live bids. Different markets and report groups can publish at different times. The date shown with the market or quote tells you which reporting period you are viewing.</p><div class="data-callout"><h3>“Latest” does not always mean today.</h3><p>Browse starts with the latest available report for each market. Where older quotes are available, they are shown through the older-reports option. A quote that did not appear in a newer report should not be treated as a newly reported price.</p></div><p>Publication gaps, holidays, and delays in processing can affect freshness. Check the date and the original USDA report when timing matters.</p></section>
+      <section id="timing"><span class="data-eyebrow">03 / Dates &amp; freshness</span><h2>Read the report date first.</h2><p>Prices are dated observations, not live bids. Different markets and report groups can publish at different times. The date shown with the market or quote tells you which reporting period you are viewing.</p><div class="data-callout"><h3>“Latest” does not always mean today.</h3><p>The dashboard shows the latest available publications for each market and report category. Select a specification to view its available reported history. A quote that did not appear in a newer report should not be treated as a newly reported price.</p></div><p>Publication gaps, holidays, and delays in processing can affect freshness. Check the date and the original USDA report when timing matters.</p></section>
       <section id="coverage"><span class="data-eyebrow">04 / Coverage &amp; limits</span><h2>Use the details behind the number.</h2><ul class="data-limits"><li><strong>Coverage varies.</strong> Market and commodity counts reflect available reports. Missing products or markets do not imply no trade occurred.</li><li><strong>Origins retain their detail.</strong> Country filters group states and districts under a country. Individual quotes keep their reported origin.</li><li><strong>Different market stages are not interchangeable.</strong> A terminal–shipping point difference is not a profit margin; freight, handling, timing, and specifications can affect comparisons.</li><li><strong>Reports are a reference.</strong> A published price is not an offer or a guarantee of the price available for your order.</li></ul></section>
       <section id="corrections" class="data-corrections"><span class="data-eyebrow">05 / Corrections</span><h2>Something doesn’t look right?</h2><p>Send the market, commodity, report date, and the quote or page link. Include the original report reference if you have it so we can check the source.</p><button class="data-issue-open" type="button" aria-expanded="false" aria-controls="data-issue-form">Report a data issue <span aria-hidden="true">↗</span></button>
 <form id="data-issue-form" hidden>
@@ -80,8 +80,8 @@
 </form><p id="issue-status" role="status" aria-live="polite"></p></section>
     </div>
   </div>
-</main>
+</main></div>
 <footer class="data-footer"><span>AgraX · Independent market data from USDA reports.</span><div><a href="/browse">Browse prices</a><a href="/privacy">Privacy</a></div></footer>
 <link rel="stylesheet" href="/styles/account.css"><script src="/js/config.js"></script><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script defer src="/js/account-client.js"></script><script defer src="/js/account-ui.js?v=mobile-header-2"></script>
-<script src="/js/data-issue-form.js"></script><link rel="stylesheet" href="/styles/reference.css">
+<script src="/js/data-issue-form.js"></script><link rel="stylesheet" href="/styles/newsletter.css"><script src="/js/api.js"></script><script src="/js/report-choices.js"></script><script src="/js/newsletter.js"></script>
 </body></html>

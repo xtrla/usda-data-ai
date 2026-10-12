@@ -12,3 +12,8 @@ The root homepage and /browse use this dashboard. /next remains the separately l
 
 ## Validation
 Run the repository Node runtime against backend/tests_dashboard.cjs. Browser checks cover desktop and mobile search, market selection, real quote selection, archive chart, matching comparison, report-category table, PDF print control, account dialog, pagination and existing /browse links. Authentication and actual watchlist writes were not exercised with a customer's account.
+
+## Navigation cleanup
+- Report library, homepage reports and footer reports open `/?view=reports`, with market/category filters inside the dashboard. Reports open inline and retain Print / Save PDF.
+- General `/reports` bookmarks forward to the dashboard. Explicit dated archive links retain the existing exact-date viewer.
+- Report emails opens the existing subscription dialog; token-bearing preference links remain unchanged. About and Privacy remain standalone information pages.
