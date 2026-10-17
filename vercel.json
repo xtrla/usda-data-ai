@@ -131,5 +131,37 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/concept",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/concept/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/next",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/next/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/debug",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/debug.html",
+      "destination": "/",
+      "permanent": false
+    }
   ]
 }

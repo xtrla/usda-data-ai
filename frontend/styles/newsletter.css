@@ -2,3 +2,5 @@
 
 .newsletter-dialog,.newsletter-dialog *{box-sizing:border-box}.newsletter-dialog{overflow-y:auto}.newsletter-dialog input[type=checkbox]{width:16px;height:16px;vertical-align:middle;margin-right:5px}.newsletter-dialog button:focus-visible,.newsletter-dialog input:focus-visible{outline:2px solid #186b39;outline-offset:3px}@media(max-width:420px){.newsletter-dialog{padding:20px}.newsletter-dialog h2{font-size:22px}.newsletter-choices{gap:12px 8px}}
 .newsletter-dialog input[type=email]{font-size:16px}
+
+.newsletter-dialog{border-radius:3px;color:#151b17;font-family:Arial,Helvetica,sans-serif}.newsletter-dialog input[type=email],.newsletter-submit{border-radius:2px}
