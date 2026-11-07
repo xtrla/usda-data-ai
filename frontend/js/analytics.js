@@ -4,7 +4,7 @@
   const id = window.AGRAX_GA_ID;
   if (!/^G-[A-Z0-9]+$/.test(id || '') || !['www.agra-x.com','agra-x.com'].includes(location.hostname)) return;
   // Never measure token-bearing subscription or authentication pages.
-  if (location.pathname.startsWith('/newsletter') || /(?:token|code|access_token|refresh_token)=/i.test(location.search + location.hash)) return;
+  if (location.pathname.startsWith('/newsletter') || /(?:token|code|access_token|refresh_token|manage|confirm)=/i.test(location.search + location.hash)) return;
   const key = 'agrax-analytics-consent-v1';
   let choice = null, started = false;
   try { choice = localStorage.getItem(key); } catch (_) {}
