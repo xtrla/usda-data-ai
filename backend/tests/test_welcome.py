@@ -24,7 +24,7 @@ class WelcomeTests(unittest.TestCase):
         payload = send.call_args.kwargs['json']
         self.assertEqual(payload['to'], ['owner@example.com'])
         self.assertIn('Choose your reports', payload['html'])
-        self.assertIn('agrax-logo-white-cropped.png', payload['html'])
+        self.assertIn('agrax-logo-ink.png', payload['html'])
         self.assertEqual(payload['reply_to'], 'hello@agra-x.com')
 
     @patch.dict(os.environ, {'RESEND_API_KEY': 'test'})
