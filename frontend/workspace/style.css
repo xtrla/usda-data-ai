@@ -12,3 +12,35 @@
 /* Keep the AgraX wordmark pure black on every preview surface. */
 img[src='/assets/agrax-logo-black.png']{filter:brightness(0)}
 .account-auth-brand{background:#000}
+/* Compact price-explorer controls; desktop keeps its familiar filter row. */
+.explore-count{font-size:11px;color:var(--muted);margin:0 0 12px}
+.explore-extra{display:contents}.explore-extra>summary{display:none}.explore-extra-panel{display:flex!important;align-items:end;gap:8px}.explore-extra-panel label{display:grid;gap:7px;font-size:10px;color:var(--muted)}#clear-origin{font-size:11px;color:var(--green);padding:12px 4px}.explore-apply{display:none}
+@media(max-width:600px){
+ .explore-view{display:flex;flex-direction:column}
+ .explore-view .page-head{order:0;margin-bottom:20px;gap:0}
+ .explore-view .page-head .eyebrow,.explore-view .page-head p,.explore-view .page-head>.btn{display:none}
+ .explore-view h1{font-size:27px;letter-spacing:-.8px}
+ #explore-form{order:1;display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:10px;margin:0 0 16px;align-items:start}
+ #explore-form .explore-search{grid-column:1/-1}
+ #explore-form label{min-width:0}
+ #explore-form .explore-search>span,#explore-form .explore-market>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ #explore-form input,#explore-form select{height:44px;min-width:0;width:100%;font-size:14px;padding:10px 12px}
+ .explore-extra{display:block;position:relative;min-width:0}
+ .explore-extra>summary{display:flex;align-items:center;justify-content:center;gap:5px;list-style:none;border:1px solid #d6ded7;border-radius:6px;background:white;height:44px;font-size:13px}
+ .explore-extra>summary::-webkit-details-marker{display:none}
+ .explore-extra summary svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;margin-left:5px}
+ .explore-extra:not([open])>.explore-extra-panel{display:none!important}
+ .explore-extra[open]>summary{border-color:var(--green);color:var(--green)}
+ .explore-extra-panel{position:absolute;top:52px;right:0;width:min(300px,calc(100vw - 32px));padding:16px;border:1px solid var(--line);border-radius:8px;background:white;box-shadow:0 8px 26px #12231b18;z-index:12;display:grid!important;gap:10px}
+ .explore-extra-panel label{font-size:12px}
+ #clear-origin{justify-self:start;padding:8px 0;min-height:36px}
+ .explore-view .chips{order:2;flex-wrap:nowrap;overflow-x:auto;gap:7px;margin:0 0 14px;padding-bottom:2px;scrollbar-width:none}
+ .explore-view .chips::-webkit-scrollbar{display:none}
+ .explore-view .chip{flex-shrink:0;padding:10px 13px;font-size:12px;border-radius:20px}
+ .explore-count{order:3;font-size:12px;margin:0 0 12px}
+ .explore-view>.table-box{order:4}.explore-view>.pagination{order:5}.explore-view>.notice{order:6}
+ .explore-view .data-table th,.explore-view .data-table td{padding:13px 10px}
+ .explore-view .data-table th{font-size:10px}.explore-view .data-table td{font-size:12px}
+}
+@media(min-width:601px){#explore-form .explore-extra-panel select{max-width:240px}#explore-form .explore-market select{max-width:230px}}
+@media(max-width:600px){#explore-form input,#explore-form select{font-size:16px}}
