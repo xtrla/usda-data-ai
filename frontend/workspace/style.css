@@ -64,3 +64,17 @@ img[src='/assets/agrax-logo-ink.png']{filter:brightness(0)}
  .quote-view .empty-state{padding:24px 12px}.quote-view .spec-list>div{padding:10px 0}
 }
 @media(max-width:600px){.product-view .page-head{flex-direction:row;text-align:left}.product-view .product-table td:nth-child(2) small:empty{display:none}.product-view .product-table td:nth-child(2) small:first-child:before{content:none}}
+.report-explore-note{font-size:12px;color:var(--muted);margin:-12px 0 24px;max-width:760px;line-height:1.6}.report-actions{flex-wrap:wrap;gap:8px}.report-quote-link{color:var(--green)}.report-link-arrow{font-size:11px;margin-left:5px}.report-document tr:has(.report-quote-link):hover{background:var(--wash)}
+@media(max-width:600px){.page-head:has(.report-actions){align-items:flex-start;text-align:left}.report-actions{width:100%;display:flex}.report-actions .btn{flex:1;padding-inline:10px}.report-explore-note{font-size:11px;margin:-10px 0 18px}}
+@media print{.report-explore-note,.report-actions,.report-link-arrow{display:none!important}.report-quote-link{color:inherit}}
+/* Explicit desktop layout avoids the native details content wrapper becoming a flex column. */
+@media(min-width:601px){
+ .product-view .spec-filters{display:flex;align-items:flex-end;gap:12px}
+ .product-view .spec-filters>.spec-market{flex:1;min-width:130px}
+ .product-view .product-refine{display:block;flex:4;min-width:0}
+ .product-view .product-refine-fields{display:flex;align-items:flex-end;gap:12px}
+ .product-view .product-refine-fields label{flex:1;min-width:0}
+ .product-view .spec-filters label{gap:7px}
+ .product-view .spec-filters select{height:42px;width:100%}
+ .product-view #clear-spec{flex:none;min-height:42px;white-space:nowrap}
+}
