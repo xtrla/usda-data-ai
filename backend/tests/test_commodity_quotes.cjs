@@ -16,3 +16,9 @@ test('named sizes and fractional measurements sort by size',()=>{
  assert.deepEqual(sort(['xlge','med','sml','lge']),['sml','med','lge','xlge']);
  assert.deepEqual(sort(['2 1/2 inch','2 1/4 inch','2 3/4 inch']),['2 1/4 inch','2 1/2 inch','2 3/4 inch']);
 });
+test('qualifiers preserve appearance and other distinctions without duplicate wording',()=>{
+ assert.equal(Q.qualifiers({appearance:'Fine Appearance',quality_note:'fine appearance'}),'Fine Appearance');
+ assert.equal(Q.qualifiers({quality:'Fair Quality',condition:'Holdovers',notes:'few lower',price_notes:'Wide range'}),'Fair Quality; Holdovers; few lower; Wide range');
+ assert.equal(Q.qualifiers({}),'');
+ assert.equal(Q.qualifiers({quality_note:'fine appearance'}),'fine appearance');
+});

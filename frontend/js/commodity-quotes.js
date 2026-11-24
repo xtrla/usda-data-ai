@@ -7,6 +7,7 @@ function money(v){return v==null||String(v).trim()===''||!Number.isFinite(Number
 function range(a,b){const l=money(a),h=money(b);return l&&h?(l===h?l:l+'–'+h):l?l:h?h+' (high only)':'—';}
 function unique(values){return values.map(clean).filter((v,i,a)=>v&&a.findIndex(x=>x.toLowerCase()===v.toLowerCase())===i).join('; ');}
 const quoteCollator=new Intl.Collator('en',{numeric:true,sensitivity:'base'});
+function qualifiers(r){return unique([r.appearance,r.quality,r.quality_note,r.condition,r.notes,r.price_notes]);}
 function compareSizes(a,b){
  const ranks={xs:0,xsml:0,'extra small':0,sml:1,small:1,med:2,medium:2,lge:3,large:3,xlge:4,'extra large':4,jbo:5,jumbo:5,col:6,colossal:6};
  const left=ranks[a.toLowerCase()],right=ranks[b.toLowerCase()];
@@ -37,5 +38,5 @@ return '<section class="commodity"><div class="table-wrap" tabindex="0" role="re
    return '<tr><td data-label="Type / variety">'+text(unique([r.variety,r.properties,r.organic===true?'Organic':null]))+'</td><td data-label="Origin">'+text(r.origin)+'</td><td data-label="Package">'+text(r.package)+'</td><td data-label="Size">'+text(r.size)+'</td><td data-label="Grade / quality">'+text(unique([r.grade,r.quality]))+'</td><td class="price" data-label="Reported price">'+(r.price_qualifier?esc(r.price_qualifier)+' ':'')+range(r.price_low,r.price_high)+(mostly==='—'?'':'<span class="mostly">Mostly '+mostly+'</span>')+'</td><td data-label="Condition / notes">'+text(unique([r.quality_note,r.appearance,r.condition,r.notes,r.price_notes,mixedDates?'Report date: '+(r.report_date||r.market_date||'Not supplied'):null]))+'</td></tr>';
   }).join('')+'</tbody></table></div></section>';
 }
-root.agraxQuotes={esc,clean,unique,compareQuotes,table};
+root.agraxQuotes={esc,clean,unique,qualifiers,compareQuotes,table};
 })(typeof window !== 'undefined' ? window : globalThis);
